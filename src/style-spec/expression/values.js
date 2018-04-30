@@ -2,6 +2,7 @@ const assert = require('assert');
 
 const Color = require('../util/color');
 const { Collator } = require('./definitions/collator');
+const { Formatted } = require('./definitions/formatted');
 const {
   NullType,
   NumberType,
@@ -117,7 +118,22 @@ function typeOf(value) {
   return ObjectType;
 }
 
+function toString(value) {
+  const type = typeof value;
+  if (value === null) {
+    return '';
+  }
+  if (type === 'string' || type === 'number' || type === 'boolean') {
+    return String(value);
+  }
+  if (value instanceof Color || value instanceof Formatted) {
+    return value.toString();
+  }
+  return JSON.stringify(value);
+}
+
 module.exports = {
+  toString,
   Color,
   Collator,
   validateRGBA,
