@@ -4,7 +4,7 @@ const FillExtrusionBucket = require('../../data/bucket/fill_extrusion_bucket');
 const { polygonIntersectsPolygon, polygonIntersectsMultiPolygon } = require('../../util/intersection_tests');
 const { translateDistance, translate } = require('../query_utils');
 const properties = require('./fill_extrusion_style_layer_properties');
-const { vec4 } = require('@mapbox/gl-matrix');
+const { vec4 } = require('gl-matrix');
 const Point = require('@mapbox/point-geometry');
 
 class FillExtrusionStyleLayer extends StyleLayer {

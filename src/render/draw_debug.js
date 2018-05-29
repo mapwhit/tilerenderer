@@ -1,4 +1,4 @@
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = require('gl-matrix');
 const EXTENT = require('../data/extent');
 const { PosArray } = require('../data/array_types');
 const { LineIndexArray } = require('../data/index_array_type');

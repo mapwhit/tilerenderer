@@ -1,7 +1,7 @@
 const { patternUniformValues } = require('./pattern');
 const { Uniform1i, Uniform1f, Uniform2f, Uniform3f, Uniform4f, UniformMatrix4f } = require('../uniform_binding');
 
-const { mat3, vec3 } = require('@mapbox/gl-matrix');
+const { mat3, vec3 } = require('gl-matrix');
 
 const fillExtrusionUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),

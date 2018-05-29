@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = require('gl-matrix');
 
 module.exports = {
   queryRenderedFeatures,

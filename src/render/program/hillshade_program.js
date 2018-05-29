@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = require('gl-matrix');
 
 const { Uniform1i, Uniform1f, Uniform2f, UniformColor, UniformMatrix4f } = require('../uniform_binding');
 const EXTENT = require('../../data/extent');

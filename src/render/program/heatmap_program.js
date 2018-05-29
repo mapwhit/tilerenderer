@@ -1,4 +1,4 @@
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = require('gl-matrix');
 
 const { Uniform1i, Uniform1f, Uniform2f, UniformMatrix4f } = require('../uniform_binding');
 const pixelsToTileUnits = require('../../source/pixels_to_tile_units');

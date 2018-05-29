@@ -1,6 +1,6 @@
 const browser = require('../util/browser');
 
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = require('gl-matrix');
 const SourceCache = require('../source/source_cache');
 const EXTENT = require('../data/extent');
 const pixelsToTileUnits = require('../source/pixels_to_tile_units');
