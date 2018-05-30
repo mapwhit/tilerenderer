@@ -84,8 +84,8 @@ test('Style', async t => {
       t.spy(style.dispatcher, 'broadcast');
       t.assert.ok(Style.registerForPluginAvailability.calledOnce);
 
-      setRTLTextPlugin('some bogus url');
-      t.assert.ok(style.dispatcher.broadcast.calledWith('loadRTLTextPlugin', 'some bogus url'));
+      setRTLTextPlugin('some-bogus-url');
+      t.assert.ok(style.dispatcher.broadcast.calledWith('loadRTLTextPlugin', 'https://example.org/some-bogus-url'));
     });
 
     await t.test('loads plugin immediately if already registered', (t, done) => {
@@ -95,7 +95,7 @@ test('Style', async t => {
         // Getting this error message shows the bogus URL was succesfully passed to the worker
         // We'll get the error from all workers, only pay attention to the first one
         if (firstError) {
-          t.assert.equal(error.message, 'RTL Text Plugin failed to import scripts from /plugin.js');
+          t.assert.equal(error.message, 'RTL Text Plugin failed to import scripts from https://example.org/plugin.js');
           done();
           firstError = false;
         }
