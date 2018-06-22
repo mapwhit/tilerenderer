@@ -170,11 +170,15 @@ class SourceExpressionBinder {
 
   upload(context) {
     if (this.paintVertexArray?.arrayBuffer) {
-      this.paintVertexBuffer = context.createVertexBuffer(
-        this.paintVertexArray,
-        this.paintVertexAttributes,
-        this.expression.isStateDependent
-      );
+      if (this.paintVertexBuffer?.buffer) {
+        this.paintVertexBuffer.updateData(this.paintVertexArray);
+      } else {
+        this.paintVertexBuffer = context.createVertexBuffer(
+          this.paintVertexArray,
+          this.paintVertexAttributes,
+          this.expression.isStateDependent
+        );
+      }
     }
   }
 
@@ -265,11 +269,15 @@ class CompositeExpressionBinder {
 
   upload(context) {
     if (this.paintVertexArray?.arrayBuffer) {
-      this.paintVertexBuffer = context.createVertexBuffer(
-        this.paintVertexArray,
-        this.paintVertexAttributes,
-        this.expression.isStateDependent
-      );
+      if (this.paintVertexBuffer?.buffer) {
+        this.paintVertexBuffer.updateData(this.paintVertexArray);
+      } else {
+        this.paintVertexBuffer = context.createVertexBuffer(
+          this.paintVertexArray,
+          this.paintVertexAttributes,
+          this.expression.isStateDependent
+        );
+      }
     }
   }
 
