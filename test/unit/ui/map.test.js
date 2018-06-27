@@ -558,8 +558,8 @@ test('Map', async t => {
       const map = createMap({ zoom: 1, bearing: 45 });
       t.assert.deepEqual(
         toFixed([
-          [-49.718445552178764, 0],
-          [49.7184455522, 0]
+          [-49.718445552178764, -44.44541580601936],
+          [49.7184455522, 44.445415806019355]
         ]),
         toFixed(map.getBounds().toArray())
       );
