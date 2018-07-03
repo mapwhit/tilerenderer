@@ -17,12 +17,13 @@ const { vec4, mat4, mat2 } = require('@mapbox/gl-matrix');
 class Transform {
   constructor(minZoom, maxZoom, renderWorldCopies) {
     this.tileSize = 512; // constant
+    this.maxValidLatitude = 85.051129; // constant
 
     this._renderWorldCopies = renderWorldCopies === undefined ? true : renderWorldCopies;
     this._minZoom = minZoom || 0;
     this._maxZoom = maxZoom || 22;
 
-    this.latRange = [-85.05113, 85.05113];
+    this.latRange = [-this.maxValidLatitude, this.maxValidLatitude];
 
     this.width = 0;
     this.height = 0;
@@ -273,6 +274,7 @@ class Transform {
    * @returns {number} pixel coordinate
    */
   latY(lat) {
+    lat = clamp(lat, -this.maxValidLatitude, this.maxValidLatitude);
     const y = (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
     return ((180 - y) * this.worldSize) / 360;
   }
