@@ -22,6 +22,28 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { x: undefined } }), false);
   });
 
+  await t.test('expression, collator comparison', t => {
+    const caseSensitive = filter([
+      '==',
+      ['string', ['get', 'x']],
+      ['string', ['get', 'y']],
+      ['collator', { 'case-sensitive': true }]
+    ]);
+    t.assert.equal(caseSensitive({ zoom: 0 }, { properties: { x: 'a', y: 'b' } }), false);
+    t.assert.equal(caseSensitive({ zoom: 0 }, { properties: { x: 'a', y: 'A' } }), false);
+    t.assert.equal(caseSensitive({ zoom: 0 }, { properties: { x: 'a', y: 'a' } }), true);
+
+    const caseInsensitive = filter([
+      '==',
+      ['string', ['get', 'x']],
+      ['string', ['get', 'y']],
+      ['collator', { 'case-sensitive': false }]
+    ]);
+    t.assert.equal(caseInsensitive({ zoom: 0 }, { properties: { x: 'a', y: 'b' } }), false);
+    t.assert.equal(caseInsensitive({ zoom: 0 }, { properties: { x: 'a', y: 'A' } }), true);
+    t.assert.equal(caseInsensitive({ zoom: 0 }, { properties: { x: 'a', y: 'a' } }), true);
+  });
+
   await t.test('expression, any/all', t => {
     t.assert.equal(filter(['all'])(), true);
     t.assert.equal(filter(['all', true])(), true);

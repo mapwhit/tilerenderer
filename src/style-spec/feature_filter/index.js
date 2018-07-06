@@ -24,7 +24,7 @@ function isExpressionFilter(filter) {
     case '>=':
     case '<':
     case '<=':
-      return filter.length === 3 && (Array.isArray(filter[1]) || Array.isArray(filter[2]));
+      return filter.length !== 3 || Array.isArray(filter[1]) || Array.isArray(filter[2]);
 
     case 'any':
     case 'all':
