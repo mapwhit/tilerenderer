@@ -563,6 +563,15 @@ test('Map', async t => {
         ]),
         toFixed(map.getBounds().toArray())
       );
+
+      map.setBearing(135);
+      t.assert.deepEqual(
+        toFixed([
+          [-49.718445552178764, -44.44541580601936],
+          [49.7184455522, 44.445415806019355]
+        ]),
+        toFixed(map.getBounds().toArray())
+      );
     });
 
     function toFixed(bounds) {
