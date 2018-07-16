@@ -1278,6 +1278,27 @@ test('Map', async t => {
         map.setFeatureState({ source: 'vector', sourceLayer: 0, id: '12345' }, { hover: true });
       });
     });
+    await t.test('fires an error if id not provided', (t, done) => {
+      const map = createMap({
+        style: {
+          version: 8,
+          sources: {
+            vector: {
+              type: 'vector',
+              tiles: ['http://example.com/{z}/{x}/{y}.png']
+            }
+          },
+          layers: []
+        }
+      });
+      map.on('load', () => {
+        map.on('error', ({ error }) => {
+          t.assert.match(error.message, /id/);
+          done();
+        });
+        map.setFeatureState({ source: 'vector', sourceLayer: '1' }, { hover: true });
+      });
+    });
   });
 
   await t.test('error event', async t => {
