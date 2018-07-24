@@ -26,7 +26,7 @@ const Case = require('./case');
 const Step = require('./step');
 const Interpolate = require('./interpolate');
 const Coalesce = require('./coalesce');
-const { Equals, NotEquals } = require('./equals');
+const { Equals, NotEquals, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual } = require('./comparison');
 const { CollatorExpression } = require('./collator');
 const Length = require('./length');
 
@@ -34,6 +34,10 @@ const expressions = {
   // special forms
   '==': Equals,
   '!=': NotEquals,
+  '>': GreaterThan,
+  '<': LessThan,
+  '>=': GreaterThanOrEqual,
+  '<=': LessThanOrEqual,
   array: ArrayAssertion,
   at: At,
   boolean: Assertion,
@@ -71,32 +75,6 @@ function has(key, obj) {
 function get(key, obj) {
   const v = obj[key];
   return typeof v === 'undefined' ? null : v;
-}
-
-function lt(ctx, [a, b]) {
-  return a.evaluate(ctx) < b.evaluate(ctx);
-}
-function gt(ctx, [a, b]) {
-  return a.evaluate(ctx) > b.evaluate(ctx);
-}
-function lteq(ctx, [a, b]) {
-  return a.evaluate(ctx) <= b.evaluate(ctx);
-}
-function gteq(ctx, [a, b]) {
-  return a.evaluate(ctx) >= b.evaluate(ctx);
-}
-
-function ltCollate(ctx, [a, b, c]) {
-  return c.evaluate(ctx).compare(a.evaluate(ctx), b.evaluate(ctx)) < 0;
-}
-function gtCollate(ctx, [a, b, c]) {
-  return c.evaluate(ctx).compare(a.evaluate(ctx), b.evaluate(ctx)) > 0;
-}
-function lteqCollate(ctx, [a, b, c]) {
-  return c.evaluate(ctx).compare(a.evaluate(ctx), b.evaluate(ctx)) <= 0;
-}
-function gteqCollate(ctx, [a, b, c]) {
-  return c.evaluate(ctx).compare(a.evaluate(ctx), b.evaluate(ctx)) >= 0;
 }
 
 function binarySearch(v, a, i, j) {
@@ -323,38 +301,6 @@ CompoundExpression.register(expressions, {
     // assumes v is a array literal with values sorted in ascending order and of a single type
     (ctx, [k, v]) => binarySearch(ctx.properties()[k.value], v.value, 0, v.value.length - 1)
   ],
-  '>': {
-    type: BooleanType,
-    overloads: [
-      [[NumberType, NumberType], gt],
-      [[StringType, StringType], gt],
-      [[StringType, StringType, CollatorType], gtCollate]
-    ]
-  },
-  '<': {
-    type: BooleanType,
-    overloads: [
-      [[NumberType, NumberType], lt],
-      [[StringType, StringType], lt],
-      [[StringType, StringType, CollatorType], ltCollate]
-    ]
-  },
-  '>=': {
-    type: BooleanType,
-    overloads: [
-      [[NumberType, NumberType], gteq],
-      [[StringType, StringType], gteq],
-      [[StringType, StringType, CollatorType], gteqCollate]
-    ]
-  },
-  '<=': {
-    type: BooleanType,
-    overloads: [
-      [[NumberType, NumberType], lteq],
-      [[StringType, StringType], lteq],
-      [[StringType, StringType, CollatorType], lteqCollate]
-    ]
-  },
   all: {
     type: BooleanType,
     overloads: [

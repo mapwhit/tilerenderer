@@ -95,6 +95,8 @@ exports.run = function (implementation, options, runExpressionTest) {
           serialized: result.serialized
         };
 
+        delete fixture.metadata;
+
         fs.writeFile(path.join(dir, 'test.json'), `${stringify(fixture, null, 2)}\n`, done);
         return;
       }
@@ -163,12 +165,12 @@ exports.run = function (implementation, options, runExpressionTest) {
       };
 
       if (compileOk && !evalOk) {
-        const differences = diffOutputs(result.outputs);
+        const differences = `Original\n${diffOutputs(result.outputs)}\n`;
         diffOutput.text += differences;
         diffOutput.html += differences;
       }
       if (recompileOk && !roundTripOk) {
-        const differences = diffOutputs(result.roundTripOutputs);
+        const differences = `\nRoundtripped through serialize()\n${diffOutputs(result.roundTripOutputs)}\n`;
         diffOutput.text += differences;
         diffOutput.html += differences;
       }
