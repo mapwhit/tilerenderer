@@ -57,7 +57,8 @@ test('GeoJSONSource.update', async t => {
         maxZoom: 10,
         tolerance: 4,
         buffer: 256,
-        lineMetrics: false
+        lineMetrics: false,
+        generateId: true
       });
       done();
 
@@ -70,7 +71,8 @@ test('GeoJSONSource.update', async t => {
         data: {},
         maxzoom: 10,
         tolerance: 0.25,
-        buffer: 16
+        buffer: 16,
+        generateId: true
       },
       null,
       {}
