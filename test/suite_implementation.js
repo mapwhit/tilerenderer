@@ -9,6 +9,7 @@ const path = require('path');
 
 rtlTextPlugin['applyArabicShaping'] = rtlText.applyArabicShaping;
 rtlTextPlugin['processBidirectionalText'] = rtlText.processBidirectionalText;
+rtlTextPlugin['processStyledBidirectionalText'] = rtlText.processStyledBidirectionalText;
 
 module.exports = function (style, options, _callback) {
   let wasCallbackCalled = false;
