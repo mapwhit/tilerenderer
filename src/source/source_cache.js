@@ -186,6 +186,9 @@ class SourceCache extends Evented {
     }
 
     this._cache.reset();
+    //Reset the SourceCache when the source has been reloaded. For GeoJSON sources,
+    // the `id`  of features is not guaranteed to be identical when updated
+    this._state = new SourceFeatureState();
 
     this._tiles.forEach(tile => {
       if (tile.state !== 'errored') {
