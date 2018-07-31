@@ -262,7 +262,7 @@ class Transform {
   }
 
   /**
-   * latitude to absolute x coord
+   * longitude to absolute x coord
    * @returns {number} pixel coordinate
    */
   lngX(lng) {
