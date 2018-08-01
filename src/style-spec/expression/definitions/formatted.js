@@ -28,7 +28,7 @@ class Formatted {
   }
 }
 
-class FormattedExpression {
+class FormatExpression {
   constructor(sections) {
     this.type = FormattedType;
     this.sections = sections;
@@ -69,7 +69,7 @@ class FormattedExpression {
       sections.push({ text, scale, font });
     }
 
-    return new FormattedExpression(sections);
+    return new FormatExpression(sections);
   }
 
   evaluate(ctx) {
@@ -120,4 +120,4 @@ class FormattedExpression {
   }
 }
 
-module.exports = { Formatted, FormattedExpression };
+module.exports = { Formatted, FormatExpression };

@@ -18,7 +18,6 @@ function transformText(text, layer, feature) {
 
 module.exports = function (text, layer, feature) {
   if (text instanceof Formatted) {
-    // OK to transform in place?
     text.sections.forEach(section => {
       section.text = transformText(section.text, layer, feature);
     });

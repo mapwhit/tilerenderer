@@ -18,7 +18,7 @@ module.exports = {
 class TaggedString {
   constructor() {
     this.text = '';
-    this.sectionIndex = [];
+    this.sectionIndex = []; // maps each character in 'text' to its corresponding entry in 'sections'
     this.sections = [];
   }
 
