@@ -1,3 +1,5 @@
+const { Formatted } = require('../style-spec/expression/definitions/formatted');
+
 module.exports = function (features) {
   const leftIndex = new Map();
   const rightIndex = new Map();
@@ -5,7 +7,8 @@ module.exports = function (features) {
   let mergedIndex = 0;
 
   for (let k = 0; k < features.length; k++) {
-    const { geometry, text } = features[k];
+    const { geometry, text: featureText } = features[k];
+    const text = featureText instanceof Formatted ? featureText.toString() : featureText;
 
     if (!text) {
       add(k);

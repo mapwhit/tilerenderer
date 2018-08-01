@@ -47,6 +47,7 @@ function setRTLTextPlugin(url, callback) {
 const plugin = {
   applyArabicShaping: null,
   processBidirectionalText: null,
+  processStyledBidirectionalText: null,
   isLoaded: function () {
     return (
       foregroundLoadComplete || // Foreground: loaded if the completion callback returned successfully

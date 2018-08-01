@@ -11,11 +11,10 @@ if (typeof process !== 'undefined' && process.env !== undefined) {
 
 test('shaping', t => {
   const oneEm = 24;
-  const name = 'Test';
-  const stacks = {
+  const fontStack = 'Test';
+  const glyphs = {
     Test: JSON.parse(fs.readFileSync(path.join(__dirname, '/../../fixtures/fontstack-glyphs.json')))
   };
-  const glyphs = stacks[name];
 
   let shaped;
 
@@ -24,6 +23,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     `hi${String.fromCharCode(0)}`,
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -44,6 +44,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -67,6 +68,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -90,6 +92,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde abcde',
     glyphs,
+    fontStack,
     4 * oneEm,
     oneEm,
     'center',
@@ -113,6 +116,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde\nabcde',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -132,6 +136,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde\r\nabcde',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -150,6 +155,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     'abcde\n\nabcde',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -170,6 +176,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     '',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -184,6 +191,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     String.fromCharCode(0),
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -199,6 +207,7 @@ test('shaping', t => {
   shaped = shaping.shapeText(
     '   foo bar\n',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',
@@ -211,6 +220,7 @@ test('shaping', t => {
   const shaped2 = shaping.shapeText(
     'foo bar',
     glyphs,
+    fontStack,
     15 * oneEm,
     oneEm,
     'center',

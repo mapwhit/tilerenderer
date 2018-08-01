@@ -28,6 +28,7 @@ const Interpolate = require('./interpolate');
 const Coalesce = require('./coalesce');
 const { Equals, NotEquals, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual } = require('./comparison');
 const { CollatorExpression } = require('./collator');
+const { Formatted, FormattedExpression } = require('./formatted');
 const Length = require('./length');
 
 const expressions = {
@@ -44,6 +45,7 @@ const expressions = {
   case: Case,
   coalesce: Coalesce,
   collator: CollatorExpression,
+  format: FormattedExpression,
   interpolate: Interpolate,
   length: Length,
   let: Let,
@@ -112,7 +114,7 @@ CompoundExpression.register(expressions, {
       if (type === 'string' || type === 'number' || type === 'boolean') {
         return String(v);
       }
-      if (v instanceof Color) {
+      if (v instanceof Color || v instanceof Formatted) {
         return v.toString();
       }
       return JSON.stringify(v);

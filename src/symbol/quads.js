@@ -105,7 +105,8 @@ function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
 
   for (let k = 0; k < positionedGlyphs.length; k++) {
     const positionedGlyph = positionedGlyphs[k];
-    const glyph = positions[positionedGlyph.glyph];
+    const glyphPositions = positions[positionedGlyph.fontStack];
+    const glyph = glyphPositions?.[positionedGlyph.glyph];
     if (!glyph) continue;
 
     const rect = glyph.rect;
@@ -115,7 +116,7 @@ function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
     const glyphPadding = 1.0;
     const rectBuffer = GLYPH_PBF_BORDER + glyphPadding;
 
-    const halfAdvance = glyph.metrics.advance / 2;
+    const halfAdvance = (glyph.metrics.advance * positionedGlyph.scale) / 2;
 
     const glyphOffset = alongLine ? [positionedGlyph.x + halfAdvance, positionedGlyph.y] : [0, 0];
 
@@ -123,10 +124,10 @@ function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
       ? [0, 0]
       : [positionedGlyph.x + halfAdvance + textOffset[0], positionedGlyph.y + textOffset[1]];
 
-    const x1 = glyph.metrics.left - rectBuffer - halfAdvance + builtInOffset[0];
-    const y1 = -glyph.metrics.top - rectBuffer + builtInOffset[1];
-    const x2 = x1 + rect.w;
-    const y2 = y1 + rect.h;
+    const x1 = (glyph.metrics.left - rectBuffer) * positionedGlyph.scale - halfAdvance + builtInOffset[0];
+    const y1 = (-glyph.metrics.top - rectBuffer) * positionedGlyph.scale + builtInOffset[1];
+    const x2 = x1 + rect.w * positionedGlyph.scale;
+    const y2 = y1 + rect.h * positionedGlyph.scale;
 
     const tl = new Point(x1, y1);
     const tr = new Point(x2, y1);

@@ -38,6 +38,7 @@ class Worker {
       }
       globalRTLTextPlugin['applyArabicShaping'] = rtlTextPlugin.applyArabicShaping;
       globalRTLTextPlugin['processBidirectionalText'] = rtlTextPlugin.processBidirectionalText;
+      globalRTLTextPlugin['processStyledBidirectionalText'] = rtlTextPlugin.processStyledBidirectionalText;
     };
   }
 

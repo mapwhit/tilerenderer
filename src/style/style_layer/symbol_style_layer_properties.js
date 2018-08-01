@@ -106,7 +106,7 @@ const layout = new Properties({
     expression: { parameters: ['zoom'] }
   }),
   'text-field': new DataDrivenProperty({
-    type: 'string',
+    type: 'formatted',
     default: '',
     tokens: true,
     expression: { parameters: ['zoom', 'feature'] }
