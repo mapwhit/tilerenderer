@@ -1,4 +1,4 @@
-const { NumberType, ValueType, FormattedType } = require('../types');
+const { NumberType, ValueType, FormattedType, array, StringType } = require('../types');
 
 class FormattedSection {
   constructor(text, scale, fontStack) {
@@ -63,7 +63,7 @@ class FormatExpression {
 
       let font = null;
       if (options['text-font']) {
-        font = context.parse(options['text-font'], 1, ValueType); // Require array of strings?
+        font = context.parse(options['text-font'], 1, array(StringType));
         if (!font) return null;
       }
       sections.push({ text, scale, font });
