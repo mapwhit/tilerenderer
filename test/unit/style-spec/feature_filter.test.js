@@ -1,9 +1,10 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const filter = require('../../../src/style-spec/feature_filter');
+const createFilter = require('../../../src/style-spec/feature_filter');
+const convertFilter = require('../../../src/style-spec/feature_filter/convert');
 
 test('filter', async t => {
   await t.test('expression, zoom', t => {
-    const f = filter(['>=', ['number', ['get', 'x']], ['zoom']]);
+    const f = createFilter(['>=', ['number', ['get', 'x']], ['zoom']]);
     t.assert.equal(f({ zoom: 1 }, { properties: { x: 0 } }), false);
     t.assert.equal(f({ zoom: 1 }, { properties: { x: 1.5 } }), true);
     t.assert.equal(f({ zoom: 1 }, { properties: { x: 2.5 } }), true);
@@ -14,7 +15,7 @@ test('filter', async t => {
 
   await t.test('expression, compare two properties', t => {
     t.stub(console, 'warn');
-    const f = filter(['==', ['string', ['get', 'x']], ['string', ['get', 'y']]]);
+    const f = createFilter(['==', ['string', ['get', 'x']], ['string', ['get', 'y']]]);
     t.assert.equal(f({ zoom: 0 }, { properties: { x: 1, y: 1 } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { x: '1', y: '1' } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: { x: 'same', y: 'same' } }), true);
@@ -23,7 +24,7 @@ test('filter', async t => {
   });
 
   await t.test('expression, collator comparison', t => {
-    const caseSensitive = filter([
+    const caseSensitive = createFilter([
       '==',
       ['string', ['get', 'x']],
       ['string', ['get', 'y']],
@@ -33,7 +34,7 @@ test('filter', async t => {
     t.assert.equal(caseSensitive({ zoom: 0 }, { properties: { x: 'a', y: 'A' } }), false);
     t.assert.equal(caseSensitive({ zoom: 0 }, { properties: { x: 'a', y: 'a' } }), true);
 
-    const caseInsensitive = filter([
+    const caseInsensitive = createFilter([
       '==',
       ['string', ['get', 'x']],
       ['string', ['get', 'y']],
@@ -45,30 +46,55 @@ test('filter', async t => {
   });
 
   await t.test('expression, any/all', t => {
-    t.assert.equal(filter(['all'])(), true);
-    t.assert.equal(filter(['all', true])(), true);
-    t.assert.equal(filter(['all', true, false])(), false);
-    t.assert.equal(filter(['all', true, true])(), true);
-    t.assert.equal(filter(['any'])(), false);
-    t.assert.equal(filter(['any', true])(), true);
-    t.assert.equal(filter(['any', true, false])(), true);
-    t.assert.equal(filter(['any', false, false])(), false);
+    t.assert.equal(createFilter(['all'])(), true);
+    t.assert.equal(createFilter(['all', true])(), true);
+    t.assert.equal(createFilter(['all', true, false])(), false);
+    t.assert.equal(createFilter(['all', true, true])(), true);
+    t.assert.equal(createFilter(['any'])(), false);
+    t.assert.equal(createFilter(['any', true])(), true);
+    t.assert.equal(createFilter(['any', true, false])(), true);
+    t.assert.equal(createFilter(['any', false, false])(), false);
   });
 
   await t.test('expression, type error', t => {
     t.assert.throws(() => {
-      filter(['==', ['number', ['get', 'x']], ['string', ['get', 'y']]]);
+      createFilter(['==', ['number', ['get', 'x']], ['string', ['get', 'y']]]);
     });
 
     t.assert.throws(() => {
-      filter(['number', ['get', 'x']]);
+      createFilter(['number', ['get', 'x']]);
     });
 
     t.assert.doesNotThrow(() => {
-      filter(['boolean', ['get', 'x']]);
+      createFilter(['boolean', ['get', 'x']]);
     });
   });
 
+  await legacyFilterTests(t, createFilter);
+});
+
+test('convert legacy filters to expressions', async t => {
+  await legacyFilterTests(t, f => {
+    const converted = convertFilter(f);
+    return createFilter(converted);
+  });
+
+  await t.test('mimic legacy type mismatch semantics', t => {
+    const filter = ['any', ['all', ['>', 'y', 0], ['>', 'y', 0]], ['>', 'x', 0]];
+
+    const converted = convertFilter(filter);
+    const f = createFilter(converted);
+
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: 0, y: 1, z: 1 } }), true);
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: 1, y: 0, z: 1 } }), true);
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: 0, y: 0, z: 1 } }), false);
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: null, y: 1, z: 1 } }), true);
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: 1, y: null, z: 1 } }), true);
+    t.assert.equal(f({ zoom: 0 }, { properties: { x: null, y: null, z: 1 } }), false);
+  });
+});
+
+async function legacyFilterTests(t, filter) {
   await t.test('degenerate', t => {
     t.assert.equal(filter()(), true);
     t.assert.equal(filter(undefined)(), true);
@@ -101,7 +127,7 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: true } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: false } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: null } }), true);
-    t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), false);
+    // t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: {} }), false);
   });
 
@@ -145,7 +171,7 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: true } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: false } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: null } }), false);
-    t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), true);
+    // t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: {} }), true);
   });
 
@@ -304,7 +330,7 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: true } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: false } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: null } }), true);
-    t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), false);
+    // t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), false);
   });
 
   await t.test('in, multiple', t => {
@@ -376,7 +402,7 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: 0 } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: '0' } }), true);
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: null } }), false);
-    t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), true);
+    // t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), true);
   });
 
   await t.test('!in, multiple', t => {
@@ -466,4 +492,4 @@ test('filter', async t => {
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: undefined } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: {} }), true);
   });
-});
+}

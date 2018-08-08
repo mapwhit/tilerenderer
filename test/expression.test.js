@@ -1,5 +1,7 @@
 const { expression: expressionSuite } = require('./integration');
 const { createPropertyExpression } = require('../src/style-spec/expression');
+const { isFunction } = require('../src/style-spec/function');
+const convertFunction = require('../src/style-spec/function/convert');
 const { toString } = require('../src/style-spec/expression/types');
 const ignores = require('./ignores.json');
 
@@ -11,11 +13,17 @@ if (process.argv[1] === __filename && process.argv.length > 2) {
 
 expressionSuite.run('js', { ignores, tests }, fixture => {
   const spec = Object.assign({}, fixture.propertySpec);
-  spec['property-type'] = 'data-driven';
-  spec['expression'] = {
-    interpolated: true,
-    parameters: ['zoom', 'feature']
-  };
+
+  if (!spec['property-type']) {
+    spec['property-type'] = 'data-driven';
+  }
+
+  if (!spec['expression']) {
+    spec['expression'] = {
+      interpolated: true,
+      parameters: ['zoom', 'feature']
+    };
+  }
 
   const evaluateExpression = (expression, compilationResult) => {
     if (expression.result === 'error') {
@@ -66,7 +74,13 @@ expressionSuite.run('js', { ignores, tests }, fixture => {
   };
 
   const result = { compiled: {}, recompiled: {} };
-  const expression = createPropertyExpression(fixture.expression, spec);
+  const expression = (() => {
+    if (isFunction(fixture.expression)) {
+      return createPropertyExpression(convertFunction(fixture.expression, spec), spec);
+    }
+    return createPropertyExpression(fixture.expression, spec);
+  })();
+
   result.outputs = evaluateExpression(expression, result.compiled);
   if (expression.result === 'success') {
     result.serialized = expression.value._styleExpression.expression.serialize();
