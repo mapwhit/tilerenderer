@@ -1,12 +1,14 @@
 const UnitBezier = require('@mapbox/unitbezier');
 
 const interpolate = require('../../util/interpolate');
-const { toString, NumberType } = require('../types');
+const { toString, ColorType, NumberType } = require('../types');
 const { findStopLessThanOrEqualTo } = require('../stops');
+const { hcl, lab } = require('../../util/color_spaces');
 
 class Interpolate {
-  constructor(type, interpolation, input, stops) {
+  constructor(type, operator, interpolation, input, stops) {
     this.type = type;
+    this.operator = operator;
     this.interpolation = interpolation;
     this.input = input;
 
@@ -33,7 +35,7 @@ class Interpolate {
   }
 
   static parse(args, context) {
-    let [, interpolation, input, ...rest] = args;
+    let [operator, interpolation, input, ...rest] = args;
 
     if (!Array.isArray(interpolation) || interpolation.length === 0) {
       return context.error('Expected an interpolation type expression.', 1);
@@ -79,7 +81,9 @@ class Interpolate {
     const stops = [];
 
     let outputType = null;
-    if (context.expectedType && context.expectedType.kind !== 'value') {
+    if (operator === 'interpolate-hcl' || operator === 'interpolate-lab') {
+      outputType = ColorType;
+    } else if (context.expectedType && context.expectedType.kind !== 'value') {
       outputType = context.expectedType;
     }
 
@@ -118,7 +122,7 @@ class Interpolate {
       return context.error(`Type ${toString(outputType)} is not interpolatable.`);
     }
 
-    return new Interpolate(outputType, interpolation, input, stops);
+    return new Interpolate(outputType, operator, interpolation, input, stops);
   }
 
   evaluate(ctx) {
@@ -147,7 +151,13 @@ class Interpolate {
     const outputLower = outputs[index].evaluate(ctx);
     const outputUpper = outputs[index + 1].evaluate(ctx);
 
-    return interpolate[this.type.kind.toLowerCase()](outputLower, outputUpper, t);
+    if (this.operator === 'interpolate') {
+      return interpolate[this.type.kind.toLowerCase()](outputLower, outputUpper, t);
+    }
+    if (this.operator === 'interpolate-hcl') {
+      return hcl.reverse(hcl.interpolate(hcl.forward(outputLower), hcl.forward(outputUpper), t));
+    }
+    return lab.reverse(lab.interpolate(lab.forward(outputLower), lab.forward(outputUpper), t));
   }
 
   eachChild(fn) {
@@ -175,7 +185,7 @@ class Interpolate {
       interpolation = ['cubic-bezier'].concat(this.interpolation.controlPoints);
     }
 
-    const serialized = ['interpolate', interpolation, this.input.serialize()];
+    const serialized = [this.operator, interpolation, this.input.serialize()];
 
     for (let i = 0; i < this.labels.length; i++) {
       serialized.push(this.labels[i], this.outputs[i].serialize());
