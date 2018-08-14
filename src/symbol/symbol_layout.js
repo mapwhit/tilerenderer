@@ -13,6 +13,7 @@ const EXTENT = require('../data/extent');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const { Formatted } = require('../style-spec/expression/definitions/formatted');
+const murmur3 = require('murmurhash-js');
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
 // `icon-size` at up to three:
@@ -368,7 +369,7 @@ function addSymbol(
   let numIconVertices = 0;
   let numGlyphVertices = 0;
   let numVerticalGlyphVertices = 0;
-  const key = shapedTextOrientations.horizontal ? shapedTextOrientations.horizontal.text : '';
+  const key = murmur3(shapedTextOrientations.horizontal ? shapedTextOrientations.horizontal.text : '');
   const placedTextSymbolIndices = [];
   if (shapedTextOrientations.horizontal) {
     // As a collision approximation, we can use either the vertical or the horizontal version of the feature
