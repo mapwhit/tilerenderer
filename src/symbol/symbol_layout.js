@@ -32,7 +32,6 @@ const murmur3 = require('murmurhash-js');
 
 function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePositions, showCollisionBoxes) {
   bucket.createArrays();
-  bucket.symbolInstances = [];
 
   const tileSize = 512 * bucket.overscaling;
   bucket.tilePixelRatio = EXTENT / tileSize;
@@ -200,30 +199,28 @@ function addFeature(bucket, feature, shapedTextOrientations, shapedIcon, glyphPo
       return;
     }
 
-    bucket.symbolInstances.push(
-      addSymbol(
-        bucket,
-        anchor,
-        line,
-        shapedTextOrientations,
-        shapedIcon,
-        bucket.layers[0],
-        bucket.collisionBoxArray,
-        feature.index,
-        feature.sourceLayerIndex,
-        bucket.index,
-        textBoxScale,
-        textPadding,
-        textAlongLine,
-        textOffset,
-        iconBoxScale,
-        iconPadding,
-        iconAlongLine,
-        iconOffset,
-        feature,
-        glyphPositionMap,
-        sizes
-      )
+    addSymbol(
+      bucket,
+      anchor,
+      line,
+      shapedTextOrientations,
+      shapedIcon,
+      bucket.layers[0],
+      bucket.collisionBoxArray,
+      feature.index,
+      feature.sourceLayerIndex,
+      bucket.index,
+      textBoxScale,
+      textPadding,
+      textAlongLine,
+      textOffset,
+      iconBoxScale,
+      iconPadding,
+      iconAlongLine,
+      iconOffset,
+      feature,
+      glyphPositionMap,
+      sizes
     );
   };
 
@@ -484,21 +481,22 @@ function addSymbol(
   if (bucket.glyphOffsetArray.length >= SymbolBucket.MAX_GLYPHS)
     warn.once('Too many glyphs being rendered in a tile. See https://github.com/mapbox/mapbox-gl-js/issues/2907');
 
-  return {
+  bucket.symbolInstances.emplaceBack(
+    anchor.x,
+    anchor.y,
+    placedTextSymbolIndices.length > 0 ? placedTextSymbolIndices[0] : -1,
+    placedTextSymbolIndices.length > 1 ? placedTextSymbolIndices[1] : -1,
     key,
     textBoxStartIndex,
     textBoxEndIndex,
     iconBoxStartIndex,
     iconBoxEndIndex,
-    anchor,
     featureIndex,
     numGlyphVertices,
     numVerticalGlyphVertices,
     numIconVertices,
-    horizontalPlacedTextSymbolIndex: placedTextSymbolIndices.length > 0 ? placedTextSymbolIndices[0] : -1,
-    verticalPlacedTextSymbolIndex: placedTextSymbolIndices.length > 1 ? placedTextSymbolIndices[1] : -1,
-    crossTileID: 0
-  };
+    0
+  );
 }
 
 function anchorIsTooClose(bucket, text, repeatDistance, anchor) {

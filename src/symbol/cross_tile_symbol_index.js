@@ -1,5 +1,7 @@
 const EXTENT = require('../data/extent');
 
+const { SymbolInstanceArray } = require('../data/array_types');
+
 /*
     The CrossTileSymbolIndex generally works on the assumption that
     a conceptual "unique symbol" can be identified by the text of
@@ -23,7 +25,8 @@ class TileLayerIndex {
     this.indexedSymbolInstances = {};
     this.bucketInstanceId = bucketInstanceId;
 
-    for (const symbolInstance of symbolInstances) {
+    for (let i = 0; i < symbolInstances.length; i++) {
+      const symbolInstance = symbolInstances.get(i);
       const key = symbolInstance.key;
       if (!this.indexedSymbolInstances[key]) {
         this.indexedSymbolInstances[key] = [];
@@ -46,10 +49,9 @@ class TileLayerIndex {
   getScaledCoordinates(symbolInstance, childTileID) {
     const zDifference = childTileID.canonical.z - this.tileID.canonical.z;
     const scale = roundingFactor / 2 ** zDifference;
-    const anchor = symbolInstance.anchor;
     return {
-      x: Math.floor((childTileID.canonical.x * EXTENT + anchor.x) * scale),
-      y: Math.floor((childTileID.canonical.y * EXTENT + anchor.y) * scale)
+      x: Math.floor((childTileID.canonical.x * EXTENT + symbolInstance.anchorX) * scale),
+      y: Math.floor((childTileID.canonical.y * EXTENT + symbolInstance.anchorY) * scale)
     };
   }
 
@@ -57,7 +59,8 @@ class TileLayerIndex {
     const tolerance =
       this.tileID.canonical.z < newTileID.canonical.z ? 1 : 2 ** (this.tileID.canonical.z - newTileID.canonical.z);
 
-    for (const symbolInstance of symbolInstances) {
+    for (let i = 0; i < symbolInstances.length; i++) {
+      const symbolInstance = symbolInstances.get(i);
       if (symbolInstance.crossTileID) {
         // already has a match, skip
         continue;
@@ -143,7 +146,8 @@ class CrossTileSymbolLayerIndex {
       this.removeBucketCrossTileIDs(tileID.overscaledZ, this.indexes[tileID.overscaledZ][tileID.key]);
     }
 
-    for (const symbolInstance of bucket.symbolInstances) {
+    for (let i = 0; i < bucket.symbolInstances.length; i++) {
+      const symbolInstance = bucket.symbolInstances.get(i);
       symbolInstance.crossTileID = 0;
     }
 
@@ -170,7 +174,8 @@ class CrossTileSymbolLayerIndex {
       }
     }
 
-    for (const symbolInstance of bucket.symbolInstances) {
+    for (let i = 0; i < bucket.symbolInstances.length; i++) {
+      const symbolInstance = bucket.symbolInstances.get(i);
       if (!symbolInstance.crossTileID) {
         // symbol did not match any known symbol, assign a new id
         symbolInstance.crossTileID = crossTileIDs.generate();
