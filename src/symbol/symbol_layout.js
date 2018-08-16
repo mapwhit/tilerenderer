@@ -495,7 +495,8 @@ function addSymbol(
     numGlyphVertices,
     numVerticalGlyphVertices,
     numIconVertices,
-    placedTextSymbolIndices,
+    horizontalPlacedTextSymbolIndex: placedTextSymbolIndices.length > 0 ? placedTextSymbolIndices[0] : -1,
+    verticalPlacedTextSymbolIndex: placedTextSymbolIndices.length > 1 ? placedTextSymbolIndices[1] : -1,
     crossTileID: 0
   };
 }

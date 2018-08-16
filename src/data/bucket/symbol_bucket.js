@@ -630,6 +630,16 @@ class SymbolBucket {
     return this.collisionCircle.segments.get().length > 0;
   }
 
+  addIndicesForPlacedTextSymbol(placedTextSymbolIndex) {
+    const placedSymbol = this.text.placedSymbolArray.get(placedTextSymbolIndex);
+
+    const endIndex = placedSymbol.vertexStartIndex + placedSymbol.numGlyphs * 4;
+    for (let vertexIndex = placedSymbol.vertexStartIndex; vertexIndex < endIndex; vertexIndex += 4) {
+      this.text.indexArray.emplaceBack(vertexIndex, vertexIndex + 1, vertexIndex + 2);
+      this.text.indexArray.emplaceBack(vertexIndex + 1, vertexIndex + 2, vertexIndex + 3);
+    }
+  }
+
   sortFeatures(angle) {
     if (!this.sortFeaturesByY) return;
 
@@ -670,14 +680,11 @@ class SymbolBucket {
       const symbolInstance = this.symbolInstances[i];
       this.featureSortOrder.push(symbolInstance.featureIndex);
 
-      for (const placedTextSymbolIndex of symbolInstance.placedTextSymbolIndices) {
-        const placedSymbol = this.text.placedSymbolArray.get(placedTextSymbolIndex);
-
-        const endIndex = placedSymbol.vertexStartIndex + placedSymbol.numGlyphs * 4;
-        for (let vertexIndex = placedSymbol.vertexStartIndex; vertexIndex < endIndex; vertexIndex += 4) {
-          this.text.indexArray.emplaceBack(vertexIndex, vertexIndex + 1, vertexIndex + 2);
-          this.text.indexArray.emplaceBack(vertexIndex + 1, vertexIndex + 2, vertexIndex + 3);
-        }
+      if (symbolInstance.horizontalPlacedTextSymbolIndex >= 0) {
+        this.addIndicesForPlacedTextSymbol(symbolInstance.horizontalPlacedTextSymbolIndex);
+      }
+      if (symbolInstance.verticalPlacedTextSymbolIndex >= 0) {
+        this.addIndicesForPlacedTextSymbol(symbolInstance.verticalPlacedTextSymbolIndex);
       }
 
       const placedIcon = this.icon.placedSymbolArray.get(i);
