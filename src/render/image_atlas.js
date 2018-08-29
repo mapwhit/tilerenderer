@@ -1,7 +1,6 @@
-const ShelfPack = require('@mapbox/shelf-pack');
-
 const { RGBAImage } = require('../util/image');
 const { register } = require('../util/transfer_registry');
+const potpack = require('potpack');
 
 const padding = 1;
 
@@ -32,7 +31,6 @@ class ImageAtlas {
   constructor(icons, patterns) {
     const iconPositions = {};
     const patternPositions = {};
-    const pack = new ShelfPack(0, 0, { autoResize: true });
     const bins = [];
     for (const id in icons) {
       const src = icons[id];
@@ -58,9 +56,8 @@ class ImageAtlas {
       patternPositions[id] = new ImagePosition(bin, src);
     }
 
-    pack.pack(bins, { inPlace: true });
-
-    const image = new RGBAImage({ width: pack.w, height: pack.h });
+    const { w, h } = potpack(bins);
+    const image = new RGBAImage({ width: w || 1, height: h || 1 });
 
     for (const id in icons) {
       const src = icons[id];
