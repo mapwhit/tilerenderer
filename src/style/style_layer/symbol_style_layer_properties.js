@@ -19,6 +19,12 @@ const layout = new Properties({
     default: false,
     expression: { parameters: ['zoom'] }
   }),
+  'symbol-z-order': new DataConstantProperty({
+    type: 'enum',
+    values: ['viewport-y', 'source'],
+    default: 'viewport-y',
+    expression: { parameters: ['zoom'] }
+  }),
   'icon-allow-overlap': new DataConstantProperty({
     type: 'boolean',
     default: false,
