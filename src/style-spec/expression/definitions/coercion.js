@@ -48,6 +48,9 @@ class Coercion {
       for (const arg of this.args) {
         input = arg.evaluate(ctx);
         error = null;
+        if (input instanceof Color) {
+          return input;
+        }
         if (typeof input === 'string') {
           const c = ctx.parseColor(input);
           if (c) return c;
