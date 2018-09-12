@@ -84,7 +84,7 @@ class Coercion {
     let value = null;
     for (const arg of this.args) {
       value = arg.evaluate(ctx);
-      if (value === null) continue;
+      if (value === null) return 0;
       const num = Number(value);
       if (isNaN(num)) continue;
       return num;
