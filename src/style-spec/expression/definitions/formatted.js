@@ -1,4 +1,5 @@
 const { NumberType, ValueType, FormattedType, array, StringType } = require('../types');
+const { toString } = require('../values');
 
 class FormattedSection {
   constructor(text, scale, fontStack) {
@@ -77,7 +78,7 @@ class FormatExpression {
       this.sections.map(
         section =>
           new FormattedSection(
-            section.text.evaluate(ctx) || '',
+            toString(section.text.evaluate(ctx)),
             section.scale ? section.scale.evaluate(ctx) : null,
             section.font ? section.font.evaluate(ctx).join(',') : null
           )
