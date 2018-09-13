@@ -33,7 +33,9 @@ function convertIdentityFunction(parameters, propertySpec) {
   const get = ['get', parameters.property];
 
   if (parameters.default === undefined) {
-    return get;
+    // By default, expressions for string-valued properties get coerced. To preserve
+    // legacy function semantics, insert an explicit assertion instead.
+    return propertySpec.type === 'string' ? ['string', get] : get;
   }
   if (propertySpec.type === 'enum') {
     return ['match', get, Object.keys(propertySpec.values), get, parameters.default];

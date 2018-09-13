@@ -48,6 +48,16 @@ class ParsingContext {
       expr = ['literal', expr];
     }
 
+    function annotate(parsed, type, typeAnnotation) {
+      if (typeAnnotation === 'assert') {
+        return new Assertion(type, [parsed]);
+      }
+      if (typeAnnotation === 'coerce') {
+        return new Coercion(type, [parsed]);
+      }
+      return parsed;
+    }
+
     if (Array.isArray(expr)) {
       if (expr.length === 0) {
         return this.error(
@@ -73,11 +83,14 @@ class ParsingContext {
           const expected = this.expectedType;
           const actual = parsed.type;
 
-          // When we expect a number, string, boolean, or array but
-          // have a Value, we can wrap it in a refining assertion.
-          // When we expect a Color but have a String or Value, we
-          // can wrap it in "to-color" coercion.
+          // When we expect a number, string, boolean, or array but have a value, wrap it in an assertion.
+          // When we expect a color or formatted string, but have a string or value, wrap it in a coercion.
           // Otherwise, we do static type-checking.
+          //
+          // These behaviors are overridable for:
+          //   * The "coalesce" operator, which needs to omit type annotations.
+          //   * String-valued properties (e.g. `text-field`), where coercion is more convenient than assertion.
+          //
           if (
             (expected.kind === 'string' ||
               expected.kind === 'number' ||
@@ -86,18 +99,13 @@ class ParsingContext {
               expected.kind === 'array') &&
             actual.kind === 'value'
           ) {
-            if (!options.omitTypeAnnotations) {
-              parsed = new Assertion(expected, [parsed]);
-            }
-          } else if (expected.kind === 'color' && (actual.kind === 'value' || actual.kind === 'string')) {
-            if (!options.omitTypeAnnotations) {
-              parsed = new Coercion(expected, [parsed]);
-            }
-          } else if (expected.kind === 'formatted' && (actual.kind === 'value' || actual.kind === 'string')) {
-            if (!options.omitTypeAnnotations) {
-              parsed = new Coercion(expected, [parsed]);
-            }
-          } else if (this.checkSubtype(this.expectedType, parsed.type)) {
+            parsed = annotate(parsed, expected, options.typeAnnotation || 'assert');
+          } else if (
+            (expected.kind === 'color' || expected.kind === 'formatted') &&
+            (actual.kind === 'value' || actual.kind === 'string')
+          ) {
+            parsed = annotate(parsed, expected, options.typeAnnotation || 'coerce');
+          } else if (this.checkSubtype(expected, actual)) {
             return null;
           }
         }

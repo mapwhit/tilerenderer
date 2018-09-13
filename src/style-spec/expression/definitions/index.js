@@ -56,8 +56,10 @@ const expressions = {
   object: Assertion,
   step: Step,
   string: Assertion,
+  'to-boolean': Coercion,
   'to-color': Coercion,
   'to-number': Coercion,
+  'to-string': Coercion,
   var: Var
 };
 
@@ -103,8 +105,6 @@ CompoundExpression.register(expressions, {
     }
   ],
   typeof: [StringType, [ValueType], (ctx, [v]) => typeToString(typeOf(v.evaluate(ctx)))],
-  'to-string': [StringType, [ValueType], (ctx, [v]) => valueToString(v.evaluate(ctx))],
-  'to-boolean': [BooleanType, [ValueType], (ctx, [v]) => Boolean(v.evaluate(ctx))],
   'to-rgba': [
     array(NumberType, 4),
     [ColorType],

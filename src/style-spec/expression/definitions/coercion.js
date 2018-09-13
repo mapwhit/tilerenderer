@@ -1,13 +1,15 @@
 const assert = require('assert');
 
-const { ColorType, ValueType, NumberType } = require('../types');
-const { Color, validateRGBA } = require('../values');
+const { BooleanType, ColorType, NumberType, StringType, ValueType } = require('../types');
+const { Color, toString: valueToString, validateRGBA } = require('../values');
 const RuntimeError = require('../runtime_error');
 const { Formatted, FormattedSection } = require('./formatted');
 
 const types = {
+  'to-boolean': BooleanType,
+  'to-color': ColorType,
   'to-number': NumberType,
-  'to-color': ColorType
+  'to-string': StringType
 };
 
 /**
@@ -29,6 +31,9 @@ class Coercion {
     const name = args[0];
     assert(types[name], name);
 
+    if ((name === 'to-boolean' || name === 'to-string') && args.length !== 2)
+      return context.error('Expected one argument.');
+
     const type = types[name];
 
     const parsed = [];
@@ -42,6 +47,9 @@ class Coercion {
   }
 
   evaluate(ctx) {
+    if (this.type.kind === 'boolean') {
+      return Boolean(this.args[0].evaluate(ctx));
+    }
     if (this.type.kind === 'color') {
       let input;
       let error;
@@ -81,15 +89,18 @@ class Coercion {
         `Could not parse formatted text from value '${typeof input === 'string' ? input : JSON.stringify(input)}'`
       );
     }
-    let value = null;
-    for (const arg of this.args) {
-      value = arg.evaluate(ctx);
-      if (value === null) return 0;
-      const num = Number(value);
-      if (isNaN(num)) continue;
-      return num;
+    if (this.type.kind === 'number') {
+      let value = null;
+      for (const arg of this.args) {
+        value = arg.evaluate(ctx);
+        if (value === null) return 0;
+        const num = Number(value);
+        if (isNaN(num)) continue;
+        return num;
+      }
+      throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`);
     }
-    throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`);
+    return valueToString(this.args[0].evaluate(ctx));
   }
 
   eachChild(fn) {
