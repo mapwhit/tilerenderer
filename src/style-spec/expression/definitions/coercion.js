@@ -3,7 +3,6 @@ const assert = require('assert');
 const { BooleanType, ColorType, NumberType, StringType, ValueType } = require('../types');
 const { Color, toString: valueToString, validateRGBA } = require('../values');
 const RuntimeError = require('../runtime_error');
-const { Formatted, FormattedSection } = require('./formatted');
 
 const types = {
   'to-boolean': BooleanType,
@@ -75,18 +74,6 @@ class Coercion {
       }
       throw new RuntimeError(
         error || `Could not parse color from value '${typeof input === 'string' ? input : JSON.stringify(input)}'`
-      );
-    }
-    if (this.type.kind === 'formatted') {
-      let input;
-      for (const arg of this.args) {
-        input = arg.evaluate(ctx);
-        if (typeof input === 'string') {
-          return new Formatted([new FormattedSection(input, null, null)]);
-        }
-      }
-      throw new RuntimeError(
-        `Could not parse formatted text from value '${typeof input === 'string' ? input : JSON.stringify(input)}'`
       );
     }
     if (this.type.kind === 'number') {

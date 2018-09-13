@@ -292,7 +292,7 @@ function findZoomCurve(expression) {
   return result;
 }
 
-const { ColorType, StringType, NumberType, BooleanType, ValueType, array } = require('./types');
+const { ColorType, StringType, NumberType, BooleanType, ValueType, FormattedType, array } = require('./types');
 
 function getExpectedType(spec) {
   const types = {
@@ -300,14 +300,15 @@ function getExpectedType(spec) {
     string: StringType,
     number: NumberType,
     enum: StringType,
-    boolean: BooleanType
+    boolean: BooleanType,
+    formatted: FormattedType
   };
 
   if (spec.type === 'array') {
     return array(types[spec.value] || ValueType, spec.length);
   }
 
-  return types[spec.type] || null;
+  return types[spec.type];
 }
 
 function getDefaultValue(spec) {
