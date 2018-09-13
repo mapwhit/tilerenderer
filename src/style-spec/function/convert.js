@@ -219,7 +219,7 @@ function convertTokenString(s) {
     const literal = s.slice(pos, re.lastIndex - match[0].length);
     pos = re.lastIndex;
     if (literal.length > 0) result.push(literal);
-    result.push(['to-string', ['get', match[1]]]);
+    result.push(['get', match[1]]);
   }
 
   if (result.length === 1) {
@@ -229,7 +229,7 @@ function convertTokenString(s) {
   if (pos < s.length) {
     result.push(s.slice(pos));
   } else if (result.length === 2) {
-    return result[1];
+    return ['to-string', result[1]];
   }
 
   return result;
