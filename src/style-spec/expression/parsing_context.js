@@ -10,7 +10,7 @@ const EvaluationContext = require('./evaluation_context');
 const { CollatorExpression } = require('./definitions/collator');
 const { isGlobalPropertyConstant, isFeatureConstant } = require('./is_constant');
 const Var = require('./definitions/var');
-const { FormatExpression } = require('./definitions/formatted');
+const { FormatExpression } = require('./definitions/format');
 
 /**
  * State associated parsing at a given point in an expression tree.

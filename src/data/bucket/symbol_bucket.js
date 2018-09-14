@@ -32,7 +32,7 @@ const { verticalizedCharacterMap } = require('../../util/verticalize_punctuation
 const { getSizeData } = require('../../symbol/symbol_size');
 const { register } = require('../../util/transfer_registry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
-const { Formatted } = require('../../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../../style-spec/expression/types/formatted');
 
 // Opacity arrays are frequently updated but don't contain a lot of information, so we pack them
 // tight. Each Uint32 is actually four duplicate Uint8s for the four corners of a glyph

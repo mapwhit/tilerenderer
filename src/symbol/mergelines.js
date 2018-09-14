@@ -1,4 +1,4 @@
-const { Formatted } = require('../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../style-spec/expression/types/formatted');
 
 module.exports = function (features) {
   const leftIndex = new Map();

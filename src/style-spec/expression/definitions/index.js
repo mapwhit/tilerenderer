@@ -27,7 +27,7 @@ const Interpolate = require('./interpolate');
 const Coalesce = require('./coalesce');
 const { Equals, NotEquals, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual } = require('./comparison');
 const { CollatorExpression } = require('./collator');
-const { FormatExpression } = require('./formatted');
+const { FormatExpression } = require('./format');
 const Length = require('./length');
 
 const expressions = {

@@ -1,7 +1,7 @@
 const { charHasUprightVerticalOrientation, charAllowsIdeographicBreaking } = require('../util/script_detection');
 const verticalizePunctuation = require('../util/verticalize_punctuation');
 const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
-const { Formatted } = require('../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../style-spec/expression/types/formatted');
 
 const WritingMode = {
   horizontal: 1,
