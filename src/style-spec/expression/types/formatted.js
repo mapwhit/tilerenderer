@@ -11,6 +11,10 @@ class Formatted {
     this.sections = sections;
   }
 
+  static fromString(unformatted) {
+    return new Formatted([new FormattedSection(unformatted, null, null)]);
+  }
+
   toString() {
     return this.sections.map(section => section.text).join('');
   }

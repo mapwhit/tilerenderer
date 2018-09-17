@@ -17,11 +17,8 @@ function transformText(text, layer, feature) {
 }
 
 module.exports = function (text, layer, feature) {
-  if (text instanceof Formatted) {
-    text.sections.forEach(section => {
-      section.text = transformText(section.text, layer, feature);
-    });
-    return text;
-  }
-  return transformText(text, layer, feature);
+  text.sections.forEach(section => {
+    section.text = transformText(section.text, layer, feature);
+  });
+  return text;
 };

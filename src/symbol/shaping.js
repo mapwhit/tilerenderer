@@ -1,7 +1,6 @@
 const { charHasUprightVerticalOrientation, charAllowsIdeographicBreaking } = require('../util/script_detection');
 const verticalizePunctuation = require('../util/verticalize_punctuation');
 const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
-const { Formatted } = require('../style-spec/expression/types/formatted');
 
 const WritingMode = {
   horizontal: 1,
@@ -24,23 +23,15 @@ class TaggedString {
 
   static fromFeature(text, defaultFontStack) {
     const result = new TaggedString();
-    if (text instanceof Formatted) {
-      for (let i = 0; i < text.sections.length; i++) {
-        const section = text.sections[i];
-        result.sections.push({
-          scale: section.scale || 1,
-          fontStack: section.fontStack || defaultFontStack
-        });
-        result.text += section.text;
-        for (let j = 0; j < section.text.length; j++) {
-          result.sectionIndex.push(i);
-        }
-      }
-    } else {
-      result.text = text;
-      result.sections.push({ scale: 1, fontStack: defaultFontStack });
-      for (let i = 0; i < text.length; i++) {
-        result.sectionIndex.push(0);
+    for (let i = 0; i < text.sections.length; i++) {
+      const section = text.sections[i];
+      result.sections.push({
+        scale: section.scale || 1,
+        fontStack: section.fontStack || defaultFontStack
+      });
+      result.text += section.text;
+      for (let j = 0; j < section.text.length; j++) {
+        result.sectionIndex.push(i);
       }
     }
     return result;

@@ -10,7 +10,6 @@ const EvaluationContext = require('./evaluation_context');
 const { CollatorExpression } = require('./definitions/collator');
 const { isGlobalPropertyConstant, isFeatureConstant } = require('./is_constant');
 const Var = require('./definitions/var');
-const { FormatExpression } = require('./definitions/format');
 
 /**
  * State associated parsing at a given point in an expression tree.
@@ -102,11 +101,11 @@ class ParsingContext {
             actual.kind === 'value'
           ) {
             parsed = annotate(parsed, expected, options.typeAnnotation || 'assert');
-          } else if (expected.kind === 'color' && (actual.kind === 'value' || actual.kind === 'string')) {
+          } else if (
+            (expected.kind === 'color' || expected.kind === 'formatted') &&
+            (actual.kind === 'value' || actual.kind === 'string')
+          ) {
             parsed = annotate(parsed, expected, options.typeAnnotation || 'coerce');
-          } else if (expected.kind === 'formatted' && actual.kind !== 'formatted') {
-            assert(!options.typeAnnotation);
-            parsed = new FormatExpression([{ text: parsed, scale: null, font: null }]);
           } else if (this.checkSubtype(expected, actual)) {
             return null;
           }

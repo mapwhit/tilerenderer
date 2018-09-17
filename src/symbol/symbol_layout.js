@@ -79,7 +79,7 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
     const shapedTextOrientations = {};
     const text = feature.text;
     if (text) {
-      const unformattedText = text instanceof Formatted ? text.toString() : text;
+      const unformattedText = text.toString();
       const textOffset = layout
         .get('text-offset')
         .evaluate(feature, {})

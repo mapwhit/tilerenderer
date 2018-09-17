@@ -2,6 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const fs = require('fs');
 const path = require('path');
 const shaping = require('../../../src/symbol/shaping');
+const { Formatted } = require('../../../src/style-spec/expression/types/formatted');
 const WritingMode = shaping.WritingMode;
 
 let UPDATE = false;
@@ -21,7 +22,7 @@ test('shaping', t => {
   JSON.parse('{}');
 
   shaped = shaping.shapeText(
-    `hi${String.fromCharCode(0)}`,
+    Formatted.fromString(`hi${String.fromCharCode(0)}`),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -42,7 +43,7 @@ test('shaping', t => {
 
   // Default shaping.
   shaped = shaping.shapeText(
-    'abcde',
+    Formatted.fromString('abcde'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -66,7 +67,7 @@ test('shaping', t => {
 
   // Letter spacing.
   shaped = shaping.shapeText(
-    'abcde',
+    Formatted.fromString('abcde'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -90,7 +91,7 @@ test('shaping', t => {
 
   // Line break.
   shaped = shaping.shapeText(
-    'abcde abcde',
+    Formatted.fromString('abcde abcde'),
     glyphs,
     fontStack,
     4 * oneEm,
@@ -114,7 +115,7 @@ test('shaping', t => {
   );
 
   shaped = shaping.shapeText(
-    'abcde\nabcde',
+    Formatted.fromString('abcde\nabcde'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -134,7 +135,7 @@ test('shaping', t => {
   t.assert.deepEqual(shaped, expectedNewLine);
 
   shaped = shaping.shapeText(
-    'abcde\r\nabcde',
+    Formatted.fromString('abcde\r\nabcde'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -153,7 +154,7 @@ test('shaping', t => {
   );
 
   shaped = shaping.shapeText(
-    'abcde\n\nabcde',
+    Formatted.fromString('abcde\n\nabcde'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -174,7 +175,7 @@ test('shaping', t => {
 
   // Null shaping.
   shaped = shaping.shapeText(
-    '',
+    Formatted.fromString(''),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -189,7 +190,7 @@ test('shaping', t => {
   t.assert.equal(false, shaped);
 
   shaped = shaping.shapeText(
-    String.fromCharCode(0),
+    Formatted.fromString(String.fromCharCode(0)),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -205,7 +206,7 @@ test('shaping', t => {
 
   // https://github.com/mapbox/mapbox-gl-js/issues/3254
   shaped = shaping.shapeText(
-    '   foo bar\n',
+    Formatted.fromString('   foo bar\n'),
     glyphs,
     fontStack,
     15 * oneEm,
@@ -218,7 +219,7 @@ test('shaping', t => {
     WritingMode.horizontal
   );
   const shaped2 = shaping.shapeText(
-    'foo bar',
+    Formatted.fromString('foo bar'),
     glyphs,
     fontStack,
     15 * oneEm,
