@@ -3,6 +3,7 @@ const Color = require('../util/color');
 const getType = require('../util/get_type');
 const interpolate = require('../util/interpolate');
 const Interpolate = require('../expression/definitions/interpolate');
+const { Formatted } = require('../expression/types/formatted');
 const { supportsInterpolation } = require('../util/properties');
 
 module.exports = {
@@ -202,6 +203,9 @@ function evaluateIdentityFunction(parameters, propertySpec, input) {
   switch (propertySpec.type) {
     case 'color':
       input = Color.parse(input);
+      break;
+    case 'formatted':
+      input = Formatted.fromString(input.toString());
       break;
     case 'enum':
       if (!propertySpec.values.includes(input)) {
