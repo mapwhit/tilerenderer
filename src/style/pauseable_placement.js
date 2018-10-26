@@ -21,8 +21,16 @@ class LayerPlacement {
 }
 
 class PauseablePlacement {
-  constructor(transform, maxIndex, forceFullPlacement, showCollisionBoxes, fadeDuration, crossSourceCollisions) {
-    this.placement = new Placement(transform, fadeDuration, crossSourceCollisions);
+  constructor(
+    transform,
+    maxIndex,
+    forceFullPlacement,
+    showCollisionBoxes,
+    fadeDuration,
+    crossSourceCollisions,
+    prevPlacement
+  ) {
+    this.placement = new Placement(transform, fadeDuration, crossSourceCollisions, prevPlacement);
     this._currentPlacementIndex = maxIndex;
     this._forceFullPlacement = forceFullPlacement;
     this._showCollisionBoxes = showCollisionBoxes;
@@ -77,8 +85,8 @@ class PauseablePlacement {
     this._done = true;
   }
 
-  commit(previousPlacement, now) {
-    this.placement.commit(previousPlacement, now);
+  commit(now) {
+    this.placement.commit(now);
     return this.placement;
   }
 }

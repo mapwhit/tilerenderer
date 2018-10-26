@@ -324,8 +324,8 @@ function placeGlyphsAlongLine(
   aspectRatio
 ) {
   const fontScale = fontSize / 24;
-  const lineOffsetX = symbol.lineOffsetX * fontSize;
-  const lineOffsetY = symbol.lineOffsetY * fontSize;
+  const lineOffsetX = symbol.lineOffsetX * fontScale;
+  const lineOffsetY = symbol.lineOffsetY * fontScale;
 
   let placedGlyphs;
   if (symbol.numGlyphs > 1) {
@@ -580,7 +580,7 @@ const hiddenGlyphAttributes = new Float32Array([
 
 // Hide them by moving them offscreen. We still need to add them to the buffer
 // because the dynamic buffer is paired with a static buffer that doesn't get updated.
-function hideGlyphs(num, dynamicLayoutVertexArray) {
+export function hideGlyphs(num, dynamicLayoutVertexArray) {
   for (let i = 0; i < num; i++) {
     const offset = dynamicLayoutVertexArray.length;
     dynamicLayoutVertexArray.resize(offset + 4);

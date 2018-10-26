@@ -417,7 +417,7 @@ export default class Painter {
     }
     this.id = layer.id;
 
-    draw[layer.type](painter, sourceCache, layer, coords);
+    draw[layer.type](painter, sourceCache, layer, coords, this.style.placement.variableOffsets);
   }
 
   /**

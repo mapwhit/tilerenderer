@@ -1873,6 +1873,92 @@
       },
       "property-type": "data-driven"
     },
+    "text-radial-offset": {
+      "type": "number",
+      "units": "ems",
+      "default": 0,
+      "doc": "Radial offset of text, in the direction of the symbol's anchor. Useful in combination with `text-variable-anchor`, which defaults to using the two-dimensional `text-offset` if present.",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        },
+        "data-driven styling": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        }
+      },
+      "requires": [
+        "text-field"
+      ],
+      "property-type": "data-driven",
+      "expression": {
+        "interpolated": true,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      }
+    },
+    "text-variable-anchor": {
+      "type": "array",
+      "value": "enum",
+      "values": {
+        "center": {
+          "doc": "The center of the text is placed closest to the anchor."
+        },
+        "left": {
+          "doc": "The left side of the text is placed closest to the anchor."
+        },
+        "right": {
+          "doc": "The right side of the text is placed closest to the anchor."
+        },
+        "top": {
+          "doc": "The top of the text is placed closest to the anchor."
+        },
+        "bottom": {
+          "doc": "The bottom of the text is placed closest to the anchor."
+        },
+        "top-left": {
+          "doc": "The top left corner of the text is placed closest to the anchor."
+        },
+        "top-right": {
+          "doc": "The top right corner of the text is placed closest to the anchor."
+        },
+        "bottom-left": {
+          "doc": "The bottom left corner of the text is placed closest to the anchor."
+        },
+        "bottom-right": {
+          "doc": "The bottom right corner of the text is placed closest to the anchor."
+        }
+      },
+      "requires": [
+        "text-field",
+        {
+          "symbol-placement": [
+            "point"
+          ]
+        }
+      ],
+      "doc": "To increase the chance of placing high-priority labels on the map, you can provide an array of `text-anchor` locations: the renderer will attempt to place the label at each location, in order, before moving onto the next label. Use `text-justify: auto` to choose justification based on anchor position. To apply an offset, use the `text-radial-offset` or the two-dimensional `text-offset`.",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        }
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom"
+        ]
+      },
+      "example": ["center", "left", "right"],
+      "property-type": "data-constant"
+    },
     "text-anchor": {
       "type": "enum",
       "values": {

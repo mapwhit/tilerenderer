@@ -153,6 +153,17 @@ const layout = new Properties({
     default: 'center',
     expression: { parameters: ['zoom', 'feature'] }
   }),
+  'text-radial-offset': new DataDrivenProperty({
+    type: 'number',
+    default: 0,
+    expression: { interpolated: true, parameters: ['zoom', 'feature'] }
+  }),
+  'text-variable-anchor': new DataConstantProperty({
+    type: 'array',
+    value: 'enum',
+    values: ['center', 'left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
+    expression: { parameters: ['zoom'] }
+  }),
   'text-anchor': new DataDrivenProperty({
     type: 'enum',
     values: ['center', 'left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],

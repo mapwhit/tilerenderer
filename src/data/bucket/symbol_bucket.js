@@ -351,7 +351,9 @@ export default class SymbolBucket {
       lineOffset[0],
       lineOffset[1],
       writingMode,
-      false
+      false,
+      // The crossTileID is only filled/used on the foreground for dynamic text anchors
+      0
     );
 
     arrays.programConfigurations.populatePaintArrays(arrays.layoutVertexArray.length, feature, feature.index, {
@@ -498,13 +500,26 @@ export default class SymbolBucket {
 
     for (let i = 0; i < slen; i++) {
       const index = symbolInstanceIndexes[i];
-      const { featureIndex, horizontalPlacedTextSymbolIndex, verticalPlacedTextSymbolIndex } =
-        this.symbolInstances.get(index);
+      const {
+        centerJustifiedTextSymbolIndex,
+        featureIndex,
+        leftJustifiedTextSymbolIndex,
+        rightJustifiedTextSymbolIndex,
+        verticalPlacedTextSymbolIndex
+      } = this.symbolInstances.get(index);
       this.featureSortOrder[i] = featureIndex;
 
-      if (horizontalPlacedTextSymbolIndex >= 0) {
-        this.addIndicesForPlacedTextSymbol(horizontalPlacedTextSymbolIndex);
-      }
+      [rightJustifiedTextSymbolIndex, centerJustifiedTextSymbolIndex, leftJustifiedTextSymbolIndex].forEach(
+        (index, i, array) => {
+          // Only add a given index the first time it shows up,
+          // to avoid duplicate opacity entries when multiple justifications
+          // share the same glyphs.
+          if (index >= 0 && array.indexOf(index) === i) {
+            this.addIndicesForPlacedTextSymbol(index);
+          }
+        }
+      );
+
       if (verticalPlacedTextSymbolIndex >= 0) {
         this.addIndicesForPlacedTextSymbol(verticalPlacedTextSymbolIndex);
       }

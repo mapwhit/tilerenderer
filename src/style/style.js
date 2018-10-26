@@ -1117,7 +1117,8 @@ class Style extends Evented {
         forceFullPlacement,
         showCollisionBoxes,
         fadeDuration,
-        crossSourceCollisions
+        crossSourceCollisions,
+        this.placement
       );
       this._layerOrderChanged = false;
     }
@@ -1132,7 +1133,7 @@ class Style extends Evented {
       this.pauseablePlacement.continuePlacement(Array.from(this._layers.values()), layerTiles);
 
       if (this.pauseablePlacement.isDone()) {
-        this.placement = this.pauseablePlacement.commit(this.placement, browser.now());
+        this.placement = this.pauseablePlacement.commit(browser.now());
         placementCommitted = true;
       }
 
