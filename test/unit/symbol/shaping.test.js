@@ -33,7 +33,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -58,7 +57,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -83,7 +81,6 @@ test('shaping', t => {
     'center',
     0.125 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -108,7 +105,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -133,7 +129,6 @@ test('shaping', t => {
     'center',
     0,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -154,7 +149,6 @@ test('shaping', t => {
     'center',
     0,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   t.assert.deepEqual(shaped.positionedGlyphs, expectedNewLine.positionedGlyphs);
@@ -173,7 +167,6 @@ test('shaping', t => {
     'center',
     0,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   if (UPDATE) {
@@ -195,7 +188,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   t.assert.equal(false, shaped);
@@ -210,7 +202,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   t.assert.equal(false, shaped);
@@ -226,7 +217,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   const shaped2 = shaping.shapeText(
@@ -239,7 +229,6 @@ test('shaping', t => {
     'center',
     0 * oneEm,
     [0, 0],
-    oneEm,
     WritingMode.horizontal
   );
   t.assert.deepEqual(shaped.positionedGlyphs, shaped2.positionedGlyphs);

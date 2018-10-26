@@ -17,6 +17,7 @@
       "fontStack": "Test"
     }
   ],
+  "lineCount": 1,
   "text": "hi\u0000",
   "top": -12,
   "bottom": 12,
