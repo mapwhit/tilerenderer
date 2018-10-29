@@ -1,19 +1,11 @@
 import test from 'node:test';
-import Coordinate from '../../../src/geo/coordinate.js';
-import { bezier, clamp, easeCubicInOut, getCoordinatesCenter, wrap } from '../../../src/util/util.js';
+import { bezier, clamp, easeCubicInOut, wrap } from '../../../src/util/util.js';
 
 test('util', async t => {
   t.assert.equal(easeCubicInOut(0), 0, 'easeCubicInOut=0');
   t.assert.equal(easeCubicInOut(0.2), 0.03200000000000001);
   t.assert.equal(easeCubicInOut(0.5), 0.5, 'easeCubicInOut=0.5');
   t.assert.equal(easeCubicInOut(1), 1, 'easeCubicInOut=1');
-
-  await t.test('getCoordinatesCenter', t => {
-    t.assert.deepEqual(
-      getCoordinatesCenter([new Coordinate(0, 0, 2), new Coordinate(1, 1, 2)]),
-      new Coordinate(0.5, 0.5, 0)
-    );
-  });
 
   await t.test('clamp', t => {
     t.assert.equal(clamp(0, 0, 1), 0);

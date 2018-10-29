@@ -1,7 +1,7 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import { Point } from '@mapwhit/point-geometry';
 import EXTENT from '../data/extent.js';
-import Coordinate from '../geo/coordinate.js';
+import MercatorCoordinate from '../geo/mercator_coordinate.js';
 import browser from '../util/browser.js';
 import { create as createSource } from './source.js';
 import SourceFeatureState from './source_state.js';
@@ -725,13 +725,12 @@ class SourceCache extends Evented {
     let minY = Number.POSITIVE_INFINITY;
     let maxX = Number.NEGATIVE_INFINITY;
     let maxY = Number.NEGATIVE_INFINITY;
-    const z = queryGeometry[0].zoom;
 
     for (const p of cameraQueryGeometry) {
-      minX = Math.min(minX, p.column);
-      minY = Math.min(minY, p.row);
-      maxX = Math.max(maxX, p.column);
-      maxY = Math.max(maxY, p.row);
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x);
+      maxY = Math.max(maxY, p.y);
     }
 
     for (const id of ids) {
@@ -745,8 +744,8 @@ class SourceCache extends Evented {
       const queryPadding = (maxPitchScaleFactor * tile.queryPadding * EXTENT) / tile.tileSize / scale;
 
       const tileSpaceBounds = [
-        coordinateToTilePoint(tileID, new Coordinate(minX, minY, z)),
-        coordinateToTilePoint(tileID, new Coordinate(maxX, maxY, z))
+        tileID.getTilePoint(new MercatorCoordinate(minX, minY)),
+        tileID.getTilePoint(new MercatorCoordinate(maxX, maxY))
       ];
 
       if (
@@ -755,8 +754,8 @@ class SourceCache extends Evented {
         tileSpaceBounds[1].x + queryPadding >= 0 &&
         tileSpaceBounds[1].y + queryPadding >= 0
       ) {
-        const tileSpaceQueryGeometry = queryGeometry.map(c => coordinateToTilePoint(tileID, c));
-        const tileSpaceCameraQueryGeometry = cameraQueryGeometry.map(c => coordinateToTilePoint(tileID, c));
+        const tileSpaceQueryGeometry = queryGeometry.map(c => tileID.getTilePoint(c));
+        const tileSpaceCameraQueryGeometry = cameraQueryGeometry.map(c => tileID.getTilePoint(c));
 
         tileResults.push({
           tile,
@@ -825,18 +824,6 @@ class SourceCache extends Evented {
 
 SourceCache.maxOverzooming = 10;
 SourceCache.maxUnderzooming = 3;
-
-/**
- * Convert a coordinate to a point in a tile's coordinate space.
- * @private
- */
-function coordinateToTilePoint(tileID, coord) {
-  const zoomedCoord = coord.zoomTo(tileID.canonical.z);
-  return new Point(
-    (zoomedCoord.column - (tileID.canonical.x + tileID.wrap * 2 ** tileID.canonical.z)) * EXTENT,
-    (zoomedCoord.row - tileID.canonical.y) * EXTENT
-  );
-}
 
 function isRasterType(type) {
   return type === 'raster' || type === 'image';

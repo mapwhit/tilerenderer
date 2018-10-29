@@ -1,7 +1,7 @@
 import glMatrix from '@mapbox/gl-matrix';
 import assert from 'assert';
 import EXTENT from '../../data/extent.js';
-import Coordinate from '../../geo/coordinate.js';
+import MercatorCoordinate from '../../geo/mercator_coordinate.js';
 import { Uniform1f, Uniform1i, Uniform2f, UniformColor, UniformMatrix4f } from '../uniform_binding.js';
 
 const { mat4 } = glMatrix;
@@ -65,7 +65,10 @@ export const hillshadeUniformPrepareValues = (tile, maxzoom) => {
 
 function getTileLatRange(painter, tileID) {
   // for scaling the magnitude of a points slope by its latitude
-  const coordinate0 = tileID.toCoordinate();
-  const coordinate1 = new Coordinate(coordinate0.column, coordinate0.row + 1, coordinate0.zoom);
-  return [painter.transform.coordinateLocation(coordinate0).lat, painter.transform.coordinateLocation(coordinate1).lat];
+  const tilesAtZoom = 2 ** tileID.canonical.z;
+  const y = tileID.canonical.y;
+  return [
+    new MercatorCoordinate(0, y / tilesAtZoom).toLngLat().lat,
+    new MercatorCoordinate(0, (y + 1) / tilesAtZoom).toLngLat().lat
+  ];
 }

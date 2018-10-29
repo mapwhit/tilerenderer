@@ -1,5 +1,7 @@
+import { Point } from '@mapwhit/point-geometry';
 import assert from 'assert';
-import Coordinate from '../geo/coordinate.js';
+import EXTENT from '../data/extent.js';
+import MercatorCoordinate from '../geo/mercator_coordinate.js';
 
 export class CanonicalTileID {
   constructor(z, x, y) {
@@ -18,6 +20,11 @@ export class CanonicalTileID {
 
   get cacheKey() {
     return this.key;
+  }
+
+  getTilePoint(coord) {
+    const tilesAtZoom = 2 ** this.z;
+    return new Point((coord.x * tilesAtZoom - this.x) * EXTENT, (coord.y * tilesAtZoom - this.y) * EXTENT);
   }
 }
 
@@ -139,8 +146,8 @@ export class OverscaledTileID {
     return `${this.overscaledZ}/${this.canonical.x}/${this.canonical.y}`;
   }
 
-  toCoordinate() {
-    return new Coordinate(this.canonical.x + 2 ** this.wrap, this.canonical.y, this.canonical.z);
+  getTilePoint(coord) {
+    return this.canonical.getTilePoint(new MercatorCoordinate(coord.x - this.wrap, coord.y));
   }
 }
 
