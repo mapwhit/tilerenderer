@@ -1,7 +1,7 @@
+import { Point } from '@mapwhit/point-geometry';
 import { OverscaledTileID } from '../source/tile_id.js';
-export default tileCover;
 
-function tileCover(z, bounds, actualZ, renderWorldCopies) {
+export default function tileCover(z, bounds, actualZ, renderWorldCopies) {
   if (renderWorldCopies === undefined) {
     renderWorldCopies = true;
   }
@@ -25,12 +25,14 @@ function tileCover(z, bounds, actualZ, renderWorldCopies) {
     }
   }
 
+  const zoomedBounds = bounds.map(coord => new Point(coord.x, coord.y)._mult(tiles));
+
   // Divide the screen up in two triangles and scan each of them:
   // +---/
   // | / |
   // /---+
-  scanTriangle(bounds[0], bounds[1], bounds[2], 0, tiles, scanLine);
-  scanTriangle(bounds[2], bounds[3], bounds[0], 0, tiles, scanLine);
+  scanTriangle(zoomedBounds[0], zoomedBounds[1], zoomedBounds[2], 0, tiles, scanLine);
+  scanTriangle(zoomedBounds[2], zoomedBounds[3], zoomedBounds[0], 0, tiles, scanLine);
 
   return Object.keys(t).map(id => {
     return t[id];
@@ -41,18 +43,18 @@ function tileCover(z, bounds, actualZ, renderWorldCopies) {
 // https://github.com/simplegeo/polymaps/blob/master/src/Layer.js#L333-L383
 
 function edge(a, b) {
-  if (a.row > b.row) {
+  if (a.y > b.y) {
     const t = a;
     a = b;
     b = t;
   }
   return {
-    x0: a.column,
-    y0: a.row,
-    x1: b.column,
-    y1: b.row,
-    dx: b.column - a.column,
-    dy: b.row - a.row
+    x0: a.x,
+    y0: a.y,
+    x1: b.x,
+    y1: b.y,
+    dx: b.x - a.x,
+    dy: b.y - a.y
   };
 }
 

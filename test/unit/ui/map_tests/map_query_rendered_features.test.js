@@ -35,7 +35,7 @@ test('queryRenderedFeatures', async t => {
       const args = map.style.queryRenderedFeatures.mock.calls[0].arguments;
       t.assert.deepEqual(
         args[0].worldCoordinate.map(c => fixedCoord(c)),
-        [{ column: 0.5, row: 0.5, zoom: 0 }]
+        [{ x: 0.5, y: 0.5, z: 0 }]
       ); // query geometry
       t.assert.deepEqual(args[1], {}); // params
       t.assert.deepEqual(args[2], map.transform); // transform
@@ -85,9 +85,9 @@ test('queryRenderedFeatures', async t => {
       map.queryRenderedFeatures(map.project(new LngLat(360, 0)));
 
       const coords = map.style.queryRenderedFeatures.mock.calls[0].arguments[0].worldCoordinate.map(c => fixedCoord(c));
-      t.assert.equal(coords[0].column, 1.5);
-      t.assert.equal(coords[0].row, 0.5);
-      t.assert.equal(coords[0].zoom, 0);
+      t.assert.equal(coords[0].x, 1.5);
+      t.assert.equal(coords[0].y, 0.5);
+      t.assert.equal(coords[0].z, 0);
 
       done();
     });

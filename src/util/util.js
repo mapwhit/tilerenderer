@@ -1,5 +1,4 @@
 import UnitBezier from '@mapbox/unitbezier';
-import Coordinate from '../geo/coordinate.js';
 
 /**
  * @module util
@@ -76,32 +75,6 @@ export function wrap(n, min, max) {
   const d = max - min;
   const w = ((((n - min) % d) + d) % d) + min;
   return w === min ? max : w;
-}
-
-/**
- * Given a list of coordinates, get their center as a coordinate.
- *
- * @returns centerpoint
- * @private
- */
-export function getCoordinatesCenter(coords) {
-  let minX = Number.POSITIVE_INFINITY;
-  let minY = Number.POSITIVE_INFINITY;
-  let maxX = Number.NEGATIVE_INFINITY;
-  let maxY = Number.NEGATIVE_INFINITY;
-
-  for (let i = 0; i < coords.length; i++) {
-    minX = Math.min(minX, coords[i].column);
-    minY = Math.min(minY, coords[i].row);
-    maxX = Math.max(maxX, coords[i].column);
-    maxY = Math.max(maxY, coords[i].row);
-  }
-
-  const dx = maxX - minX;
-  const dy = maxY - minY;
-  const dMax = Math.max(dx, dy);
-  const zoom = Math.max(0, Math.floor(-Math.log(dMax) / Math.LN2));
-  return new Coordinate((minX + maxX) / 2, (minY + maxY) / 2, 0).zoomTo(zoom);
 }
 
 /**

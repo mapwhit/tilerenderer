@@ -26,8 +26,8 @@ function fixedCoord(coord, precision) {
     precision = 10;
   }
   return {
-    column: fixedNum(coord.column, precision),
-    row: fixedNum(coord.row, precision),
-    zoom: coord.zoom
+    x: fixedNum(coord.x, precision),
+    y: fixedNum(coord.y, precision),
+    z: fixedNum(coord.z, precision)
   };
 }
