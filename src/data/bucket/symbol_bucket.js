@@ -94,7 +94,10 @@ export default class SymbolBucket {
     this.iconSizeData = getSizeData(this.zoom, unevaluatedLayoutValues['icon-size']);
 
     const layout = this.layers[0]._layout;
-    const zOrderByViewportY = layout.get('symbol-z-order') === 'viewport-y';
+    const sortKey = layout.get('symbol-sort-key');
+    const zOrder = layout.get('symbol-z-order');
+    this.sortFeaturesByKey = zOrder !== 'viewport-y' && sortKey.constantOr(1) !== undefined;
+    const zOrderByViewportY = zOrder === 'viewport-y' || (zOrder === 'auto' && !this.sortFeaturesByKey);
     this.sortFeaturesByY =
       zOrderByViewportY &&
       (layout.get('text-allow-overlap') ||
@@ -140,6 +143,7 @@ export default class SymbolBucket {
       (textField.value.kind !== 'constant' || textField.value.value.toString().length > 0) &&
       (textFont.value.kind !== 'constant' || textFont.value.value.length > 0);
     const hasIcon = iconImage.value.kind !== 'constant' || iconImage.value.value?.length > 0;
+    const symbolSortKey = layout.get('symbol-sort-key');
 
     this.features = [];
 
@@ -178,6 +182,8 @@ export default class SymbolBucket {
         continue;
       }
 
+      const sortKey = this.sortFeaturesByKey ? symbolSortKey.evaluate(feature, {}) : undefined;
+
       const symbolFeature = {
         text,
         icon,
@@ -185,7 +191,8 @@ export default class SymbolBucket {
         sourceLayerIndex,
         geometry: loadGeometry(feature),
         properties: feature.properties,
-        type: VectorTileFeature.types[feature.type]
+        type: VectorTileFeature.types[feature.type],
+        sortKey
       };
       if (typeof feature.id !== 'undefined') {
         symbolFeature.id = feature.id;
@@ -213,6 +220,13 @@ export default class SymbolBucket {
       // Merge adjacent lines with the same text to improve labelling.
       // It's better to place labels on one long line than on many short segments.
       this.features = mergeLines(this.features);
+    }
+
+    if (this.sortFeaturesByKey) {
+      this.features.sort((a, b) => {
+        // a.sortKey is always a number when sortFeaturesByKey is true
+        return a.sortKey - b.sortKey;
+      });
     }
   }
 
@@ -295,7 +309,7 @@ export default class SymbolBucket {
     lineLength
   ) {
     const { indexArray, layoutVertexArray, dynamicLayoutVertexArray, segments } = arrays;
-    const segment = segments.prepareSegment(4 * quads.length, layoutVertexArray, indexArray);
+    const segment = segments.prepareSegment(4 * quads.length, layoutVertexArray, indexArray, feature.sortKey);
     const glyphOffsetArrayStart = this.glyphOffsetArray.length;
     const vertexStartIndex = segment.vertexLength;
     const { x: lax, y: lay } = labelAnchor;

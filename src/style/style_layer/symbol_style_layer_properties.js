@@ -19,10 +19,14 @@ const layout = new Properties({
     default: false,
     expression: { parameters: ['zoom'] }
   }),
+  'symbol-sort-key': new DataDrivenProperty({
+    type: 'number',
+    expression: { parameters: ['zoom', 'feature'] }
+  }),
   'symbol-z-order': new DataConstantProperty({
     type: 'enum',
-    values: ['viewport-y', 'source'],
-    default: 'viewport-y',
+    values: ['auto', 'viewport-y', 'source'],
+    default: 'auto',
     expression: { parameters: ['zoom'] }
   }),
   'icon-allow-overlap': new DataConstantProperty({

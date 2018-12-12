@@ -1,4 +1,5 @@
 import glMatrix from '@mapbox/gl-matrix';
+import SegmentVector from '../data/segment.js';
 import CullFaceMode from '../gl/cull_face_mode.js';
 import DepthMode from '../gl/depth_mode.js';
 import StencilMode from '../gl/stencil_mode.js';
@@ -87,10 +88,14 @@ function drawLayerSymbols(
   // Unpitched point labels need to have their rotation applied after projection
   const rotateInShader = rotateWithMap && !pitchWithMap && !alongLine;
 
+  const sortFeaturesByKey = layer._layout.get('symbol-sort-key').constantOr(1) !== undefined;
+
   const depthMode = painter.depthModeForSublayer(0, DepthMode.ReadOnly);
 
   let program;
   let size;
+
+  const tileRenderState = [];
 
   for (const coord of coords) {
     const tile = sourceCache.getTile(coord);
@@ -120,20 +125,21 @@ function drawLayerSymbols(
     context.activeTexture.set(gl.TEXTURE0);
 
     let texSize;
+    let atlasTexture;
+    let atlasInterpolation;
     if (isText) {
-      tile.glyphAtlasTexture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE);
+      atlasTexture = tile.glyphAtlasTexture;
+      atlasInterpolation = gl.LINEAR;
       texSize = tile.glyphAtlasTexture.size;
     } else {
       const iconScaled = layer._layout.get('icon-size').constantOr(0) !== 1 || bucket.iconsNeedLinear;
       const iconTransformed = pitchWithMap || tr.pitch !== 0;
 
-      tile.imageAtlasTexture.bind(
+      atlasTexture = tile.imageAtlasTexture;
+      atlasInterpolation =
         isSDF || painter.options.rotating || painter.options.zooming || iconScaled || iconTransformed
           ? gl.LINEAR
-          : gl.NEAREST,
-        gl.CLAMP_TO_EDGE
-      );
-
+          : gl.NEAREST;
       texSize = tile.imageAtlasTexture.size;
     }
 
@@ -170,10 +176,10 @@ function drawLayerSymbols(
     const uLabelPlaneMatrix = alongLine ? identityMat4 : labelPlaneMatrix;
     const uglCoordMatrix = painter.translatePosMatrix(glCoordMatrix, tile, translate, translateAnchor, true);
 
+    const hasHalo = isSDF && layer._paint.get(isText ? 'text-halo-width' : 'icon-halo-width').constantOr(1) !== 0;
+
     let uniformValues;
     if (isSDF) {
-      const hasHalo = layer._paint.get(isText ? 'text-halo-width' : 'icon-halo-width').constantOr(1) !== 0;
-
       uniformValues = symbolSDFUniformValues(
         sizeData.functionType,
         size,
@@ -187,12 +193,6 @@ function drawLayerSymbols(
         texSize,
         true
       );
-
-      if (hasHalo) {
-        drawSymbolElements(buffers, layer, painter, program, depthMode, stencilMode, colorMode, uniformValues);
-      }
-
-      uniformValues['u_is_halo'] = 0;
     } else {
       uniformValues = symbolIconUniformValues(
         sizeData.functionType,
@@ -208,11 +208,86 @@ function drawLayerSymbols(
       );
     }
 
-    drawSymbolElements(buffers, layer, painter, program, depthMode, stencilMode, colorMode, uniformValues);
+    const state = {
+      program,
+      buffers,
+      uniformValues,
+      atlasTexture,
+      atlasInterpolation,
+      isSDF,
+      hasHalo
+    };
+
+    if (sortFeaturesByKey) {
+      const oldSegments = buffers.segments.get();
+      for (const segment of oldSegments) {
+        tileRenderState.push({
+          segments: new SegmentVector([segment]),
+          sortKey: segment.sortKey,
+          state
+        });
+      }
+    } else {
+      tileRenderState.push({
+        segments: buffers.segments,
+        sortKey: 0,
+        state
+      });
+    }
+  }
+
+  if (sortFeaturesByKey) {
+    tileRenderState.sort((a, b) => a.sortKey - b.sortKey);
+  }
+
+  for (const segmentState of tileRenderState) {
+    const state = segmentState.state;
+
+    state.atlasTexture.bind(state.atlasInterpolation, gl.CLAMP_TO_EDGE);
+
+    if (state.isSDF) {
+      const uniformValues = state.uniformValues;
+      if (state.hasHalo) {
+        uniformValues['u_is_halo'] = 1;
+        drawSymbolElements(
+          state.buffers,
+          segmentState.segments,
+          layer,
+          painter,
+          state.program,
+          depthMode,
+          stencilMode,
+          colorMode,
+          uniformValues
+        );
+      }
+      uniformValues['u_is_halo'] = 0;
+    }
+    drawSymbolElements(
+      state.buffers,
+      segmentState.segments,
+      layer,
+      painter,
+      state.program,
+      depthMode,
+      stencilMode,
+      colorMode,
+      state.uniformValues
+    );
   }
 }
 
-function drawSymbolElements(buffers, layer, painter, program, depthMode, stencilMode, colorMode, uniformValues) {
+function drawSymbolElements(
+  buffers,
+  segments,
+  layer,
+  painter,
+  program,
+  depthMode,
+  stencilMode,
+  colorMode,
+  uniformValues
+) {
   const context = painter.context;
   const gl = context.gl;
   program.draw(
@@ -226,7 +301,7 @@ function drawSymbolElements(buffers, layer, painter, program, depthMode, stencil
     layer.id,
     buffers.layoutVertexBuffer,
     buffers.indexBuffer,
-    buffers.segments,
+    segments,
     layer._paint,
     painter.transform.zoom,
     buffers.programConfigurations.get(layer.id),
