@@ -78,6 +78,8 @@ export default class LineBucket {
     this.indexArray = new TriangleIndexArray();
     this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, layers, zoom);
     this.segments = new SegmentVector();
+
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
   }
 
   populate(features, options) {

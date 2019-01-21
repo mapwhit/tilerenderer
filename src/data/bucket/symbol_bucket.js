@@ -105,6 +105,8 @@ export default class SymbolBucket {
         layout.get('text-ignore-placement') ||
         layout.get('icon-ignore-placement'));
 
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
+
     this.sourceID = options.sourceID;
   }
 

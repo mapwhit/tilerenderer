@@ -32,6 +32,7 @@ class CircleBucket {
     this.indexArray = new TriangleIndexArray();
     this.segments = new SegmentVector();
     this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, options.layers, options.zoom);
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
   }
 
   populate(features, options) {
