@@ -6,26 +6,25 @@
       "height": 64,
       "operations": [
         [
-          "setGlobalStateProperty",
-          "color",
-          "cyan"
-        ],
-        [
           "setFeatureState",
           {
             "source": "geojson",
-            "id": 0
+            "id": "1"
           },
           {
-            "color": "magenta"
+            "color": "red"
           }
+        ],
+        [
+          "wait"
         ],
         [
           "removeFeatureState",
           {
             "source": "geojson",
-            "id": 0
-          }
+            "id": "1"
+          },
+          "color"
         ],
         [
           "wait"
@@ -33,25 +32,20 @@
       ]
     }
   },
+  "zoom": 2,
   "sources": {
     "geojson": {
       "type": "geojson",
       "data": {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "id": 0,
-            "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [-10, 0] },
-            "properties": {}
-          },
-          {
-            "id": 1,
-            "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [10, 0] },
-            "properties": {}
-          }
-        ]
+        "type": "Feature",
+        "id": "1",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0,
+            0
+          ]
+        }
       }
     }
   },
@@ -61,18 +55,14 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-radius": 10,
+        "circle-radius": 5,
         "circle-color": [
           "coalesce",
           [
             "feature-state",
             "color"
           ],
-          [
-            "global-state",
-            "color"
-          ],
-          "yellow"
+          "black"
         ]
       }
     }

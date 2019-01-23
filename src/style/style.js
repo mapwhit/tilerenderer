@@ -729,6 +729,10 @@ class Style extends Evented {
       return;
     }
     const sourceType = sourceCache.getSource().type;
+    if (sourceType === 'geojson' && sourceLayer) {
+      this.fire(new ErrorEvent(new Error('GeoJSON sources cannot have a sourceLayer parameter.')));
+      return;
+    }
     if (sourceType === 'vector' && !sourceLayer) {
       this.fire(new ErrorEvent(new Error('The sourceLayer parameter must be provided for vector source types.')));
       return;
@@ -739,6 +743,32 @@ class Style extends Evented {
     }
 
     sourceCache.setFeatureState(sourceLayer, feature.id, state);
+  }
+
+  removeFeatureState(target, key) {
+    this._checkLoaded();
+    const sourceId = target.source;
+    const sourceCache = this._sources[sourceId];
+
+    if (sourceCache === undefined) {
+      this.fire(new ErrorEvent(new Error(`The source '${sourceId}' does not exist in the map's style.`)));
+      return;
+    }
+
+    const sourceType = sourceCache.getSource().type;
+    const sourceLayer = sourceType === 'vector' ? target.sourceLayer : undefined;
+
+    if (sourceType === 'vector' && !sourceLayer) {
+      this.fire(new ErrorEvent(new Error('The sourceLayer parameter must be provided for vector source types.')));
+      return;
+    }
+
+    if (key && typeof target.id !== 'string' && typeof target.id !== 'number') {
+      this.fire(new ErrorEvent(new Error('A feature id is required to remove its specific state property.')));
+      return;
+    }
+
+    sourceCache.removeFeatureState(sourceLayer, target.id, key);
   }
 
   getFeatureState(feature) {
