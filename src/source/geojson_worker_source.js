@@ -22,7 +22,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param callback
    */
   loadData(params) {
-    const data = loadJSON(params.data);
+    const data = loadJSON(params);
     this._geoJSONIndex = null;
     this._createGeoJSONIndex = params.cluster
       ? () => {
@@ -70,11 +70,11 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
  *
  * @param data Literal GeoJSON data. Must be provided.
  */
-function loadJSON(data) {
+function loadJSON({ data, source }) {
   try {
     return typeof data === 'string' ? JSON.parse(data) : data;
   } catch {
-    throw new Error('Input data is not a valid GeoJSON object.');
+    throw new Error(`Input data given to '${source}' is not a valid GeoJSON object.`);
   }
 }
 
