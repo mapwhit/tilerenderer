@@ -455,6 +455,30 @@ export default class SymbolBucket {
     }
   }
 
+  getSortedSymbolIndexes(angle) {
+    if (this.sortedAngle === angle && this.symbolInstanceIndexes !== undefined) {
+      return this.symbolInstanceIndexes;
+    }
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    const rotatedYs = [];
+    const featureIndexes = [];
+    const result = [];
+
+    for (let i = 0; i < this.symbolInstances.length; ++i) {
+      result.push(i);
+      const symbolInstance = this.symbolInstances.get(i);
+      rotatedYs.push(Math.round(sin * symbolInstance.anchorX + cos * symbolInstance.anchorY) | 0);
+      featureIndexes.push(symbolInstance.featureIndex);
+    }
+
+    result.sort((aIndex, bIndex) => {
+      return rotatedYs[aIndex] - rotatedYs[bIndex] || featureIndexes[bIndex] - featureIndexes[aIndex];
+    });
+
+    return result;
+  }
+
   sortFeatures(angle) {
     if (!this.sortFeaturesByY) {
       return;
@@ -463,7 +487,6 @@ export default class SymbolBucket {
     if (this.sortedAngle === angle) {
       return;
     }
-    this.sortedAngle = angle;
 
     // The current approach to sorting doesn't sort across segments so don't try.
     // Sorting within segments separately seemed not to be worth the complexity.
@@ -476,28 +499,16 @@ export default class SymbolBucket {
     // sorted order.
 
     // To avoid sorting the actual symbolInstance array we sort an array of indexes.
-    const slen = this.symbolInstances.length;
-    const symbolInstanceIndexes = new Array(slen);
-    const rotatedYs = new Array(slen);
-    const featureIndexes = new Array(slen);
-    const sin = Math.sin(angle);
-    const cos = Math.cos(angle);
-    for (let i = 0; i < slen; i++) {
-      symbolInstanceIndexes[i] = i;
-      const { anchorX, anchorY, featureIndex } = this.symbolInstances.get(i);
-      rotatedYs[i] = Math.round(sin * anchorX + cos * anchorY) | 0;
-      featureIndexes[i] = featureIndex;
-    }
-
-    symbolInstanceIndexes.sort((a, b) => rotatedYs[a] - rotatedYs[b] || featureIndexes[b] - featureIndexes[a]);
+    this.symbolInstanceIndexes = this.getSortedSymbolIndexes(angle);
+    this.sortedAngle = angle;
 
     this.text.indexArray.clear();
     this.icon.indexArray.clear();
 
-    this.featureSortOrder = new Array(slen);
+    this.featureSortOrder = new Array(this.symbolInstanceIndexes.length);
 
-    for (let i = 0; i < slen; i++) {
-      const index = symbolInstanceIndexes[i];
+    for (let i = 0; i < this.symbolInstanceIndexes.length; i++) {
+      const index = this.symbolInstanceIndexes[i];
       const {
         centerJustifiedTextSymbolIndex,
         featureIndex,
@@ -505,7 +516,7 @@ export default class SymbolBucket {
         rightJustifiedTextSymbolIndex,
         verticalPlacedTextSymbolIndex
       } = this.symbolInstances.get(index);
-      this.featureSortOrder[i] = featureIndex;
+      this.featureSortOrder.push(featureIndex);
 
       [rightJustifiedTextSymbolIndex, centerJustifiedTextSymbolIndex, leftJustifiedTextSymbolIndex].forEach(
         (index, i, array) => {
