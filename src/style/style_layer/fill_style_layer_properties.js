@@ -2,6 +2,13 @@
 
 import { CrossFadedDataDrivenProperty, DataConstantProperty, DataDrivenProperty, Properties } from '../properties.js';
 
+const layout = new Properties({
+  'fill-sort-key': new DataDrivenProperty({
+    type: 'number',
+    expression: { parameters: ['zoom', 'feature'] }
+  })
+});
+
 const paint = new Properties({
   'fill-antialias': new DataConstantProperty({ type: 'boolean', default: true, expression: { parameters: ['zoom'] } }),
   'fill-opacity': new DataDrivenProperty({
@@ -42,4 +49,4 @@ const paint = new Properties({
   })
 });
 
-export default { paint };
+export default { paint, layout };

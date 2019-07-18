@@ -13,7 +13,7 @@ export function loadVectorTile(name = 'mbsv5-6-18-23.vector.pbf') {
 export function getFeaturesFromLayer(sourceLayer) {
   const features = new Array(sourceLayer.length);
   for (let i = 0; i < sourceLayer.length; i++) {
-    features[i] = { feature: sourceLayer.feature(i) };
+    features[i] = { feature: sourceLayer.feature(i), index: i };
   }
   return features;
 }

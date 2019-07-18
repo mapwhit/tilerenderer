@@ -20,6 +20,7 @@ class FillBucket {
     this.layers = options.layers;
     this.index = options.index;
     this.hasPattern = false;
+    this.features = [];
 
     this.layoutVertexArray = new FillLayoutArray();
     this.indexArray = new TriangleIndexArray();
@@ -31,8 +32,9 @@ class FillBucket {
   }
 
   populate(features, options) {
-    this.features = [];
     this.hasPattern = hasPattern('fill', this.layers, options);
+    const fillSortKey = this.layers[0]._layout.get('fill-sort-key');
+    const bucketFeatures = [];
 
     for (const { feature, index, sourceLayerIndex } of features) {
       if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
@@ -40,26 +42,42 @@ class FillBucket {
       }
 
       const geometry = loadGeometry(feature);
+      const sortKey = fillSortKey ? fillSortKey.evaluate(feature, {}) : undefined;
 
-      const patternFeature = {
+      const bucketFeature = {
+        id: feature.id,
+        properties: feature.properties,
+        type: feature.type,
         sourceLayerIndex,
         index,
         geometry,
-        properties: feature.properties,
-        type: feature.type,
-        patterns: {}
+        patterns: {},
+        sortKey
       };
 
-      if (typeof feature.id !== 'undefined') {
-        patternFeature.id = feature.id;
-      }
+      bucketFeatures.push(bucketFeature);
+    }
+
+    if (fillSortKey) {
+      bucketFeatures.sort((a, b) => {
+        // a.sortKey is always a number when in use
+        return a.sortKey - b.sortKey;
+      });
+    }
+
+    for (const bucketFeature of bucketFeatures) {
+      const { geometry, index, sourceLayerIndex } = bucketFeature;
 
       if (this.hasPattern) {
-        this.features.push(addPatternDependencies('fill', this.layers, patternFeature, { zoom: this.zoom }, options));
+        const patternFeature = addPatternDependencies('fill', this.layers, bucketFeature, { zoom: this.zoom }, options);
+        // pattern features are added only once the pattern is loaded into the image atlas
+        // so are stored during populate until later updated with positions by tile worker in addFeatures
+        this.features.push(patternFeature);
       } else {
-        this.addFeature(patternFeature, geometry, index, {});
+        this.addFeature(bucketFeature, geometry, index, {});
       }
 
+      const feature = features[index].feature;
       options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
     }
   }
@@ -75,8 +93,7 @@ class FillBucket {
 
   addFeatures(options, imagePositions) {
     for (const feature of this.features) {
-      const { geometry } = feature;
-      this.addFeature(feature, geometry, feature.index, imagePositions);
+      this.addFeature(feature, feature.geometry, feature.index, imagePositions);
     }
   }
 
