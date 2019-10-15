@@ -1,9 +1,14 @@
 import dynload from 'dynload';
 import browser from '../util/browser.js';
 
-let pluginRequested = false;
+const status = {
+  unavailable: 'unavailable',
+  loading: 'loading',
+  loaded: 'loaded',
+  error: 'error'
+};
+let pluginStatus = status.unavailable;
 let pluginURL;
-let loading = false;
 
 let _completionCallback;
 const _loadedCallbacks = [];
@@ -14,6 +19,10 @@ const rtlPlugin = {
   registerForPluginAvailability,
   setRTLTextPlugin
 };
+
+export function getRTLTextPluginStatus() {
+  return pluginStatus;
+}
 
 export function registerForPluginAvailability(callback) {
   if (plugin.isLoaded()) {
@@ -27,35 +36,37 @@ export function registerForPluginAvailability(callback) {
 
 export function clearRTLTextPlugin() {
   _loadedCallbacks.length = 0;
-  pluginRequested = false;
+  pluginStatus = status.unavailable;
   pluginURL = undefined;
 }
 
 export function setRTLTextPlugin(url, callback) {
-  if (pluginRequested) {
+  if (pluginStatus === status.loading || pluginStatus === status.loaded) {
     throw new Error('setRTLTextPlugin cannot be called multiple times.');
   }
-  pluginRequested = true;
   pluginURL = browser.resolveURL(url);
   _completionCallback = error => {
     if (error) {
       const msg = `RTL Text Plugin failed to load scripts from ${pluginURL}`;
       // Clear loaded state to allow retries
       clearRTLTextPlugin();
+      pluginStatus = status.error;
       if (callback) {
         callback(new Error(msg));
       }
+    } else {
+      pluginStatus = status.loaded;
     }
-    loading = false;
     _completionCallback = undefined;
   };
   loadRTLTextPlugin();
 }
 
 function loadRTLTextPlugin() {
-  if (pluginURL && !plugin.isLoaded() && _loadedCallbacks.length > 0 && !loading) {
+  if (pluginURL && !plugin.isLoaded() && _loadedCallbacks.length > 0 && pluginStatus !== status.loading) {
+    pluginStatus = status.loading;
     // needs to be called as exported method for mock testing
-    loading = rtlPlugin.loadScript(pluginURL).catch(_completionCallback);
+    rtlPlugin.loadScript(pluginURL).catch(_completionCallback);
   }
 }
 
@@ -88,7 +99,9 @@ export const plugin = (rtlPlugin.plugin = {
   applyArabicShaping: null,
   processBidirectionalText: null,
   processStyledBidirectionalText: null,
-  isLoaded: () => plugin.applyArabicShaping != null
+  // Foreground: loaded if the completion callback returned successfully
+  // Background: loaded if the plugin functions have been compiled
+  isLoaded: () => pluginStatus === status.loaded || plugin.applyArabicShaping != null
 });
 
 export default rtlPlugin;
