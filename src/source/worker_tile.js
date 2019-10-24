@@ -98,6 +98,7 @@ async function finalizeBuckets(params, options, resources) {
   const buckets = new Map();
   const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(options, resources);
   let hasSymbolBuckets = false;
+  let hasRTLText = false;
   let queryPadding = 0;
   for (const bucket of uniqueBuckets.values()) {
     if (bucket instanceof SymbolBucket) {
@@ -114,6 +115,7 @@ async function finalizeBuckets(params, options, resources) {
       if (justReloaded) {
         bucket.justReloaded = true;
       }
+      hasRTLText ||= bucket.hasRTLText;
     } else if (
       bucket.hasPattern &&
       (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
@@ -143,6 +145,7 @@ async function finalizeBuckets(params, options, resources) {
     glyphAtlasImage: glyphAtlas.image,
     imageAtlas,
     hasSymbolBuckets,
+    hasRTLText,
     queryPadding
   };
 }

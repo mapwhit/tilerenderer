@@ -415,6 +415,15 @@ export function charHasRotatedVerticalOrientation(char) {
   return !(charHasUprightVerticalOrientation(char) || charHasNeutralVerticalOrientation(char));
 }
 
+export function charInRTLScript(char) {
+  // Main blocks for Hebrew, Arabic, Thaana and other RTL scripts
+  return (
+    (char >= 0x0590 && char <= 0x08ff) ||
+    isChar['Arabic Presentation Forms-A'](char) ||
+    isChar['Arabic Presentation Forms-B'](char)
+  );
+}
+
 export function charInSupportedScript(char, canRenderRTL) {
   // This is a rough heuristic: whether we "can render" a script
   // actually depends on the properties of the font being used
@@ -423,13 +432,7 @@ export function charInSupportedScript(char, canRenderRTL) {
 
   // Even in Latin script, we "can't render" combinations such as the fi
   // ligature, but we don't consider that semantically significant.
-  if (
-    !canRenderRTL &&
-    ((char >= 0x0590 && char <= 0x08ff) ||
-      isChar['Arabic Presentation Forms-A'](char) ||
-      isChar['Arabic Presentation Forms-B'](char))
-  ) {
-    // Main blocks for Hebrew, Arabic, Thaana and other RTL scripts
+  if (!canRenderRTL && charInRTLScript(char)) {
     return false;
   }
   if (
@@ -446,6 +449,15 @@ export function charInSupportedScript(char, canRenderRTL) {
     return false;
   }
   return true;
+}
+
+export function stringContainsRTLText(chars) {
+  for (const char of chars) {
+    if (charInRTLScript(char.charCodeAt(0))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function isStringInSupportedScript(chars, canRenderRTL) {

@@ -31,6 +31,7 @@ class Tile {
     this.buckets = new Map();
     this.queryPadding = 0;
     this.hasSymbolBuckets = false;
+    this.hasRTLText = false;
 
     this.state = 'loading';
   }
@@ -94,6 +95,7 @@ class Tile {
 
     this.buckets = data.buckets;
     this.hasSymbolBuckets = data.hasSymbolBuckets;
+    this.hasRTLText = data.hasRTLText;
     this.queryPadding = data.queryPadding;
 
     if (data.imageAtlas) {

@@ -64,7 +64,7 @@ class Style extends Evented {
     this._removedLayers = new Map();
     this._resetUpdates();
 
-    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginAvailability(this._reloadSources.bind(this));
+    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginStateChange(this._reloadSources.bind(this));
 
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
@@ -1181,5 +1181,6 @@ class Style extends Evented {
 
 Style.getSourceType = getSourceType;
 Style.setSourceType = setSourceType;
+Style.registerForPluginStateChange = plugin.registerForPluginStateChange;
 
 export default Style;

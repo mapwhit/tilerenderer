@@ -2,21 +2,25 @@ import dynload from 'dynload';
 import browser from '../util/browser.js';
 
 const status = {
-  unavailable: 'unavailable',
-  loading: 'loading',
+  unavailable: 'unavailable', // Not loaded
+  deferred: 'deferred', // The plugin URL has been specified, but loading has been deferred
+  loading: 'loading', // request in-flight
   loaded: 'loaded',
   error: 'error'
 };
+
+let _completionCallback;
+
+//Variables defining the current state of the plugin
 let pluginStatus = status.unavailable;
 let pluginURL;
 
-let _completionCallback;
 const _loadedCallbacks = [];
 
 const rtlPlugin = {
   clearRTLTextPlugin, // exported for testing
   loadScript, // exported for testing
-  registerForPluginAvailability,
+  registerForPluginStateChange,
   setRTLTextPlugin
 };
 
@@ -24,13 +28,13 @@ export function getRTLTextPluginStatus() {
   return pluginStatus;
 }
 
-export function registerForPluginAvailability(callback) {
+export function registerForPluginStateChange(callback) {
   if (plugin.isLoaded()) {
     callback();
     return;
   }
   _loadedCallbacks.push(callback);
-  loadRTLTextPlugin();
+  downloadRTLTextPlugin();
   return () => _loadedCallbacks.splice(_loadedCallbacks.indexOf(callback), 1);
 }
 
@@ -40,33 +44,38 @@ export function clearRTLTextPlugin() {
   pluginURL = undefined;
 }
 
-export function setRTLTextPlugin(url, callback) {
-  if (pluginStatus === status.loading || pluginStatus === status.loaded) {
+export function setRTLTextPlugin(url, callback, deferred = false) {
+  if (pluginStatus === status.deferred || pluginStatus === status.loading || pluginStatus === status.loaded) {
     throw new Error('setRTLTextPlugin cannot be called multiple times.');
   }
   pluginURL = browser.resolveURL(url);
+  pluginStatus = status.deferred;
   _completionCallback = error => {
     if (error) {
       const msg = `RTL Text Plugin failed to load scripts from ${pluginURL}`;
       // Clear loaded state to allow retries
       clearRTLTextPlugin();
       pluginStatus = status.error;
-      if (callback) {
-        callback(new Error(msg));
-      }
+      error = new Error(msg);
     } else {
       pluginStatus = status.loaded;
     }
+    if (callback) {
+      callback(error);
+    }
     _completionCallback = undefined;
   };
-  loadRTLTextPlugin();
+  //Start downloading the plugin immediately if not intending to lazy-load
+  if (!deferred) {
+    downloadRTLTextPlugin();
+  }
 }
 
-function loadRTLTextPlugin() {
-  if (pluginURL && !plugin.isLoaded() && _loadedCallbacks.length > 0 && pluginStatus !== status.loading) {
+export function downloadRTLTextPlugin() {
+  if (pluginURL && !plugin.isLoading() && !plugin.isLoaded() && _loadedCallbacks.length > 0) {
     pluginStatus = status.loading;
     // needs to be called as exported method for mock testing
-    rtlPlugin.loadScript(pluginURL).catch(_completionCallback);
+    rtlPlugin.loadScript(pluginURL).then(_completionCallback).catch(_completionCallback);
   }
 }
 
@@ -99,9 +108,14 @@ export const plugin = (rtlPlugin.plugin = {
   applyArabicShaping: null,
   processBidirectionalText: null,
   processStyledBidirectionalText: null,
-  // Foreground: loaded if the completion callback returned successfully
-  // Background: loaded if the plugin functions have been compiled
-  isLoaded: () => pluginStatus === status.loaded || plugin.applyArabicShaping != null
+  // loaded if the completion callback returned successfully or the plugin functions have been compiled
+  isLoaded: () => pluginStatus === status.loaded || plugin.applyArabicShaping != null,
+  // query the loading status
+  isLoading: () => pluginStatus === status.loading,
+  isParsed: () =>
+    plugin.applyArabicShaping != null &&
+    plugin.processBidirectionalText != null &&
+    plugin.processStyledBidirectionalText != null
 });
 
 export default rtlPlugin;

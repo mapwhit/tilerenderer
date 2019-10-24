@@ -1,6 +1,7 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import browser from '../util/browser.js';
 import loadTileJSON from './load_tilejson.js';
+import { downloadRTLTextPlugin, getRTLTextPluginStatus, plugin as rtlTextPlugin } from './rtl_text_plugin.js';
 import TileBounds from './tile_bounds.js';
 import VectorTileWorkerSource from './vector_tile_worker_source.js';
 
@@ -103,6 +104,12 @@ class VectorTileSource extends Evented {
         data.rawTileData = rawData;
       }
       tile.loadVectorData(data, this.map.painter);
+      if (tile.hasRTLText) {
+        const plugin = rtlTextPlugin;
+        if (!plugin.isLoading() && !plugin.isLoaded() && getRTLTextPluginStatus() === 'deferred') {
+          downloadRTLTextPlugin();
+        }
+      }
     } catch (err) {
       if (tile.aborted) {
         tile.state = 'unloaded';

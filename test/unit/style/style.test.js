@@ -63,13 +63,13 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('registers plugin listener', t => {
+    await t.test('registers plugin state change listener', t => {
       plugin.clearRTLTextPlugin();
 
-      t.mock.method(plugin, 'registerForPluginAvailability');
+      t.mock.method(plugin, 'registerForPluginStateChange');
 
       style = new Style(new StubMap());
-      t.assert.equal(plugin.registerForPluginAvailability.mock.callCount(), 1);
+      t.assert.equal(plugin.registerForPluginStateChange.mock.callCount(), 1);
 
       t.mock.method(plugin, 'loadScript', () => Promise.reject());
       plugin.setRTLTextPlugin('some-bogus-url');
