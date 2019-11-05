@@ -79,6 +79,34 @@ test('GeoJSONSource.update', async t => {
     ).load();
   });
 
+  await t.test('forwards Supercluster options with worker request', (t, done) => {
+    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', params => {
+      t.assert.deepEqual(params.superclusterOptions, {
+        maxZoom: 12,
+        extent: 8192,
+        radius: 1600,
+        log: false,
+        generateId: true
+      });
+      done();
+
+      return Promise.resolve();
+    });
+
+    new GeoJSONSource(
+      'id',
+      {
+        data: {},
+        cluster: true,
+        clusterMaxZoom: 12,
+        clusterRadius: 100,
+        generateId: true
+      },
+      null,
+      {}
+    ).load();
+  });
+
   await t.test('fires event when metadata loads', (t, done) => {
     const source = new GeoJSONSource('id', { data: {} }, null, {});
 
