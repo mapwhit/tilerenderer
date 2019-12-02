@@ -1,6 +1,7 @@
 import rewind from '@mapwhit/geojson-rewind';
 import geojsonvt from 'geojson-vt';
 import Supercluster from 'supercluster';
+import FeatureIndex from '../data/feature_index.js';
 import GeoJSONWrapper from './geojson_wrapper.js';
 import { makeSingleSourceLayerWorkerTile as makeWorkerTile } from './worker_tile.js';
 
@@ -56,7 +57,7 @@ export default function makeTiler(resources, layerIndex) {
    * Returns a single tile.
    */
   async function loadTile(params) {
-    const { tileID, source } = params;
+    const { tileID, source, promoteId } = params;
     const geoJSONTile = getTile(tileID);
     if (!geoJSONTile) {
       return; // nothing in the given tile
@@ -66,12 +67,16 @@ export default function makeTiler(resources, layerIndex) {
     if (!layerFamilies) {
       return;
     }
+    params.featureIndex = new FeatureIndex(tileID, promoteId);
+    const { name } = sourceLayer;
     const features = new Array(sourceLayer.length);
     for (let index = 0; index < sourceLayer.length; index++) {
-      features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex: 0 };
+      const feature = sourceLayer.feature(index);
+      const id = params.featureIndex.getId(feature, name);
+      features[index] = { feature, id, index, sourceLayerIndex: 0 };
     }
 
-    const result = await makeWorkerTile(params, features, layerFamilies.get(sourceLayer.name), resources);
+    const result = await makeWorkerTile(params, features, layerFamilies.get(name), resources);
 
     result.vectorTile = sourceLayer;
     return result;

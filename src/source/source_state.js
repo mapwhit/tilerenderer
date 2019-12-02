@@ -13,7 +13,8 @@ class SourceFeatureState {
   #stateChanges = {};
   #deletedStates = {};
 
-  updateState(sourceLayer, feature, newState) {
+  updateState(sourceLayer, featureId, newState) {
+    const feature = String(featureId);
     const changes = (this.#stateChanges[sourceLayer] ??= {});
     const featureState = (changes[feature] ??= {});
     Object.assign(featureState, newState);
@@ -76,7 +77,8 @@ class SourceFeatureState {
     }
   }
 
-  getState(sourceLayer, feature) {
+  getState(sourceLayer, featureId) {
+    const feature = String(featureId);
     const base = this.#state[sourceLayer];
     const changes = this.#stateChanges[sourceLayer];
     const reconciledState = Object.assign({}, base?.[feature], changes?.[feature]);

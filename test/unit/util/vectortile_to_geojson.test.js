@@ -15,7 +15,7 @@ test('vector tile to GeoJSON', async t => {
 
   await t.test('poi_label feature conversion', t => {
     const vtf = tile.layers.poi_label.feature(11);
-    const f = new GeoJSONFeature(vtf, 14, 8801, 5371);
+    const f = new GeoJSONFeature(vtf, 14, 8801, 5371, vtf.id);
     t.assert.equal(f.type, 'Feature');
     t.assert.equal(f.id, 3000003150561);
     t.assert.deepEqual(f.properties, {
@@ -37,7 +37,7 @@ test('vector tile to GeoJSON', async t => {
 
   await t.test('bridge feature conversion', t => {
     const vtf = tile.layers.bridge.feature(0);
-    const f = new GeoJSONFeature(vtf, 14, 8801, 5371);
+    const f = new GeoJSONFeature(vtf, 14, 8801, 5371, vtf.id);
     t.assert.equal(f.type, 'Feature');
     t.assert.equal(f.id, 238162948);
     t.assert.deepEqual(f.properties, {
@@ -55,7 +55,7 @@ test('vector tile to GeoJSON', async t => {
 
   await t.test('building feature conversion', t => {
     const vtf = tile.layers.building.feature(0);
-    const f = new GeoJSONFeature(vtf, 14, 8801, 5371);
+    const f = new GeoJSONFeature(vtf, 14, 8801, 5371, vtf.id);
     t.assert.equal(f.type, 'Feature');
     t.assert.equal(f.id, 1000267229912);
     t.assert.deepEqual(f.properties, {

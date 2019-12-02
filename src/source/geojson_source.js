@@ -81,6 +81,7 @@ export default class GeoJSONSource extends Evented {
     if (options.type) {
       this.type = options.type;
     }
+    this.promoteId = options.promoteId;
 
     const scale = EXTENT / this.tileSize;
 
@@ -186,7 +187,8 @@ export default class GeoJSONSource extends Evented {
       pixelRatio: browser.devicePixelRatio,
       showCollisionBoxes: this.map.showCollisionBoxes,
       justReloaded: tile.workerID != null,
-      painter: this.map.painter
+      painter: this.map.painter,
+      promoteId: this.promoteId
     };
 
     tile.workerID ??= true;

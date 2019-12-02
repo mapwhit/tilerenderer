@@ -52,14 +52,15 @@ export default class FillExtrusionBucket {
     this.features = [];
     this.hasPattern = hasPattern('fill-extrusion', this.layers, options);
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         continue;
       }
 
       const geometry = loadGeometry(feature);
 
-      const patternFeature = {
+      const bucketFeature = {
+        id,
         sourceLayerIndex,
         index,
         geometry,
@@ -69,15 +70,15 @@ export default class FillExtrusionBucket {
       };
 
       if (typeof feature.id !== 'undefined') {
-        patternFeature.id = feature.id;
+        bucketFeature.id = feature.id;
       }
 
       if (this.hasPattern) {
         this.features.push(
-          addPatternDependencies('fill-extrusion', this.layers, patternFeature, { zoom: this.zoom }, options)
+          addPatternDependencies('fill-extrusion', this.layers, bucketFeature, { zoom: this.zoom }, options)
         );
       } else {
-        this.addFeature(patternFeature, geometry, index, {});
+        this.addFeature(bucketFeature, geometry, index, {});
       }
 
       options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index, true);

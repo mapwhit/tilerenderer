@@ -87,7 +87,7 @@ export default class LineBucket {
     const lineSortKey = this.layers[0]._layout.get('line-sort-key');
     const bucketFeatures = [];
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         continue;
       }
@@ -96,7 +96,7 @@ export default class LineBucket {
       const sortKey = lineSortKey ? lineSortKey.evaluate(feature, {}) : undefined;
 
       const bucketFeature = {
-        id: feature.id,
+        id,
         properties: feature.properties,
         type: feature.type,
         sourceLayerIndex,

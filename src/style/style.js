@@ -784,13 +784,13 @@ class Style extends Evented {
     return this.getLayer(layer).getPaintProperty(name);
   }
 
-  setFeatureState(feature, state) {
+  setFeatureState(target, state) {
     if (!this._loaded) {
-      this.#opsQueue.push(() => this.setFeatureState(feature, state));
+      this.#opsQueue.push(() => this.setFeatureState(target, state));
       return;
     }
-    const sourceId = feature.source;
-    const sourceLayer = feature.sourceLayer;
+    const sourceId = target.source;
+    const sourceLayer = target.sourceLayer;
     const sourceCache = this._sources[sourceId];
 
     if (sourceCache === undefined) {
@@ -806,12 +806,12 @@ class Style extends Evented {
       this.fire(new ErrorEvent(new Error('The sourceLayer parameter must be provided for vector source types.')));
       return;
     }
-    if (feature.id == null || feature.id === '') {
+    if (target.id === undefined) {
       this.fire(new ErrorEvent(new Error('The feature id parameter must be provided.')));
       return;
     }
 
-    sourceCache.setFeatureState(sourceLayer, feature.id, state);
+    sourceCache.setFeatureState(sourceLayer, target.id, state);
   }
 
   removeFeatureState(target, key) {
@@ -843,12 +843,12 @@ class Style extends Evented {
     sourceCache.removeFeatureState(sourceLayer, target.id, key);
   }
 
-  getFeatureState(feature) {
+  getFeatureState(target) {
     if (!this._loaded) {
       return;
     }
-    const sourceId = feature.source;
-    const sourceLayer = feature.sourceLayer;
+    const sourceId = target.source;
+    const sourceLayer = target.sourceLayer;
     const sourceCache = this._sources[sourceId];
 
     if (sourceCache === undefined) {
@@ -861,7 +861,11 @@ class Style extends Evented {
       return;
     }
 
-    return sourceCache.getFeatureState(sourceLayer, feature.id);
+    if (target.id === undefined) {
+      this.fire(new ErrorEvent(new Error('The feature id parameter must be provided.')));
+    }
+
+    return sourceCache.getFeatureState(sourceLayer, target.id);
   }
 
   getTransition() {

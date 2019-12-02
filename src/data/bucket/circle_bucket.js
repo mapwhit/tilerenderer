@@ -45,13 +45,13 @@ class CircleBucket {
       circleSortKey = styleLayer._layout.get('circle-sort-key');
     }
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (styleLayer._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         const geometry = loadGeometry(feature);
         const sortKey = circleSortKey ? circleSortKey.evaluate(feature, {}) : undefined;
 
         const bucketFeature = {
-          id: feature.id,
+          id,
           properties: feature.properties,
           type: feature.type,
           sourceLayerIndex,

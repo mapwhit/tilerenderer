@@ -9,12 +9,13 @@ import { FeatureIndexArray } from './array_types.js';
 import EXTENT from './extent.js';
 import loadGeometry from './load_geometry.js';
 
-class FeatureIndex {
-  constructor(tileID, grid = new Grid(EXTENT, 16, 0), featureIndexArray = new FeatureIndexArray()) {
+export default class FeatureIndex {
+  constructor(tileID, promoteId) {
     this.tileID = tileID;
-    this.grid = grid;
+    this.grid = new Grid(EXTENT, 16, 0);
     this.grid3D = new Grid(EXTENT, 16, 0);
-    this.featureIndexArray = featureIndexArray;
+    this.featureIndexArray = new FeatureIndexArray();
+    this.promoteId = promoteId;
   }
 
   insert(feature, geometry, featureIndex, sourceLayerIndex, bucketIndex, is3D) {
@@ -91,14 +92,14 @@ class FeatureIndex {
 
       const match = this.featureIndexArray.get(index);
       let featureGeometry = null;
-      const intersectionTest = (feature, styleLayer) => {
+      const intersectionTest = (feature, styleLayer, id) => {
         if (!featureGeometry) {
           featureGeometry = loadGeometry(feature);
         }
         let featureState = {};
-        if (feature.id) {
+        if (id !== undefined) {
           // `feature-state` expression evaluation requires feature state to be available
-          featureState = sourceFeatureState.getState(styleLayer.sourceLayer || '_geojsonTileLayer', String(feature.id));
+          featureState = sourceFeatureState.getState(styleLayer.sourceLayer || '_geojsonTileLayer', id);
         }
         return styleLayer.queryIntersectsFeature(
           queryGeometry,
@@ -149,6 +150,8 @@ class FeatureIndex {
       return;
     }
 
+    const id = this.getId(feature, sourceLayerName);
+
     const { x, y, z } = this.tileID.canonical;
     for (const layerID of layerIDs) {
       if (filterLayerIDs && !filterLayerIDs.includes(layerID)) {
@@ -160,13 +163,13 @@ class FeatureIndex {
         continue;
       }
 
-      const intersectionZ = !intersectionTest || intersectionTest(feature, styleLayer);
+      const intersectionZ = !intersectionTest || intersectionTest(feature, styleLayer, id);
       if (!intersectionZ) {
         // Only applied for non-symbol features
         continue;
       }
 
-      const geojsonFeature = new GeoJSONFeature(feature, z, x, y);
+      const geojsonFeature = new GeoJSONFeature(feature, z, x, y, id);
       geojsonFeature.layer = styleLayer;
       const layerResult = (result[layerID] ??= []);
       layerResult.push({ featureIndex, feature: geojsonFeature, intersectionZ });
@@ -201,9 +204,19 @@ class FeatureIndex {
     }
     return result;
   }
-}
 
-export default FeatureIndex;
+  getId(feature, sourceLayerId) {
+    let id = feature.id;
+    if (this.promoteId) {
+      const propName = typeof this.promoteId === 'string' ? this.promoteId : this.promoteId[sourceLayerId];
+      id = feature.properties[propName];
+      if (typeof id === 'boolean') {
+        id = Number(id);
+      }
+    }
+    return id;
+  }
+}
 
 function getBounds(geometry) {
   let minX = Number.POSITIVE_INFINITY;

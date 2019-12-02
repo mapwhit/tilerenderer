@@ -157,7 +157,7 @@ export default class SymbolBucket {
     const stacks = options.glyphDependencies;
     const globalProperties = new EvaluationParameters(this.zoom);
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (!layer._featureFilter(globalProperties, feature)) {
         continue;
       }
@@ -187,6 +187,7 @@ export default class SymbolBucket {
       const sortKey = this.sortFeaturesByKey ? symbolSortKey.evaluate(feature, {}) : undefined;
 
       const symbolFeature = {
+        id,
         text,
         icon,
         index,
@@ -196,9 +197,6 @@ export default class SymbolBucket {
         type: VectorTileFeature.types[feature.type],
         sortKey
       };
-      if (typeof feature.id !== 'undefined') {
-        symbolFeature.id = feature.id;
-      }
       this.features.push(symbolFeature);
 
       if (icon) {

@@ -191,11 +191,12 @@ class Tile {
   }
 
   querySourceFeatures(result, params) {
-    if (!this.latestFeatureIndex?.vectorTile) {
+    const featureIndex = this.latestFeatureIndex;
+    if (!featureIndex?.vectorTile) {
       return;
     }
 
-    const vtLayers = this.latestFeatureIndex.loadVTLayers();
+    const vtLayers = featureIndex.loadVTLayers();
 
     const sourceLayer = params ? params.sourceLayer : '';
     const layer = vtLayers._geojsonTileLayer || vtLayers[sourceLayer];
@@ -211,7 +212,8 @@ class Tile {
     for (let i = 0; i < layer.length; i++) {
       const feature = layer.feature(i);
       if (filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) {
-        const geojsonFeature = new GeoJSONFeature(feature, z, x, y);
+        const id = featureIndex.getId(feature, sourceLayer);
+        const geojsonFeature = new GeoJSONFeature(feature, z, x, y, id);
         geojsonFeature.tile = coord;
         result.push(geojsonFeature);
       }

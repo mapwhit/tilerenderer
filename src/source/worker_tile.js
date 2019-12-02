@@ -27,7 +27,9 @@ async function makeWorkerTile(params, { layers }, layerIndex, resources) {
     const sourceLayerIndex = sourceLayerCoder.encode(sourceLayerId);
     const features = new Array(sourceLayer.length);
     for (let index = 0; index < sourceLayer.length; index++) {
-      features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex };
+      const feature = sourceLayer.feature(index);
+      const id = options.featureIndex.getId(feature, sourceLayerId);
+      features[index] = { feature, id, index, sourceLayerIndex };
     }
 
     makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, features, params, options);
@@ -47,7 +49,7 @@ export async function makeSingleSourceLayerWorkerTile(params, features, sourceLa
 function initializeBucketsOptions(params) {
   const tileID = createTileID(params);
 
-  const featureIndex = new FeatureIndex(tileID);
+  const featureIndex = params.featureIndex ?? new FeatureIndex(tileID, params.promoteId);
   featureIndex.bucketLayerIDs = [];
 
   return {
