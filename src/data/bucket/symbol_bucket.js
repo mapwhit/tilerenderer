@@ -6,7 +6,7 @@ import EvaluationParameters from '../../style/evaluation_parameters.js';
 import mergeLines from '../../symbol/mergelines.js';
 import { getSizeData } from '../../symbol/symbol_size.js';
 import transformText from '../../symbol/transform_text.js';
-import { allowsVerticalWritingMode } from '../../util/script_detection.js';
+import { allowsVerticalWritingMode, stringContainsRTLText } from '../../util/script_detection.js';
 import { verticalizedCharacterMap } from '../../util/verticalize_punctuation.js';
 import {
   CollisionBoxLayoutArray,
@@ -43,6 +43,15 @@ export function addDynamicAttributes(dynamicLayoutVertexArray, p, angle) {
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
+}
+
+function containsRTLText(formattedText) {
+  for (const section of formattedText.sections) {
+    if (stringContainsRTLText(section.text)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -173,6 +182,9 @@ export default class SymbolBucket {
         const resolvedTokens = layer.getValueAndResolveTokens('text-field', feature);
         const formattedText =
           resolvedTokens instanceof Formatted ? resolvedTokens : Formatted.fromString(resolvedTokens);
+        if (containsRTLText(formattedText)) {
+          this.hasRTLText = true;
+        }
         if (
           !this.hasRTLText || // non-rtl text so can proceed safely
           getRTLTextPluginStatus() === 'unavailable' || // We don't intend to lazy-load the rtl text plugin, so proceed with incorrect shaping
