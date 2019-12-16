@@ -118,4 +118,10 @@ export const plugin = (rtlPlugin.plugin = {
     plugin.processStyledBidirectionalText != null
 });
 
+export function lazyLoadRTLTextPlugin() {
+  if (!plugin.isLoading() && !plugin.isLoaded() && getRTLTextPluginStatus() === 'deferred') {
+    downloadRTLTextPlugin();
+  }
+}
+
 export default rtlPlugin;

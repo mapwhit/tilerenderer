@@ -5,11 +5,11 @@ import FeatureIndex from '../../../src/data/feature_index.js';
 import Transform from '../../../src/geo/transform.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
-import SymbolStyleLayer from '../../../src/style/style_layer/symbol_style_layer.js';
 import CrossTileSymbolIndex from '../../../src/symbol/cross_tile_symbol_index.js';
 import { Placement } from '../../../src/symbol/placement.js';
 import { performSymbolLayout } from '../../../src/symbol/symbol_layout.js';
 import glyphs from '../../fixtures/fontstack-glyphs.json' with { type: 'json' };
+import { createSymbolBucket } from '../../util/create_symbol_layer.js';
 import { createPopulateOptions, loadVectorTile } from '../../util/tile.js';
 
 const collisionBoxArray = new CollisionBoxArray();
@@ -20,25 +20,6 @@ transform.cameraToCenterDistance = 100;
 
 const stacks = { Test: glyphs };
 
-function createSymbolBucket(globalState) {
-  const layer = new SymbolStyleLayer(
-    {
-      id: 'test',
-      type: 'symbol',
-      layout: { 'text-font': ['Test'], 'text-field': 'abcde' }
-    },
-    globalState
-  );
-  layer.recalculate({ zoom: 0, zoomHistory: {} });
-
-  return new SymbolBucket({
-    overscaling: 1,
-    zoom: 0,
-    collisionBoxArray,
-    layers: [layer]
-  });
-}
-
 test('SymbolBucket', async t => {
   let features;
   t.before(() => {
@@ -48,8 +29,8 @@ test('SymbolBucket', async t => {
   });
 
   await t.test('SymbolBucket', t => {
-    const bucketA = createSymbolBucket();
-    const bucketB = createSymbolBucket();
+    const bucketA = createSymbolBucket(collisionBoxArray);
+    const bucketB = createSymbolBucket(collisionBoxArray);
     const options = createPopulateOptions();
     const placement = new Placement(transform, 0, true);
     const tileID = new OverscaledTileID(0, 0, 0, 0, 0);
@@ -101,7 +82,7 @@ test('SymbolBucket', async t => {
     });
     const warn = t.mock.method(console, 'warn');
 
-    const bucket = createSymbolBucket();
+    const bucket = createSymbolBucket(collisionBoxArray);
 
     bucket.populate(features, createPopulateOptions());
     const fakeGlyph = { rect: { w: 10, h: 10 }, metrics: { left: 10, top: 10, advance: 10 } };
@@ -111,5 +92,35 @@ test('SymbolBucket', async t => {
 
     t.assert.equal(warn.mock.callCount(), 1);
     t.assert.match(warn.mock.calls[0].arguments[0], /Too many glyphs being rendered in a tile./);
+  });
+
+  await t.test('SymbolBucket detects rtl text', t => {
+    const rtlBucket = createSymbolBucket(collisionBoxArray, 'مرحبا');
+    const ltrBucket = createSymbolBucket(collisionBoxArray, 'hello');
+    const options = { iconDependencies: {}, glyphDependencies: {} };
+    rtlBucket.populate(features, options);
+    ltrBucket.populate(features, options);
+
+    t.assert.ok(rtlBucket.hasRTLText);
+    t.assert.ok(!ltrBucket.hasRTLText);
+  });
+
+  // Test to prevent symbol bucket with rtl from text being culled by worker serialization.
+  await t.test('SymbolBucket with rtl text is NOT empty even though no symbol instances are created', t => {
+    const rtlBucket = createSymbolBucket(collisionBoxArray, 'مرحبا');
+    const options = { iconDependencies: {}, glyphDependencies: {} };
+    rtlBucket.createArrays();
+    rtlBucket.populate(features, options);
+
+    t.assert.ok(!rtlBucket.isEmpty());
+    t.assert.equal(rtlBucket.symbolInstances.length, 0);
+  });
+
+  await t.test('SymbolBucket detects rtl text mixed with ltr text', t => {
+    const mixedBucket = createSymbolBucket(collisionBoxArray, 'مرحبا translates to hello');
+    const options = { iconDependencies: {}, glyphDependencies: {} };
+    mixedBucket.populate(features, options);
+
+    t.assert.ok(mixedBucket.hasRTLText);
   });
 });

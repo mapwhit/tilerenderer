@@ -11,6 +11,7 @@ import browser from '../util/browser.js';
 import { deepEqual } from '../util/object.js';
 import uniqueId from '../util/unique_id.js';
 import GeoJSONFeature from '../util/vectortile_to_geojson.js';
+import { lazyLoadRTLTextPlugin } from './rtl_text_plugin.js';
 
 /**
  * A tile object is the combination of a Coordinate, which defines
@@ -95,9 +96,12 @@ class Tile {
 
     this.buckets = data.buckets;
     this.hasSymbolBuckets = data.hasSymbolBuckets;
-    this.hasRTLText = data.hasRTLText;
     this.queryPadding = data.queryPadding;
 
+    if (data.hasRTLText) {
+      this.hasRTLText = data.hasRTLText;
+      lazyLoadRTLTextPlugin();
+    }
     if (data.imageAtlas) {
       this.imageAtlas = data.imageAtlas;
     }
