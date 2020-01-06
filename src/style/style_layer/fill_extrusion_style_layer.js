@@ -66,9 +66,21 @@ function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
     // triangle of the face, using only the xy plane. It doesn't matter if the
     // point is outside the first triangle because all the triangles in the face
     // are in the same plane.
-    const a = projectedFace[0];
-    const b = projectedFace[1];
-    const c = projectedFace[3];
+    //
+    // Check whether points are coincident and use other points if they are.
+    let i = 0;
+    const a = projectedFace[i++];
+    let b;
+    let c;
+    while (!b || a.equals(b)) {
+      b = projectedFace[i++];
+      if (!b) return Number.POSITIVE_INFINITY;
+    }
+    while (!c || a.equals(c) || b.equals(c)) {
+      c = projectedFace[i++];
+      if (!c) return Number.POSITIVE_INFINITY;
+    }
+
     const p = projectedQueryGeometry[0];
 
     const ab = b.sub(a);
@@ -191,4 +203,4 @@ function projectQueryGeometry(queryGeometry, pixelPosMatrix, transform, z) {
   return projectedQueryGeometry;
 }
 
-module.exports = FillExtrusionStyleLayer;
+module.exports = { FillExtrusionStyleLayer, getIntersectionDistance };
