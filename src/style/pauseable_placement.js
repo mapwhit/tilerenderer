@@ -2,21 +2,45 @@ import { Placement } from '../symbol/placement.js';
 import browser from '../util/browser.js';
 
 class LayerPlacement {
-  constructor() {
+  constructor(styleLayer) {
+    this._sortAcrossTiles =
+      styleLayer._layout.get('symbol-z-order') !== 'viewport-y' &&
+      styleLayer._layout.get('symbol-sort-key').constantOr(1) !== undefined;
+
     this._currentTileIndex = 0;
+    this._currentPartIndex = 0;
     this._seenCrossTileIDs = {};
+    this._bucketParts = [];
   }
 
   continuePlacement(tiles, placement, showCollisionBoxes, styleLayer, shouldPausePlacement) {
+    const bucketParts = this._bucketParts;
+
     while (this._currentTileIndex < tiles.length) {
       const tile = tiles[this._currentTileIndex];
-      placement.placeLayerTile(styleLayer, tile, showCollisionBoxes, this._seenCrossTileIDs);
+      placement.getBucketParts(bucketParts, styleLayer, tile, this._sortAcrossTiles);
 
       this._currentTileIndex++;
       if (shouldPausePlacement()) {
         return true;
       }
     }
+
+    if (this._sortAcrossTiles) {
+      this._sortAcrossTiles = false;
+      bucketParts.sort((a, b) => a.sortKey - b.sortKey);
+    }
+
+    while (this._currentPartIndex < bucketParts.length) {
+      const bucketPart = bucketParts[this._currentPartIndex];
+      placement.placeLayerBucketPart(bucketPart, this._seenCrossTileIDs, showCollisionBoxes);
+
+      this._currentPartIndex++;
+      if (shouldPausePlacement()) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -58,7 +82,7 @@ class PauseablePlacement {
         (!layer.maxzoom || layer.maxzoom > placementZoom)
       ) {
         if (!this._inProgressLayer) {
-          this._inProgressLayer = new LayerPlacement();
+          this._inProgressLayer = new LayerPlacement(layer);
         }
 
         const pausePlacement = this._inProgressLayer.continuePlacement(

@@ -72,13 +72,20 @@ test('SymbolBucket', async t => {
 
     crossTileSymbolIndex.addLayer(bucketA.layers[0], [tileA, tileB]);
 
+    const place = (layer, tile) => {
+      const parts = [];
+      placement.getBucketParts(parts, layer, tile, false);
+      for (const part of parts) {
+        placement.placeLayerBucketPart(part, {}, false);
+      }
+    };
     const a = placement.collisionIndex.grid.keysLength();
-    placement.placeLayerTile(bucketA.layers[0], tileA, false, {});
+    place(bucketA.layers[0], tileA);
     const b = placement.collisionIndex.grid.keysLength();
     t.assert.notEqual(a, b, 'places feature');
 
     const a2 = placement.collisionIndex.grid.keysLength();
-    placement.placeLayerTile(bucketB.layers[0], tileB, false, {});
+    place(bucketB.layers[0], tileB);
     const b2 = placement.collisionIndex.grid.keysLength();
     t.assert.equal(b2, a2, 'detects collision and does not place feature');
   });

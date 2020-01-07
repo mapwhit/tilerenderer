@@ -86,6 +86,7 @@ export default class SymbolBucket {
     this.pixelRatio = options.pixelRatio;
     this.sourceLayerIndex = options.sourceLayerIndex;
     this.hasPattern = false;
+    this.sortKeyRanges = [];
 
     const layer = this.layers[0];
     const unevaluatedLayoutValues = layer._unevaluatedLayout._values;
@@ -477,6 +478,19 @@ export default class SymbolBucket {
     });
 
     return result;
+  }
+
+  addToSortKeyRanges(symbolInstanceIndex, sortKey) {
+    const last = this.sortKeyRanges[this.sortKeyRanges.length - 1];
+    if (last && last.sortKey === sortKey) {
+      last.symbolInstanceEnd = symbolInstanceIndex + 1;
+    } else {
+      this.sortKeyRanges.push({
+        sortKey,
+        symbolInstanceStart: symbolInstanceIndex,
+        symbolInstanceEnd: symbolInstanceIndex + 1
+      });
+    }
   }
 
   sortFeatures(angle) {
