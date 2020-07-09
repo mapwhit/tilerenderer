@@ -69,7 +69,7 @@ export default class FillExtrusionBucket {
         patterns: {}
       };
 
-      if (typeof feature.id !== 'undefined') {
+      if (typeof feature.id !== 'undefined' && typeof bucketFeature.id === 'undefined') {
         bucketFeature.id = feature.id;
       }
 

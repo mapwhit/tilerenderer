@@ -39,6 +39,7 @@
         "features": [
           {
             "type": "Feature",
+            "id": 1,
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -57,6 +58,7 @@
           },
           {
             "type": "Feature",
+            "id": 1,
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -75,6 +77,7 @@
           },
           {
             "type": "Feature",
+            "id": 1,
             "geometry": {
               "type": "Polygon",
               "coordinates": [
