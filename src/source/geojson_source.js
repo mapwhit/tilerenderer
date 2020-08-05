@@ -1,5 +1,5 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
-
+import { createExpression } from '@mapwhit/style-expressions';
 import EXTENT from '../data/extent.js';
 import browser from '../util/browser.js';
 
@@ -169,6 +169,7 @@ export default class GeoJSONSource extends Evented {
    */
   async #updateTilerData() {
     this.data = await loadJSON(this.data, this.id);
+    this.data = filterGeoJSON(this.data, this._options);
 
     const options = { ...this.workerOptions, data: this.data };
     await this.#tiler.loadData(options);
@@ -236,4 +237,22 @@ async function loadJSON(data, source) {
     }
   }
   return data;
+}
+
+function filterGeoJSON(data, { filter }) {
+  if (!filter) {
+    return data;
+  }
+  const compiled = createExpression(filter, {
+    type: 'boolean',
+    'property-type': 'data-driven',
+    overridable: false,
+    transition: false
+  });
+  if (compiled.result === 'error') {
+    throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
+  }
+
+  const features = data.features.filter(feature => compiled.value.evaluate({ zoom: 0 }, feature));
+  return { type: 'FeatureCollection', features };
 }
