@@ -369,15 +369,16 @@ test('Style', async t => {
       });
     });
 
-    await t.test('fires "data" event', (t, done) => {
+    await t.test('fires "data" event', async () => {
       style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
       const source = createSource();
-      style.once('data', () => done());
+      const dataPromise = style.once('data');
       style.on('style.load', () => {
         style.addSource('source-id', source);
         style.update({});
       });
+      await dataPromise;
     });
 
     await t.test('throws on duplicates', (t, done) => {
@@ -440,16 +441,17 @@ test('Style', async t => {
       t.assert.throws(() => style.removeSource('source-id'), /load/i);
     });
 
-    await t.test('fires "data" event', (t, done) => {
+    await t.test('fires "data" event', async () => {
       style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
       const source = createSource();
-      style.once('data', () => done());
+      const dataPromise = style.once('data');
       style.on('style.load', () => {
         style.addSource('source-id', source);
         style.removeSource('source-id');
         style.update({});
       });
+      await dataPromise;
     });
 
     await t.test('clears tiles', (t, done) => {
@@ -1438,17 +1440,17 @@ test('Style', async t => {
       }
     );
 
-    await t.test('fires "data" event', (t, done) => {
+    await t.test('fires "data" event', async () => {
       style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
       const layer = { id: 'background', type: 'background' };
 
-      style.once('data', () => done());
-
+      const dataPromise = style.once('data');
       style.on('style.load', () => {
         style.addLayer(layer);
         style.update({});
       });
+      await dataPromise;
     });
 
     await t.test('emits error on duplicates', (t, done) => {
@@ -1585,18 +1587,18 @@ test('Style', async t => {
       t.assert.throws(() => style.removeLayer('background'), /load/i);
     });
 
-    await t.test('fires "data" event', (t, done) => {
+    await t.test('fires "data" event', async () => {
       style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
       const layer = { id: 'background', type: 'background' };
 
-      style.once('data', () => done());
-
+      const dataPromise = style.once('data');
       style.on('style.load', () => {
         style.addLayer(layer);
         style.removeLayer('background');
         style.update({});
       });
+      await dataPromise;
     });
 
     await t.test('tears down layer event forwarding', (t, done) => {
@@ -1682,17 +1684,17 @@ test('Style', async t => {
       t.assert.throws(() => style.moveLayer('background'), /load/i);
     });
 
-    await t.test('fires "data" event', (t, done) => {
+    await t.test('fires "data" event', async () => {
       style.loadJSON(createStyleJSON());
       const layer = { id: 'background', type: 'background' };
 
-      style.once('data', () => done());
-
+      const dataPromise = style.once('data');
       style.on('style.load', () => {
         style.addLayer(layer);
         style.moveLayer('background');
         style.update({});
       });
+      await dataPromise;
     });
 
     await t.test('fires an error on non-existence', (t, done) => {

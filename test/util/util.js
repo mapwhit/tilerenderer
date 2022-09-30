@@ -64,3 +64,14 @@ export function initWindow(t) {
     globalThis.window = globalWindow;
   });
 }
+
+export function waitForEvent(evented, eventName, predicate) {
+  return new Promise(resolve => {
+    const listener = e => {
+      if (predicate(e)) {
+        resolve(e);
+      }
+    };
+    evented.on(eventName, listener);
+  });
+}

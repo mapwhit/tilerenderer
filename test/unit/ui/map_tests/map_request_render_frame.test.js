@@ -12,26 +12,22 @@ test('Map._requestRenderFrame', async t => {
     map.remove();
   });
 
-  await t.test('Map._requestRenderFrame queues a task for the next render frame', (t, done) => {
+  await t.test('Map._requestRenderFrame queues a task for the next render frame', async t => {
     const map = createMap();
     const cb = t.mock.fn();
     map._requestRenderFrame(cb);
-    map.once('render', () => {
-      t.assert.equal(cb.mock.callCount(), 1);
-      map.remove();
-      done();
-    });
+    await map.once('render');
+    t.assert.equal(cb.mock.callCount(), 1);
+    map.remove();
   });
 
-  await t.test('Map._cancelRenderFrame cancels a queued task', (t, done) => {
+  await t.test('Map._cancelRenderFrame cancels a queued task', async t => {
     const map = createMap();
     const cb = t.mock.fn();
     const id = map._requestRenderFrame(cb);
     map._cancelRenderFrame(id);
-    map.once('render', () => {
-      t.assert.equal(cb.mock.callCount(), 0);
-      map.remove();
-      done();
-    });
+    await map.once('render');
+    t.assert.equal(cb.mock.callCount(), 0);
+    map.remove();
   });
 });

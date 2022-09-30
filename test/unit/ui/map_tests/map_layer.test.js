@@ -1,10 +1,10 @@
 import test from 'node:test';
-import { createMap, createStyle, initWindow } from '../../../util/util.js';
+import { createMap, createStyle, initWindow, waitForEvent } from '../../../util/util.js';
 
 test('map layers', async t => {
   initWindow(t);
 
-  await t.test('moveLayer', (t, done) => {
+  await t.test('moveLayer', async t => {
     const map = createMap({
       style: Object.assign(createStyle(), {
         sources: {
@@ -32,15 +32,13 @@ test('map layers', async t => {
       })
     });
 
-    map.once('render', () => {
-      map.moveLayer('layerId1', 'layerId2');
-      t.assert.equal(map.getLayer('layerId1').id, 'layerId1');
-      t.assert.equal(map.getLayer('layerId2').id, 'layerId2');
-      done();
-    });
+    await map.once('render');
+    map.moveLayer('layerId1', 'layerId2');
+    t.assert.equal(map.getLayer('layerId1').id, 'layerId1');
+    t.assert.equal(map.getLayer('layerId2').id, 'layerId2');
   });
 
-  await t.test('getLayer', (t, done) => {
+  await t.test('getLayer', async t => {
     const layer = {
       id: 'layerId',
       type: 'circle',
@@ -61,16 +59,14 @@ test('map layers', async t => {
       })
     });
 
-    map.once('render', () => {
-      const mapLayer = map.getLayer('layerId');
-      t.assert.equal(mapLayer.id, layer.id);
-      t.assert.equal(mapLayer.type, layer.type);
-      t.assert.equal(mapLayer.source, layer.source);
-      done();
-    });
+    await map.once('render');
+    const mapLayer = map.getLayer('layerId');
+    t.assert.equal(mapLayer.id, layer.id);
+    t.assert.equal(mapLayer.type, layer.type);
+    t.assert.equal(mapLayer.source, layer.source);
   });
 
-  await t.test('removeLayer restores Map.loaded() to true', (t, done) => {
+  await t.test('removeLayer restores Map.loaded() to true', async _t => {
     const map = createMap({
       style: Object.assign(createStyle(), {
         sources: {
@@ -92,19 +88,14 @@ test('map layers', async t => {
       })
     });
 
-    map.once('render', () => {
-      map.removeLayer('layerId');
-      map.on('render', () => {
-        if (map.loaded()) {
-          map.remove();
-          done();
-        }
-      });
-    });
+    await map.once('render');
+    map.removeLayer('layerId');
+    await waitForEvent(map, 'render', () => map.loaded());
+    map.remove();
   });
 
   await t.test('setLayoutProperty', async t => {
-    await t.test('sets property', (t, done) => {
+    await t.test('sets property', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -130,15 +121,13 @@ test('map layers', async t => {
         }
       });
 
-      map.on('style.load', () => {
-        const updateLayers = t.mock.method(map.style, '_updateWorkerLayers');
+      await map.once('style.load');
+      const updateLayers = t.mock.method(map.style, '_updateWorkerLayers');
 
-        map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
-        map.style.update({});
-        t.assert.deepEqual(map.getLayoutProperty('symbol', 'text-transform'), 'lowercase');
-        t.assert.equal(updateLayers.mock.callCount(), 1);
-        done();
-      });
+      map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
+      map.style.update({});
+      t.assert.deepEqual(map.getLayoutProperty('symbol', 'text-transform'), 'lowercase');
+      t.assert.equal(updateLayers.mock.callCount(), 1);
     });
 
     await t.test('throw before loaded', t => {
@@ -159,7 +148,7 @@ test('map layers', async t => {
       );
     });
 
-    await t.test('fires an error if layer not found', (t, done) => {
+    await t.test('fires an error if layer not found', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -168,16 +157,14 @@ test('map layers', async t => {
         }
       });
 
-      map.on('style.load', () => {
-        map.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
-          done();
-        });
-        map.setLayoutProperty('non-existant', 'text-transform', 'lowercase');
-      });
+      await map.once('style.load');
+      const errorPromise = map.once('error');
+      map.setLayoutProperty('non-existant', 'text-transform', 'lowercase');
+      const { error } = await errorPromise;
+      t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
     });
 
-    await t.test('fires a data event', (t, done) => {
+    await t.test('fires a data event', async t => {
       // background layers do not have a source
       const map = createMap({
         style: {
@@ -195,15 +182,11 @@ test('map layers', async t => {
         }
       });
 
-      map.once('style.load', () => {
-        map.once('data', e => {
-          if (e.dataType === 'style') {
-            done();
-          }
-        });
-
-        map.setLayoutProperty('background', 'visibility', 'visible');
-      });
+      await map.once('style.load');
+      const dataPromise = map.once('data');
+      map.setLayoutProperty('background', 'visibility', 'visible');
+      const e = await dataPromise;
+      t.assert.equal(e.dataType, 'style');
     });
 
     await t.test('sets visibility on background layer', (t, done) => {
@@ -231,7 +214,7 @@ test('map layers', async t => {
       });
     });
 
-    await t.test('sets visibility on raster layer', (t, done) => {
+    await t.test('sets visibility on raster layer', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -257,14 +240,12 @@ test('map layers', async t => {
       // Suppress errors because we're not loading tiles from a real URL.
       map.on('error', () => {});
 
-      map.on('style.load', () => {
-        map.setLayoutProperty('satellite', 'visibility', 'visible');
-        t.assert.deepEqual(map.getLayoutProperty('satellite', 'visibility'), 'visible');
-        done();
-      });
+      await map.once('style.load');
+      map.setLayoutProperty('satellite', 'visibility', 'visible');
+      t.assert.deepEqual(map.getLayoutProperty('satellite', 'visibility'), 'visible');
     });
 
-    await t.test('sets visibility on image layer', (t, done) => {
+    await t.test('sets visibility on image layer', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -293,16 +274,14 @@ test('map layers', async t => {
         }
       });
 
-      map.on('style.load', () => {
-        map.setLayoutProperty('image', 'visibility', 'visible');
-        t.assert.deepEqual(map.getLayoutProperty('image', 'visibility'), 'visible');
-        done();
-      });
+      await map.once('style.load');
+      map.setLayoutProperty('image', 'visibility', 'visible');
+      t.assert.deepEqual(map.getLayoutProperty('image', 'visibility'), 'visible');
     });
   });
 
   await t.test('setPaintProperty', async t => {
-    await t.test('sets property', (t, done) => {
+    await t.test('sets property', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -316,11 +295,9 @@ test('map layers', async t => {
         }
       });
 
-      map.on('style.load', () => {
-        map.setPaintProperty('background', 'background-color', 'red');
-        t.assert.deepEqual(map.getPaintProperty('background', 'background-color'), 'red');
-        done();
-      });
+      await map.once('style.load');
+      map.setPaintProperty('background', 'background-color', 'red');
+      t.assert.deepEqual(map.getPaintProperty('background', 'background-color'), 'red');
     });
 
     await t.test('throw before loaded', t => {
@@ -341,7 +318,7 @@ test('map layers', async t => {
       );
     });
 
-    await t.test('fires an error if layer not found', (t, done) => {
+    await t.test('fires an error if layer not found', async t => {
       const map = createMap({
         style: {
           version: 8,
@@ -350,13 +327,11 @@ test('map layers', async t => {
         }
       });
 
-      map.on('style.load', () => {
-        map.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
-          done();
-        });
-        map.setPaintProperty('non-existant', 'background-color', 'red');
-      });
+      await map.once('style.load');
+      const errorPromise = map.once('error');
+      map.setPaintProperty('non-existant', 'background-color', 'red');
+      const { error } = await errorPromise;
+      t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
     });
   });
 });

@@ -42,15 +42,13 @@ test('Map', async t => {
     });
 
     await t.test('Map.isStyleLoaded', async t => {
-      await t.test('Map.isStyleLoaded', (t, done) => {
+      await t.test('Map.isStyleLoaded', async t => {
         const style = createStyle();
         const map = createMap({ style });
 
         t.assert.equal(map.isStyleLoaded(), false, 'false before style has loaded');
-        map.on('load', () => {
-          t.assert.equal(map.isStyleLoaded(), true, 'true when style is loaded');
-          done();
-        });
+        await map.once('load');
+        t.assert.equal(map.isStyleLoaded(), true, 'true when style is loaded');
       });
 
       await t.test('unresponsive source', (t, done) => {
