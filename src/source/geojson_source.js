@@ -2,6 +2,7 @@ import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import { createExpression } from '@mapwhit/style-expressions';
 import EXTENT from '../data/extent.js';
 import browser from '../util/browser.js';
+import { applySourceDiff, isUpdateableGeoJSON, toUpdateable } from './geojson_source_diff.js';
 
 /**
  * A source containing GeoJSON.
@@ -52,6 +53,7 @@ export default class GeoJSONSource extends Evented {
   #pendingDataEvents = new Set();
   #newData = false;
   #updateInProgress = false;
+  #dataUpdateable;
   #tiler;
 
   constructor(id, options, eventedParent, tiler) {
@@ -134,6 +136,32 @@ export default class GeoJSONSource extends Evented {
    */
   setData(data) {
     this.data = data;
+    this.#dataUpdateable = undefined;
+    this.#updateData();
+    return this;
+  }
+
+  /**
+   * Updates the source's GeoJSON, and re-renders the map.
+   *
+   * For sources with lots of features, this method can be used to make updates more quickly.
+   *
+   * This approach requires unique IDs for every feature in the source. The IDs can either be specified on the feature,
+   * or by using the promoteId option to specify which property should be used as the ID.
+   *
+   * It is an error to call updateData on a source that did not have unique IDs for each of its features already.
+   *
+   * Updates are applied on a best-effort basis, updating an ID that does not exist will not result in an error.
+   *
+   * @param {GeoJSONSourceDiff} diff The changes that need to be applied.
+   * @returns {GeoJSONSource} this
+   */
+  updateData(diff) {
+    if (!this.#dataUpdateable) {
+      throw new Error(`Cannot update existing geojson data in ${this.id}`);
+    }
+    applySourceDiff(this.#dataUpdateable, diff, this.promoteId);
+    this.data = { type: 'FeatureCollection', features: Array.from(this.#dataUpdateable.values()) };
     this.#updateData();
     return this;
   }
@@ -169,6 +197,7 @@ export default class GeoJSONSource extends Evented {
    */
   async #updateTilerData() {
     this.data = await loadJSON(this.data, this.id);
+    this.#dataUpdateable ??= updatableGeoJson(this.data, this.promoteId);
     this.data = filterGeoJSON(this.data, this._options);
 
     const options = { ...this.workerOptions, data: this.data };
@@ -255,4 +284,8 @@ function filterGeoJSON(data, { filter }) {
 
   const features = data.features.filter(feature => compiled.value.evaluate({ zoom: 0 }, feature));
   return { type: 'FeatureCollection', features };
+}
+
+function updatableGeoJson(data, promoteId) {
+  return isUpdateableGeoJSON(data, promoteId) ? toUpdateable(data, promoteId) : false;
 }

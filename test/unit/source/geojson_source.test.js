@@ -5,6 +5,7 @@ import GeoJSONSource from '../../../src/source/geojson_source.js';
 import makeTiler from '../../../src/source/geojson_tiler.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import { waitForEvent } from '../../util/util.js';
 
 test('GeoJSONSource.setData', async t => {
   function createSource(opts = {}) {
@@ -168,5 +169,60 @@ test('GeoJSONSource.update', async t => {
     });
 
     source.load();
+  });
+});
+
+test('GeoJSONSource.updateData', async t => {
+  function createSource(opts = {}) {
+    Object.assign(opts, { data: {} });
+    return new GeoJSONSource('source1', opts, null, makeTiler());
+  }
+  const geoJson = {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [0, 0]
+    }
+  };
+  const updateableGeoJson = {
+    type: 'Feature',
+    id: 'point',
+    geometry: {
+      type: 'Point',
+      coordinates: [0, 0]
+    },
+    properties: {}
+  };
+
+  await t.test('updateData with geojson creates an non-updateable source', async t => {
+    const source = createSource();
+    source.setData(geoJson);
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+    t.assert.throws(() => source.updateData({ source: 'source1', dataDiff: { removeAll: true } }), {
+      message: 'Cannot update existing geojson data in source1'
+    });
+  });
+
+  await t.test('updateData with geojson creates an updateable source', async () => {
+    const source = createSource();
+    source.setData(updateableGeoJson);
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+    source.updateData({ removeAll: true });
+  });
+
+  await t.test('updateData with diff updates', async () => {
+    const source = createSource();
+    source.setData(updateableGeoJson);
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+    source.updateData({
+      add: [
+        {
+          type: 'Feature',
+          id: 'update_point',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
   });
 });
