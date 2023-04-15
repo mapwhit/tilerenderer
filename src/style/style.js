@@ -64,7 +64,12 @@ class Style extends Evented {
     this._removedLayers = new Map();
     this._resetUpdates();
 
-    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginStateChange(this._reloadSources.bind(this));
+    // Non-vector sources don't have any symbols buckets to reload when the RTL text plugin loads
+    // They also load more quickly, so they're more likely to have already displaying tiles
+    // that would be unnecessarily booted by the plugin load event
+    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginStateChange(
+      this._reloadSources.bind(this, new Set(['vector', 'geojson']))
+    );
 
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
@@ -1064,9 +1069,12 @@ class Style extends Evented {
     }
   }
 
-  _reloadSources() {
+  _reloadSources(types) {
     for (const sourceCache of Object.values(this._sources)) {
-      sourceCache.reload(); // Should be a no-op if called before any tiles load
+      const { type } = sourceCache.getSource();
+      if (!types || types.has(type)) {
+        sourceCache.reload(); // Should be a no-op if the plugin loads before any tiles load
+      }
     }
   }
 

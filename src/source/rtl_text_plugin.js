@@ -42,6 +42,7 @@ export function clearRTLTextPlugin() {
   _loadedCallbacks.length = 0;
   pluginStatus = status.unavailable;
   pluginURL = undefined;
+  _completionCallback = null;
 }
 
 export function setRTLTextPlugin(url, callback, deferred = false) {

@@ -86,6 +86,49 @@ test('Style', async t => {
       });
       style = new Style(createStyleJSON());
     });
+
+    await t.test('RTL plugin load reloads vector source but not raster source', (t, done) => {
+      plugin.clearRTLTextPlugin();
+      t.mock.method(plugin, 'loadScript', () => {
+        globalThis.registerRTLTextPlugin({});
+        return Promise.resolve();
+      });
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            raster: {
+              type: 'raster',
+              tiles: ['http://tiles.server']
+            },
+            vector: {
+              type: 'vector',
+              tiles: ['http://tiles.server']
+            }
+          },
+          layers: [
+            {
+              id: 'raster',
+              type: 'raster',
+              source: 'raster'
+            }
+          ]
+        })
+      );
+      style.on('style.load', () => {
+        t.mock.method(style._sources.raster, 'reload');
+        t.mock.method(style._sources.vector, 'reload');
+        plugin.setRTLTextPlugin('some-bogus-url', error => {
+          t.assert.ok(!error);
+          setTimeout(() => {
+            plugin.clearRTLTextPlugin();
+            t.assert.equal(style._sources.raster.reload.mock.callCount(), 1);
+            t.assert.equal(style._sources.vector.reload.mock.callCount(), 2);
+            done();
+          }, 0);
+        });
+      });
+    });
   });
 
   await t.test('Style.loadJSON', async t => {
