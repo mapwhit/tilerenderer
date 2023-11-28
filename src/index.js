@@ -5,7 +5,7 @@ import { Point } from '@mapwhit/point-geometry';
 import packageJSON from '../package.json' with { type: 'json' };
 import { default as LngLat } from './geo/lng_lat.js';
 import { default as LngLatBounds } from './geo/lng_lat_bounds.js';
-import { getRTLTextPluginStatus, setRTLTextPlugin } from './source/rtl_text_plugin.js';
+import { rtlMainThreadPluginFactory } from './source/rtl_text_plugin_main_thread.js';
 import { default as Style } from './style/style.js';
 import { default as Map } from './ui/map.js';
 import config from './util/config.js';
@@ -48,14 +48,15 @@ export default mapwhit;
  *
  * @function setRTLTextPlugin
  * @param {string} pluginURL URL pointing to the Mapbox RTL text plugin source.
- * @param {Function} callback Called with an error argument if there is an error.
  * @param {boolean} lazy If set to `true`, mapboxgl will defer loading the plugin until rtl text is encountered,
  *    rtl text will then be rendered only after the plugin finishes loading.
  * @example
  * mapboxgl.setRTLTextPlugin('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js');
  * @see [Add support for right-to-left scripts](https://www.mapbox.com/mapbox-gl-js/example/mapbox-gl-rtl-text/)
  */
-
+function setRTLTextPlugin(pluginURL, lazy) {
+  return rtlMainThreadPluginFactory().setRTLTextPlugin(pluginURL, lazy);
+}
 /**
  * Gets the map's [RTL text plugin](https://www.mapbox.com/mapbox-gl-js/plugins/#mapbox-gl-rtl-text) status.
  * The status can be `unavailable` (i.e. not requested or removed), `loading`, `loaded` or `error`.
@@ -65,6 +66,9 @@ export default mapwhit;
  * @example
  * const pluginStatus = mapboxgl.getRTLTextPluginStatus();
  */
+function getRTLTextPluginStatus() {
+  return rtlMainThreadPluginFactory().getRTLTextPluginStatus();
+}
 
 // canary assert: used to confirm that asserts have been removed from production build
 import assert from 'assert';

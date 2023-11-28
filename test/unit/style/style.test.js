@@ -2,7 +2,7 @@ import test from 'node:test';
 import { Event, Evented } from '@mapwhit/events';
 import { Color } from '@mapwhit/style-expressions';
 import Transform from '../../../src/geo/transform.js';
-import plugin from '../../../src/source/rtl_text_plugin.js';
+import { rtlMainThreadPluginFactory } from '../../../src/source/rtl_text_plugin_main_thread.js';
 import SourceCache from '../../../src/source/source_cache.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import Style from '../../../src/style/style.js';
@@ -63,36 +63,7 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('registers plugin state change listener', t => {
-      plugin.clearRTLTextPlugin();
-
-      t.mock.method(plugin, 'registerForPluginStateChange');
-
-      style = new Style(new StubMap());
-      t.assert.equal(plugin.registerForPluginStateChange.mock.callCount(), 1);
-
-      t.mock.method(plugin, 'loadScript', () => Promise.reject());
-      plugin.setRTLTextPlugin('some-bogus-url');
-      t.assert.deepEqual(plugin.loadScript.mock.calls[0].arguments[0], 'https://example.org/some-bogus-url');
-    });
-
-    await t.test('loads plugin immediately if already registered', (t, done) => {
-      plugin.clearRTLTextPlugin();
-      t.mock.method(plugin, 'loadScript', () => Promise.reject(true));
-      plugin.setRTLTextPlugin('some-bogus-url', error => {
-        // Getting this error message shows the bogus URL was succesfully passed to the worker state
-        t.assert.equal(error.message, 'RTL Text Plugin failed to load scripts from https://example.org/some-bogus-url');
-        done();
-      });
-      style = new Style(createStyleJSON());
-    });
-
-    await t.test('RTL plugin load reloads vector source but not raster source', (t, done) => {
-      plugin.clearRTLTextPlugin();
-      t.mock.method(plugin, 'loadScript', () => {
-        globalThis.registerRTLTextPlugin({});
-        return Promise.resolve();
-      });
+    await t.test('RTL plugin load reloads vector source but not raster source', async t => {
       style = new Style(new StubMap());
       style.loadJSON(
         createStyleJSON({
@@ -115,19 +86,12 @@ test('Style', async t => {
           ]
         })
       );
-      style.on('style.load', () => {
-        t.mock.method(style._sources.raster, 'reload');
-        t.mock.method(style._sources.vector, 'reload');
-        plugin.setRTLTextPlugin('some-bogus-url', error => {
-          t.assert.ok(!error);
-          setTimeout(() => {
-            plugin.clearRTLTextPlugin();
-            t.assert.equal(style._sources.raster.reload.mock.callCount(), 1);
-            t.assert.equal(style._sources.vector.reload.mock.callCount(), 2);
-            done();
-          }, 0);
-        });
-      });
+      await style.once('style.load');
+      t.mock.method(style._sources.raster, 'reload');
+      t.mock.method(style._sources.vector, 'reload');
+      rtlMainThreadPluginFactory().fire(new Event('pluginStateChange'));
+      t.assert.equal(style._sources.raster.reload.mock.callCount(), 0);
+      t.assert.equal(style._sources.vector.reload.mock.callCount(), 1);
     });
   });
 
@@ -394,19 +358,14 @@ test('Style', async t => {
       });
     });
 
-    await t.test('deregisters plugin listener', (t, done) => {
+    await t.test('deregisters plugin listener', async t => {
+      t.mock.method(rtlMainThreadPluginFactory(), 'off');
       const style = new Style(new StubMap());
-      t.mock.method(style, '_reloadSources', () => {});
       style.loadJSON(createStyleJSON());
-      t.mock.method(plugin, 'loadScript', () => {});
 
-      style.on('style.load', () => {
-        style._remove();
-        plugin.setRTLTextPlugin('some-bogus-url');
-        t.assert.equal(plugin.loadScript.mock.callCount(), 0);
-        t.assert.equal(style._reloadSources.mock.callCount(), 0);
-        done();
-      });
+      await style.once('style.load');
+      style._remove();
+      t.assert.equal(rtlMainThreadPluginFactory().off.mock.callCount(), 1);
     });
   });
 

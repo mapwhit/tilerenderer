@@ -5,7 +5,7 @@ import ImageManager from '../render/image_manager.js';
 import LineAtlas from '../render/line_atlas.js';
 import { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } from '../source/query_features.js';
 import { resources } from '../source/resources/index.js';
-import plugin from '../source/rtl_text_plugin.js';
+import { rtlMainThreadPluginFactory } from '../source/rtl_text_plugin_main_thread.js';
 import { getType as getSourceType, setType as setSourceType } from '../source/source.js';
 import SourceCache from '../source/source_cache.js';
 import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
@@ -42,6 +42,7 @@ class Style extends Evented {
   });
   #layerIndex = new StyleLayerIndex();
   #opsQueue = [];
+  #pluginStateChangeHandler;
 
   constructor(map, options = {}) {
     super();
@@ -63,14 +64,8 @@ class Style extends Evented {
     this._updatedLayers = new Map();
     this._removedLayers = new Map();
     this._resetUpdates();
-
-    // Non-vector sources don't have any symbols buckets to reload when the RTL text plugin loads
-    // They also load more quickly, so they're more likely to have already displaying tiles
-    // that would be unnecessarily booted by the plugin load event
-    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginStateChange(
-      this._reloadSources.bind(this, new Set(['vector', 'geojson']))
-    );
-
+    this.#pluginStateChangeHandler = this.#rtlTextPluginStateChange.bind(this);
+    rtlMainThreadPluginFactory().on('pluginStateChange', this.#pluginStateChangeHandler);
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
         return;
@@ -92,6 +87,18 @@ class Style extends Evented {
         }
       }
     });
+  }
+
+  #rtlTextPluginStateChange() {
+    for (const sourceCache of Object.values(this._sources)) {
+      const { type } = sourceCache.getSource();
+      if (type === 'vector' || type === 'geojson') {
+        // Non-vector sources don't have any symbols buckets to reload when the RTL text plugin loads
+        // They also load more quickly, so they're more likely to have already displaying tiles
+        // that would be unnecessarily booted by the plugin load event
+        sourceCache.reload(); // Should be a no-op if the plugin loads before any tiles load
+      }
+    }
   }
 
   setGlobalStateProperty(name, value) {
@@ -1048,7 +1055,7 @@ class Style extends Evented {
   }
 
   _remove() {
-    this._rtlTextPluginCallbackUnregister?.();
+    rtlMainThreadPluginFactory().off('pluginStateChange', this.#pluginStateChangeHandler);
     for (const id in this._sources) {
       this._sources[id].clearTiles();
     }
@@ -1066,15 +1073,6 @@ class Style extends Evented {
   _updateSources(transform) {
     for (const id in this._sources) {
       this._sources[id].update(transform);
-    }
-  }
-
-  _reloadSources(types) {
-    for (const sourceCache of Object.values(this._sources)) {
-      const { type } = sourceCache.getSource();
-      if (!types || types.has(type)) {
-        sourceCache.reload(); // Should be a no-op if the plugin loads before any tiles load
-      }
     }
   }
 
@@ -1189,6 +1187,5 @@ class Style extends Evented {
 
 Style.getSourceType = getSourceType;
 Style.setSourceType = setSourceType;
-Style.registerForPluginStateChange = plugin.registerForPluginStateChange;
 
 export default Style;
