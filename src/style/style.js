@@ -42,7 +42,7 @@ class Style extends Evented {
   });
   #layerIndex = new StyleLayerIndex();
   #opsQueue = [];
-  #pluginStateChangeHandler;
+  #rtlPluginLoadedHandler;
 
   constructor(map, options = {}) {
     super();
@@ -64,8 +64,8 @@ class Style extends Evented {
     this._updatedLayers = new Map();
     this._removedLayers = new Map();
     this._resetUpdates();
-    this.#pluginStateChangeHandler = this.#rtlTextPluginStateChange.bind(this);
-    rtlMainThreadPluginFactory().on('pluginStateChange', this.#pluginStateChangeHandler);
+    this.#rtlPluginLoadedHandler = this.#rtlPluginLoaded.bind(this);
+    rtlMainThreadPluginFactory().on('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
         return;
@@ -89,7 +89,7 @@ class Style extends Evented {
     });
   }
 
-  #rtlTextPluginStateChange() {
+  #rtlPluginLoaded() {
     for (const sourceCache of Object.values(this._sources)) {
       const { type } = sourceCache.getSource();
       if (type === 'vector' || type === 'geojson') {
@@ -1055,7 +1055,7 @@ class Style extends Evented {
   }
 
   _remove() {
-    rtlMainThreadPluginFactory().off('pluginStateChange', this.#pluginStateChangeHandler);
+    rtlMainThreadPluginFactory().off('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
     for (const id in this._sources) {
       this._sources[id].clearTiles();
     }

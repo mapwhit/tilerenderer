@@ -100,7 +100,7 @@ class Tile {
 
     if (data.hasRTLText) {
       this.hasRTLText = data.hasRTLText;
-      rtlMainThreadPluginFactory().lazyLoadRTLTextPlugin();
+      rtlMainThreadPluginFactory().lazyLoad();
     }
     if (data.imageAtlas) {
       this.imageAtlas = data.imageAtlas;

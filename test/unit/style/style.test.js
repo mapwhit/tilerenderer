@@ -89,7 +89,7 @@ test('Style', async t => {
       await style.once('style.load');
       t.mock.method(style._sources.raster, 'reload');
       t.mock.method(style._sources.vector, 'reload');
-      rtlMainThreadPluginFactory().fire(new Event('pluginStateChange'));
+      rtlMainThreadPluginFactory().fire(new Event('RTLPluginLoaded'));
       t.assert.equal(style._sources.raster.reload.mock.callCount(), 0);
       t.assert.equal(style._sources.vector.reload.mock.callCount(), 1);
     });

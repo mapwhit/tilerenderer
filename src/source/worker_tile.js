@@ -151,6 +151,8 @@ async function finalizeBuckets(params, options, resources) {
 }
 
 async function makeAtlasses({ glyphDependencies, patternDependencies, iconDependencies }, resources) {
+  // options.glyphDependencies looks like: {"SomeFontName":{"10":true,"32":true}}
+  // this line makes an object like: {"SomeFontName":[10,32]}
   const stacks = mapObject(glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
   const icons = Object.keys(iconDependencies);
   const patterns = Object.keys(patternDependencies);

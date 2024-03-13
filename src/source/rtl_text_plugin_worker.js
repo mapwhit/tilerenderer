@@ -8,6 +8,12 @@ class RTLWorkerPlugin {
     this.pluginStatus = state.pluginStatus;
     this.pluginURL = state.pluginURL;
   }
+  getState() {
+    return {
+      pluginStatus: this.pluginStatus,
+      pluginURL: this.pluginURL
+    };
+  }
   setMethods(rtlTextPlugin) {
     this.applyArabicShaping = rtlTextPlugin.applyArabicShaping;
     this.processBidirectionalText = rtlTextPlugin.processBidirectionalText;

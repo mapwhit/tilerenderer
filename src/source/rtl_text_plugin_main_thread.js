@@ -18,24 +18,28 @@ import { rtlWorkerPlugin } from './rtl_text_plugin_worker.js';
  */
 
 class RTLMainThreadPlugin extends Evented {
-  pluginStatus = 'unavailable';
-  pluginURL = null;
+  status = 'unavailable';
+  url = null;
   queue = [];
-  _sendPluginStateToWorker() {
+  _syncState(statusToSend) {
+    this.status = statusToSend;
     syncRTLPluginState({
-      pluginStatus: this.pluginStatus,
-      pluginURL: this.pluginURL
+      pluginStatus: this.status,
+      pluginURL: this.url
     });
-    this.fire(new Event('pluginStateChange', { pluginStatus: this.pluginStatus, pluginURL: this.pluginURL }));
   }
+
+  /** This one is exposed to outside */
   getRTLTextPluginStatus() {
-    return this.pluginStatus;
+    return this.status;
   }
+
   // public for testing
   clearRTLTextPlugin() {
-    this.pluginStatus = 'unavailable';
-    this.pluginURL = null;
+    this.status = 'unavailable';
+    this.url = null;
   }
+
   // public for testing
   loadScript({ url }) {
     const { promise, resolve, reject } = Promise.withResolvers();
@@ -44,34 +48,51 @@ class RTLMainThreadPlugin extends Evented {
     s.onerror = () => reject(true);
     return promise;
   }
-  async setRTLTextPlugin(url, deferred = false) {
-    if (this.pluginStatus === 'deferred' || this.pluginStatus === 'loading' || this.pluginStatus === 'loaded') {
-      throw new Error('setRTLTextPlugin cannot be called multiple times.');
+
+  setRTLTextPlugin(url, deferred = false) {
+    if (this.url) {
+      // error
+      return Promise.reject(new Error('setRTLTextPlugin cannot be called multiple times.'));
     }
-    this.pluginURL = browser.resolveURL(url);
-    this.pluginStatus = 'deferred';
-    this._sendPluginStateToWorker();
-    if (!deferred) {
-      //Start downloading the plugin immediately if not intending to lazy-load
-      await this._downloadRTLTextPlugin();
+    this.url = browser.resolveURL(url);
+    if (!this.url) {
+      return Promise.reject(new Error(`requested url ${url} is invalid`));
+    }
+    if (this.status === 'requested') {
+      return this._downloadRTLTextPlugin();
+    }
+    if (this.status === 'unavailable') {
+      // from initial state:
+      if (!deferred) {
+        return this._downloadRTLTextPlugin();
+      }
+      this.status = 'deferred';
+      // fire and forget: in this case it does not need wait for the broadcasting result
+      // it is important to sync the deferred status once because
+      // symbol_bucket will be checking it in worker
+      this._syncState(this.status);
     }
   }
+
   async _downloadRTLTextPlugin() {
-    if (this.pluginStatus !== 'deferred' || !this.pluginURL) {
-      throw new Error('rtl-text-plugin cannot be downloaded unless a pluginURL is specified');
-    }
+    this._syncState('loading');
     try {
-      this.pluginStatus = 'loading';
-      this._sendPluginStateToWorker();
-      await this.loadScript({ url: this.pluginURL });
+      await this.loadScript({ url: this.url });
+      this.fire(new Event('RTLPluginLoaded'));
     } catch {
-      this.pluginStatus = 'error';
-      this._sendPluginStateToWorker();
+      this.status = 'error';
+      this._syncState(this.status);
+      throw new Error(`RTL Text Plugin failed to import scripts from ${this.url}`);
     }
   }
-  async lazyLoadRTLTextPlugin() {
-    if (this.pluginStatus === 'deferred') {
-      await this._downloadRTLTextPlugin();
+
+  /** Start a lazy loading process of RTL plugin */
+  lazyLoad() {
+    if (this.status === 'unavailable') {
+      this.status = 'requested';
+      this._syncState(this.status);
+    } else if (this.status === 'deferred') {
+      return this._downloadRTLTextPlugin();
     }
   }
 }
@@ -93,8 +114,8 @@ function registerRTLTextPlugin(rtlTextPlugin) {
     throw new Error('RTL text plugin already registered.');
   }
   const rtlMainThreadPlugin = rtlMainThreadPluginFactory();
-  rtlMainThreadPlugin.pluginStatus = 'loaded';
-  rtlMainThreadPlugin._sendPluginStateToWorker();
+  rtlMainThreadPlugin.status = 'loaded';
+  rtlMainThreadPlugin._syncState(rtlMainThreadPlugin.status);
   rtlWorkerPlugin.setMethods(rtlTextPlugin);
 }
 
