@@ -54,6 +54,7 @@ export default class GeoJSONSource extends Evented {
   #newData = false;
   #updateInProgress = false;
   #dataUpdateable;
+  #pendingData;
   #tiler;
 
   constructor(id, options, eventedParent, tiler) {
@@ -166,6 +167,15 @@ export default class GeoJSONSource extends Evented {
     return this;
   }
 
+  /**
+   * Allows to get the source's actual GeoJSON data.
+   *
+   * @returns a promise which resolves to the source's actual GeoJSON data
+   */
+  getData() {
+    return this.#pendingData;
+  }
+
   async #updateData(sourceDataType = 'content') {
     this.#newData = true;
     this.#pendingDataEvents.add(sourceDataType);
@@ -178,7 +188,8 @@ export default class GeoJSONSource extends Evented {
       this.fire(new Event('dataloading', { dataType: 'source' }));
       while (this.#newData) {
         this.#newData = false;
-        await this.#updateTilerData();
+        this.#pendingData = this.#updateTilerData();
+        await this.#pendingData;
       }
       this.#pendingDataEvents.forEach(sourceDataType =>
         this.fire(new Event('data', { dataType: 'source', sourceDataType }))
