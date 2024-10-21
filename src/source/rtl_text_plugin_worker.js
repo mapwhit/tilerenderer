@@ -4,7 +4,11 @@ class RTLWorkerPlugin {
   processStyledBidirectionalText = null;
   pluginStatus = 'unavailable';
   pluginURL = null;
+
   setState(state) {
+    if (this.isParsed()) {
+      return;
+    }
     this.pluginStatus = state.pluginStatus;
     this.pluginURL = state.pluginURL;
   }
@@ -15,6 +19,9 @@ class RTLWorkerPlugin {
     };
   }
   setMethods(rtlTextPlugin) {
+    if (this.isParsed()) {
+      throw new Error('RTL text plugin already registered.');
+    }
     this.applyArabicShaping = rtlTextPlugin.applyArabicShaping;
     this.processBidirectionalText = rtlTextPlugin.processBidirectionalText;
     this.processStyledBidirectionalText = rtlTextPlugin.processStyledBidirectionalText;
@@ -25,9 +32,6 @@ class RTLWorkerPlugin {
       this.processBidirectionalText != null &&
       this.processStyledBidirectionalText != null
     );
-  }
-  getPluginURL() {
-    return this.pluginURL;
   }
   getRTLTextPluginStatus() {
     return this.pluginStatus;

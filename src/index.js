@@ -51,8 +51,8 @@ export default mapwhit;
  * @param {boolean} lazy If set to `true`, mapboxgl will defer loading the plugin until rtl text is encountered,
  *    rtl text will then be rendered only after the plugin finishes loading.
  * @example
- * mapboxgl.setRTLTextPlugin('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js');
- * @see [Add support for right-to-left scripts](https://www.mapbox.com/mapbox-gl-js/example/mapbox-gl-rtl-text/)
+ * setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js', false);
+ * @see [Add support for right-to-left scripts](https://maplibre.org/maplibre-gl-js/docs/examples/mapbox-gl-rtl-text/)
  */
 function setRTLTextPlugin(pluginURL, lazy) {
   return rtlMainThreadPluginFactory().setRTLTextPlugin(pluginURL, lazy);
@@ -64,7 +64,7 @@ function setRTLTextPlugin(pluginURL, lazy) {
  *
  * @function getRTLTextPluginStatus
  * @example
- * const pluginStatus = mapboxgl.getRTLTextPluginStatus();
+ * const pluginStatus = getRTLTextPluginStatus();
  */
 function getRTLTextPluginStatus() {
   return rtlMainThreadPluginFactory().getRTLTextPluginStatus();
