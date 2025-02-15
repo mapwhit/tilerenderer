@@ -13,4 +13,4 @@ jobs:
       - run: yarn install
       - env:
           TEST_REPORTER: tap
-        run: make check
+        run: make check test-integration
