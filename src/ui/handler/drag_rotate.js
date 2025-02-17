@@ -87,7 +87,7 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
     }
   }
 
-  function onMouseDown(e) {
+  function onPointerDown(e) {
     if (state !== 'enabled') return;
 
     if (button === 'right') {
@@ -105,16 +105,16 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
     // window-level event listeners give us the best shot at capturing events that
     // fall outside the map canvas element. Use `{capture: true}` for the move event
     // to prevent map move events from being fired during a drag.
-    window.document.addEventListener('mousemove', onMouseMove, { capture: true });
-    window.document.addEventListener('mouseup', onMouseUp);
+    window.document.addEventListener('pointermove', onPointerMove, { capture: true });
+    window.document.addEventListener('pointerup', onPointerUp);
 
-    // Deactivate when the window loses focus. Otherwise if a mouseup occurs when the window
+    // Deactivate when the window loses focus. Otherwise if a pointerup occurs when the window
     // isn't in focus, dragging will continue even though the mouse is no longer pressed.
     window.addEventListener('blur', onBlur);
 
     state = 'pending';
 
-    previousPos = DOM.mousePos(el, e);
+    previousPos = DOM.pointerPos(el, e);
     previousBearing = map.getBearing();
 
     inertia = makeInertia(map, calculateInertia);
@@ -123,8 +123,8 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
     e.preventDefault();
   }
 
-  function onMouseMove(e) {
-    const pos = DOM.mousePos(el, e);
+  function onPointerMove(e) {
+    const pos = DOM.pointerPos(el, e);
     frame.request(e, pos);
 
     if (state === 'pending') {
@@ -160,7 +160,7 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
     previousPos = pos;
   }
 
-  function onMouseUp(e) {
+  function onPointerUp(e) {
     if (DOM.mouseButton(e) !== eventButton) return;
     switch (state) {
       case 'active':
@@ -201,8 +201,8 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
   }
 
   function unbind() {
-    window.document.removeEventListener('mousemove', onMouseMove, { capture: true });
-    window.document.removeEventListener('mouseup', onMouseUp);
+    window.document.removeEventListener('pointermove', onPointerMove, { capture: true });
+    window.document.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('blur', onBlur);
     DOM.enableDrag();
   }
@@ -283,7 +283,7 @@ function dragRotateHandler(map, { element, button = 'right', bearingSnap = 0, pi
     isEnabled,
     enable,
     disable,
-    onMouseDown
+    onPointerDown
   };
 }
 

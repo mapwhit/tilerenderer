@@ -27,17 +27,17 @@ test('BoxZoomHandler', async t => {
     map.on('boxzoomstart', boxzoomstart);
     map.on('boxzoomend', boxzoomend);
 
-    simulate.mousedown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
+    simulate.pointerdown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 0);
     t.assert.equal(boxzoomend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointermove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 1);
     t.assert.equal(boxzoomend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointerup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 1);
     t.assert.equal(boxzoomend.callCount, 1);
@@ -65,17 +65,17 @@ test('BoxZoomHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
+    simulate.pointerdown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 0);
     t.assert.equal(boxzoomend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointermove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 1);
     t.assert.equal(boxzoomend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointerup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
     t.assert.equal(boxzoomstart.callCount, 1);
     t.assert.equal(boxzoomend.callCount, 1);
@@ -98,13 +98,13 @@ test('BoxZoomHandler', async t => {
     map.on('boxzoomstart', boxzoomstart);
     map.on('boxzoomend', boxzoomend);
 
-    simulate.mousedown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
+    simulate.pointerdown(map.getCanvas(), { shiftKey: true, clientX: 0, clientY: 0 });
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointermove(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
+    simulate.pointerup(map.getCanvas(), { shiftKey: true, clientX: 5, clientY: 5 });
     map._renderTaskQueue.run();
 
     t.assert.equal(boxzoomstart.callCount, 0);

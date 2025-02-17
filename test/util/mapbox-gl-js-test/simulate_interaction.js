@@ -9,38 +9,42 @@ function window(target) {
 }
 
 exports.click = function (target, options) {
-  options = Object.assign({ bubbles: true }, options);
-  const MouseEvent = window(target).MouseEvent;
-  target.dispatchEvent(new MouseEvent('mousedown', options));
-  target.dispatchEvent(new MouseEvent('mouseup', options));
+  options = { bubbles: true, pointerType: 'mouse', ...options };
+  const { MouseEvent } = window(target);
+  target.dispatchEvent(new MouseEvent('pointerdown', options));
+  target.dispatchEvent(new MouseEvent('pointerup', options));
   target.dispatchEvent(new MouseEvent('click', options));
 };
 
 exports.drag = function (target, mousedownOptions, mouseUpOptions) {
-  mousedownOptions = Object.assign({ bubbles: true }, mousedownOptions);
-  mouseUpOptions = Object.assign({ bubbles: true }, mouseUpOptions);
-  const MouseEvent = window(target).MouseEvent;
-  target.dispatchEvent(new MouseEvent('mousedown', mousedownOptions));
-  target.dispatchEvent(new MouseEvent('mouseup', mouseUpOptions));
+  mousedownOptions = { bubbles: true, pointerType: 'mouse', ...mousedownOptions };
+  mouseUpOptions = { bubbles: true, pointerType: 'mouse', ...mouseUpOptions };
+  const { MouseEvent } = window(target);
+  target.dispatchEvent(new MouseEvent('pointerdown', mousedownOptions));
+  target.dispatchEvent(new MouseEvent('pointerup', mouseUpOptions));
   target.dispatchEvent(new MouseEvent('click', mouseUpOptions));
 };
 
 exports.dblclick = function (target, options) {
-  options = Object.assign({ bubbles: true }, options);
-  const MouseEvent = window(target).MouseEvent;
-  target.dispatchEvent(new MouseEvent('mousedown', options));
-  target.dispatchEvent(new MouseEvent('mouseup', options));
+  options = { bubbles: true, pointerType: 'mouse', ...options };
+  const { MouseEvent } = window(target);
+  target.dispatchEvent(new MouseEvent('pointerdown', options));
+  target.dispatchEvent(new MouseEvent('pointerup', options));
   target.dispatchEvent(new MouseEvent('click', options));
-  target.dispatchEvent(new MouseEvent('mousedown', options));
-  target.dispatchEvent(new MouseEvent('mouseup', options));
+  target.dispatchEvent(new MouseEvent('pointerdown', options));
+  target.dispatchEvent(new MouseEvent('pointerup', options));
   target.dispatchEvent(new MouseEvent('click', options));
   target.dispatchEvent(new MouseEvent('dblclick', options));
 };
 
-['mouseup', 'mousedown', 'mouseover', 'mousemove', 'mouseout'].forEach(event => {
+['pointerup', 'pointerdown', 'pointerover', 'pointermove', 'pointerout', 'pointercancel'].forEach(event => {
   exports[event] = function (target, options) {
-    options = Object.assign({ bubbles: true }, options);
-    const MouseEvent = window(target).MouseEvent;
+    options = {
+      bubbles: true,
+      pointerType: 'mouse',
+      ...options
+    };
+    const { MouseEvent } = window(target);
     target.dispatchEvent(new MouseEvent(event, options));
   };
 });
@@ -57,14 +61,14 @@ exports.dblclick = function (target, options) {
 // (rather than a trackpad)
 exports.magicWheelZoomDelta = 4.000244140625;
 
-['touchstart', 'touchend', 'touchmove', 'touchcancel'].forEach(event => {
-  exports[event] = function (target, options) {
-    // Should be using Touch constructor here, but https://github.com/jsdom/jsdom/issues/2152.
-    options = Object.assign({ bubbles: true, touches: [{ clientX: 0, clientY: 0 }] }, options);
-    const TouchEvent = window(target).TouchEvent;
-    target.dispatchEvent(new TouchEvent(event, options));
-  };
-});
+// ['touchstart', 'touchend', 'touchmove', 'touchcancel'].forEach(event => {
+//   exports[event] = function (target, options) {
+//     // Should be using Touch constructor here, but https://github.com/jsdom/jsdom/issues/2152.
+//     options = Object.assign({ bubbles: true, touches: [{ clientX: 0, clientY: 0 }] }, options);
+//     const TouchEvent = window(target).TouchEvent;
+//     target.dispatchEvent(new TouchEvent(event, options));
+//   };
+// });
 
 ['focus', 'blur'].forEach(event => {
   exports[event] = function (target, options) {

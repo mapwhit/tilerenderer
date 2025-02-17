@@ -31,19 +31,19 @@ test('DragPanHandler', async t => {
       map.on('drag', drag);
       map.on('dragend', dragend);
 
-      simulate.mousedown(map.getCanvas());
+      simulate.pointerdown(map.getCanvas());
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 0);
       t.assert.equal(drag.callCount, 0);
       t.assert.equal(dragend.callCount, 0);
 
-      simulate.mousemove(map.getCanvas());
+      simulate.pointermove(map.getCanvas());
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 1);
       t.assert.equal(drag.callCount, 1);
       t.assert.equal(dragend.callCount, 0);
 
-      simulate.mouseup(map.getCanvas());
+      simulate.pointerup(map.getCanvas());
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 1);
       t.assert.equal(drag.callCount, 1);
@@ -66,19 +66,19 @@ test('DragPanHandler', async t => {
       map.on('drag', drag);
       map.on('dragend', dragend);
 
-      simulate.mousedown(map.getCanvas());
+      simulate.pointerdown(map.getCanvas());
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 0);
       t.assert.equal(drag.callCount, 0);
       t.assert.equal(dragend.callCount, 0);
 
-      simulate.mousemove(window.document.body);
+      simulate.pointermove(window.document.body);
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 1);
       t.assert.equal(drag.callCount, 1);
       t.assert.equal(dragend.callCount, 0);
 
-      simulate.mouseup(map.getCanvas());
+      simulate.pointerup(map.getCanvas());
       map._renderTaskQueue.run();
       t.assert.equal(dragstart.callCount, 1);
       t.assert.equal(drag.callCount, 1);
@@ -164,13 +164,13 @@ test('DragPanHandler', async t => {
     const mousemove = t.spy();
     map.on('mousemove', mousemove);
 
-    simulate.mousedown(map.getCanvasContainer());
+    simulate.pointerdown(map.getCanvasContainer());
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvasContainer());
+    simulate.pointermove(map.getCanvasContainer());
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvasContainer());
+    simulate.pointerup(map.getCanvasContainer());
     map._renderTaskQueue.run();
 
     t.assert.ok(mousemove.notCalled);
@@ -184,10 +184,10 @@ test('DragPanHandler', async t => {
     const dragend = t.spy();
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
 
     simulate.blur(window);
@@ -218,15 +218,15 @@ test('DragPanHandler', async t => {
     const map = createMap();
     const requestFrame = t.spy(map, '_requestRenderFrame');
 
-    simulate.mousedown(map.getCanvas());
-    simulate.mousemove(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     t.assert.ok(requestFrame.callCount > 0);
 
     map._renderTaskQueue.run();
 
     // https://github.com/mapbox/mapbox-gl-js/issues/6063
     requestFrame.resetHistory();
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     t.assert.equal(requestFrame.callCount, 1);
 
     map.remove();
@@ -244,13 +244,13 @@ test('DragPanHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 0);
     t.assert.equal(drag.callCount, 0);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 1);
@@ -263,13 +263,13 @@ test('DragPanHandler', async t => {
     t.assert.equal(drag.callCount, 1);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 2);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 2);
@@ -278,7 +278,7 @@ test('DragPanHandler', async t => {
     map.remove();
   });
 
-  Promise.all(
+  await Promise.all(
     ['ctrl', 'shift'].map(async modifier => {
       await t.test(`DragPanHandler does not begin a drag if the ${modifier} key is down on mousedown`, t => {
         const map = createMap();
@@ -292,19 +292,19 @@ test('DragPanHandler', async t => {
         map.on('drag', drag);
         map.on('dragend', dragend);
 
-        simulate.mousedown(map.getCanvas(), { [`${modifier}Key`]: true });
+        simulate.pointerdown(map.getCanvas(), { [`${modifier}Key`]: true });
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
         t.assert.equal(dragend.callCount, 0);
 
-        simulate.mousemove(map.getCanvas(), { [`${modifier}Key`]: true });
+        simulate.pointermove(map.getCanvas(), { [`${modifier}Key`]: true });
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
         t.assert.equal(dragend.callCount, 0);
 
-        simulate.mouseup(map.getCanvas(), { [`${modifier}Key`]: true });
+        simulate.pointerup(map.getCanvas(), { [`${modifier}Key`]: true });
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
@@ -325,19 +325,19 @@ test('DragPanHandler', async t => {
         map.on('drag', drag);
         map.on('dragend', dragend);
 
-        simulate.mousedown(map.getCanvas());
+        simulate.pointerdown(map.getCanvas());
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
         t.assert.equal(dragend.callCount, 0);
 
-        simulate.mouseup(map.getCanvas(), { [`${modifier}Key`]: true });
+        simulate.pointerup(map.getCanvas(), { [`${modifier}Key`]: true });
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
         t.assert.equal(dragend.callCount, 0);
 
-        simulate.mousemove(map.getCanvas());
+        simulate.pointermove(map.getCanvas());
         map._renderTaskQueue.run();
         t.assert.equal(dragstart.callCount, 0);
         t.assert.equal(drag.callCount, 0);
@@ -360,19 +360,19 @@ test('DragPanHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 0);
     t.assert.equal(drag.callCount, 0);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 0);
     t.assert.equal(drag.callCount, 0);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 0);
     t.assert.equal(drag.callCount, 0);
@@ -393,37 +393,37 @@ test('DragPanHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 0);
     t.assert.equal(drag.callCount, 0);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 1);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 1);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 1);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 2);
     t.assert.equal(dragend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(dragstart.callCount, 1);
     t.assert.equal(drag.callCount, 2);
@@ -445,13 +445,13 @@ test('DragPanHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
 
     t.assert.equal(dragstart.callCount, 0);
@@ -490,8 +490,8 @@ test('DragPanHandler', async t => {
     map.remove();
   });
 
-  Promise.all(
-    ['dragstart', 'drag'].map(async event => {
+  await Promise.all(
+    ['dragstart', 'drag'].forEach(async event => {
       await t.test(`DragPanHandler can be disabled on ${event} (#2419)`, t => {
         const map = createMap();
 
@@ -505,10 +505,10 @@ test('DragPanHandler', async t => {
         map.on('drag', drag);
         map.on('dragend', dragend);
 
-        simulate.mousedown(map.getCanvas());
+        simulate.pointerdown(map.getCanvas());
         map._renderTaskQueue.run();
 
-        simulate.mousemove(map.getCanvas());
+        simulate.pointermove(map.getCanvas());
         map._renderTaskQueue.run();
 
         t.assert.equal(dragstart.callCount, 1);
@@ -517,7 +517,7 @@ test('DragPanHandler', async t => {
         t.assert.equal(map.isMoving(), false);
         t.assert.equal(map.dragPan.isEnabled(), false);
 
-        simulate.mouseup(map.getCanvas());
+        simulate.pointerup(map.getCanvas());
         map._renderTaskQueue.run();
 
         t.assert.equal(dragstart.callCount, 1);
@@ -542,12 +542,12 @@ test('DragPanHandler', async t => {
     map.on('drag', drag);
     map.on('dragend', dragend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
 
     map.dragPan.disable();
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
 
     t.assert.equal(dragstart.callCount, 0);
@@ -556,7 +556,7 @@ test('DragPanHandler', async t => {
     t.assert.equal(map.isMoving(), false);
     t.assert.equal(map.dragPan.isEnabled(), false);
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
 
     t.assert.equal(dragstart.callCount, 0);

@@ -1,5 +1,5 @@
 const { test } = require('../../../util/mapbox-gl-js-test');
-const _window = require('../../../util/window');
+const _window = require('../../..//util/window');
 const Map = require('../../../../src/ui/map');
 const DOM = require('../../../../src/util/dom');
 const simulate = require('../../../util/mapbox-gl-js-test/simulate_interaction');
@@ -19,7 +19,7 @@ test('DragRotateHandler', async t => {
   });
 
   await t.test(
-    'DragRotateHandler fires rotatestart, rotate, and rotateend events at appropriate times in response to a right-click drag',
+    'fires rotatestart, rotate, and rotateend events at appropriate times in response to a right-click drag',
     t => {
       const map = createMap();
 
@@ -31,19 +31,19 @@ test('DragRotateHandler', async t => {
       map.on('rotate', rotate);
       map.on('rotateend', rotateend);
 
-      simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+      simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 0);
       t.assert.equal(rotate.callCount, 0);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.mousemove(map.getCanvas(), { buttons: 2 });
+      simulate.pointermove(map.getCanvas(), { buttons: 2 });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+      simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
@@ -53,7 +53,7 @@ test('DragRotateHandler', async t => {
     }
   );
 
-  await t.test('DragRotateHandler stops firing events after mouseup', t => {
+  await t.test('stops firing events after mouseup', t => {
     const map = createMap();
 
     const spy = t.spy();
@@ -61,14 +61,14 @@ test('DragRotateHandler', async t => {
     map.on('rotate', spy);
     map.on('rotateend', spy);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     t.assert.equal(spy.callCount, 3);
 
     spy.resetHistory();
-    simulate.mousemove(map.getCanvas(), { buttons: 0 });
+    simulate.pointermove(map.getCanvas(), { buttons: 0 });
     map._renderTaskQueue.run();
     t.assert.equal(spy.callCount, 0);
 
@@ -76,7 +76,7 @@ test('DragRotateHandler', async t => {
   });
 
   await t.test(
-    'DragRotateHandler fires rotatestart, rotate, and rotateend events at appropriate times in response to a control-left-click drag',
+    'fires rotatestart, rotate, and rotateend events at appropriate times in response to a control-left-click drag',
     t => {
       const map = createMap();
 
@@ -88,19 +88,19 @@ test('DragRotateHandler', async t => {
       map.on('rotate', rotate);
       map.on('rotateend', rotateend);
 
-      simulate.mousedown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
+      simulate.pointerdown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 0);
       t.assert.equal(rotate.callCount, 0);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+      simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.mouseup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
+      simulate.pointerup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
@@ -110,7 +110,7 @@ test('DragRotateHandler', async t => {
     }
   );
 
-  await t.test('DragRotateHandler pitches in response to a right-click drag by default', t => {
+  await t.test('pitches in response to a right-click drag by default', t => {
     const map = createMap();
 
     const pitchstart = t.spy();
@@ -121,19 +121,19 @@ test('DragRotateHandler', async t => {
     map.on('pitch', pitch);
     map.on('pitchend', pitchend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(pitchstart.callCount, 1);
     t.assert.equal(pitch.callCount, 1);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     t.assert.equal(pitchend.callCount, 1);
 
     map.remove();
   });
 
-  await t.test('DragRotateHandler pitches in response to a control-left-click drag', t => {
+  await t.test('pitches in response to a control-left-click drag', t => {
     const map = createMap();
 
     const pitchstart = t.spy();
@@ -144,19 +144,19 @@ test('DragRotateHandler', async t => {
     map.on('pitch', pitch);
     map.on('pitchend', pitchend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
-    simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+    simulate.pointerdown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
+    simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(pitchstart.callCount, 1);
     t.assert.equal(pitch.callCount, 1);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
     t.assert.equal(pitchend.callCount, 1);
 
     map.remove();
   });
 
-  await t.test('DragRotateHandler does not pitch if given pitchWithRotate: false', t => {
+  await t.test('does not pitch if given pitchWithRotate: false', t => {
     const map = createMap({ pitchWithRotate: false });
 
     const spy = t.spy();
@@ -165,22 +165,22 @@ test('DragRotateHandler', async t => {
     map.on('pitch', spy);
     map.on('pitchend', spy);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
 
-    simulate.mousedown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
-    simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+    simulate.pointerdown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
+    simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
 
     t.assert.ok(spy.notCalled);
 
     map.remove();
   });
 
-  await t.test('DragRotateHandler does not rotate or pitch when disabled', t => {
+  await t.test('does not rotate or pitch when disabled', t => {
     const map = createMap();
 
     map.dragRotate.disable();
@@ -194,31 +194,31 @@ test('DragRotateHandler', async t => {
     map.on('pitch', spy);
     map.on('pitchend', spy);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
 
     t.assert.ok(spy.notCalled);
 
     map.remove();
   });
 
-  await t.test('DragRotateHandler ensures that map.isMoving() returns true during drag', t => {
+  await t.test('ensures that map.isMoving() returns true during drag', t => {
     // The bearingSnap option here ensures that the moveend event is sent synchronously.
     const map = createMap({ bearingSnap: 0 });
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     t.assert.ok(map.isMoving());
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     t.assert.ok(!map.isMoving());
 
     map.remove();
   });
 
-  await t.test('DragRotateHandler fires move events', t => {
+  await t.test('fires move events', t => {
     // The bearingSnap option here ensures that the moveend event is sent synchronously.
     const map = createMap({ bearingSnap: 0 });
 
@@ -230,13 +230,13 @@ test('DragRotateHandler', async t => {
     map.on('move', move);
     map.on('moveend', moveend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(movestart.callCount, 1);
     t.assert.equal(move.callCount, 1);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     t.assert.equal(moveend.callCount, 1);
 
     map.remove();
@@ -267,10 +267,10 @@ test('DragRotateHandler', async t => {
     map.on('move', move);
     map.on('moveend', moveend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
 
     t.assert.ok(rotatestart.firstCall.args[0].originalEvent.type, 'mousemove');
     t.assert.ok(pitchstart.firstCall.args[0].originalEvent.type, 'mousemove');
@@ -298,13 +298,13 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvasContainer(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvasContainer(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvasContainer(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvasContainer(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
 
-    simulate.mouseup(map.getCanvasContainer(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvasContainer(), { buttons: 0, button: 2 });
     t.assert.equal(rotateend.callCount, 1);
 
     map.remove();
@@ -316,10 +316,10 @@ test('DragRotateHandler', async t => {
     const mousemove = t.spy();
     map.on('mousemove', mousemove);
 
-    simulate.mousedown(map.getCanvasContainer(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvasContainer(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvasContainer(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvasContainer(), { buttons: 2 });
     map._renderTaskQueue.run();
-    simulate.mouseup(map.getCanvasContainer(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvasContainer(), { buttons: 0, button: 2 });
 
     t.assert.ok(mousemove.notCalled);
 
@@ -339,13 +339,13 @@ test('DragRotateHandler', async t => {
       map.on('rotate', rotate);
       map.on('rotateend', rotateend);
 
-      simulate.mousedown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
-      simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+      simulate.pointerdown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
+      simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
 
-      simulate.mouseup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: false });
+      simulate.pointerup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: false });
       t.assert.equal(rotateend.callCount, 1);
 
       map.remove();
@@ -363,8 +363,8 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
@@ -379,15 +379,15 @@ test('DragRotateHandler', async t => {
     const map = createMap();
     const requestRenderFrame = t.spy(map, '_requestRenderFrame');
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     t.assert.ok(requestRenderFrame.callCount > 0);
 
     map._renderTaskQueue.run();
 
     // https://github.com/mapbox/mapbox-gl-js/issues/6063
     requestRenderFrame.resetHistory();
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     t.assert.equal(requestRenderFrame.callCount, 1);
 
     map.remove();
@@ -405,13 +405,13 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
@@ -425,13 +425,13 @@ test('DragRotateHandler', async t => {
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
@@ -452,19 +452,19 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
@@ -485,37 +485,37 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 3, button: 0 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 3, button: 0 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 2, button: 0 });
+    simulate.pointerup(map.getCanvas(), { buttons: 2, button: 0 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
@@ -536,37 +536,37 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
+    simulate.pointerdown(map.getCanvas(), { buttons: 1, button: 0, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 0);
     t.assert.equal(rotate.callCount, 0);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+    simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 3, button: 2, ctrlKey: true });
+    simulate.pointerdown(map.getCanvas(), { buttons: 3, button: 2, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 1, button: 2, ctrlKey: true });
+    simulate.pointerup(map.getCanvas(), { buttons: 1, button: 2, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 1);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mousemove(map.getCanvas(), { buttons: 1, ctrlKey: true });
+    simulate.pointermove(map.getCanvas(), { buttons: 1, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
     t.assert.equal(rotateend.callCount, 0);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 0, ctrlKey: true });
     map._renderTaskQueue.run();
     t.assert.equal(rotatestart.callCount, 1);
     t.assert.equal(rotate.callCount, 2);
@@ -588,13 +588,13 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
 
     t.assert.equal(rotatestart.callCount, 0);
@@ -604,7 +604,7 @@ test('DragRotateHandler', async t => {
     map.remove();
   });
 
-  Promise.all(
+  await Promise.all(
     ['rotatestart', 'rotate'].map(async event => {
       await t.test(`DragRotateHandler can be disabled on ${event} (#2419)`, t => {
         const map = createMap();
@@ -619,10 +619,10 @@ test('DragRotateHandler', async t => {
         map.on('rotate', rotate);
         map.on('rotateend', rotateend);
 
-        simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+        simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
         map._renderTaskQueue.run();
 
-        simulate.mousemove(map.getCanvas(), { buttons: 2 });
+        simulate.pointermove(map.getCanvas(), { buttons: 2 });
         map._renderTaskQueue.run();
 
         t.assert.equal(rotatestart.callCount, 1);
@@ -631,7 +631,7 @@ test('DragRotateHandler', async t => {
         t.assert.equal(map.isMoving(), false);
         t.assert.equal(map.dragRotate.isEnabled(), false);
 
-        simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+        simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
         map._renderTaskQueue.run();
 
         t.assert.equal(rotatestart.callCount, 1);
@@ -656,12 +656,12 @@ test('DragRotateHandler', async t => {
     map.on('rotate', rotate);
     map.on('rotateend', rotateend);
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
 
     map.dragRotate.disable();
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
 
     t.assert.equal(rotatestart.callCount, 0);
@@ -670,7 +670,7 @@ test('DragRotateHandler', async t => {
     t.assert.equal(map.isMoving(), false);
     t.assert.equal(map.dragRotate.isEnabled(), false);
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
 
     t.assert.equal(rotatestart.callCount, 0);

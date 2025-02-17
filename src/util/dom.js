@@ -67,26 +67,14 @@ DOM.suppressClick = function () {
   }, 0);
 };
 
-DOM.mousePos = function (el, e) {
+DOM.pointerPos = function (el, e) {
   const rect = el.getBoundingClientRect();
-  e = e.touches ? e.touches[0] : e;
   return new Point(e.clientX - rect.left - el.clientLeft, e.clientY - rect.top - el.clientTop);
 };
 
-DOM.touchPos = function (el, e) {
-  const rect = el.getBoundingClientRect();
-  const points = [];
-  const touches = e.type === 'touchend' ? e.changedTouches : e.touches;
-  for (let i = 0; i < touches.length; i++) {
-    points.push(
-      new Point(touches[i].clientX - rect.left - el.clientLeft, touches[i].clientY - rect.top - el.clientTop)
-    );
-  }
-  return points;
-};
-
 DOM.mouseButton = function (e) {
-  assert(e.type === 'mousedown' || e.type === 'mouseup');
+  assert(e.type === 'pointerdown' || e.type === 'pointerup');
+  // HACK: is it necessary?
   if (
     typeof window.InstallTrigger !== 'undefined' &&
     e.button === 2 &&

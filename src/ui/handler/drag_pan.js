@@ -80,32 +80,17 @@ function dragPanHandler(map) {
     }
   }
 
-  function onMouseDown(e) {
+  function onPointerDown(e) {
     if (state !== 'enabled') return;
     if (e.ctrlKey || DOM.mouseButton(e) !== 0) return;
 
-    // Bind window-level event listeners for mousemove/up events. In the absence of
+    // Bind window-level event listeners for pointermove/up events. In the absence of
     // the pointer capture API, which is not supported by all necessary platforms,
     // window-level event listeners give us the best shot at capturing events that
     // fall outside the map canvas element. Use `{capture: true}` for the move event
     // to prevent map move events from being fired during a drag.
-    window.document.addEventListener('mousemove', onMove, { capture: true });
-    window.document.addEventListener('mouseup', onMouseUp);
-
-    start(e);
-  }
-
-  function onTouchStart(e) {
-    if (state !== 'enabled') return;
-    if (e.touches.length > 1) return;
-
-    // Bind window-level event listeners for touchmove/end events. In the absence of
-    // the pointer capture API, which is not supported by all necessary platforms,
-    // window-level event listeners give us the best shot at capturing events that
-    // fall outside the map canvas element. Use `{capture: true}` for the move event
-    // to prevent map move events from being fired during a drag.
-    window.document.addEventListener('touchmove', onMove, { capture: true, passive: false });
-    window.document.addEventListener('touchend', onTouchEnd);
+    window.document.addEventListener('pointermove', onMove, { capture: true });
+    window.document.addEventListener('pointerup', onPointerUp);
 
     start(e);
   }
@@ -116,7 +101,7 @@ function dragPanHandler(map) {
     window.addEventListener('blur', onBlur);
 
     state = 'pending';
-    previousPos = DOM.mousePos(_el, e);
+    previousPos = DOM.pointerPos(_el, e);
     inertia = makeInertia(map, calculateInertia);
     inertia.update(previousPos);
   }
@@ -124,7 +109,7 @@ function dragPanHandler(map) {
   function onMove(e) {
     e.preventDefault();
 
-    const pos = DOM.mousePos(_el, e);
+    const pos = DOM.pointerPos(_el, e);
     inertia.update(pos);
     frame.request(e, pos);
 
@@ -150,30 +135,12 @@ function dragPanHandler(map) {
     previousPos = pos;
   }
 
-  function onMouseUp(e) {
+  function onPointerUp(e) {
     if (DOM.mouseButton(e) !== 0) return;
     switch (state) {
       case 'active':
         state = 'enabled';
         DOM.suppressClick();
-        unbind();
-        deactivate();
-        inertialPan(e);
-        break;
-      case 'pending':
-        state = 'enabled';
-        unbind();
-        break;
-      default:
-        assert(false);
-        break;
-    }
-  }
-
-  function onTouchEnd(e) {
-    switch (state) {
-      case 'active':
-        state = 'enabled';
         unbind();
         deactivate();
         inertialPan(e);
@@ -208,10 +175,8 @@ function dragPanHandler(map) {
   }
 
   function unbind() {
-    window.document.removeEventListener('touchmove', onMove, { capture: true, passive: false });
-    window.document.removeEventListener('touchend', onTouchEnd);
-    window.document.removeEventListener('mousemove', onMove, { capture: true });
-    window.document.removeEventListener('mouseup', onMouseUp);
+    window.document.removeEventListener('pointermove', onMove, { capture: true });
+    window.document.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('blur', onBlur);
   }
 
@@ -277,8 +242,7 @@ function dragPanHandler(map) {
     isEnabled,
     enable,
     disable,
-    onMouseDown,
-    onTouchStart
+    onPointerDown
   };
 }
 

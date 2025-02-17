@@ -54,22 +54,22 @@ function boxZoomHandler(map) {
     enabled = false;
   }
 
-  function onMouseDown(e) {
+  function onPointerDown(e) {
     if (!enabled) return;
     if (!(e.shiftKey && e.button === 0)) return;
 
-    window.document.addEventListener('mousemove', onMouseMove, false);
-    window.document.addEventListener('keydown', onKeyDown, false);
-    window.document.addEventListener('mouseup', onMouseUp, false);
+    window.document.addEventListener('pointermove', onPointerMove);
+    window.document.addEventListener('keydown', onKeyDown);
+    window.document.addEventListener('pointerup', onPointerUp);
 
     DOM.disableDrag();
-    startPos = DOM.mousePos(el, e);
+    startPos = DOM.pointerPos(el, e);
     active = true;
   }
 
-  function onMouseMove(e) {
+  function onPointerMove(e) {
     const p0 = startPos;
-    const p1 = DOM.mousePos(el, e);
+    const p1 = DOM.pointerPos(el, e);
 
     if (!box) {
       box = DOM.create('div', 'mapboxgl-boxzoom', container);
@@ -87,11 +87,11 @@ function boxZoomHandler(map) {
     box.style.height = `${maxY - minY}px`;
   }
 
-  function onMouseUp(e) {
+  function onPointerUp(e) {
     if (e.button !== 0) return;
 
     const p0 = startPos;
-    const p1 = DOM.mousePos(el, e);
+    const p1 = DOM.pointerPos(el, e);
 
     const bounds = new LngLatBounds().extend(map.unproject(p0)).extend(map.unproject(p1));
 
@@ -118,9 +118,9 @@ function boxZoomHandler(map) {
   function finish() {
     active = false;
 
-    window.document.removeEventListener('mousemove', onMouseMove, false);
-    window.document.removeEventListener('keydown', onKeyDown, false);
-    window.document.removeEventListener('mouseup', onMouseUp, false);
+    window.document.removeEventListener('pointermove', onPointerMove);
+    window.document.removeEventListener('keydown', onKeyDown);
+    window.document.removeEventListener('pointerup', onPointerUp);
 
     container.classList.remove('mapboxgl-crosshair');
 
@@ -144,7 +144,7 @@ function boxZoomHandler(map) {
     isActive,
     enable,
     disable,
-    onMouseDown
+    onPointerDown
   };
 }
 

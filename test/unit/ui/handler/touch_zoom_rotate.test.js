@@ -19,7 +19,7 @@ test('TouchZoomRotateHandler', async t => {
   });
 
   await t.test(
-    'TouchZoomRotateHandler fires zoomstart, zoom, and zoomend events at appropriate times in response to a pinch-zoom gesture',
+    'fires zoomstart, zoom, and zoomend events at appropriate times in response to a pinch-zoom gesture',
     t => {
       const map = createMap();
 
@@ -31,40 +31,32 @@ test('TouchZoomRotateHandler', async t => {
       map.on('zoom', zoom);
       map.on('zoomend', zoomend);
 
-      simulate.touchstart(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: -5 },
-          { clientX: 0, clientY: 5 }
-        ]
-      });
+      const canvas = map.getCanvas();
+      simulate.pointerdown(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+      simulate.pointerdown(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
       map._renderTaskQueue.run();
       t.assert.equal(zoomstart.callCount, 0);
       t.assert.equal(zoom.callCount, 0);
       t.assert.equal(zoomend.callCount, 0);
 
-      simulate.touchmove(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: -10 },
-          { clientX: 0, clientY: 10 }
-        ]
-      });
+      simulate.pointermove(canvas, { pointerId: 'a', clientX: 0, clientY: -10 });
+      simulate.pointermove(canvas, { pointerId: 'b', clientX: 0, clientY: 10 });
+
       map._renderTaskQueue.run();
       t.assert.equal(zoomstart.callCount, 1);
       t.assert.equal(zoom.callCount, 1);
       t.assert.equal(zoomend.callCount, 0);
 
-      simulate.touchmove(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: -5 },
-          { clientX: 0, clientY: 5 }
-        ]
-      });
+      simulate.pointermove(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+      simulate.pointermove(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
       map._renderTaskQueue.run();
       t.assert.equal(zoomstart.callCount, 1);
       t.assert.equal(zoom.callCount, 2);
       t.assert.equal(zoomend.callCount, 0);
 
-      simulate.touchend(map.getCanvas(), { touches: [] });
+      simulate.pointerup(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
       map._renderTaskQueue.run();
       t.assert.equal(zoomstart.callCount, 1);
       t.assert.equal(zoom.callCount, 2);
@@ -75,7 +67,7 @@ test('TouchZoomRotateHandler', async t => {
   );
 
   await t.test(
-    'TouchZoomRotateHandler fires rotatestart, rotate, and rotateend events at appropriate times in response to a pinch-rotate gesture',
+    'fires rotatestart, rotate, and rotateend events at appropriate times in response to a pinch-rotate gesture',
     t => {
       const map = createMap();
 
@@ -87,40 +79,32 @@ test('TouchZoomRotateHandler', async t => {
       map.on('rotate', rotate);
       map.on('rotateend', rotateend);
 
-      simulate.touchstart(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: -5 },
-          { clientX: 0, clientY: 5 }
-        ]
-      });
+      const canvas = map.getCanvas();
+      simulate.pointerdown(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+      simulate.pointerdown(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 0);
       t.assert.equal(rotate.callCount, 0);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.touchmove(map.getCanvas(), {
-        touches: [
-          { clientX: -5, clientY: 0 },
-          { clientX: 5, clientY: 0 }
-        ]
-      });
+      simulate.pointermove(canvas, { pointerId: 'a', clientX: -5, clientY: 0 });
+      simulate.pointermove(canvas, { pointerId: 'b', clientX: 5, clientY: 0 });
+
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 1);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.touchmove(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: -5 },
-          { clientX: 0, clientY: 5 }
-        ]
-      });
+      simulate.pointermove(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+      simulate.pointermove(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 2);
       t.assert.equal(rotateend.callCount, 0);
 
-      simulate.touchend(map.getCanvas(), { touches: [] });
+      simulate.pointerup(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
       map._renderTaskQueue.run();
       t.assert.equal(rotatestart.callCount, 1);
       t.assert.equal(rotate.callCount, 2);
@@ -130,42 +114,34 @@ test('TouchZoomRotateHandler', async t => {
     }
   );
 
-  await t.test(
-    'TouchZoomRotateHandler does not begin a gesture if preventDefault is called on the touchstart event',
-    t => {
-      const map = createMap();
+  await t.test('does not begin a gesture if preventDefault is called on the touchstart event', t => {
+    const map = createMap();
 
-      map.on('touchstart', e => e.preventDefault());
+    map.on('touchstart', e => e.preventDefault());
 
-      const move = t.spy();
-      map.on('move', move);
+    const move = t.spy();
+    map.on('move', move);
 
-      simulate.touchstart(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: 0 },
-          { clientX: 5, clientY: 0 }
-        ]
-      });
-      map._renderTaskQueue.run();
+    const canvas = map.getCanvas();
+    simulate.pointerdown(canvas, { pointerId: 'a', clientX: 0, clientY: 0 });
+    simulate.pointerdown(canvas, { pointerId: 'b', clientX: 5, clientY: 0 });
+    map._renderTaskQueue.run();
 
-      simulate.touchmove(map.getCanvas(), {
-        touches: [
-          { clientX: 0, clientY: 0 },
-          { clientX: 0, clientY: 5 }
-        ]
-      });
-      map._renderTaskQueue.run();
+    simulate.pointermove(map.getCanvas(), { pointerId: 'a', clientX: 0, clientY: 0 });
+    simulate.pointermove(map.getCanvas(), { pointerId: 'b', clientX: 0, clientY: 5 });
 
-      simulate.touchend(map.getCanvas(), { touches: [] });
-      map._renderTaskQueue.run();
+    map._renderTaskQueue.run();
 
-      t.assert.equal(move.callCount, 0);
+    simulate.pointerup(canvas, { pointerId: 'a' });
 
-      map.remove();
-    }
-  );
+    map._renderTaskQueue.run();
 
-  await t.test('TouchZoomRotateHandler starts zoom immediately when rotation disabled', t => {
+    t.assert.equal(move.callCount, 0);
+
+    map.remove();
+  });
+
+  await t.test('starts zoom immediately when rotation disabled', t => {
     const map = createMap(t);
     map.touchZoomRotate.disableRotation();
 
@@ -177,40 +153,33 @@ test('TouchZoomRotateHandler', async t => {
     map.on('zoom', zoom);
     map.on('zoomend', zoomend);
 
-    simulate.touchstart(map.getCanvas(), {
-      touches: [
-        { clientX: 0, clientY: -5 },
-        { clientX: 0, clientY: 5 }
-      ]
-    });
+    const canvas = map.getCanvas();
+    simulate.pointerdown(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+    simulate.pointerdown(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
     map._renderTaskQueue.run();
     t.assert.equal(zoomstart.callCount, 0);
     t.assert.equal(zoom.callCount, 0);
     t.assert.equal(zoomend.callCount, 0);
 
-    simulate.touchmove(map.getCanvas(), {
-      touches: [
-        { clientX: 0, clientY: -5 },
-        { clientX: 0, clientY: 6 }
-      ]
-    });
+    simulate.pointermove(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+    simulate.pointermove(canvas, { pointerId: 'b', clientX: 0, clientY: 6 });
+
     map._renderTaskQueue.run();
     t.assert.equal(zoomstart.callCount, 1);
     t.assert.equal(zoom.callCount, 1);
     t.assert.equal(zoomend.callCount, 0);
 
-    simulate.touchmove(map.getCanvas(), {
-      touches: [
-        { clientX: 0, clientY: -5 },
-        { clientX: 0, clientY: 5 }
-      ]
-    });
+    simulate.pointermove(canvas, { pointerId: 'a', clientX: 0, clientY: -5 });
+    simulate.pointermove(canvas, { pointerId: 'b', clientX: 0, clientY: 5 });
+
     map._renderTaskQueue.run();
     t.assert.equal(zoomstart.callCount, 1);
     t.assert.equal(zoom.callCount, 2);
     t.assert.equal(zoomend.callCount, 0);
 
-    simulate.touchend(map.getCanvas(), { touches: [] });
+    simulate.pointerup(canvas, { pointerId: 'a' });
+
     map._renderTaskQueue.run();
     t.assert.equal(zoomstart.callCount, 1);
     t.assert.equal(zoom.callCount, 2);
