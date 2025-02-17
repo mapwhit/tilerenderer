@@ -54,13 +54,13 @@ test('Map#isMoving', async t => {
       done();
     });
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvas());
+    simulate.pointerup(map.getCanvas());
     map._renderTaskQueue.run();
   });
 
@@ -77,13 +77,13 @@ test('Map#isMoving', async t => {
       done();
     });
 
-    simulate.mousedown(map.getCanvas(), { buttons: 2, button: 2 });
+    simulate.pointerdown(map.getCanvas(), { buttons: 2, button: 2 });
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas(), { buttons: 2 });
+    simulate.pointermove(map.getCanvas(), { buttons: 2 });
     map._renderTaskQueue.run();
 
-    simulate.mouseup(map.getCanvas(), { buttons: 0, button: 2 });
+    simulate.pointerup(map.getCanvas(), { buttons: 0, button: 2 });
     map._renderTaskQueue.run();
   });
 
@@ -124,7 +124,7 @@ test('Map#isMoving', async t => {
 
     map.on('zoomend', () => {
       t.assert.equal(map.isMoving(), true);
-      simulate.mouseup(map.getCanvas());
+      simulate.pointerup(map.getCanvas());
       map._renderTaskQueue.run();
     });
 
@@ -137,10 +137,10 @@ test('Map#isMoving', async t => {
     // The following should trigger the above events, where a zoomstart/zoomend
     // pair is nested within a dragstart/dragend pair.
 
-    simulate.mousedown(map.getCanvas());
+    simulate.pointerdown(map.getCanvas());
     map._renderTaskQueue.run();
 
-    simulate.mousemove(map.getCanvas());
+    simulate.pointermove(map.getCanvas());
     map._renderTaskQueue.run();
 
     const browserNow = t.stub(browser, 'now');

@@ -1357,7 +1357,7 @@ test('Map', async t => {
     const map = createMap({ interactive: true });
     map.flyTo({ center: [200, 0], duration: 100 });
 
-    simulate.mousedown(map.getCanvasContainer());
+    simulate.pointerdown(map.getCanvasContainer());
     t.assert.equal(map.isEasing(), false);
 
     map.remove();
@@ -1367,27 +1367,7 @@ test('Map', async t => {
     const map = createMap({ interactive: false });
     map.flyTo({ center: [200, 0], duration: 100 });
 
-    simulate.mousedown(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), true);
-
-    map.remove();
-  });
-
-  await t.test('stops camera animation on touchstart when interactive', t => {
-    const map = createMap({ interactive: true });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.touchstart(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), false);
-
-    map.remove();
-  });
-
-  await t.test('continues camera animation on touchstart when non-interactive', t => {
-    const map = createMap({ interactive: false });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.touchstart(map.getCanvasContainer());
+    simulate.pointerdown(map.getCanvasContainer());
     t.assert.equal(map.isEasing(), true);
 
     map.remove();

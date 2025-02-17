@@ -202,7 +202,7 @@ function scrollZoomHandler(_map) {
       _around = _map.getCenter();
       _aroundPoint = _map.transform.locationPoint(_around);
     } else {
-      _aroundPoint = DOM.mousePos(_map.getCanvasContainer(), _lastWheelEvent);
+      _aroundPoint = DOM.pointerPos(_map.getCanvasContainer(), _lastWheelEvent);
       _around = _map.unproject(_aroundPoint);
     }
     frame.request();

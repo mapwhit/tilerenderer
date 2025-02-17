@@ -46,9 +46,8 @@ function doubleClickZoomHandler(map) {
     enabled = false;
   }
 
-  function onTouchStart(e) {
+  function onPointerDown(e) {
     if (!enabled) return;
-    if (e.points.length > 1) return;
 
     if (!tapped) {
       tapped = setTimeout(() => {
@@ -84,7 +83,7 @@ function doubleClickZoomHandler(map) {
     enable,
     disable,
     onDblClick,
-    onTouchStart
+    onPointerDown
   };
 }
 
