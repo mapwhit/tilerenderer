@@ -1,25 +1,16 @@
 const DEMData = require('../data/dem_data');
 
 class RasterDEMTileWorkerSource {
-  constructor() {
-    this.loaded = {};
-  }
+  #loaded = {};
 
-  loadTile(params, callback) {
-    const { uid, encoding, rawImageData } = params;
+  loadTile({ uid, encoding, rawImageData }, callback) {
     const dem = new DEMData(uid, rawImageData, encoding);
-
-    this.loaded = this.loaded || {};
-    this.loaded[uid] = dem;
+    this.#loaded[uid] = dem;
     callback(null, dem);
   }
 
-  removeTile(params) {
-    const loaded = this.loaded;
-    const uid = params.uid;
-    if (loaded?.[uid]) {
-      delete loaded[uid];
-    }
+  removeTile({ uid }) {
+    delete this.#loaded[uid];
   }
 }
 
