@@ -99,83 +99,13 @@ class WorkerTile {
       }
     }
 
-    let error;
-    let glyphMap;
-    let iconMap;
-    let patternMap;
-
     const stacks = mapObject(options.glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
-    if (Object.keys(stacks).length) {
-      actor.send('getGlyphs', { uid: this.uid, stacks }, (err, result) => {
-        if (!error) {
-          error = err;
-          glyphMap = result;
-          maybePrepare.call(this);
-        }
-      });
-    } else {
-      glyphMap = {};
-    }
-
     const icons = Object.keys(options.iconDependencies);
-    if (icons.length) {
-      actor.send('getImages', { icons }, (err, result) => {
-        if (!error) {
-          error = err;
-          iconMap = result;
-          maybePrepare.call(this);
-        }
-      });
-    } else {
-      iconMap = {};
-    }
-
     const patterns = Object.keys(options.patternDependencies);
-    if (patterns.length) {
-      actor.send('getImages', { icons: patterns }, (err, result) => {
-        if (!error) {
-          error = err;
-          patternMap = result;
-          maybePrepare.call(this);
-        }
-      });
-    } else {
-      patternMap = {};
-    }
 
-    maybePrepare.call(this);
-
-    function maybePrepare() {
-      if (error) {
-        return callback(error);
-      }
-      if (glyphMap && iconMap && patternMap) {
-        const glyphAtlas = new GlyphAtlas(glyphMap);
-        const imageAtlas = new ImageAtlas(iconMap, patternMap);
-
-        for (const key in buckets) {
-          const bucket = buckets[key];
-          if (bucket instanceof SymbolBucket) {
-            recalculateLayers(bucket.layers, this.zoom);
-            performSymbolLayout(
-              bucket,
-              glyphMap,
-              glyphAtlas.positions,
-              iconMap,
-              imageAtlas.iconPositions,
-              this.showCollisionBoxes
-            );
-          } else if (
-            bucket.hasPattern &&
-            (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
-          ) {
-            recalculateLayers(bucket.layers, this.zoom);
-            bucket.addFeatures(options, imageAtlas.patternPositions);
-          }
-        }
-
+    loadGlypshsAndImages(this)
+      .then(({ glyphAtlas, imageAtlas }) => {
         this.status = 'done';
-
         callback(null, {
           buckets: values(buckets).filter(b => !b.isEmpty()),
           featureIndex,
@@ -183,7 +113,40 @@ class WorkerTile {
           glyphAtlasImage: glyphAtlas.image,
           imageAtlas
         });
+      })
+      .catch(callback);
+
+    async function loadGlypshsAndImages({ uid, zoom, showCollisionBoxes }) {
+      const tasks = [
+        Object.keys(stacks).length ? actor.send('getGlyphs', { uid, stacks }) : {},
+        icons.length ? actor.send('getImages', { icons }) : {},
+        patterns.length ? actor.send('getImages', { icons: patterns }) : {}
+      ];
+      const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
+      const glyphAtlas = new GlyphAtlas(glyphMap);
+      const imageAtlas = new ImageAtlas(iconMap, patternMap);
+
+      for (const key in buckets) {
+        const bucket = buckets[key];
+        if (bucket instanceof SymbolBucket) {
+          recalculateLayers(bucket.layers, zoom);
+          performSymbolLayout(
+            bucket,
+            glyphMap,
+            glyphAtlas.positions,
+            iconMap,
+            imageAtlas.iconPositions,
+            showCollisionBoxes
+          );
+        } else if (
+          bucket.hasPattern &&
+          (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
+        ) {
+          recalculateLayers(bucket.layers, zoom);
+          bucket.addFeatures(options, imageAtlas.patternPositions);
+        }
       }
+      return { glyphAtlas, imageAtlas };
     }
   }
 }
