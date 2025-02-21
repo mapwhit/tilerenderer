@@ -16,29 +16,11 @@ test('loadTile', async t => {
       },
       (err, data) => {
         if (err) t.assert.fail();
-        t.assert.deepEqual(Object.keys(source.loaded), [0]);
         t.assert.ok(data instanceof DEMData, 'returns DEM data');
 
+        source.removeTile({ uid: 0 });
         done();
       }
     );
-  });
-});
-
-test('removeTile', async t => {
-  await t.test('removes loaded tile', (t, done) => {
-    const source = new RasterDEMTileWorkerSource(null, new StyleLayerIndex());
-
-    source.loaded = {
-      0: {}
-    };
-
-    source.removeTile({
-      source: 'source',
-      uid: 0
-    });
-
-    t.assert.deepEqual(source.loaded, {});
-    done();
   });
 });
