@@ -47,6 +47,26 @@ test('Actor', async t => {
     });
   });
 
+  await t.test('forwards responses to correct callback with promises', async t => {
+    t.stub(WebWorker, 'Worker').callsFake(function Worker(self) {
+      this.self = self;
+      this.actor = new Actor(self, this);
+      this.test = function (mapId, params, callback) {
+        setTimeout(() => callback(null, params), 0);
+      };
+    });
+
+    const worker = new WebWorker();
+
+    const m1 = new Actor(worker, {}, 'map-1');
+    const m2 = new Actor(worker, {}, 'map-2');
+
+    const responses = await Promise.all([m1.send('test', { value: 1729 }), m2.send('test', { value: 4104 })]);
+
+    t.assert.deepEqual(responses[0], { value: 1729 });
+    t.assert.deepEqual(responses[1], { value: 4104 });
+  });
+
   await t.test('targets worker-initiated messages to correct map instance', (t, done) => {
     let workerActor;
 
