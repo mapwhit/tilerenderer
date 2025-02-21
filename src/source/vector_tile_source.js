@@ -120,7 +120,6 @@ class VectorTileSource extends Evented {
   abortTile(tile) {
     tile.aborted = true;
     tile.abortController.abort();
-    this.dispatcher.send('abortTile', { uid: tile.uid, type: this.type, source: this.id }, undefined, tile.workerID);
   }
 
   unloadTile(tile) {

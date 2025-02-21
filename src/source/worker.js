@@ -66,11 +66,6 @@ class Worker {
     this.getWorkerSource(mapId, params.type, params.source).reloadTile(params, callback);
   }
 
-  abortTile(mapId, params, callback) {
-    assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).abortTile(params, callback);
-  }
-
   removeTile(mapId, params, callback) {
     assert(params.type);
     this.getWorkerSource(mapId, params.type, params.source).removeTile(params, callback);
