@@ -3,10 +3,10 @@ require('../util/polyfill');
 const Actor = require('../util/actor');
 
 const StyleLayerIndex = require('../style/style_layer_index');
-const VectorTileWorkerSource = require('./vector_tile_worker_source');
-const GeoJSONWorkerSource = require('./geojson_worker_source');
+const VectorTileWorkerSource = require('./source/vector_tile_worker_source');
+const GeoJSONWorkerSource = require('./source/geojson_worker_source');
 const assert = require('assert');
-const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
+const { plugin: globalRTLTextPlugin } = require('../source/rtl_text_plugin');
 const DEMData = require('../data/dem_data');
 
 class Worker {

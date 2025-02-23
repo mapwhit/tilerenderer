@@ -1,4 +1,4 @@
-const Worker = require('../../src/source/worker');
+const Worker = require('../../src/worker');
 
 // The main thread interface. Provided by Worker in a browser environment,
 // and MessageBus below in a node environment.
