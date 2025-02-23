@@ -1,5 +1,5 @@
 const rewind = require('@mapwhit/geojson-rewind');
-const GeoJSONWrapper = require('./geojson_wrapper');
+const GeoJSONWrapper = require('../../source/geojson_wrapper');
 const vtpbf = require('@mapwhit/vt-pbf');
 const supercluster = require('supercluster');
 const geojsonvt = require('geojson-vt');

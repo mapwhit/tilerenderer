@@ -13,7 +13,7 @@ const assert = require('assert');
 const ImageAtlas = require('../render/image_atlas');
 const GlyphAtlas = require('../render/glyph_atlas');
 const EvaluationParameters = require('../style/evaluation_parameters');
-const { OverscaledTileID } = require('./tile_id');
+const { OverscaledTileID } = require('../source/tile_id');
 
 class WorkerTile {
   constructor(params) {
