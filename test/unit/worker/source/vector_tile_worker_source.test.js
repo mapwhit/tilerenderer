@@ -1,7 +1,7 @@
-const { test } = require('../../util/mapbox-gl-js-test');
-const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
-const WorkerTile = require('../../../src/source/worker_tile');
+const { test } = require('../../../util/mapbox-gl-js-test');
+const VectorTileWorkerSource = require('../../../../src/worker/source/vector_tile_worker_source');
+const StyleLayerIndex = require('../../../../src/style/style_layer_index');
+const WorkerTile = require('../../../../src/worker/worker_tile');
 
 test('VectorTileWorkerSource#constructor', t => {
   const actor = {};
