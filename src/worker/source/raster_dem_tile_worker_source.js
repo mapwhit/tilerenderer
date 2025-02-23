@@ -1,4 +1,4 @@
-const DEMData = require('../data/dem_data');
+const DEMData = require('../../data/dem_data');
 
 class RasterDEMTileWorkerSource {
   #loaded = {};

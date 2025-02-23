@@ -1,6 +1,6 @@
-const { test } = require('../../util/mapbox-gl-js-test');
-const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
+const { test } = require('../../../util/mapbox-gl-js-test');
+const VectorTileWorkerSource = require('../../../../src/worker/source/vector_tile_worker_source');
+const StyleLayerIndex = require('../../../../src/style/style_layer_index');
 
 test('VectorTileWorkerSource#abortTile aborts pending request', t => {
   const source = new VectorTileWorkerSource(null, new StyleLayerIndex());

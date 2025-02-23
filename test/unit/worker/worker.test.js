@@ -1,5 +1,5 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const Worker = require('../../../src/source/worker');
+const Worker = require('../../../src/worker');
 
 const _self = {
   addEventListener: function () {}
