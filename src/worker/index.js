@@ -101,21 +101,6 @@ class Worker {
     }
   }
 
-  /**
-   * Load a {@link WorkerSource} script at params.url.  The script is run
-   * (using importScripts) with `registerWorkerSource` in scope, which is a
-   * function taking `(name, workerSourceObject)`.
-   *  @private
-   */
-  loadWorkerSource(map, params, callback) {
-    try {
-      this.self.importScripts(params.url);
-      callback();
-    } catch (e) {
-      callback(e.toString());
-    }
-  }
-
   loadRTLTextPlugin(map, pluginURL, callback) {
     try {
       if (!globalRTLTextPlugin.isLoaded()) {
