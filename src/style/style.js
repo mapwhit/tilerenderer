@@ -767,25 +767,6 @@ class Style extends Evented {
     return sourceCache ? querySourceFeatures(sourceCache, params) : [];
   }
 
-  addSourceType(name, SourceType, callback) {
-    if (Style.getSourceType(name)) {
-      return callback(new Error(`A source type called "${name}" already exists.`));
-    }
-
-    Style.setSourceType(name, SourceType);
-
-    if (!SourceType.workerSourceURL) {
-      return callback(null, null);
-    }
-
-    this.dispatcher
-      .broadcast('loadWorkerSource', {
-        name: name,
-        url: SourceType.workerSourceURL
-      })
-      .then(data => callback(null, data), callback);
-  }
-
   getLight() {
     return this.light.getLight();
   }
