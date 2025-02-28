@@ -36,14 +36,14 @@ class RasterDEMTileSource extends RasterTileSource {
         tile.dem = dem;
         tile.needsHillshadePrepare = true;
         tile.state = 'loaded';
-        callback(null);
+        callback();
       }
     };
     const imageLoaded = (err, img) => {
       delete tile.request;
       if (tile.aborted) {
         tile.state = 'unloaded';
-        callback(null);
+        callback();
       } else if (err) {
         tile.state = 'errored';
         callback(err);
@@ -58,7 +58,8 @@ class RasterDEMTileSource extends RasterTileSource {
         };
 
         if (!tile.workerID || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.send('loadDEMTile', params, done);
+          tile.workerID = this.dispatcher.nextWorkerId();
+          this.dispatcher.send('loadDEMTile', params, tile.workerID).then(data => done(null, data), done);
         }
       }
     };
@@ -133,7 +134,7 @@ class RasterDEMTileSource extends RasterTileSource {
     delete tile.neighboringTiles;
 
     tile.state = 'unloaded';
-    this.dispatcher.send('removeDEMTile', { uid: tile.uid, source: this.id }, undefined, tile.workerID);
+    this.dispatcher.send('removeDEMTile', { uid: tile.uid, source: this.id }, tile.workerID);
   }
 }
 

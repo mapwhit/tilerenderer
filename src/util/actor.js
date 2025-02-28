@@ -34,9 +34,9 @@ function actor(target, parent, mapId, name) {
    * @param targetMapId A particular mapId to which to send this message.
    * @private
    */
-  function send(type, data, callback, targetMapId) {
+  function send(type, data, targetMapId) {
     const id = `${mapId}:${callbackID++}`;
-    const p = makePromise(callback);
+    const p = Promise.withResolvers();
     promises.set(id, p);
     postMessage(targetMapId, id, type, data);
     return p.promise;
@@ -99,18 +99,4 @@ function actor(target, parent, mapId, name) {
     }
     target.postMessage(payload, buffers);
   }
-}
-
-function makePromise(cb) {
-  return cb
-    ? {
-        promise: Promise.resolve(),
-        resolve(data) {
-          cb(null, data);
-        },
-        reject(err) {
-          cb(err);
-        }
-      }
-    : Promise.withResolvers();
 }

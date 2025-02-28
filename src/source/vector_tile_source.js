@@ -90,12 +90,19 @@ class VectorTileSource extends Evented {
         };
 
         if (tile.workerID === undefined || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.send('loadTile', params, done.bind(this));
+          tile.workerID = this.dispatcher.nextWorkerId();
+          this.dispatcher.send('loadTile', params, tile.workerID).then(
+            data => done.call(this, null, data),
+            err => done.call(this, err)
+          );
         } else if (tile.state === 'loading') {
           // schedule tile reloading after it has been loaded
           tile.reloadCallback = callback;
         } else {
-          this.dispatcher.send('reloadTile', params, done.bind(this), tile.workerID);
+          this.dispatcher.send('reloadTile', params, tile.workerID).then(
+            data => done.call(this, null, data),
+            err => done.call(this, err)
+          );
         }
       });
 
@@ -108,7 +115,7 @@ class VectorTileSource extends Evented {
 
       tile.loadVectorData(data, this.map.painter);
 
-      callback(null);
+      callback();
 
       if (tile.reloadCallback) {
         this.loadTile(tile, tile.reloadCallback);
@@ -124,7 +131,7 @@ class VectorTileSource extends Evented {
 
   unloadTile(tile) {
     tile.unloadVectorData();
-    this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, undefined, tile.workerID);
+    return this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   hasTransition() {
@@ -132,7 +139,7 @@ class VectorTileSource extends Evented {
   }
 
   updateWorkerConfig() {
-    this.dispatcher.broadcast('vector.updateConfig', {
+    return this.dispatcher.broadcast('vector.updateConfig', {
       source: this.id
     });
   }

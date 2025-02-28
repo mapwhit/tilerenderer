@@ -6,7 +6,10 @@ const Transform = require('../../../src/geo/transform');
 const LngLat = require('../../../src/geo/lng_lat');
 
 const mockDispatcher = {
-  send: function () {}
+  async send() {},
+  nextWorkerId() {
+    return 0;
+  }
 };
 
 const hawkHill = {
@@ -49,13 +52,7 @@ test('GeoJSONSource#setData', async t => {
   function createSource(opts) {
     opts = opts || {};
     opts = Object.assign(opts, { data: {} });
-    return new GeoJSONSource('id', opts, {
-      send: function (type, data, callback) {
-        if (callback) {
-          return setTimeout(callback, 0);
-        }
-      }
-    });
+    return new GeoJSONSource('id', opts, mockDispatcher);
   }
 
   await t.test('returns self', t => {
@@ -108,11 +105,20 @@ test('GeoJSONSource#update', async t => {
   transform.zoom = 15;
   transform.setLocationAtPoint(lngLat, point);
 
+  const messages = ['geojson.loadData', 'geojson.coalesce'];
+
   await t.test('sends initial loadData request to dispatcher', (t, done) => {
+    let index = 0;
     const mockDispatcher = {
-      send: function (message) {
-        t.assert.equal(message, 'geojson.loadData');
-        done();
+      send(message) {
+        t.assert.equal(message, messages[index++]);
+        if (index === messages.length) {
+          done();
+        }
+        return Promise.resolve();
+      },
+      nextWorkerId() {
+        return 0;
       }
     };
 
@@ -120,17 +126,26 @@ test('GeoJSONSource#update', async t => {
   });
 
   await t.test('forwards geojson-vt options with worker request', (t, done) => {
+    let index = 0;
     const mockDispatcher = {
-      send: function (message, params) {
-        t.assert.equal(message, 'geojson.loadData');
-        t.assert.deepEqual(params.geojsonVtOptions, {
-          extent: 8192,
-          maxZoom: 10,
-          tolerance: 4,
-          buffer: 256,
-          lineMetrics: false
-        });
-        done();
+      send(message, params) {
+        t.assert.equal(message, messages[index++]);
+        if (message === 'geojson.loadData') {
+          t.assert.deepEqual(params.geojsonVtOptions, {
+            extent: 8192,
+            maxZoom: 10,
+            tolerance: 4,
+            buffer: 256,
+            lineMetrics: false
+          });
+        }
+        if (index === messages.length) {
+          done();
+        }
+        return Promise.resolve();
+      },
+      nextWorkerId() {
+        return 0;
       }
     };
 
@@ -147,14 +162,6 @@ test('GeoJSONSource#update', async t => {
   });
 
   await t.test('fires event when metadata loads', (t, done) => {
-    const mockDispatcher = {
-      send: function (message, args, callback) {
-        if (callback) {
-          setTimeout(callback, 0);
-        }
-      }
-    };
-
     const source = new GeoJSONSource('id', { data: {} }, mockDispatcher);
 
     source.on('data', e => {
@@ -168,10 +175,11 @@ test('GeoJSONSource#update', async t => {
 
   await t.test('fires "error"', (t, done) => {
     const mockDispatcher = {
-      send: function (message, args, callback) {
-        if (callback) {
-          setTimeout(callback.bind(null, 'error'), 0);
-        }
+      send(message) {
+        return message === 'geojson.loadData' ? Promise.reject('error') : Promise.resolve();
+      },
+      nextWorkerId() {
+        return 0;
       }
     };
 
@@ -188,13 +196,14 @@ test('GeoJSONSource#update', async t => {
   await t.test('sends loadData request to dispatcher after data update', (t, done) => {
     let expectedLoadDataCalls = 2;
     const mockDispatcher = {
-      send: function (message, args, callback) {
+      send(message) {
         if (message === 'geojson.loadData' && --expectedLoadDataCalls <= 0) {
           done();
         }
-        if (callback) {
-          setTimeout(callback, 0);
-        }
+        return Promise.resolve();
+      },
+      nextWorkerId() {
+        return 0;
       }
     };
 

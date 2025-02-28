@@ -1,10 +1,7 @@
-const async = require('./async');
 const uniqueId = require('./unique_id');
 const actor = require('./actor');
 
 module.exports = dispatcher;
-
-const noop = () => {};
 
 /**
  * Responsible for sending messages from a {@link Source} to an associated
@@ -15,7 +12,7 @@ const noop = () => {};
 function dispatcher(workerPool, parent, makeActor = actor) {
   // exposed to allow stubbing in unit tests
 
-  let currentActor = 0;
+  let currentActor = -1;
   const id = uniqueId();
   const workers = workerPool.acquire(id);
   const actors = workers.map((worker, i) => makeActor(worker, parent, id, `Worker ${i}`));
@@ -23,8 +20,9 @@ function dispatcher(workerPool, parent, makeActor = actor) {
   /**
    * Broadcast a message to all Workers.
    */
-  function broadcast(type, data, cb = noop) {
-    async.all(actors, (actor, done) => actor.send(type, data, done), cb);
+  function broadcast(type, data) {
+    const tasks = actors.map(actor => actor.send(type, data));
+    return Promise.all(tasks);
   }
 
   // Use round robin to send requests to web workers.
@@ -41,16 +39,8 @@ function dispatcher(workerPool, parent, makeActor = actor) {
    * @param targetID The ID of the Worker to which to send this message. Omit to allow the dispatcher to choose.
    * @returns The ID of the worker to which the message was sent.
    */
-  function send(type, data, callback, targetID) {
-    if (typeof targetID !== 'number' || isNaN(targetID)) {
-      targetID = nextActorId();
-    }
-
-    const actor = actors[targetID];
-    if (actor) {
-      actor.send(type, data, callback);
-    }
-    return targetID;
+  function send(type, data, targetID = nextActorId()) {
+    return actors[targetID]?.send(type, data) ?? Promise.resolve();
   }
 
   function remove() {
@@ -59,10 +49,17 @@ function dispatcher(workerPool, parent, makeActor = actor) {
     workerPool.release(id);
   }
 
+  function nextWorkerId(workerId = nextActorId()) {
+    return workerId;
+  }
+
   return {
-    id,
+    get id() {
+      return id;
+    },
     broadcast,
     send,
+    nextWorkerId,
     remove
   };
 }

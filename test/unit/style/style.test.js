@@ -50,6 +50,15 @@ class StubMap extends Evented {
   }
 }
 
+const mockDispatcher = {
+  nextWorkerId() {
+    return 0;
+  },
+  async send() {},
+  async broadcast() {},
+  remove() {}
+};
+
 test('Style', async t => {
   let globalWindow;
   t.before(() => {
@@ -332,6 +341,7 @@ test('Style', async t => {
         t.assert.deepEqual(value.removedIds, ['second']);
         style._remove();
         done();
+        return Promise.resolve();
       };
 
       style.update({});
@@ -1026,18 +1036,22 @@ test('Style', async t => {
 
   await t.test('Style#moveLayer', async t => {
     let style;
-    t.afterEach(() => {
-      style._remove();
+
+    t.beforeEach(() => {
+      style = new Style(new StubMap());
+      style.dispatcher = mockDispatcher;
     });
 
-    await t.test('throw before loaded', (t, done) => {
-      style = new Style(new StubMap());
+    t.afterEach(() => {
+      style._remove();
+      style = null;
+    });
+
+    await t.test('throw before loaded', t => {
       t.assert.throws(() => style.moveLayer('background'), /load/i);
-      done();
     });
 
     await t.test('fires "data" event', (t, done) => {
-      style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
       const layer = { id: 'background', type: 'background' };
 
@@ -1051,7 +1065,6 @@ test('Style', async t => {
     });
 
     await t.test('fires an error on non-existence', (t, done) => {
-      style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
 
       style.on('style.load', () => {
@@ -1064,7 +1077,6 @@ test('Style', async t => {
     });
 
     await t.test('changes the order', (t, done) => {
-      style = new Style(new StubMap());
       style.loadJSON(
         createStyleJSON({
           layers: [
@@ -1083,7 +1095,6 @@ test('Style', async t => {
     });
 
     await t.test('moves to existing location', (t, done) => {
-      style = new Style(new StubMap());
       style.loadJSON(
         createStyleJSON({
           layers: [
@@ -1104,12 +1115,19 @@ test('Style', async t => {
 
   await t.test('Style#setPaintProperty', async t => {
     let style;
-    t.afterEach(() => {
-      style._remove();
+
+    t.beforeEach(() => {
+      style = new Style(new StubMap());
+      style.dispatcher = mockDispatcher;
     });
 
-    await t.test('#4738 postpones source reload until layers have been broadcast to workers', (t, done) => {
-      style = new Style(new StubMap());
+    t.afterEach(() => {
+      style._remove();
+      style = null;
+    });
+
+    await t.test('#4738 postpones source reload until layers have been broadcast to workers', async t => {
+      const { promise, resolve } = Promise.withResolvers();
       style.loadJSON(
         Object.assign(createStyleJSON(), {
           sources: {
@@ -1139,15 +1157,15 @@ test('Style', async t => {
         let begun = false;
         let styleUpdateCalled = false;
 
+        t.stub(sourceCache, 'reload').callsFake(() => {
+          t.assert.ok(styleUpdateCalled, 'loadTile called before layer data broadcast');
+          resolve();
+        });
+
         source.on('data', e =>
           setImmediate(() => {
             if (!begun && sourceCache.loaded()) {
               begun = true;
-              t.stub(sourceCache, 'reload').callsFake(() => {
-                t.assert.ok(styleUpdateCalled, 'loadTile called before layer data broadcast');
-                done();
-              });
-
               source.setData({ type: 'FeatureCollection', features: [] });
               style.setPaintProperty('circle', 'circle-color', { type: 'identity', property: 'foo' });
             }
@@ -1165,10 +1183,10 @@ test('Style', async t => {
           })
         );
       });
+      await promise;
     });
 
     await t.test('#5802 clones the input', (t, done) => {
-      style = new Style(new StubMap());
       style.loadJSON({
         version: 8,
         sources: {},
@@ -1192,7 +1210,7 @@ test('Style', async t => {
         t.assert.ok(style._changed);
 
         style.update({});
-        t.assert.notOk(style._changed);
+        t.assert.ok(!style._changed);
 
         value.stops[0][0] = 1;
         style.setPaintProperty('background', 'background-color', value);
@@ -1230,7 +1248,7 @@ test('Style', async t => {
           ]
         });
         style.update({});
-        t.assert.notOk(style._changed);
+        t.assert.ok(!style._changed);
 
         const value = style.getPaintProperty('background', 'background-color');
         value.stops[0][0] = 1;
@@ -1282,7 +1300,7 @@ test('Style', async t => {
         t.assert.ok(style._changed);
 
         style.update({});
-        t.assert.notOk(style._changed);
+        t.assert.ok(!style._changed);
 
         value.stops[0][0] = 1;
         style.setLayoutProperty('line', 'line-cap', value);
@@ -1329,7 +1347,7 @@ test('Style', async t => {
           ]
         });
         style.update({});
-        t.assert.notOk(style._changed);
+        t.assert.ok(!style._changed);
 
         const value = style.getLayoutProperty('line', 'line-cap');
         value.stops[0][0] = 1;
@@ -1374,6 +1392,7 @@ test('Style', async t => {
           t.assert.deepEqual(value.layers[0].id, 'symbol');
           t.assert.deepEqual(value.layers[0].filter, ['==', 'id', 1]);
           done();
+          return Promise.resolve();
         };
 
         style.setFilter('symbol', ['==', 'id', 1]);
@@ -1776,6 +1795,7 @@ test('Style', async t => {
         if (type === 'loadWorkerSource') {
           t.assert.fail();
         }
+        return Promise.resolve();
       };
 
       style.addSourceType('foo', SourceType, () => {
@@ -1796,6 +1816,7 @@ test('Style', async t => {
           t.assert.equal(params.url, 'worker-source.js');
           done();
         }
+        return Promise.resolve();
       };
 
       style.addSourceType('bar', SourceType, err => {

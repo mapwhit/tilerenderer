@@ -46,7 +46,9 @@ class Style extends Evented {
 
     const self = this;
     this._rtlTextPluginCallback = Style.registerForPluginAvailability(args => {
-      self.dispatcher.broadcast('loadRTLTextPlugin', args.pluginURL, args.completionCallback);
+      self.dispatcher
+        .broadcast('loadRTLTextPlugin', args.pluginURL)
+        .then(_ => args.completionCallback(), args.completionCallback);
       for (const id in self.sourceCaches) {
         self.sourceCaches[id].reload(); // Should be a no-op if the plugin loads before any tiles load
       }
@@ -776,14 +778,12 @@ class Style extends Evented {
       return callback(null, null);
     }
 
-    this.dispatcher.broadcast(
-      'loadWorkerSource',
-      {
+    this.dispatcher
+      .broadcast('loadWorkerSource', {
         name: name,
         url: SourceType.workerSourceURL
-      },
-      callback
-    );
+      })
+      .then(data => callback(null, data), callback);
   }
 
   getLight() {
