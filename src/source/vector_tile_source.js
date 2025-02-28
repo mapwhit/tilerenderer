@@ -75,7 +75,7 @@ class VectorTileSource extends Evented {
         if (!data) {
           const err = new Error('Tile could not be loaded');
           err.status = 404; // will try to use the parent/child tile
-          return done(err);
+          return onerror(err);
         }
         const params = {
           response: { data },
@@ -90,25 +90,34 @@ class VectorTileSource extends Evented {
         };
 
         if (tile.workerID === undefined || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.send('loadTile', params, done.bind(this));
+          tile.workerID = this.dispatcher.nextWorkerId(tile.workerID);
+          this.dispatcher.send('loadTile', params, tile.workerID).then(done.bind(this), onerror);
         } else if (tile.state === 'loading') {
           // schedule tile reloading after it has been loaded
           tile.reloadCallback = callback;
         } else {
-          this.dispatcher.send('reloadTile', params, done.bind(this), tile.workerID);
+          this.dispatcher.send('reloadTile', params, tile.workerID).then(done.bind(this), onerror);
         }
       });
 
-    function done(err, data) {
-      if (tile.aborted) return callback(null);
+    function onerror(err) {
+      if (tile.aborted) {
+        return callback();
+      }
 
       if (err) {
         return callback(err);
       }
+    }
+
+    function done(data) {
+      if (tile.aborted) {
+        return callback();
+      }
 
       tile.loadVectorData(data, this.map.painter);
 
-      callback(null);
+      callback();
 
       if (tile.reloadCallback) {
         this.loadTile(tile, tile.reloadCallback);
@@ -120,12 +129,12 @@ class VectorTileSource extends Evented {
   abortTile(tile) {
     tile.aborted = true;
     tile.abortController.abort();
-    // this.dispatcher.send('abortTile', { uid: tile.uid, type: this.type, source: this.id }, undefined, tile.workerID);
+    // return this.dispatcher.send('abortTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   unloadTile(tile) {
     tile.unloadVectorData();
-    this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, undefined, tile.workerID);
+    return this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   hasTransition() {
@@ -133,7 +142,7 @@ class VectorTileSource extends Evented {
   }
 
   updateWorkerConfig() {
-    this.dispatcher.broadcast('vector.updateConfig', {
+    return this.dispatcher.broadcast('vector.updateConfig', {
       source: this.id
     });
   }

@@ -33,6 +33,20 @@ function createMap(options, callback) {
       options
     )
   );
+  if (map.style) {
+    map.style.dispatcher = {
+      nextWorkerId() {
+        return 0;
+      },
+      send() {
+        return Promise.resolve();
+      },
+      broadcast() {
+        return Promise.resolve();
+      },
+      remove() {}
+    };
+  }
 
   if (callback)
     map.on('load', () => {

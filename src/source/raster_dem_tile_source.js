@@ -26,24 +26,23 @@ class RasterDEMTileSource extends RasterTileSource {
   }
 
   loadTile(tile, callback) {
-    const done = (err, dem) => {
-      if (err) {
-        tile.state = 'errored';
-        callback(err);
-      }
-
+    const onerror = err => {
+      tile.state = 'errored';
+      callback(err);
+    };
+    const ondem = dem => {
       if (dem) {
         tile.dem = dem;
         tile.needsHillshadePrepare = true;
         tile.state = 'loaded';
-        callback(null);
       }
+      callback();
     };
     const imageLoaded = (err, img) => {
       delete tile.request;
       if (tile.aborted) {
         tile.state = 'unloaded';
-        callback(null);
+        callback();
       } else if (err) {
         tile.state = 'errored';
         callback(err);
@@ -58,7 +57,8 @@ class RasterDEMTileSource extends RasterTileSource {
         };
 
         if (!tile.workerID || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.send('loadDEMTile', params, done);
+          tile.workerID = this.dispatcher.nextWorkerId(tile.workerID);
+          this.dispatcher.send('loadDEMTile', params, tile.workerID).then(ondem, onerror);
         }
       }
     };
@@ -71,7 +71,7 @@ class RasterDEMTileSource extends RasterTileSource {
         if (!data) {
           const err = new Error('Tile could not be loaded');
           err.status = 404; // will try to use the parent/child tile
-          return done(err);
+          return onerror(err);
         }
         tile.request = loadImage(data, imageLoaded);
       });
@@ -133,7 +133,7 @@ class RasterDEMTileSource extends RasterTileSource {
     delete tile.neighboringTiles;
 
     tile.state = 'unloaded';
-    this.dispatcher.send('removeDEMTile', { uid: tile.uid, source: this.id }, undefined, tile.workerID);
+    this.dispatcher.send('removeDEMTile', { uid: tile.uid, source: this.id }, tile.workerID);
   }
 }
 

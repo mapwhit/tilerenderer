@@ -10,8 +10,11 @@ function createSource(options) {
     'id',
     options,
     {
-      send: function () {},
-      broadcast: function () {}
+      async send() {},
+      nextWorkerId() {
+        return 0;
+      },
+      async broadcast() {}
     },
     options.eventedParent
   );
@@ -107,10 +110,9 @@ test('VectorTileSource', async t => {
   await t.test('reloads a loading tile properly', (t, done) => {
     const source = createSource({});
     const events = [];
-    source.dispatcher.send = function (type, params, cb) {
+    source.dispatcher.send = function (type) {
       events.push(type);
-      setTimeout(cb, 0);
-      return 1;
+      return Promise.resolve(0);
     };
 
     source.on('data', e => {
