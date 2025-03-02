@@ -112,9 +112,8 @@ class RasterTileSource extends Evented {
     }
   }
 
-  unloadTile(tile, callback) {
+  unloadTile(tile) {
     if (tile.texture) this.map.painter.saveTileTexture(tile.texture);
-    callback();
   }
 
   hasTransition() {
