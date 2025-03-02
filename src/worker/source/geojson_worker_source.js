@@ -6,16 +6,18 @@ const geojsonvt = require('geojson-vt');
 const assert = require('assert');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
-function loadGeoJSONTile(params, callback) {
+function loadGeoJSONTile(params) {
   const canonical = params.tileID.canonical;
 
   if (!this._geoJSONIndex) {
-    return callback(null, null); // we couldn't load the file
+    // we couldn't load the file
+    return;
   }
 
   const geoJSONTile = this._geoJSONIndex.getTile(canonical.z, canonical.x, canonical.y);
   if (!geoJSONTile) {
-    return callback(null, null); // nothing in the given tile
+    // nothing in the given tile
+    return;
   }
 
   const geojsonWrapper = new GeoJSONWrapper(geoJSONTile.features);
@@ -29,10 +31,10 @@ function loadGeoJSONTile(params, callback) {
     pbf = new Uint8Array(pbf);
   }
 
-  callback(null, {
+  return {
     vectorTile: geojsonWrapper,
     rawData: pbf.buffer
-  });
+  };
 }
 
 // 'loadData' received while coalescing, trigger one more 'loadData' on receiving 'coalesced'
@@ -167,14 +169,10 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param params.uid The UID for this tile.
    */
-  reloadTile(params, callback) {
-    const loaded = this.loaded;
+  reloadTile(params) {
     const uid = params.uid;
 
-    if (loaded?.[uid]) {
-      return super.reloadTile(params, callback);
-    }
-    return this.loadTile(params, callback);
+    return this.loaded?.[uid] ? super.reloadTile(params) : this.loadTile(params);
   }
 
   /**

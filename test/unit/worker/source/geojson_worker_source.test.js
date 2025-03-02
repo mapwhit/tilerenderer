@@ -16,9 +16,9 @@ test('reloadTile', async t => {
     const source = new GeoJSONWorkerSource(null, layerIndex);
     const originalLoadVectorData = source.loadVectorData;
     let loadVectorCallCount = 0;
-    source.loadVectorData = function (params, callback) {
+    source.loadVectorData = function (params) {
       loadVectorCallCount++;
-      return originalLoadVectorData.call(this, params, callback);
+      return originalLoadVectorData.call(this, params);
     };
     const geoJson = {
       type: 'Feature',
@@ -42,38 +42,30 @@ test('reloadTile', async t => {
       });
     }
 
-    function reloadTile(callback) {
-      source.reloadTile(tileParams, (err, data) => {
-        t.assert.equal(err, null);
-        return callback(data);
-      });
+    function reloadTile() {
+      return source.reloadTile(tileParams);
     }
 
-    addData(() => {
+    addData(async () => {
       // first call should load vector data from geojson
-      let firstData;
-      reloadTile(data => {
-        firstData = data;
-      });
+      const firstData = await reloadTile();
       t.assert.equal(loadVectorCallCount, 1);
 
       // second call won't give us new rawTileData
-      reloadTile(data => {
-        t.assert.notOk('rawTileData' in data);
-        data.rawTileData = firstData.rawTileData;
-        t.assert.deepEqual(data, firstData);
-      });
+      const data = await reloadTile();
+      t.assert.notOk('rawTileData' in data);
+      data.rawTileData = firstData.rawTileData;
+      t.assert.deepEqual(data, firstData);
 
       // also shouldn't call loadVectorData again
       t.assert.equal(loadVectorCallCount, 1);
 
       // replace geojson data
-      addData(() => {
+      addData(async () => {
         // should call loadVectorData again after changing geojson data
-        reloadTile(data => {
-          t.assert.ok('rawTileData' in data);
-          t.assert.deepEqual(data, firstData);
-        });
+        const data = await reloadTile();
+        t.assert.ok('rawTileData' in data);
+        t.assert.deepEqual(data, firstData);
         t.assert.equal(loadVectorCallCount, 2);
         done();
       });
