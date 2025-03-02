@@ -96,16 +96,6 @@ class VectorTileWorkerSource {
   }
 
   /**
-   * Implements {@link WorkerSource#abortTile}.
-   *
-   * @param params
-   * @param params.uid The UID for this tile.
-   */
-  abortTile(params, callback) {
-    callback();
-  }
-
-  /**
    * Implements {@link WorkerSource#removeTile}.
    *
    * @param params

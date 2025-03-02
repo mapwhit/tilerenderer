@@ -119,7 +119,7 @@ class SourceCache extends Evented {
   }
 
   _abortTile(tile) {
-    if (this._source.abortTile) return this._source.abortTile(tile, () => {});
+    return this._source.abortTile?.(tile);
   }
 
   serialize() {

@@ -103,14 +103,13 @@ class RasterTileSource extends Evented {
       });
   }
 
-  abortTile(tile, callback) {
+  abortTile(tile) {
     if (tile.abortController) {
       tile.aborted = true;
       tile.abortController.abort();
       delete tile.abortController;
       delete tile.request;
     }
-    callback();
   }
 
   unloadTile(tile, callback) {
