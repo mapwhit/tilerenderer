@@ -1,3 +1,5 @@
+require('../util/polyfill');
+
 const Actor = require('../util/actor');
 
 const StyleLayerIndex = require('../style/style_layer_index');
