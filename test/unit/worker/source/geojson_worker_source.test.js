@@ -96,19 +96,9 @@ test('loadData', async t => {
   };
 
   const layerIndex = new StyleLayerIndex(layers);
-  function createWorker() {
-    const worker = new GeoJSONWorkerSource(null, layerIndex);
 
-    // Making the call to loadGeoJSON asynchronous
-    // allows these tests to mimic a message queue building up
-    // (regardless of timing)
-    const originalLoadGeoJSON = worker.loadGeoJSON;
-    worker.loadGeoJSON = function (params, callback) {
-      setTimeout(() => {
-        originalLoadGeoJSON(params, callback);
-      }, 0);
-    };
-    return worker;
+  function createWorker() {
+    return new GeoJSONWorkerSource(null, layerIndex);
   }
 
   await t.test('abandons coalesced callbacks', (t, done) => {

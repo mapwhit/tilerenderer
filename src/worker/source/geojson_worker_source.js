@@ -55,11 +55,8 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * GeoJSON based on parameters passed from the main-thread Source.
    * See {@link GeoJSONWorkerSource#loadGeoJSON}.
    */
-  constructor(actor, layerIndex, loadGeoJSON) {
+  constructor(actor, layerIndex) {
     super(actor, layerIndex, loadGeoJSONTile);
-    if (loadGeoJSON) {
-      this.loadGeoJSON = loadGeoJSON;
-    }
   }
 
   /**
@@ -98,7 +95,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * Internal implementation: called directly by `loadData`
    * or by `coalesce` using stored parameters.
    */
-  _loadData() {
+  async _loadData() {
     if (!this._pendingCallback || !this._pendingLoadDataParams) {
       assert(false);
       return;
@@ -107,12 +104,10 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
     const params = this._pendingLoadDataParams;
     delete this._pendingCallback;
     delete this._pendingLoadDataParams;
-    this.loadGeoJSON(params, (err, data) => {
-      if (err || !data) {
-        return callback(err);
-      }
+    try {
+      const data = await this.loadGeoJSON(params);
       if (typeof data !== 'object') {
-        return callback(new Error('Input data is not a valid GeoJSON object.'));
+        throw new Error('Input data is not a valid GeoJSON object.');
       }
       rewind(data, true);
 
@@ -120,15 +115,13 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
         this._geoJSONIndex = params.cluster
           ? supercluster(params.superclusterOptions).load(data.features)
           : geojsonvt(data, params.geojsonVtOptions);
-      } catch (err) {
-        return callback(err);
+      } finally {
+        this.loaded = {};
       }
-
-      this.loaded = {};
-
-      const result = {};
-      callback(null, result);
-    });
+      callback(null, {});
+    } catch (err) {
+      callback(err);
+    }
   }
 
   /**
@@ -176,23 +169,18 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
   }
 
   /**
-   * Fetch and parse GeoJSON according to the given params.  Calls `callback`
-   * with `(err, data)`, where `data` is a parsed GeoJSON object.
+   * Fetch and parse GeoJSON according to the given params.
    *
    * GeoJSON is expected as a literal (string or object) `params.data`.
    *
    * @param params
    * @param [params.data] Literal GeoJSON data. Must be provided.
    */
-  loadGeoJSON(params, callback) {
-    if (typeof params.data === 'string') {
-      try {
-        return callback(null, JSON.parse(params.data));
-      } catch (e) {
-        return callback(new Error('Input data is not a valid GeoJSON object.'));
-      }
-    } else {
-      return callback(new Error('Input data is not a valid GeoJSON object.'));
+  loadGeoJSON({ data }) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      throw new Error('Input data is not a valid GeoJSON object.');
     }
   }
 
