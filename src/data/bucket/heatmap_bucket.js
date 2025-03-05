@@ -1,6 +1,6 @@
 const CircleBucket = require('./circle_bucket');
 
-const { register } = require('../../util/web_worker_transfer');
+const { register } = require('../../util/transfer_registry');
 
 class HeatmapBucket extends CircleBucket {
   // Needed for flow to accept omit: ['layers'] below, due to

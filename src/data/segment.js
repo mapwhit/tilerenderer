@@ -1,6 +1,6 @@
 const warn = require('../util/warn');
 
-const { register } = require('../util/web_worker_transfer');
+const { register } = require('../util/transfer_registry');
 
 class SegmentVector {
   constructor(segments = []) {

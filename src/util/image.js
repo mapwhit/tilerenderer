@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { register } = require('./web_worker_transfer');
+const { register } = require('./transfer_registry');
 
 function createImage(image, { width, height }, channels, data) {
   if (!data) {
