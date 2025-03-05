@@ -55,8 +55,8 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * GeoJSON based on parameters passed from the main-thread Source.
    * See {@link GeoJSONWorkerSource#loadGeoJSON}.
    */
-  constructor(actor, layerIndex) {
-    super(actor, layerIndex, loadGeoJSONTile);
+  constructor() {
+    super(loadGeoJSONTile);
   }
 
   /**
@@ -162,10 +162,10 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param params.uid The UID for this tile.
    */
-  reloadTile(params) {
+  reloadTile(params, ctx) {
     const uid = params.uid;
 
-    return this.loaded?.[uid] ? super.reloadTile(params) : this.loadTile(params);
+    return this.loaded?.[uid] ? super.reloadTile(params, ctx) : this.loadTile(params, ctx);
   }
 
   /**

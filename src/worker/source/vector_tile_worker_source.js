@@ -31,9 +31,7 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(actor, layerIndex, loadVectorData = loadVectorTile) {
-    this.actor = actor;
-    this.layerIndex = layerIndex;
+  constructor(loadVectorData = loadVectorTile) {
     this.loadVectorData = loadVectorData;
     this.loaded = {};
   }
@@ -43,22 +41,22 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadVectorData} (which by default expects
    * a `params.url` property) for fetching and producing a VectorTile object.
    */
-  async loadTile(params) {
+  async loadTile(params, ctx) {
     const { vectorTile, rawData } = await this.loadVectorData(params);
     const workerTile = new WorkerTile(params);
     workerTile.vectorTile = vectorTile;
-    const result = await workerTile.parse(vectorTile, this.layerIndex, this.actor);
+    const result = await workerTile.parse(vectorTile, ctx);
     this.loaded[params.uid] = workerTile;
     // Transferring a copy of rawTileData because the worker needs to retain its copy.
     return { ...result, rawTileData: rawData.slice() };
   }
 
   // biome-ignore lint/suspicious/useAwait: need to return a promise
-  async reloadTile({ uid, showCollisionBoxes }) {
+  async reloadTile({ uid, showCollisionBoxes }, ctx) {
     const workerTile = this.loaded[uid];
     if (workerTile) {
       workerTile.showCollisionBoxes = showCollisionBoxes;
-      return workerTile.parse(workerTile.vectorTile, this.layerIndex, this.actor);
+      return workerTile.parse(workerTile.vectorTile, ctx);
     }
   }
 

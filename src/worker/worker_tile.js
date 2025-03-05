@@ -35,7 +35,7 @@ class WorkerTile {
     this.showCollisionBoxes = params.showCollisionBoxes;
   }
 
-  async parse(data, layerIndex, actor) {
+  async parse(data, { layerFamilies, actor }) {
     // Wait for any previous parsing to finish before starting a new one.
     await this.#parsingInProgress;
 
@@ -59,7 +59,6 @@ class WorkerTile {
       glyphDependencies: {}
     };
 
-    const layerFamilies = layerIndex.familiesBySource[this.source];
     for (const sourceLayerId in layerFamilies) {
       const sourceLayer = data.layers[sourceLayerId];
       if (!sourceLayer) {

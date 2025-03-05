@@ -34,9 +34,10 @@ test('WorkerTile#parse', async t => {
       type: 'circle'
     }
   ]);
+  const layerFamilies = layerIndex.familiesBySource.source;
 
   const tile = createWorkerTile();
-  const result = await tile.parse(createWrapper(), layerIndex, {});
+  const result = await tile.parse(createWrapper(), { layerFamilies });
   t.assert.ok(result.buckets[0]);
 });
 
@@ -49,9 +50,10 @@ test('WorkerTile#parse skips hidden layers', async t => {
       layout: { visibility: 'none' }
     }
   ]);
+  const layerFamilies = layerIndex.familiesBySource.source;
 
   const tile = createWorkerTile();
-  const result = await tile.parse(createWrapper(), layerIndex, {});
+  const result = await tile.parse(createWrapper(), { layerFamilies });
   t.assert.equal(result.buckets.length, 0);
 });
 
@@ -64,9 +66,10 @@ test('WorkerTile#parse skips layers without a corresponding source layer', async
       type: 'fill'
     }
   ]);
+  const layerFamilies = layerIndex.familiesBySource.source;
 
   const tile = createWorkerTile();
-  const result = await tile.parse({ layers: {} }, layerIndex, {});
+  const result = await tile.parse({ layers: {} }, { layerFamilies });
   t.assert.equal(result.buckets.length, 0);
 });
 
@@ -89,8 +92,9 @@ test('WorkerTile#parse warns once when encountering a v1 vector tile layer', asy
   };
 
   t.stub(console, 'warn');
+  const layerFamilies = layerIndex.familiesBySource.source;
 
   const tile = createWorkerTile();
-  await tile.parse(data, layerIndex, {});
+  await tile.parse(data, { layerFamilies });
   t.assert.ok(console.warn.calledWithMatch(/does not use vector tile spec v2/));
 });

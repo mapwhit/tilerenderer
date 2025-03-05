@@ -13,7 +13,8 @@ test('reloadTile', async t => {
       }
     ];
     const layerIndex = new StyleLayerIndex(layers);
-    const source = new GeoJSONWorkerSource(null, layerIndex);
+    const layerFamilies = layerIndex.familiesBySource['mylayer'];
+    const source = new GeoJSONWorkerSource();
     const originalLoadVectorData = source.loadVectorData;
     let loadVectorCallCount = 0;
     source.loadVectorData = function (params) {
@@ -43,7 +44,7 @@ test('reloadTile', async t => {
     }
 
     function reloadTile() {
-      return source.reloadTile(tileParams);
+      return source.reloadTile(tileParams, { layerFamilies });
     }
 
     addData(async () => {
