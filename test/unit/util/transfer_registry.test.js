@@ -1,6 +1,6 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const _window = require('../../util/window');
-const { register, serialize, deserialize } = require('../../../src/util/web_worker_transfer');
+const { register, serialize, deserialize } = require('../../../src/util/transfer_registry');
 
 test('web worker transfer', async t => {
   let globalWindow;
