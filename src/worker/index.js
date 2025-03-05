@@ -53,8 +53,9 @@ class Worker {
 
   loadTile(mapId, params, callback) {
     assert(params.type);
+    const ctx = this.#getContext(mapId, params.source);
     this.getWorkerSource(mapId, params.type, params.source)
-      .loadTile(params)
+      .loadTile(params, ctx)
       .then(r => callback(null, r), callback);
   }
 
@@ -66,8 +67,9 @@ class Worker {
 
   reloadTile(mapId, params, callback) {
     assert(params.type);
+    const ctx = this.#getContext(mapId, params.source);
     this.getWorkerSource(mapId, params.type, params.source)
-      .reloadTile(params)
+      .reloadTile(params, ctx)
       .then(r => callback(null, r), callback);
   }
 
@@ -116,25 +118,22 @@ class Worker {
   getWorkerSource(mapId, type, source) {
     this.workerSources[mapId] ??= {};
     this.workerSources[mapId][type] ??= {};
-
-    let s = this.workerSources[mapId][type][source];
-    if (!s) {
-      // use a wrapped actor so that we can attach a target mapId param
-      // to any messages invoked by the WorkerSource
-      const actor = {
-        send: (type, data) => this.actor.send(type, data, mapId)
-      };
-
-      const WorkerSource = this.workerSourceTypes[type];
-      s = this.workerSources[mapId][type][source] = new WorkerSource(actor, this.getLayerIndex(mapId));
-    }
-
-    return s;
+    return this.workerSources[mapId][type][source] ?? new this.workerSourceTypes[type]();
   }
 
   getDEMWorkerSource(mapId, source) {
     this.demWorkerSources[mapId] ??= {};
     return (this.demWorkerSources[mapId][source] ??= new RasterDEMTileWorkerSource());
+  }
+
+  #getContext(mapId, source) {
+    const layerIndex = this.getLayerIndex(mapId);
+    return {
+      layerFamilies: layerIndex.familiesBySource?.[source],
+      actor: {
+        send: (type, data) => this.actor.send(type, data, mapId)
+      }
+    };
   }
 }
 

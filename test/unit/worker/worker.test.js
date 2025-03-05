@@ -51,8 +51,8 @@ test('worker source messages dispatched to the correct map instance', (t, done) 
     return Promise.resolve();
   };
 
-  _self.registerWorkerSource('test', function (actor) {
-    this.loadTile = function () {
+  _self.registerWorkerSource('test', function () {
+    this.loadTile = function (_, { actor }) {
       // we expect the map id to get appended in the call to the "real"
       // actor.send()
       return actor.send('main thread task', { type: 'test' });
