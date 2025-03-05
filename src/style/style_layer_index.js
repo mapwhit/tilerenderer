@@ -5,54 +5,48 @@ const featureFilter = require('../style-spec/feature_filter');
 const groupByLayout = require('../style-spec/group_by_layout');
 
 class StyleLayerIndex {
+  #layerConfigs = {};
+  #layers = {};
+
   constructor(layerConfigs) {
     if (layerConfigs) {
-      this.replace(layerConfigs);
+      this.update(layerConfigs);
     }
   }
 
   replace(layerConfigs) {
-    this._layerConfigs = {};
-    this._layers = {};
-    this.update(layerConfigs, []);
+    this.#layerConfigs = {};
+    this.#layers = {};
+    this.update(layerConfigs);
   }
 
-  update(layerConfigs, removedIds) {
+  update(layerConfigs, removedIds = []) {
     for (const layerConfig of layerConfigs) {
-      this._layerConfigs[layerConfig.id] = layerConfig;
+      this.#layerConfigs[layerConfig.id] = layerConfig;
 
-      const layer = (this._layers[layerConfig.id] = createStyleLayer(layerConfig));
+      const layer = (this.#layers[layerConfig.id] = createStyleLayer(layerConfig));
       layer._featureFilter = featureFilter(layer.filter);
     }
     for (const id of removedIds) {
-      delete this._layerConfigs[id];
-      delete this._layers[id];
+      delete this.#layerConfigs[id];
+      delete this.#layers[id];
     }
 
     this.familiesBySource = {};
 
-    const groups = groupByLayout(values(this._layerConfigs));
+    const groups = groupByLayout(values(this.#layerConfigs));
 
     for (const layerConfigs of groups) {
-      const layers = layerConfigs.map(layerConfig => this._layers[layerConfig.id]);
+      const layers = layerConfigs.map(layerConfig => this.#layers[layerConfig.id]);
 
       const layer = layers[0];
       if (layer.visibility === 'none') {
         continue;
       }
 
-      const sourceId = layer.source || '';
-      let sourceGroup = this.familiesBySource[sourceId];
-      if (!sourceGroup) {
-        sourceGroup = this.familiesBySource[sourceId] = {};
-      }
-
-      const sourceLayerId = layer.sourceLayer || '_geojsonTileLayer';
-      let sourceLayerFamilies = sourceGroup[sourceLayerId];
-      if (!sourceLayerFamilies) {
-        sourceLayerFamilies = sourceGroup[sourceLayerId] = [];
-      }
-
+      const { source = '', sourceLayer = '_geojsonTileLayer' } = layer;
+      const sourceGroup = (this.familiesBySource[source] ??= {});
+      const sourceLayerFamilies = (sourceGroup[sourceLayer] ??= []);
       sourceLayerFamilies.push(layers);
     }
   }
