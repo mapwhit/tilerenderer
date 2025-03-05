@@ -1,6 +1,6 @@
 const { packUint8ToFloat } = require('../shaders/encode_attribute');
 const { supportsPropertyExpression } = require('../style-spec/util/properties');
-const { register } = require('../util/web_worker_transfer');
+const { register } = require('../util/transfer_registry');
 const { PossiblyEvaluatedPropertyValue } = require('../style/properties');
 const {
   StructArrayLayout1f4,

@@ -9,7 +9,7 @@ const vtpbf = require('@mapwhit/vt-pbf');
 const FeatureIndex = require('../../../src/data/feature_index');
 const { CollisionBoxArray } = require('../../../src/data/array_types');
 const Context = require('../../../src/gl/context');
-const { serialize, deserialize } = require('../../../src/util/web_worker_transfer');
+const { serialize, deserialize } = require('../../../src/util/transfer_registry');
 
 test('Tile', async t => {
   let globalWindow;

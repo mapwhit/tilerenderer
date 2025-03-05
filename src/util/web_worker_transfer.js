@@ -11,7 +11,6 @@ const expressions = require('../style-spec/expression/definitions');
 
 const { register, serialize, deserialize } = require('./transfer_registry');
 module.exports = {
-  register,
   serialize,
   deserialize
 };

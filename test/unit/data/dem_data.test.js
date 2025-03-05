@@ -2,7 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const _window = require('../../util/window');
 const DEMData = require('../../../src/data/dem_data');
 const { RGBAImage } = require('../../../src/util/image');
-const { serialize, deserialize } = require('../../../src/util/web_worker_transfer');
+const { serialize, deserialize } = require('../../../src/util/transfer_registry');
 
 function createMockImage(height, width) {
   const pixels = new Uint8Array(height * width * 4);
