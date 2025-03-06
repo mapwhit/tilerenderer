@@ -16,7 +16,7 @@ const LngLatBounds = require('../geo/lng_lat_bounds');
 const Point = require('@mapbox/point-geometry');
 const { RGBAImage } = require('../util/image');
 const { Event, ErrorEvent } = require('../util/evented');
-const TaskQueue = require('../util/task_queue');
+const taskQueue = require('../util/task_queue');
 
 const defaultMinZoom = 0;
 const defaultMaxZoom = 22;
@@ -134,36 +134,6 @@ const defaultOptions = {
  * @see [Display a map](https://www.mapbox.com/mapbox-gl-js/examples/)
  */
 class Map extends Camera {
-  /**
-   * The map's {@link ScrollZoomHandler}, which implements zooming in and out with a scroll wheel or trackpad.
-   */
-
-  /**
-   * The map's {@link BoxZoomHandler}, which implements zooming using a drag gesture with the Shift key pressed.
-   */
-
-  /**
-   * The map's {@link DragRotateHandler}, which implements rotating the map while dragging with the right
-   * mouse button or with the Control key pressed.
-   */
-
-  /**
-   * The map's {@link DragPanHandler}, which implements dragging the map with a mouse or touch gesture.
-   */
-
-  /**
-   * The map's {@link KeyboardHandler}, which allows the user to zoom, rotate, and pan the map using keyboard
-   * shortcuts.
-   */
-
-  /**
-   * The map's {@link DoubleClickZoomHandler}, which allows the user to zoom by double clicking.
-   */
-
-  /**
-   * The map's {@link TouchZoomRotateHandler}, which allows the user to zoom or rotate the map with touch gestures.
-   */
-
   constructor(options) {
     options = Object.assign({}, defaultOptions, options);
 
@@ -186,7 +156,7 @@ class Map extends Camera {
     this._fadeDuration = options.fadeDuration;
     this._crossSourceCollisions = options.crossSourceCollisions;
     this._crossFadingFactor = 1;
-    this._renderTaskQueue = new TaskQueue();
+    this._renderTaskQueue = taskQueue(this);
 
     if (typeof options.container === 'string') {
       const container = window.document.getElementById(options.container);

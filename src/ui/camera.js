@@ -1,4 +1,4 @@
-const { bindAll, deepEqual } = require('../util/object');
+const { deepEqual } = require('../util/object');
 const { clamp, wrap, ease: defaultEasing } = require('../util/util');
 const warn = require('../util/warn');
 const interpolate = require('../util/interpolate');
@@ -53,8 +53,6 @@ class Camera extends Evented {
     this._zooming = false;
     this.transform = transform;
     this._bearingSnap = options.bearingSnap;
-
-    bindAll(['_renderFrameCallback'], this);
   }
 
   /**

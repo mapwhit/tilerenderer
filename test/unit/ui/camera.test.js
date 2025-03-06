@@ -1,7 +1,7 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const Camera = require('../../../src/ui/camera');
 const Transform = require('../../../src/geo/transform');
-const TaskQueue = require('../../../src/util/task_queue');
+const taskQueue = require('../../../src/util/task_queue');
 const browser = require('../../../src/util/browser');
 const fixed = require('../../util/mapbox-gl-js-test/fixed');
 const fixedLngLat = fixed.LngLat;
@@ -9,16 +9,14 @@ const fixedNum = fixed.Num;
 
 test('camera', async t => {
   function attachSimulateFrame(camera) {
-    const queue = new TaskQueue();
+    const queue = taskQueue(camera);
     camera._requestRenderFrame = cb => queue.add(cb);
     camera._cancelRenderFrame = id => queue.remove(id);
     camera.simulateFrame = () => queue.run();
     return camera;
   }
 
-  function createCamera(options) {
-    options = options || {};
-
+  function createCamera(options = {}) {
     const transform = new Transform(0, 20, options.renderWorldCopies);
     transform.resize(512, 512);
 
