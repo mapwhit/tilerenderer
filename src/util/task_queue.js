@@ -1,57 +1,53 @@
 const assert = require('assert');
 
-// can't mark opaque due to https://github.com/flowtype/flow-remove-types/pull/61
+module.exports = taskQueue;
 
-class TaskQueue {
-  constructor() {
-    this._queue = [];
-    this._id = 0;
-    this._cleared = false;
-    this._currentlyRunning = false;
-  }
+function taskQueue(thisArg) {
+  const queues = {
+    running: [],
+    later: []
+  };
+  let id = Number.MIN_SAFE_INTEGER;
+  let cleared = false;
 
-  add(callback) {
-    const id = ++this._id;
-    const queue = this._queue;
-    queue.push({ callback, id, cancelled: false });
+  return {
+    add,
+    remove,
+    run,
+    clear
+  };
+
+  function add(fn) {
+    if (id === Number.MAX_SAFE_INTEGER) id = Number.MIN_SAFE_INTEGER;
+    id += 1;
+    queues.later.push({ fn, id, cancelled: false });
     return id;
   }
 
-  remove(id) {
-    const running = this._currentlyRunning;
-    const queue = running ? this._queue.concat(running) : this._queue;
-    for (const task of queue) {
-      if (task.id === id) {
-        task.cancelled = true;
-        return;
-      }
+  function remove(id) {
+    const task = queues.running.find(t => t.id === id) ?? queues.later.find(t => t.id === id);
+    if (task) {
+      task.cancelled = true;
     }
   }
 
-  run() {
-    assert(!this._currentlyRunning);
-    const queue = (this._currentlyRunning = this._queue);
-
-    // Tasks queued by callbacks in the current queue should be executed
-    // on the next run, not the current run.
-    this._queue = [];
-
-    for (const task of queue) {
-      if (task.cancelled) continue;
-      task.callback();
-      if (this._cleared) break;
+  function run() {
+    assert(queues.running.length === 0);
+    queues.running = queues.later;
+    queues.later = [];
+    for (const { fn, cancelled } of queues.running) {
+      if (cancelled) continue;
+      fn.call(thisArg);
+      if (cleared) break;
     }
-
-    this._cleared = false;
-    this._currentlyRunning = false;
+    queues.running.length = 0;
+    cleared = false;
   }
 
-  clear() {
-    if (this._currentlyRunning) {
-      this._cleared = true;
+  function clear() {
+    if (queues.running.length > 0) {
+      cleared = true;
     }
-    this._queue = [];
+    queues.later.length = 0;
   }
 }
-
-module.exports = TaskQueue;

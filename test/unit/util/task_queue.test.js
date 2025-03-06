@@ -1,9 +1,9 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const TaskQueue = require('../../../src/util/task_queue');
+const taskQueue = require('../../../src/util/task_queue');
 
 test('TaskQueue', async t => {
   await t.test('Calls callbacks, in order', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     let result = '';
     q.add(() => (result += 'a'));
     q.add(() => (result += 'b'));
@@ -12,7 +12,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Allows a given callback to be queued multiple times', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const fn = t.spy();
     q.add(fn);
     q.add(fn);
@@ -21,7 +21,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Does not call a callback that was cancelled before the queue was run', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const yes = t.spy();
     const no = t.spy();
     q.add(yes);
@@ -33,7 +33,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Does not call a callback that was cancelled while the queue was running', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const yes = t.spy();
     const no = t.spy();
     q.add(yes);
@@ -46,7 +46,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Allows each instance of a multiply-queued callback to be cancelled independently', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const cb = t.spy();
     q.add(cb);
     const id = q.add(cb);
@@ -56,7 +56,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Does not throw if a remove() is called after running the queue', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const cb = t.spy();
     const id = q.add(cb);
     q.run();
@@ -65,7 +65,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('Does not add tasks to the currently-running queue', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const cb = t.spy();
     q.add(() => q.add(cb));
     q.run();
@@ -75,13 +75,13 @@ test('TaskQueue', async t => {
   });
 
   await t.test('TaskQueue#run() throws on attempted re-entrance', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     q.add(() => q.run());
     t.assert.throws(() => q.run());
   });
 
   await t.test('TaskQueue#clear() prevents queued task from being executed', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const before = t.spy();
     const after = t.spy();
     q.add(before);
@@ -93,7 +93,7 @@ test('TaskQueue', async t => {
   });
 
   await t.test('TaskQueue#clear() interrupts currently-running queue', t => {
-    const q = new TaskQueue();
+    const q = taskQueue();
     const before = t.spy();
     const after = t.spy();
     q.add(() => q.add(after));
