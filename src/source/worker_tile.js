@@ -2,7 +2,7 @@ const FeatureIndex = require('../data/feature_index');
 
 const { performSymbolLayout } = require('../symbol/symbol_layout');
 const { CollisionBoxArray } = require('../data/array_types');
-const DictionaryCoder = require('../util/dictionary_coder');
+const dictionaryCoder = require('../util/dictionary_coder');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const LineBucket = require('../data/bucket/line_bucket');
 const FillBucket = require('../data/bucket/fill_bucket');
@@ -38,7 +38,7 @@ class WorkerTile {
     this.data = data;
 
     this.collisionBoxArray = new CollisionBoxArray();
-    const sourceLayerCoder = new DictionaryCoder(Object.keys(data.layers).sort());
+    const sourceLayerCoder = dictionaryCoder(Object.keys(data.layers));
 
     const featureIndex = new FeatureIndex(this.tileID);
     featureIndex.bucketLayerIDs = [];

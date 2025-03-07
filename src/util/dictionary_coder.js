@@ -1,25 +1,17 @@
 const assert = require('assert');
 
-class DictionaryCoder {
-  constructor(strings) {
-    this._stringToNumber = {};
-    this._numberToString = [];
-    for (let i = 0; i < strings.length; i++) {
-      const string = strings[i];
-      this._stringToNumber[string] = i;
-      this._numberToString[i] = string;
+module.exports = dictionaryCoder;
+
+function dictionaryCoder(strings) {
+  const numberToString = strings.sort();
+  const stringToNumber = new Map(numberToString.map((s, i) => [s, i]));
+  return {
+    encode(string) {
+      return stringToNumber.get(string);
+    },
+    decode(n) {
+      assert(n < numberToString.length);
+      return numberToString[n];
     }
-  }
-
-  encode(string) {
-    assert(string in this._stringToNumber);
-    return this._stringToNumber[string];
-  }
-
-  decode(n) {
-    assert(n < this._numberToString.length);
-    return this._numberToString[n];
-  }
+  };
 }
-
-module.exports = DictionaryCoder;
