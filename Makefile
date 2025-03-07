@@ -1,4 +1,4 @@
-PROJECT=mapbox-gl
+PROJECT=tilerenderer
 NODE_BIN=./meta/node_modules/.bin
 
 all: check build

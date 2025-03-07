@@ -1,10 +1,13 @@
 {
-  "name": "@pirxpilot/mapbox-gl",
+  "name": "@mapwhit/tilerenderer",
   "description": "A WebGL interactive maps library",
   "version": "0.47.0",
   "main": "src/index.js",
   "license": "BSD-3-Clause",
-  "repository": "pirxpilot/mapbox-gl-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapwhit/tilerenderer.git"
+  },
   "dependencies": {
     "@mapbox/gl-matrix": "^0.0.1",
     "@mapbox/point-geometry": "^0.1.0",
