@@ -2,7 +2,7 @@ const loadGeometry = require('./load_geometry');
 const EXTENT = require('./extent');
 const featureFilter = require('../style-spec/feature_filter');
 const Grid = require('grid-index');
-const DictionaryCoder = require('../util/dictionary_coder');
+const dictionaryCoder = require('../util/dictionary_coder');
 const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const GeoJSONFeature = require('../util/vectortile_to_geojson');
@@ -56,9 +56,7 @@ class FeatureIndex {
   loadVTLayers() {
     if (!this.vtLayers) {
       this.vtLayers = new vt.VectorTile(new Protobuf(this.rawTileData)).layers;
-      this.sourceLayerCoder = new DictionaryCoder(
-        this.vtLayers ? Object.keys(this.vtLayers).sort() : ['_geojsonTileLayer']
-      );
+      this.sourceLayerCoder = dictionaryCoder(this.vtLayers ? Object.keys(this.vtLayers) : ['_geojsonTileLayer']);
     }
     return this.vtLayers;
   }
