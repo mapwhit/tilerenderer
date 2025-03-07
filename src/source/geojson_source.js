@@ -186,7 +186,6 @@ class GeoJSONSource extends Evented {
 
             this._loaded = true;
 
-            if (result?.resourceTiming?.[this.id]) this._resourceTiming = result.resourceTiming[this.id].slice(0);
             // Any `loadData` calls that piled up while we were processing
             // this one will get coalesced into a single call when this
             // 'coalesce' message is processed.
