@@ -61,19 +61,15 @@ class ImageSource extends Evented {
     this.options = options;
   }
 
-  load() {
+  async load() {
     this.fire(new Event('dataloading', { dataType: 'source' }));
-
     this.url = this.options.url;
-
-    loadImage(this.url, (err, image) => {
-      if (err) {
-        this.fire(new ErrorEvent(err));
-      } else if (image) {
-        this.image = image;
-        this._finishLoading();
-      }
-    });
+    try {
+      this.image = await loadImage(this.url);
+      this._finishLoading();
+    } catch (err) {
+      this.fire(new ErrorEvent(err));
+    }
   }
 
   _finishLoading() {

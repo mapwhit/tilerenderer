@@ -56,8 +56,6 @@ class RasterTileSource extends Evented {
 
   loadTile(tile, callback) {
     const done = (err, img) => {
-      delete tile.request;
-
       if (tile.aborted) {
         tile.state = 'unloaded';
         callback(null);
@@ -98,8 +96,9 @@ class RasterTileSource extends Evented {
           err.status = 404; // will try to use the parent/child tile
           return done(err);
         }
-        tile.request = loadImage(data, done);
-      });
+        return loadImage(data);
+      })
+      .then(image => image && done(null, image), done);
   }
 
   abortTile(tile, callback) {
@@ -107,7 +106,6 @@ class RasterTileSource extends Evented {
       tile.aborted = true;
       tile.abortController.abort();
       delete tile.abortController;
-      delete tile.request;
     }
     callback();
   }

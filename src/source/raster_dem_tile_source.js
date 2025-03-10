@@ -40,7 +40,6 @@ class RasterDEMTileSource extends RasterTileSource {
       }
     };
     const imageLoaded = (err, img) => {
-      delete tile.request;
       if (tile.aborted) {
         tile.state = 'unloaded';
         callback();
@@ -74,8 +73,9 @@ class RasterDEMTileSource extends RasterTileSource {
           err.status = 404; // will try to use the parent/child tile
           return done(err);
         }
-        tile.request = loadImage(data, imageLoaded);
-      });
+        return loadImage(data);
+      })
+      .then(image => image && imageLoaded(null, image), imageLoaded);
   }
 
   _getNeighboringTiles(tileID) {

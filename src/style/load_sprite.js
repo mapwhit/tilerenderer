@@ -5,11 +5,9 @@ const loadImage = require('../util/loader/image');
 module.exports = loadSprite;
 
 function loadSprite(sprite, callback) {
-  loadImage(sprite.image, (error, image) => {
+  loadImage(sprite.image).then(image => {
     const { json } = sprite;
-    if (error) {
-      callback(error);
-    } else if (json && image) {
+    if (json && image) {
       const imageData = browser.getImageData(image);
       const result = {};
 
@@ -22,5 +20,5 @@ function loadSprite(sprite, callback) {
 
       callback(null, result);
     }
-  });
+  }, callback);
 }
