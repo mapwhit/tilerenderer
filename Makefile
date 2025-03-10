@@ -86,16 +86,15 @@ format: | meta/node_modules
 	$(NODE_BIN)/biome format --write
 .PHONY: format
 
-test: test-unit
+test: test-unit prebuild
 
 test-integration: test-expression test-query test-render
 .NOTPARALLEL: test-expression test-query test-render
 
-test-unit test-render test-query: export NODE_PATH = meta/node_modules
-
 TEST_REPORTER ?= --test-reporter dot
 
-test-unit: dependencies
+DEPENDENCIES_TEST = test/node_modules
+test-unit: dependencies $(DEPENDENCIES_TEST)
 	node --test $(TEST_REPORTER) "test/unit/**/*.test.js"
 
 test-expression: dependencies dependencies-integration
@@ -107,12 +106,13 @@ test-render: dependencies dependencies-integration
 test-query: dependencies dependencies-integration
 	node test/query.test.js
 
-dependencies-integration: | test/integration/node_modules test/integration/tiles/node_modules
+DEPENDENCIES_INTEGRATION = test/integration/node_modules test/integration/tiles/node_modules
+dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
 
 distclean: clean
-	rm -fr $(DEPENDENCIES)
+	rm -fr $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
 clean:
 	rm -fr build
