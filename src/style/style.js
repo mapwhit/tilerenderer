@@ -95,18 +95,18 @@ class Style extends Evented {
     }
 
     if (json.sprite) {
-      loadSprite(json.sprite, (err, images) => {
-        if (err) {
-          this.fire(new ErrorEvent(err));
-        } else if (images) {
-          for (const id in images) {
-            this.imageManager.addImage(id, images[id]);
+      loadSprite(json.sprite)
+        .then(images => {
+          if (images) {
+            for (const id in images) {
+              this.imageManager.addImage(id, images[id]);
+            }
           }
-        }
 
-        this.imageManager.setLoaded(true);
-        this.fire(new Event('data', { dataType: 'style' }));
-      });
+          this.imageManager.setLoaded(true);
+          this.fire(new Event('data', { dataType: 'style' }));
+        })
+        .catch(err => this.fire(new ErrorEvent(err)));
     } else {
       this.imageManager.setLoaded(true);
     }
