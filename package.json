@@ -26,7 +26,6 @@
     "grid-index": "^1.1.0",
     "quickselect": "^2.0.0",
     "supercluster": "^2.0.1",
-    "tile-cache": "^1.0.2",
     "tinyqueue": "^1.1.0"
   },
   "browser": {
