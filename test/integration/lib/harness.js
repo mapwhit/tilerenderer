@@ -1,215 +1,204 @@
-const fs = require('fs');
-const path = require('path');
-const queue = require('d3-queue').queue;
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { pipeline } = require('node:stream/promises');
+const { createWriteStream } = require('node:fs');
+const { promisify } = require('node:util');
+
 const colors = require('chalk');
 const template = require('lodash.template');
 const shuffler = require('shuffle-seed');
 
-module.exports = async function (directory, implementation, options, run) {
-  const q = queue(1);
-  const loader = require('./loader')();
+module.exports = harness;
 
-  const tests = options.tests || [];
-  const ignores = options.ignores || {};
+async function harness(cwd, implementation, options, run) {
+  const sequence = await generateTestSequence(cwd, implementation, options);
+  const runTest = promisify(run);
+  const tests = await runSequence(sequence, runTest);
 
-  let sequence = (
-    await Promise.all(
-      fs.globSync(`**/${options.fixtureFilename || 'style.json'}`, { cwd: directory }).map(async fixture => {
-        const id = path.dirname(fixture);
-        const style = require(path.join(directory, fixture));
+  if (process.env.UPDATE) {
+    console.log(`Updated ${tests.length} tests.`);
+    process.exit(0);
+  }
 
-        await loader.localizeURLs(style);
+  let passedCount = 0;
+  let ignoreCount = 0;
+  let ignorePassCount = 0;
+  let failedCount = 0;
+  let erroredCount = 0;
 
-        style.metadata = style.metadata || {};
-        const test = (style.metadata.test = Object.assign(
-          {
-            id,
-            ignored: ignores[`${path.basename(directory)}/${id}`],
-            width: 512,
-            height: 512,
-            pixelRatio: 1,
-            recycleMap: options.recycleMap || false,
-            allowed: 0.00015
-          },
-          style.metadata.test
-        ));
+  tests.forEach(test => {
+    if (test.ignored && !test.ok) {
+      ignoreCount++;
+    } else if (test.ignored) {
+      ignorePassCount++;
+    } else if (test.error) {
+      erroredCount++;
+    } else if (!test.ok) {
+      failedCount++;
+    } else {
+      passedCount++;
+    }
+  });
 
-        if ('diff' in test) {
-          if (typeof test.diff === 'number') {
-            test.allowed = test.diff;
-          } else if (implementation in test.diff) {
-            test.allowed = test.diff[implementation];
-          }
-        }
+  const totalCount = passedCount + ignorePassCount + ignoreCount + failedCount + erroredCount;
 
-        return style;
-      })
-    )
-  ).filter(style => {
+  if (passedCount > 0) {
+    console.log(colors.green('%d passed (%s%)'), passedCount, ((100 * passedCount) / totalCount).toFixed(1));
+  }
+
+  if (ignorePassCount > 0) {
+    console.log(
+      colors.yellow('%d passed but were ignored (%s%)'),
+      ignorePassCount,
+      ((100 * ignorePassCount) / totalCount).toFixed(1)
+    );
+  }
+
+  if (ignoreCount > 0) {
+    console.log(colors.white('%d ignored (%s%)'), ignoreCount, ((100 * ignoreCount) / totalCount).toFixed(1));
+  }
+
+  if (failedCount > 0) {
+    console.log(colors.red('%d failed (%s%)'), failedCount, ((100 * failedCount) / totalCount).toFixed(1));
+  }
+
+  if (erroredCount > 0) {
+    console.log(colors.red('%d errored (%s%)'), erroredCount, ((100 * erroredCount) / totalCount).toFixed(1));
+  }
+
+  await writeResults(cwd, options, tests);
+
+  if (failedCount > 0 || erroredCount > 0) {
+    process.exit(1);
+  }
+}
+
+async function runSequence(sequence, runTest) {
+  const tests = [];
+
+  for (const style of sequence) {
     const test = style.metadata.test;
 
-    if (tests.length !== 0 && !tests.some(t => test.id.indexOf(t) !== -1)) {
+    try {
+      console.log(colors.blue(`* testing ${test.id}`));
+      await runTest(style, test);
+    } catch (error) {
+      test.error = error;
+    } finally {
+      if (test.ignored && !test.ok) {
+        test.color = '#9E9E9E';
+        test.status = 'ignored failed';
+        console.log(colors.white(`* ignore ${test.id} (${test.ignored})`));
+      } else if (test.ignored) {
+        test.color = '#E8A408';
+        test.status = 'ignored passed';
+        console.log(colors.yellow(`* ignore ${test.id} (${test.ignored})`));
+      } else if (test.error) {
+        test.color = 'red';
+        test.status = 'errored';
+        console.log(colors.red(`* errored ${test.id}`));
+      } else if (!test.ok) {
+        test.color = 'red';
+        test.status = 'failed';
+        console.log(colors.red(`* failed ${test.id}`));
+      } else {
+        test.color = 'green';
+        test.status = 'passed';
+        console.log(colors.green(`* passed ${test.id}`));
+      }
+    }
+    tests.push(test);
+  }
+  return tests;
+}
+
+async function generateTestSequence(cwd, implementation, options) {
+  const loader = require('./loader')();
+  const { tests = [], ignores = {}, fixtureFilename = 'style.json' } = options;
+
+  const files = fs.glob(`**/${fixtureFilename}`, { cwd });
+  const styles = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
+  const sequence = styles.filter(filterTest);
+
+  if (!options.shuffle) {
+    return sequence;
+  }
+  console.log(colors.white('* shuffle seed: ') + colors.bold(`${options.seed}`));
+  return shuffler.shuffle(sequence, options.seed);
+
+  async function fixtureToStyle(fixture) {
+    const id = path.dirname(fixture);
+    const style = require(path.join(cwd, fixture));
+
+    await loader.localizeURLs(style);
+
+    style.metadata ??= style.metadata || {};
+    const test = (style.metadata.test = Object.assign(
+      {
+        id,
+        ignored: ignores[`${path.basename(cwd)}/${id}`],
+        width: 512,
+        height: 512,
+        pixelRatio: 1,
+        recycleMap: options.recycleMap || false,
+        allowed: 0.00015
+      },
+      style.metadata.test
+    ));
+
+    if ('diff' in test) {
+      if (typeof test.diff === 'number') {
+        test.allowed = test.diff;
+      } else if (implementation in test.diff) {
+        test.allowed = test.diff[implementation];
+      }
+    }
+
+    return style;
+  }
+
+  function filterTest(style) {
+    const { id, ignored } = style.metadata.test;
+
+    if (tests.length !== 0 && !tests.some(t => id.indexOf(t) !== -1)) {
       return false;
     }
 
-    if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && test.id.match(/^debug\//)) {
-      console.log(colors.gray(`* skipped ${test.id}`));
+    if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && id.match(/^debug\//)) {
+      console.log(colors.gray(`* skipped ${id}`));
       return false;
     }
 
-    if (/^skip/.test(test.ignored)) {
-      console.log(colors.gray(`* skipped ${test.id} (${test.ignored})`));
+    if (/^skip/.test(ignored)) {
+      console.log(colors.gray(`* skipped ${id} (${ignored})`));
       return false;
     }
 
     return true;
-  });
-
-  if (options.shuffle) {
-    console.log(colors.white('* shuffle seed: ') + colors.bold(`${options.seed}`));
-    sequence = shuffler.shuffle(sequence, options.seed);
   }
+}
 
-  sequence.forEach(style => {
-    q.defer(callback => {
-      const test = style.metadata.test;
+async function writeResults(cwd, options, tests) {
+  const p = path.join(cwd, options.recycleMap ? 'index-recycle-map.html' : 'index.html');
+  await pipeline(resuts(), createWriteStream(p));
 
-      try {
-        console.log(colors.blue(`* testing ${test.id}`));
-        run(style, test, handleResult);
-      } catch (error) {
-        handleResult(error);
-      }
+  console.log(`Results at: ${p}`);
 
-      function handleResult(error) {
-        if (error) {
-          test.error = error;
-        }
-
-        if (test.ignored && !test.ok) {
-          test.color = '#9E9E9E';
-          test.status = 'ignored failed';
-          console.log(colors.white(`* ignore ${test.id} (${test.ignored})`));
-        } else if (test.ignored) {
-          test.color = '#E8A408';
-          test.status = 'ignored passed';
-          console.log(colors.yellow(`* ignore ${test.id} (${test.ignored})`));
-        } else if (test.error) {
-          test.color = 'red';
-          test.status = 'errored';
-          console.log(colors.red(`* errored ${test.id}`));
-        } else if (!test.ok) {
-          test.color = 'red';
-          test.status = 'failed';
-          console.log(colors.red(`* failed ${test.id}`));
-        } else {
-          test.color = 'green';
-          test.status = 'passed';
-          console.log(colors.green(`* passed ${test.id}`));
-        }
-
-        callback(null, test);
-      }
-    });
-  });
-
-  q.awaitAll((err, results) => {
-    if (err) {
-      console.error(err);
-      setTimeout(() => {
-        process.exit(-1);
-      }, 0);
-      return;
-    }
-
-    const tests = results.slice(1, -1);
-
-    if (process.env.UPDATE) {
-      console.log(`Updated ${tests.length} tests.`);
-      process.exit(0);
-    }
-
-    let passedCount = 0;
-    let ignoreCount = 0;
-    let ignorePassCount = 0;
-    let failedCount = 0;
-    let erroredCount = 0;
-
-    tests.forEach(test => {
-      if (test.ignored && !test.ok) {
-        ignoreCount++;
-      } else if (test.ignored) {
-        ignorePassCount++;
-      } else if (test.error) {
-        erroredCount++;
-      } else if (!test.ok) {
-        failedCount++;
-      } else {
-        passedCount++;
-      }
-    });
-
-    const totalCount = passedCount + ignorePassCount + ignoreCount + failedCount + erroredCount;
-
-    if (passedCount > 0) {
-      console.log(colors.green('%d passed (%s%)'), passedCount, ((100 * passedCount) / totalCount).toFixed(1));
-    }
-
-    if (ignorePassCount > 0) {
-      console.log(
-        colors.yellow('%d passed but were ignored (%s%)'),
-        ignorePassCount,
-        ((100 * ignorePassCount) / totalCount).toFixed(1)
-      );
-    }
-
-    if (ignoreCount > 0) {
-      console.log(colors.white('%d ignored (%s%)'), ignoreCount, ((100 * ignoreCount) / totalCount).toFixed(1));
-    }
-
-    if (failedCount > 0) {
-      console.log(colors.red('%d failed (%s%)'), failedCount, ((100 * failedCount) / totalCount).toFixed(1));
-    }
-
-    if (erroredCount > 0) {
-      console.log(colors.red('%d errored (%s%)'), erroredCount, ((100 * erroredCount) / totalCount).toFixed(1));
-    }
-
-    const resultsTemplate = template(fs.readFileSync(path.join(__dirname, '..', 'results.html.tmpl'), 'utf8'));
-    const itemTemplate = template(fs.readFileSync(path.join(directory, 'result_item.html.tmpl'), 'utf8'));
-
+  async function* resuts() {
+    const resultsTemplate = template(await fs.readFile(path.join(__dirname, '..', 'results.html.tmpl'), 'utf8'));
+    const itemTemplate = template(await fs.readFile(path.join(cwd, 'result_item.html.tmpl'), 'utf8'));
     const unsuccessful = tests.filter(test => test.status === 'failed' || test.status === 'errored');
-
-    const resultsShell = resultsTemplate({
+    const hasFailedTests = unsuccessful.length > 0;
+    const [header, footer] = resultsTemplate({
       unsuccessful,
       tests,
       shuffle: options.shuffle,
       seed: options.seed
     }).split('<!-- results go here -->');
-
-    const p = path.join(directory, options.recycleMap ? 'index-recycle-map.html' : 'index.html');
-    const out = fs.createWriteStream(p);
-
-    const q = queue(1);
-    q.defer(write, out, resultsShell[0]);
-    for (const test of tests) {
-      q.defer(write, out, itemTemplate({ r: test, hasFailedTests: unsuccessful.length > 0 }));
+    yield header;
+    for (const r of tests) {
+      yield itemTemplate({ r, hasFailedTests });
     }
-    q.defer(write, out, resultsShell[1]);
-    q.await(() => {
-      out.end();
-      out.on('close', () => {
-        console.log(`Results at: ${p}`);
-        process.exit(failedCount + erroredCount === 0 ? 0 : 1);
-      });
-    });
-  });
-};
-
-function write(stream, data, cb) {
-  if (!stream.write(data)) {
-    stream.once('drain', cb);
-  } else {
-    process.nextTick(cb);
+    yield footer;
   }
 }
