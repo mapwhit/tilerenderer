@@ -54,65 +54,59 @@ class RasterTileSource extends Evented {
     return !this.tileBounds || this.tileBounds.contains(tileID.canonical);
   }
 
-  loadTile(tile, callback) {
-    const done = (err, img) => {
+  async loadTile(tile) {
+    try {
+      tile.abortController = new window.AbortController();
+      const data = await this.tiles(tile.tileID.canonical, tile.abortController).catch(() => {});
+      if (!data) {
+        const err = new Error('Tile could not be loaded');
+        err.status = 404; // will try to use the parent/child tile
+        throw err;
+      }
+      const img = await loadImage(data);
+      if (!img) {
+        return;
+      }
+
+      tile.texture = this.map.painter.getTileTexture(img.width);
+      if (tile.texture) {
+        tile.texture.update(img, { useMipmap: true });
+      } else {
+        const { context } = this.map.painter;
+        const { gl } = context;
+        tile.texture = new Texture(context, img, gl.RGBA, { useMipmap: true });
+        tile.texture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE, gl.LINEAR_MIPMAP_NEAREST);
+
+        if (context.extTextureFilterAnisotropic) {
+          gl.texParameterf(
+            gl.TEXTURE_2D,
+            context.extTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
+            context.extTextureFilterAnisotropicMax
+          );
+        }
+      }
+
+      tile.state = 'loaded';
+    } catch (err) {
       if (tile.aborted) {
         tile.state = 'unloaded';
-        callback(null);
-      } else if (err) {
-        tile.state = 'errored';
-        callback(err);
-      } else if (img) {
-        const context = this.map.painter.context;
-        const gl = context.gl;
-        tile.texture = this.map.painter.getTileTexture(img.width);
-        if (tile.texture) {
-          tile.texture.update(img, { useMipmap: true });
-        } else {
-          tile.texture = new Texture(context, img, gl.RGBA, { useMipmap: true });
-          tile.texture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE, gl.LINEAR_MIPMAP_NEAREST);
-
-          if (context.extTextureFilterAnisotropic) {
-            gl.texParameterf(
-              gl.TEXTURE_2D,
-              context.extTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
-              context.extTextureFilterAnisotropicMax
-            );
-          }
-        }
-
-        tile.state = 'loaded';
-
-        callback(null);
+        return;
       }
-    };
-
-    tile.abortController = new window.AbortController();
-    this.tiles(tile.tileID.canonical, tile.abortController)
-      .catch(() => {})
-      .then(data => {
-        if (!data) {
-          const err = new Error('Tile could not be loaded');
-          err.status = 404; // will try to use the parent/child tile
-          return done(err);
-        }
-        return loadImage(data);
-      })
-      .then(image => image && done(null, image), done);
+      tile.state = 'errored';
+      throw err;
+    }
   }
 
-  abortTile(tile, callback) {
+  abortTile(tile) {
     if (tile.abortController) {
       tile.aborted = true;
       tile.abortController.abort();
       delete tile.abortController;
     }
-    callback();
   }
 
-  unloadTile(tile, callback) {
+  unloadTile(tile) {
     if (tile.texture) this.map.painter.saveTileTexture(tile.texture);
-    callback();
   }
 
   hasTransition() {

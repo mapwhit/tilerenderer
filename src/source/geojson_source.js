@@ -198,8 +198,7 @@ class GeoJSONSource extends Evented {
       });
   }
 
-  loadTile(tile, callback) {
-    const message = tile.workerID === undefined ? 'loadTile' : 'reloadTile';
+  async loadTile(tile) {
     const params = {
       type: this.type,
       uid: tile.uid,
@@ -212,23 +211,12 @@ class GeoJSONSource extends Evented {
       showCollisionBoxes: this.map.showCollisionBoxes
     };
 
-    const done = (err, data) => {
-      tile.unloadVectorData();
-
-      if (tile.aborted) {
-        return callback(null);
-      }
-
-      if (err) {
-        return callback(err);
-      }
-
+    const message = tile.workerID === undefined ? 'loadTile' : 'reloadTile';
+    tile.workerID ??= this.dispatcher.nextWorkerId(this.workerID);
+    const data = await this.dispatcher.send(message, params, tile.workerID).finally(() => tile.unloadVectorData());
+    if (!tile.aborted) {
       tile.loadVectorData(data, this.map.painter, message === 'reloadTile');
-
-      return callback(null);
-    };
-    tile.workerID = this.dispatcher.nextWorkerId(this.workerID);
-    this.dispatcher.send(message, params, tile.workerID).then(result => done(null, result), done);
+    }
   }
 
   abortTile(tile) {

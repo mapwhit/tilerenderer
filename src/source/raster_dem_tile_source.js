@@ -25,57 +25,45 @@ class RasterDEMTileSource extends RasterTileSource {
     };
   }
 
-  loadTile(tile, callback) {
-    const done = (err, dem) => {
-      if (err) {
-        tile.state = 'errored';
-        callback(err);
+  async loadTile(tile) {
+    try {
+      tile.abortController = new window.AbortController();
+      const data = await this.tiles(tile.tileID.canonical, tile.abortController).catch(() => {});
+      tile.neighboringTiles = this._getNeighboringTiles(tile.tileID);
+      if (!data) {
+        const err = new Error('Tile could not be loaded');
+        err.status = 404; // will try to use the parent/child tile
+        throw err;
       }
-
-      if (dem) {
-        tile.dem = dem;
-        tile.needsHillshadePrepare = true;
-        tile.state = 'loaded';
-        callback();
+      const img = await loadImage(data);
+      if (!img) {
+        return;
       }
-    };
-    const imageLoaded = (err, img) => {
-      if (tile.aborted) {
-        tile.state = 'unloaded';
-        callback();
-      } else if (err) {
-        tile.state = 'errored';
-        callback(err);
-      } else if (img) {
+      if (!tile.workerID || tile.state === 'expired') {
         const rawImageData = browser.getImageData(img);
         const params = {
           uid: tile.uid,
           coord: tile.tileID,
           source: this.id,
-          rawImageData: rawImageData,
+          rawImageData,
           encoding: this.encoding
         };
-
-        if (!tile.workerID || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.nextWorkerId();
-          this.dispatcher.send('loadDEMTile', params, tile.workerID).then(data => done(null, data), done);
+        tile.workerID = this.dispatcher.nextWorkerId();
+        const dem = await this.dispatcher.send('loadDEMTile', params, tile.workerID);
+        if (dem) {
+          tile.dem = dem;
+          tile.needsHillshadePrepare = true;
+          tile.state = 'loaded';
         }
       }
-    };
-
-    tile.abortController = new window.AbortController();
-    this.tiles(tile.tileID.canonical, tile.abortController)
-      .catch(() => {})
-      .then(data => {
-        tile.neighboringTiles = this._getNeighboringTiles(tile.tileID);
-        if (!data) {
-          const err = new Error('Tile could not be loaded');
-          err.status = 404; // will try to use the parent/child tile
-          return done(err);
-        }
-        return loadImage(data);
-      })
-      .then(image => image && imageLoaded(null, image), imageLoaded);
+    } catch (err) {
+      if (tile.aborted) {
+        tile.state = 'unloaded';
+        return;
+      }
+      tile.state = 'errored';
+      throw err;
+    }
   }
 
   _getNeighboringTiles(tileID) {

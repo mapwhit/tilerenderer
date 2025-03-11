@@ -66,60 +66,54 @@ class VectorTileSource extends Evented {
     return Object.assign({}, this._options);
   }
 
-  loadTile(tile, callback) {
-    tile.abortController = new window.AbortController();
-    this.tiles(tile.tileID.canonical, tile.abortController)
-      .catch(() => {})
-      .then(data => {
-        if (!data) {
-          const err = new Error('Tile could not be loaded');
-          err.status = 404; // will try to use the parent/child tile
-          return done(err);
-        }
-        const params = {
-          response: { data },
-          uid: tile.uid,
-          tileID: tile.tileID,
-          zoom: tile.tileID.overscaledZ,
-          tileSize: this.tileSize * tile.tileID.overscaleFactor(),
-          type: this.type,
-          source: this.id,
-          pixelRatio: browser.devicePixelRatio,
-          showCollisionBoxes: this.map.showCollisionBoxes
-        };
+  async loadTile(tile) {
+    if (tile.workerID != null && tile.state === 'loading') {
+      tile.reloadPromise ??= Promise.withResolvers();
+      return tile.reloadPromise.promise;
+    }
+    const data = await this.#loadTile(tile);
+    if (tile.reloadPromise) {
+      const { resolve, reject } = tile.reloadPromise;
+      tile.reloadPromise = null;
+      return this.loadTile(tile).then(resolve, reject);
+    }
+    return data;
+  }
 
-        if (tile.workerID === undefined || tile.state === 'expired') {
-          tile.workerID = this.dispatcher.nextWorkerId();
-          this.dispatcher.send('loadTile', params, tile.workerID).then(
-            data => done.call(this, null, data),
-            err => done.call(this, err)
-          );
-        } else if (tile.state === 'loading') {
-          // schedule tile reloading after it has been loaded
-          tile.reloadCallback = callback;
-        } else {
-          this.dispatcher.send('reloadTile', params, tile.workerID).then(
-            data => done.call(this, null, data),
-            err => done.call(this, err)
-          );
-        }
-      });
-
-    function done(err, data) {
-      if (tile.aborted) return callback(null);
-
-      if (err) {
-        return callback(err);
+  async #loadTile(tile) {
+    try {
+      tile.abortController = new window.AbortController();
+      const rawData = await this.tiles(tile.tileID.canonical, tile.abortController).catch(() => {});
+      if (!rawData) {
+        const err = new Error('Tile could not be loaded');
+        err.status = 404; // will try to use the parent/child tile
+        throw err;
       }
-
+      const params = {
+        response: { data: rawData },
+        uid: tile.uid,
+        tileID: tile.tileID,
+        zoom: tile.tileID.overscaledZ,
+        tileSize: this.tileSize * tile.tileID.overscaleFactor(),
+        type: this.type,
+        source: this.id,
+        pixelRatio: browser.devicePixelRatio,
+        showCollisionBoxes: this.map.showCollisionBoxes
+      };
+      let message = 'reloadTile';
+      if (tile.workerID === undefined || tile.state === 'expired') {
+        message = 'loadTile';
+        tile.workerID ??= this.dispatcher.nextWorkerId();
+      }
+      const data = await this.dispatcher.send(message, params, tile.workerID);
       tile.loadVectorData(data, this.map.painter);
-
-      callback();
-
-      if (tile.reloadCallback) {
-        this.loadTile(tile, tile.reloadCallback);
-        tile.reloadCallback = null;
+    } catch (err) {
+      if (tile.aborted) {
+        tile.state = 'unloaded';
+        return;
       }
+      tile.state = 'errored';
+      throw err;
     }
   }
 

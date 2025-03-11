@@ -110,16 +110,16 @@ class SourceCache extends Evented {
     if (this.transform) this.update(this.transform);
   }
 
-  _loadTile(tile, callback) {
-    return this._source.loadTile(tile, callback);
+  _loadTile(tile) {
+    return this._source.loadTile(tile);
   }
 
   _unloadTile(tile) {
-    if (this._source.unloadTile) return this._source.unloadTile(tile, () => {});
+    return this._source.unloadTile?.(tile);
   }
 
   _abortTile(tile) {
-    if (this._source.abortTile) return this._source.abortTile(tile, () => {});
+    return this._source.abortTile?.(tile);
   }
 
   serialize() {
@@ -127,9 +127,7 @@ class SourceCache extends Evented {
   }
 
   prepare(context) {
-    if (this._source.prepare) {
-      this._source.prepare();
-    }
+    this._source.prepare?.();
 
     this._state.coalesceChanges(this._tiles, this.map ? this.map.painter : null);
     for (const i in this._tiles) {
@@ -202,21 +200,22 @@ class SourceCache extends Evented {
     if (tile.state !== 'loading') {
       tile.state = state;
     }
-
-    this._loadTile(tile, this._tileLoaded.bind(this, tile, id, state));
+    this._loadTile(tile).then(
+      () => this._tileLoaded(tile),
+      err => this._tileLoadError(tile, err)
+    );
   }
 
-  _tileLoaded(tile, id, previousState, err) {
-    if (err) {
-      tile.state = 'errored';
-      // ignore do nothing strategy
-      if (err.doNothing) return;
-      if (err.status !== 404) this._source.fire(new ErrorEvent(err, { tile }));
-      // continue to try loading parent/children tiles if a tile doesn't exist (404)
-      else this.update(this.transform);
-      return;
-    }
+  _tileLoadError(tile, err) {
+    tile.state = 'errored';
+    // ignore do nothing strategy
+    if (err.doNothing) return;
+    if (err.status !== 404) this._source.fire(new ErrorEvent(err, { tile }));
+    // continue to try loading parent/children tiles if a tile doesn't exist (404)
+    else this.update(this.transform);
+  }
 
+  _tileLoaded(tile, err) {
     tile.timeAdded = browser.now();
     if (this.getSource().type === 'raster-dem' && tile.dem) this._backfillDEM(tile);
     this._state.initializeTileState(tile, this.map ? this.map.painter : null);
@@ -610,7 +609,10 @@ class SourceCache extends Evented {
     const cached = Boolean(tile);
     if (!cached) {
       tile = new Tile(tileID, this._source.tileSize * tileID.overscaleFactor());
-      this._loadTile(tile, this._tileLoaded.bind(this, tile, tileID.key, tile.state));
+      this._loadTile(tile).then(
+        () => this._tileLoaded(tile),
+        err => this._tileLoadError(tile, err)
+      );
     }
 
     // Impossible, but silence flow.

@@ -176,7 +176,7 @@ class ImageSource extends Evented {
     }
   }
 
-  loadTile(tile, callback) {
+  loadTile(tile) {
     // We have a single tile -- whoose coordinates are this.tileID -- that
     // covers the image we want to render.  If that's the one being
     // requested, set it up with the image; otherwise, mark the tile as
@@ -186,11 +186,10 @@ class ImageSource extends Evented {
     if (this.tileID?.equals(tile.tileID.canonical)) {
       this.tiles[String(tile.tileID.wrap)] = tile;
       tile.buckets = {};
-      callback(null);
     } else {
       tile.state = 'errored';
-      callback(null);
     }
+    return Promise.resolve();
   }
 
   serialize() {
