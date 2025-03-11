@@ -4,8 +4,18 @@ const RasterTileSource = require('../../../src/source/raster_tile_source');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
 function createSource(options) {
-  options.tiles = options.tiles ?? loadTile;
-  const source = new RasterTileSource('id', options, { send: function () {} }, options.eventedParent);
+  options.tiles ??= loadTile;
+  const source = new RasterTileSource(
+    'id',
+    options,
+    {
+      async send() {},
+      nextWorkerId() {
+        return 0;
+      }
+    },
+    options.eventedParent
+  );
   source.onAdd({
     transform: { angle: 0, pitch: 0, showCollisionBoxes: false }
   });
@@ -17,7 +27,7 @@ function createSource(options) {
   return source;
 
   function loadTile() {
-    return Promise.resolve(new ArrayBuffer(1));
+    return Promise.resolve(new ArrayBuffer());
   }
 }
 

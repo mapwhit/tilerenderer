@@ -4,8 +4,18 @@ const RasterDEMTileSource = require('../../../src/source/raster_dem_tile_source'
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
 function createSource(options) {
-  options.tiles = options.tiles ?? loadTile;
-  const source = new RasterDEMTileSource('id', options, { send: function () {} }, options.eventedParent);
+  options.tiles ??= loadTile;
+  const source = new RasterDEMTileSource(
+    'id',
+    options,
+    {
+      async send() {},
+      nextWorkerId() {
+        return 0;
+      }
+    },
+    options.eventedParent
+  );
   source.onAdd({
     transform: { angle: 0, pitch: 0, showCollisionBoxes: false }
   });
@@ -17,11 +27,11 @@ function createSource(options) {
   return source;
 
   function loadTile() {
-    return Promise.resolve();
+    return Promise.resolve(new ArrayBuffer());
   }
 }
 
-test('RasterTileSource', async t => {
+test('RasterDEMTileSource', async t => {
   let globalWindow;
   t.before(() => {
     globalWindow = globalThis.window;
@@ -44,7 +54,7 @@ test('RasterTileSource', async t => {
           state: 'loading',
           loadVectorData: function () {}
         };
-        source.loadTile(tile, () => {
+        source.loadTile(tile).then(() => {
           t.assert.deepEqual(Object.keys(tile.neighboringTiles), [
             new OverscaledTileID(10, 0, 10, 4, 4).key,
             new OverscaledTileID(10, 0, 10, 5, 4).key,
@@ -75,7 +85,7 @@ test('RasterTileSource', async t => {
           state: 'loading',
           loadVectorData: function () {}
         };
-        source.loadTile(tile, () => {
+        source.loadTile(tile).then(() => {
           t.assert.deepEqual(Object.keys(tile.neighboringTiles), [
             new OverscaledTileID(5, 0, 5, 30, 4).key,
             new OverscaledTileID(5, 0, 5, 31, 4).key,

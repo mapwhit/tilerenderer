@@ -120,17 +120,32 @@ test('VectorTileSource', async t => {
         const tile = {
           tileID: new OverscaledTileID(10, 0, 10, 5, 5),
           state: 'loading',
-          loadVectorData: function () {
+          loadVectorData() {
             this.state = 'loaded';
             events.push('tileLoaded');
           }
         };
-        source.loadTile(tile, () => {});
+        const promises = [source.loadTile(tile)];
         t.assert.equal(tile.state, 'loading');
-        source.loadTile(tile, () => {
-          t.assert.deepEqual(events, ['loadTile', 'tileLoaded', 'reloadTile', 'tileLoaded']);
-          done();
-        });
+        promises.push(source.loadTile(tile));
+        promises.push(source.loadTile(tile));
+
+        Promise.all(promises).then(
+          () => {
+            t.assert.deepEqual(events, [
+              'loadTile',
+              'reloadTile',
+              'reloadTile',
+              'tileLoaded',
+              'tileLoaded',
+              'tileLoaded'
+            ]);
+            done();
+          },
+          err => {
+            done(err);
+          }
+        );
       }
     });
   });
