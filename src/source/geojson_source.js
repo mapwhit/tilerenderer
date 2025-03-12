@@ -110,18 +110,16 @@ class GeoJSONSource extends Evented {
 
   load() {
     this.fire(new Event('dataloading', { dataType: 'source' }));
-    this._updateWorkerData(err => {
-      if (err) {
-        this.fire(new ErrorEvent(err));
-        return;
-      }
+    this._updateWorkerData().then(
+      () => {
+        const data = { dataType: 'source', sourceDataType: 'metadata' };
 
-      const data = { dataType: 'source', sourceDataType: 'metadata' };
-
-      // although GeoJSON sources contain no metadata, we fire this event to let the SourceCache
-      // know its ok to start requesting tiles.
-      this.fire(new Event('data', data));
-    });
+        // although GeoJSON sources contain no metadata, we fire this event to let the SourceCache
+        // know its ok to start requesting tiles.
+        this.fire(new Event('data', data));
+      },
+      err => this.fire(new ErrorEvent(err))
+    );
   }
 
   onAdd(map) {
@@ -138,14 +136,13 @@ class GeoJSONSource extends Evented {
   setData(data) {
     this._data = data;
     this.fire(new Event('dataloading', { dataType: 'source' }));
-    this._updateWorkerData(err => {
-      if (err) {
-        return this.fire(new ErrorEvent(err));
-      }
-
-      const data = { dataType: 'source', sourceDataType: 'content' };
-      this.fire(new Event('data', data));
-    });
+    this._updateWorkerData().then(
+      () => {
+        const data = { dataType: 'source', sourceDataType: 'content' };
+        this.fire(new Event('data', data));
+      },
+      err => this.fire(new ErrorEvent(err))
+    );
 
     return this;
   }
@@ -155,47 +152,33 @@ class GeoJSONSource extends Evented {
    * handles loading the geojson data and preparing to serve it up as tiles,
    * using geojson-vt or supercluster as appropriate.
    */
-  _updateWorkerData(callback) {
-    // biome-ignore lint/suspicious/useAwait: normalize return values as promises
-    async function loadGeoJSON(data) {
-      if (typeof data === 'function') {
-        return data();
-      }
-      return data;
+  async _updateWorkerData() {
+    const data = this._data;
+    const json = typeof data === 'function' ? await data().catch(() => {}) : data;
+    if (!json) {
+      throw new Error('no GeoJSON data');
+    }
+    const options = { ...this.workerOptions, data: JSON.stringify(json) };
+    this.workerID ??= this.dispatcher.nextWorkerId();
+
+    // target {this.type}.loadData rather than literally geojson.loadData,
+    // so that other geojson-like source types can easily reuse this
+    // implementation
+    const result = await this.dispatcher.send(`${this.type}.loadData`, options, this.workerID);
+    if (this._removed || result?.abandoned) {
+      return;
     }
 
-    const data = this._data;
-    loadGeoJSON(data)
-      .catch(() => {})
-      .then(json => {
-        if (!json) {
-          return callback(new Error('no GeoJSON data'));
-        }
-        const options = Object.assign({}, this.workerOptions);
-        options.data = JSON.stringify(json);
-        // target {this.type}.loadData rather than literally geojson.loadData,
-        // so that other geojson-like source types can easily reuse this
-        // implementation
-        const done = (err, result) => {
-          if (this._removed || result?.abandoned) {
-            return;
-          }
+    this._loaded = true;
 
-          this._loaded = true;
-
-          // Any `loadData` calls that piled up while we were processing
-          // this one will get coalesced into a single call when this
-          // 'coalesce' message is processed.
-          // We would self-send from the worker if we had access to its
-          // message queue. Waiting instead for the 'coalesce' to round-trip
-          // through the foreground just means we're throttling the worker
-          // to run at a little less than full-throttle.
-          this.dispatcher.send(`${this.type}.coalesce`, { source: options.source }, this.workerID);
-          callback(err);
-        };
-        this.workerID ??= this.dispatcher.nextWorkerId();
-        this.dispatcher.send(`${this.type}.loadData`, options, this.workerID).then(result => done(null, result), done);
-      });
+    // Any `loadData` calls that piled up while we were processing
+    // this one will get coalesced into a single call when this
+    // 'coalesce' message is processed.
+    // We would self-send from the worker if we had access to its
+    // message queue. Waiting instead for the 'coalesce' to round-trip
+    // through the foreground just means we're throttling the worker
+    // to run at a little less than full-throttle.
+    this.dispatcher.send(`${this.type}.coalesce`, { source: options.source }, this.workerID);
   }
 
   async loadTile(tile) {
