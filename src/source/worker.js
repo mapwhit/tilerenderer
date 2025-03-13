@@ -9,9 +9,6 @@ const GeoJSONWorkerSource = require('./geojson_worker_source');
 const assert = require('assert');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
 
-/**
- * @private
- */
 class Worker {
   constructor(self) {
     this.self = self;
@@ -88,25 +85,16 @@ class Worker {
   }
 
   removeSource(mapId, params, callback) {
-    assert(params.type);
-    assert(params.source);
+    const { type, source } = params;
+    assert(type);
+    assert(source);
 
-    if (
-      !this.workerSources[mapId] ||
-      !this.workerSources[mapId][params.type] ||
-      !this.workerSources[mapId][params.type][params.source]
-    ) {
-      return;
+    const worker = this.workerSources?.[mapId]?.[type]?.[source];
+    if (worker) {
+      delete this.workerSources[mapId][type][source];
+      worker.removeSource?.(params);
     }
-
-    const worker = this.workerSources[mapId][params.type][params.source];
-    delete this.workerSources[mapId][params.type][params.source];
-
-    if (worker.removeSource !== undefined) {
-      worker.removeSource(params, callback);
-    } else {
-      callback();
-    }
+    callback();
   }
 
   /**
@@ -140,38 +128,31 @@ class Worker {
   }
 
   getLayerIndex(mapId) {
-    let layerIndexes = this.layerIndexes[mapId];
-    if (!layerIndexes) {
-      layerIndexes = this.layerIndexes[mapId] = new StyleLayerIndex();
-    }
-    return layerIndexes;
+    return (this.layerIndexes[mapId] ??= new StyleLayerIndex());
   }
 
   getWorkerSource(mapId, type, source) {
-    if (!this.workerSources[mapId]) this.workerSources[mapId] = {};
-    if (!this.workerSources[mapId][type]) this.workerSources[mapId][type] = {};
+    this.workerSources[mapId] ??= {};
+    this.workerSources[mapId][type] ??= {};
 
-    if (!this.workerSources[mapId][type][source]) {
+    let s = this.workerSources[mapId][type][source];
+    if (!s) {
       // use a wrapped actor so that we can attach a target mapId param
       // to any messages invoked by the WorkerSource
       const actor = {
         send: (type, data) => this.actor.send(type, data, mapId)
       };
 
-      this.workerSources[mapId][type][source] = new this.workerSourceTypes[type](actor, this.getLayerIndex(mapId));
+      const WorkerSource = this.workerSourceTypes[type];
+      s = this.workerSources[mapId][type][source] = new WorkerSource(actor, this.getLayerIndex(mapId));
     }
 
-    return this.workerSources[mapId][type][source];
+    return s;
   }
 
   getDEMWorkerSource(mapId, source) {
-    if (!this.demWorkerSources[mapId]) this.demWorkerSources[mapId] = {};
-
-    if (!this.demWorkerSources[mapId][source]) {
-      this.demWorkerSources[mapId][source] = new RasterDEMTileWorkerSource();
-    }
-
-    return this.demWorkerSources[mapId][source];
+    this.demWorkerSources[mapId] ??= {};
+    return (this.demWorkerSources[mapId][source] ??= new RasterDEMTileWorkerSource());
   }
 }
 
