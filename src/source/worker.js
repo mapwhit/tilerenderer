@@ -56,7 +56,9 @@ class Worker {
 
   loadTile(mapId, params, callback) {
     assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).loadTile(params, callback);
+    this.getWorkerSource(mapId, params.type, params.source)
+      .loadTile(params)
+      .then(r => callback(null, r), callback);
   }
 
   loadDEMTile(mapId, params, callback) {
@@ -65,7 +67,9 @@ class Worker {
 
   reloadTile(mapId, params, callback) {
     assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).reloadTile(params, callback);
+    this.getWorkerSource(mapId, params.type, params.source)
+      .reloadTile(params)
+      .then(r => callback(null, r), callback);
   }
 
   removeTile(mapId, params, callback) {
