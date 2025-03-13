@@ -9,16 +9,10 @@ test('VectorTileWorkerSource#removeTile removes loaded tile', t => {
     0: {}
   };
 
-  source.removeTile(
-    {
-      source: 'source',
-      uid: 0
-    },
-    (err, res) => {
-      t.assert.notOk(err);
-      t.assert.notOk(res);
-    }
-  );
+  source.removeTile({
+    source: 'source',
+    uid: 0
+  });
 
   t.assert.deepEqual(source.loaded, {});
 });

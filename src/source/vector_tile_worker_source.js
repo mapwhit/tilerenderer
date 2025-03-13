@@ -96,13 +96,8 @@ class VectorTileWorkerSource {
    * @param params
    * @param params.uid The UID for this tile.
    */
-  removeTile(params, callback) {
-    const loaded = this.loaded;
-    const uid = params.uid;
-    if (loaded?.[uid]) {
-      delete loaded[uid];
-    }
-    callback();
+  removeTile(params) {
+    delete this.loaded?.[params.uid];
   }
 
   updateConfig() {}

@@ -74,7 +74,8 @@ class Worker {
 
   removeTile(mapId, params, callback) {
     assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).removeTile(params, callback);
+    this.getWorkerSource(mapId, params.type, params.source).removeTile(params);
+    callback();
   }
 
   removeDEMTile(mapId, params) {
