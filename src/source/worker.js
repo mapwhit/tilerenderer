@@ -62,7 +62,12 @@ class Worker {
   }
 
   loadDEMTile(mapId, params, callback) {
-    this.getDEMWorkerSource(mapId, params.source).loadTile(params, callback);
+    try {
+      const dem = this.getDEMWorkerSource(mapId, params.source).loadTile(params);
+      callback(null, dem);
+    } catch (e) {
+      callback(e);
+    }
   }
 
   reloadTile(mapId, params, callback) {
@@ -78,8 +83,8 @@ class Worker {
     callback();
   }
 
-  removeDEMTile(mapId, params) {
-    this.getDEMWorkerSource(mapId, params.source).removeTile(params);
+  removeDEMTile() {
+    // no op
   }
 
   removeSource(mapId, params, callback) {
