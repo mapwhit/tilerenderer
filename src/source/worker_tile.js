@@ -33,7 +33,7 @@ class WorkerTile {
     this.showCollisionBoxes = params.showCollisionBoxes;
   }
 
-  parse(data, layerIndex, actor, callback) {
+  async parse(data, layerIndex, actor) {
     this.status = 'parsing';
     this.data = data;
 
@@ -102,52 +102,44 @@ class WorkerTile {
     const stacks = mapObject(options.glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
     const icons = Object.keys(options.iconDependencies);
     const patterns = Object.keys(options.patternDependencies);
+    const tasks = [
+      Object.keys(stacks).length ? actor.send('getGlyphs', { uid: this.uid, stacks }) : {},
+      icons.length ? actor.send('getImages', { icons }) : {},
+      patterns.length ? actor.send('getImages', { icons: patterns }) : {}
+    ];
+    const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
+    const glyphAtlas = new GlyphAtlas(glyphMap);
+    const imageAtlas = new ImageAtlas(iconMap, patternMap);
 
-    loadGlypshsAndImages(this)
-      .then(({ glyphAtlas, imageAtlas }) => {
-        this.status = 'done';
-        callback(null, {
-          buckets: values(buckets).filter(b => !b.isEmpty()),
-          featureIndex,
-          collisionBoxArray: this.collisionBoxArray,
-          glyphAtlasImage: glyphAtlas.image,
-          imageAtlas
-        });
-      })
-      .catch(callback);
-
-    async function loadGlypshsAndImages({ uid, zoom, showCollisionBoxes }) {
-      const tasks = [
-        Object.keys(stacks).length ? actor.send('getGlyphs', { uid, stacks }) : {},
-        icons.length ? actor.send('getImages', { icons }) : {},
-        patterns.length ? actor.send('getImages', { icons: patterns }) : {}
-      ];
-      const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
-      const glyphAtlas = new GlyphAtlas(glyphMap);
-      const imageAtlas = new ImageAtlas(iconMap, patternMap);
-
-      for (const key in buckets) {
-        const bucket = buckets[key];
-        if (bucket instanceof SymbolBucket) {
-          recalculateLayers(bucket.layers, zoom);
-          performSymbolLayout(
-            bucket,
-            glyphMap,
-            glyphAtlas.positions,
-            iconMap,
-            imageAtlas.iconPositions,
-            showCollisionBoxes
-          );
-        } else if (
-          bucket.hasPattern &&
-          (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
-        ) {
-          recalculateLayers(bucket.layers, zoom);
-          bucket.addFeatures(options, imageAtlas.patternPositions);
-        }
+    for (const key in buckets) {
+      const bucket = buckets[key];
+      if (bucket instanceof SymbolBucket) {
+        recalculateLayers(bucket.layers, this.zoom);
+        performSymbolLayout(
+          bucket,
+          glyphMap,
+          glyphAtlas.positions,
+          iconMap,
+          imageAtlas.iconPositions,
+          this.showCollisionBoxes
+        );
+      } else if (
+        bucket.hasPattern &&
+        (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
+      ) {
+        recalculateLayers(bucket.layers, this.zoom);
+        bucket.addFeatures(options, imageAtlas.patternPositions);
       }
-      return { glyphAtlas, imageAtlas };
     }
+
+    this.status = 'done';
+    return {
+      buckets: values(buckets).filter(b => !b.isEmpty()),
+      featureIndex,
+      collisionBoxArray: this.collisionBoxArray,
+      glyphAtlasImage: glyphAtlas.image,
+      imageAtlas
+    };
   }
 }
 

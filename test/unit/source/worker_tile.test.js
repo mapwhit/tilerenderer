@@ -26,7 +26,7 @@ function createWrapper() {
   ]);
 }
 
-test('WorkerTile#parse', (t, done) => {
+test('WorkerTile#parse', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -36,14 +36,11 @@ test('WorkerTile#parse', (t, done) => {
   ]);
 
   const tile = createWorkerTile();
-  tile.parse(createWrapper(), layerIndex, {}, (err, result) => {
-    t.assert.ifError(err);
-    t.assert.ok(result.buckets[0]);
-    done();
-  });
+  const result = await tile.parse(createWrapper(), layerIndex, {});
+  t.assert.ok(result.buckets[0]);
 });
 
-test('WorkerTile#parse skips hidden layers', (t, done) => {
+test('WorkerTile#parse skips hidden layers', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test-hidden',
@@ -54,14 +51,11 @@ test('WorkerTile#parse skips hidden layers', (t, done) => {
   ]);
 
   const tile = createWorkerTile();
-  tile.parse(createWrapper(), layerIndex, {}, (err, result) => {
-    t.assert.ifError(err);
-    t.assert.equal(result.buckets.length, 0);
-    done();
-  });
+  const result = await tile.parse(createWrapper(), layerIndex, {});
+  t.assert.equal(result.buckets.length, 0);
 });
 
-test('WorkerTile#parse skips layers without a corresponding source layer', (t, done) => {
+test('WorkerTile#parse skips layers without a corresponding source layer', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -72,14 +66,11 @@ test('WorkerTile#parse skips layers without a corresponding source layer', (t, d
   ]);
 
   const tile = createWorkerTile();
-  tile.parse({ layers: {} }, layerIndex, {}, (err, result) => {
-    t.assert.ifError(err);
-    t.assert.equal(result.buckets.length, 0);
-    done();
-  });
+  const result = await tile.parse({ layers: {} }, layerIndex, {});
+  t.assert.equal(result.buckets.length, 0);
 });
 
-test('WorkerTile#parse warns once when encountering a v1 vector tile layer', (t, done) => {
+test('WorkerTile#parse warns once when encountering a v1 vector tile layer', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -100,9 +91,6 @@ test('WorkerTile#parse warns once when encountering a v1 vector tile layer', (t,
   t.stub(console, 'warn');
 
   const tile = createWorkerTile();
-  tile.parse(data, layerIndex, {}, err => {
-    t.assert.ifError(err);
-    t.assert.ok(console.warn.calledWithMatch(/does not use vector tile spec v2/));
-    done();
-  });
+  const result = await tile.parse(data, layerIndex, {});
+  t.assert.ok(console.warn.calledWithMatch(/does not use vector tile spec v2/));
 });

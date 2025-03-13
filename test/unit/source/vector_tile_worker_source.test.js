@@ -25,7 +25,7 @@ test('VectorTileWorkerSource#removeTile removes loaded tile', t => {
 
 test('VectorTileWorkerSource#reloadTile reloads a previously-loaded tile', t => {
   const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy();
+  const parse = t.spy(() => Promise.resolve({}));
 
   source.loaded = {
     0: {
@@ -38,13 +38,13 @@ test('VectorTileWorkerSource#reloadTile reloads a previously-loaded tile', t => 
   source.reloadTile({ uid: 0 }, callback);
   t.assert.equal(parse.callCount, 1);
 
-  parse.firstCall.args[3]();
+  // parse.firstCall.args[3]();
   t.assert.equal(callback.callCount, 1);
 });
 
 test('VectorTileWorkerSource#reloadTile queues a reload when parsing is in progress', t => {
   const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy();
+  const parse = t.spy(() => Promise.resolve({}));
 
   source.loaded = {
     0: {
@@ -75,7 +75,7 @@ test('VectorTileWorkerSource#reloadTile queues a reload when parsing is in progr
 test('VectorTileWorkerSource#reloadTile handles multiple pending reloads', t => {
   // https://github.com/mapbox/mapbox-gl-js/issues/6308
   const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy();
+  const parse = t.spy(() => Promise.resolve({}));
 
   source.loaded = {
     0: {
