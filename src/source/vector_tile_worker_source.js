@@ -2,18 +2,18 @@ const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
 
-function loadVectorTile(params, callback) {
+function loadVectorTile(params) {
   if (!params.response) {
-    return callback(new Error('no tile data'));
+    throw new Error('no tile data');
   }
   const { data } = params.response;
   if (!data) {
-    return callback();
+    return;
   }
-  callback(null, {
+  return {
     vectorTile: new vt.VectorTile(new Protobuf(data)),
     rawData: data
-  });
+  };
 }
 
 /**
@@ -32,10 +32,10 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(actor, layerIndex, loadVectorData) {
+  constructor(actor, layerIndex, loadVectorData = loadVectorTile) {
     this.actor = actor;
     this.layerIndex = layerIndex;
-    this.loadVectorData = loadVectorData || loadVectorTile.bind(this);
+    this.loadVectorData = loadVectorData;
     this.loaded = {};
   }
 
@@ -48,21 +48,20 @@ class VectorTileWorkerSource {
     const uid = params.uid;
 
     const workerTile = new WorkerTile(params);
-    this.loadVectorData(params, (err, response) => {
-      if (err || !response) {
-        return callback(err);
-      }
+    const response = this.loadVectorData(params);
+    if (!response) {
+      return callback();
+    }
 
-      const rawTileData = response.rawData;
-      workerTile.vectorTile = response.vectorTile;
-      // Transferring a copy of rawTileData because the worker needs to retain its copy.
-      workerTile
-        .parse(response.vectorTile, this.layerIndex, this.actor)
-        .then(result => callback(null, { rawTileData: rawTileData.slice(0), ...result }), callback);
+    const rawTileData = response.rawData;
+    workerTile.vectorTile = response.vectorTile;
+    // Transferring a copy of rawTileData because the worker needs to retain its copy.
+    workerTile
+      .parse(response.vectorTile, this.layerIndex, this.actor)
+      .then(result => callback(null, { rawTileData: rawTileData.slice(0), ...result }), callback);
 
-      this.loaded = this.loaded || {};
-      this.loaded[uid] = workerTile;
-    });
+    this.loaded = this.loaded || {};
+    this.loaded[uid] = workerTile;
   }
 
   /**

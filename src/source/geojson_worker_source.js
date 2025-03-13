@@ -5,12 +5,12 @@ const supercluster = require('supercluster');
 const geojsonvt = require('geojson-vt');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
-function loadGeoJSONTile(params, callback) {
+function loadGeoJSONTile(params) {
   const canonical = params.tileID.canonical;
 
   if (!this._geoJSONIndex) {
     if (!this._createGeoJSONIndex) {
-      return callback(null, null); // we couldn't load the file
+      return; // we couldn't load the file
     }
 
     this._geoJSONIndex = this._createGeoJSONIndex();
@@ -18,7 +18,7 @@ function loadGeoJSONTile(params, callback) {
 
   const geoJSONTile = this._geoJSONIndex.getTile(canonical.z, canonical.x, canonical.y);
   if (!geoJSONTile) {
-    return callback(null, null); // nothing in the given tile
+    return; // nothing in the given tile
   }
 
   const geojsonWrapper = new GeoJSONWrapper(geoJSONTile.features);
@@ -32,10 +32,10 @@ function loadGeoJSONTile(params, callback) {
     pbf = new Uint8Array(pbf);
   }
 
-  callback(null, {
+  return {
     vectorTile: geojsonWrapper,
     rawData: pbf.buffer
-  });
+  };
 }
 
 /**
