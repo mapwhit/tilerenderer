@@ -49,9 +49,10 @@ const browser = require('../util/browser');
  * @see [Create a heatmap from points](https://www.mapbox.com/mapbox-gl-js/example/heatmap/)
  */
 class GeoJSONSource extends Evented {
-  /**
-   * @private
-   */
+  #pendingDataEvents = new Set();
+  #newData = false;
+  #updateInProgress = false;
+
   constructor(id, options, dispatcher, eventedParent) {
     super();
 
@@ -109,17 +110,7 @@ class GeoJSONSource extends Evented {
   }
 
   load() {
-    this.fire(new Event('dataloading', { dataType: 'source' }));
-    this._updateWorkerData().then(
-      () => {
-        const data = { dataType: 'source', sourceDataType: 'metadata' };
-
-        // although GeoJSON sources contain no metadata, we fire this event to let the SourceCache
-        // know its ok to start requesting tiles.
-        this.fire(new Event('data', data));
-      },
-      err => this.fire(new ErrorEvent(err))
-    );
+    this.#updateData('metadata');
   }
 
   onAdd(map) {
@@ -135,16 +126,33 @@ class GeoJSONSource extends Evented {
    */
   setData(data) {
     this._data = data;
-    this.fire(new Event('dataloading', { dataType: 'source' }));
-    this._updateWorkerData().then(
-      () => {
-        const data = { dataType: 'source', sourceDataType: 'content' };
-        this.fire(new Event('data', data));
-      },
-      err => this.fire(new ErrorEvent(err))
-    );
-
+    this.#updateData();
     return this;
+  }
+
+  async #updateData(sourceDataType = 'content') {
+    this.#newData = true;
+    this.#pendingDataEvents.add(sourceDataType);
+    if (this.#updateInProgress) {
+      // will handle this update when the current one is done
+      return;
+    }
+    try {
+      this.#updateInProgress = true;
+      this.fire(new Event('dataloading', { dataType: 'source' }));
+      while (this.#newData) {
+        this.#newData = false;
+        await this._updateWorkerData(this._data);
+      }
+      this.#pendingDataEvents.forEach(sourceDataType =>
+        this.fire(new Event('data', { dataType: 'source', sourceDataType }))
+      );
+      this.#pendingDataEvents.clear();
+    } catch (err) {
+      this.fire(new ErrorEvent(err));
+    } finally {
+      this.#updateInProgress = false;
+    }
   }
 
   /*
@@ -152,8 +160,7 @@ class GeoJSONSource extends Evented {
    * handles loading the geojson data and preparing to serve it up as tiles,
    * using geojson-vt or supercluster as appropriate.
    */
-  async _updateWorkerData() {
-    const data = this._data;
+  async _updateWorkerData(data) {
     const json = typeof data === 'function' ? await data().catch(() => {}) : data;
     if (!json) {
       throw new Error('no GeoJSON data');
