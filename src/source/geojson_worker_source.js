@@ -9,7 +9,11 @@ function loadGeoJSONTile(params, callback) {
   const canonical = params.tileID.canonical;
 
   if (!this._geoJSONIndex) {
-    return callback(null, null); // we couldn't load the file
+    if (!this._createGeoJSONIndex) {
+      return callback(null, null); // we couldn't load the file
+    }
+
+    this._geoJSONIndex = this._createGeoJSONIndex();
   }
 
   const geoJSONTile = this._geoJSONIndex.getTile(canonical.z, canonical.x, canonical.y);
@@ -42,7 +46,6 @@ function loadGeoJSONTile(params, callback) {
  * `new GeoJSONWorkerSource(actor, layerIndex, customLoadGeoJSONFunction)`.
  * For a full example, see [mapbox-gl-topojson](https://github.com/developmentseed/mapbox-gl-topojson).
  *
- * @private
  */
 class GeoJSONWorkerSource extends VectorTileWorkerSource {
   /**
@@ -72,10 +75,17 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
   loadData(params, callback) {
     try {
       const data = this.loadGeoJSON(params);
-      rewind(data, true);
-      this._geoJSONIndex = params.cluster
-        ? supercluster(params.superclusterOptions).load(data.features)
-        : geojsonvt(data, params.geojsonVtOptions);
+      this._geoJSONIndex = null;
+      this._createGeoJSONIndex = params.cluster
+        ? () => {
+            rewind(data, true);
+            return supercluster(params.superclusterOptions).load(data.features);
+          }
+        : () => {
+            rewind(data, true);
+            return geojsonvt(data, params.geojsonVtOptions);
+          };
+
       this.loaded = {};
       callback();
     } catch (err) {
@@ -103,8 +113,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
   }
 
   /**
-   * Fetch and parse GeoJSON according to the given params.  Calls `callback`
-   * with `(err, data)`, where `data` is a parsed GeoJSON object.
+   * Fetch and parse GeoJSON according to the given params.
    *
    * GeoJSON is expected as a literal (string or object) `params.data`.
    *
