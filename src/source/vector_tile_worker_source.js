@@ -1,6 +1,7 @@
 const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
+const { callback } = require('../util/callback');
 
 function loadVectorTile(params) {
   if (!params.response) {
@@ -44,24 +45,29 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadVectorData} (which by default expects
    * a `params.url` property) for fetching and producing a VectorTile object.
    */
-  loadTile(params, callback) {
-    const uid = params.uid;
+  loadTile(params, fn) {
+    return callback(fn, perform.call(this));
 
-    const workerTile = new WorkerTile(params);
-    const response = this.loadVectorData(params);
-    if (!response) {
-      return callback();
+    async function perform() {
+      const uid = params.uid;
+
+      const workerTile = new WorkerTile(params);
+      const response = this.loadVectorData(params);
+      if (!response) {
+        return;
+      }
+
+      workerTile.vectorTile = response.vectorTile;
+      // Transferring a copy of rawTileData because the worker needs to retain its copy.
+      const parsingPromise = workerTile.parse(response.vectorTile, this.layerIndex, this.actor);
+
+      this.loaded = this.loaded || {};
+      this.loaded[uid] = workerTile;
+      const result = await parsingPromise;
+
+      const rawTileData = response.rawData;
+      return { rawTileData: rawTileData.slice(0), ...result };
     }
-
-    const rawTileData = response.rawData;
-    workerTile.vectorTile = response.vectorTile;
-    // Transferring a copy of rawTileData because the worker needs to retain its copy.
-    workerTile
-      .parse(response.vectorTile, this.layerIndex, this.actor)
-      .then(result => callback(null, { rawTileData: rawTileData.slice(0), ...result }), callback);
-
-    this.loaded = this.loaded || {};
-    this.loaded[uid] = workerTile;
   }
 
   /**
