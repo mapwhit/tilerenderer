@@ -1,7 +1,6 @@
 const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
-const { callback } = require('../util/callback');
 
 function loadVectorTile(params) {
   if (!params.response) {
@@ -45,57 +44,49 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadVectorData} (which by default expects
    * a `params.url` property) for fetching and producing a VectorTile object.
    */
-  loadTile(params, fn) {
-    return callback(fn, perform.call(this));
+  async loadTile(params) {
+    const workerTile = new WorkerTile(params);
+    try {
+      const uid = params.uid;
 
-    async function perform() {
-      const workerTile = new WorkerTile(params);
-      try {
-        const uid = params.uid;
-
-        const response = this.loadVectorData(params);
-        if (!response) {
-          return;
-        }
-
-        workerTile.vectorTile = response.vectorTile;
-        // Transferring a copy of rawTileData because the worker needs to retain its copy.
-        workerTile.parsingPromise = workerTile.parse(response.vectorTile, this.layerIndex, this.actor);
-
-        this.loaded ??= {};
-        this.loaded[uid] = workerTile;
-        const result = await workerTile.parsingPromise;
-
-        const rawTileData = response.rawData;
-        return { rawTileData: rawTileData.slice(0), ...result };
-      } finally {
-        delete workerTile.parsingPromise;
+      const response = this.loadVectorData(params);
+      if (!response) {
+        return;
       }
+
+      workerTile.vectorTile = response.vectorTile;
+      // Transferring a copy of rawTileData because the worker needs to retain its copy.
+      workerTile.parsingPromise = workerTile.parse(response.vectorTile, this.layerIndex, this.actor);
+
+      this.loaded ??= {};
+      this.loaded[uid] = workerTile;
+      const result = await workerTile.parsingPromise;
+
+      const rawTileData = response.rawData;
+      return { rawTileData: rawTileData.slice(0), ...result };
+    } finally {
+      delete workerTile.parsingPromise;
     }
   }
 
   /**
    * Implements {@link WorkerSource#reloadTile}.
    */
-  reloadTile(params, fn) {
-    return callback(fn, perform.call(this));
-
-    async function perform() {
-      const workerTile = this.loaded?.[params.uid];
-      if (!workerTile) {
-        return;
-      }
-      while (workerTile.parsingPromise) {
-        // If the tile is already being parsed, wait for the parsing to finish
-        await workerTile.parsingPromise;
-      }
-      try {
-        workerTile.showCollisionBoxes = params.showCollisionBoxes;
-        workerTile.parsingPromise = workerTile.parse(workerTile.vectorTile, this.layerIndex, this.actor);
-        return await workerTile.parsingPromise;
-      } finally {
-        delete workerTile.parsingPromise;
-      }
+  async reloadTile(params) {
+    const workerTile = this.loaded?.[params.uid];
+    if (!workerTile) {
+      return;
+    }
+    while (workerTile.parsingPromise) {
+      // If the tile is already being parsed, wait for the parsing to finish
+      await workerTile.parsingPromise;
+    }
+    try {
+      workerTile.showCollisionBoxes = params.showCollisionBoxes;
+      workerTile.parsingPromise = workerTile.parse(workerTile.vectorTile, this.layerIndex, this.actor);
+      return await workerTile.parsingPromise;
+    } finally {
+      delete workerTile.parsingPromise;
     }
   }
 

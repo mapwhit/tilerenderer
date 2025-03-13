@@ -102,8 +102,8 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param params.uid The UID for this tile.
    */
-  reloadTile(params, callback) {
-    return this.loaded?.[params.uid] ? super.reloadTile(params, callback) : this.loadTile(params, callback);
+  reloadTile(params) {
+    return this.loaded?.[params.uid] ? super.reloadTile(params) : this.loadTile(params);
   }
 
   /**
