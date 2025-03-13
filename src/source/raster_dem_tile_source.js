@@ -39,7 +39,7 @@ class RasterDEMTileSource extends RasterTileSource {
       if (!img) {
         return;
       }
-      if (!tile.workerID || tile.state === 'expired') {
+      if (!tile.dem) {
         const rawImageData = browser.getImageData(img);
         const params = {
           uid: tile.uid,
@@ -48,8 +48,7 @@ class RasterDEMTileSource extends RasterTileSource {
           rawImageData,
           encoding: this.encoding
         };
-        tile.workerID = this.dispatcher.nextWorkerId();
-        const dem = await this.dispatcher.send('loadDEMTile', params, tile.workerID);
+        const dem = await this.dispatcher.send('loadDEMTile', params);
         if (dem) {
           tile.dem = dem;
           tile.needsHillshadePrepare = true;
@@ -122,7 +121,6 @@ class RasterDEMTileSource extends RasterTileSource {
     delete tile.neighboringTiles;
 
     tile.state = 'unloaded';
-    this.dispatcher.send('removeDEMTile', { uid: tile.uid, source: this.id }, tile.workerID);
   }
 }
 

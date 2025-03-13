@@ -4,10 +4,10 @@ const Actor = require('../util/actor');
 
 const StyleLayerIndex = require('../style/style_layer_index');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
-const RasterDEMTileWorkerSource = require('./raster_dem_tile_worker_source');
 const GeoJSONWorkerSource = require('./geojson_worker_source');
 const assert = require('assert');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
+const DEMData = require('../data/dem_data');
 
 class Worker {
   constructor(self) {
@@ -23,7 +23,6 @@ class Worker {
 
     // [mapId][sourceType][sourceName] => worker source instance
     this.workerSources = {};
-    this.demWorkerSources = {};
 
     this.self.registerWorkerSource = (name, WorkerSource) => {
       if (this.workerSourceTypes[name]) {
@@ -55,7 +54,8 @@ class Worker {
   }
 
   loadDEMTile(mapId, params) {
-    return this.getDEMWorkerSource(mapId, params.source).loadTile(params);
+    const { uid, rawImageData, encoding } = params;
+    return new DEMData(uid, rawImageData, encoding);
   }
 
   reloadTile(mapId, params) {
@@ -66,10 +66,6 @@ class Worker {
   removeTile(mapId, params) {
     assert(params.type);
     this.getWorkerSource(mapId, params.type, params.source).removeTile(params);
-  }
-
-  removeDEMTile(mapId, params) {
-    this.getDEMWorkerSource(mapId, params.source).removeTile(params);
   }
 
   removeSource(mapId, params) {
@@ -124,11 +120,6 @@ class Worker {
     }
 
     return s;
-  }
-
-  getDEMWorkerSource(mapId, source) {
-    this.demWorkerSources[mapId] ??= {};
-    return (this.demWorkerSources[mapId][source] ??= new RasterDEMTileWorkerSource());
   }
 }
 
