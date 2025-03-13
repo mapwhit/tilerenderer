@@ -103,6 +103,11 @@ test-expression: dependencies dependencies-integration
 test-render: dependencies dependencies-integration
 	node test/render.test.js
 
+test-render-slow: dependencies dependencies-integration
+	find test/integration/render-tests -name style.json -printf '%P\n' | \
+		sed -e 's|/style.json||' | \
+		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js --test-reporter=dot
+
 test-query: dependencies dependencies-integration
 	node test/query.test.js
 
