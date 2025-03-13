@@ -105,7 +105,7 @@ test('GeoJSONSource#update', async t => {
   transform.zoom = 15;
   transform.setLocationAtPoint(lngLat, point);
 
-  const messages = ['geojson.loadData', 'geojson.coalesce'];
+  const messages = ['geojson.loadData'];
 
   await t.test('sends initial loadData request to dispatcher', (t, done) => {
     let index = 0;

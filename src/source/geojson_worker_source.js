@@ -3,7 +3,6 @@ const GeoJSONWrapper = require('./geojson_wrapper');
 const vtpbf = require('@mapwhit/vt-pbf');
 const supercluster = require('supercluster');
 const geojsonvt = require('geojson-vt');
-const assert = require('assert');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
 function loadGeoJSONTile(params, callback) {
@@ -34,8 +33,6 @@ function loadGeoJSONTile(params, callback) {
     rawData: pbf.buffer
   });
 }
-
-// 'loadData' received while coalescing, trigger one more 'loadData' on receiving 'coalesced'
 
 /**
  * The {@link WorkerSource} implementation that supports {@link GeoJSONSource}.
@@ -69,92 +66,20 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * expecting `callback(error, data)` to be called with either an error or a
    * parsed GeoJSON object.
    *
-   * When `loadData` requests come in faster than they can be processed,
-   * they are coalesced into a single request using the latest data.
-   * See {@link GeoJSONWorkerSource#coalesce}
-   *
    * @param params
    * @param callback
    */
   loadData(params, callback) {
-    if (this._pendingCallback) {
-      // Tell the foreground the previous call has been abandoned
-      this._pendingCallback(null, { abandoned: true });
-    }
-    this._pendingCallback = callback;
-    this._pendingLoadDataParams = params;
-
-    if (this._state && this._state !== 'Idle') {
-      this._state = 'NeedsLoadData';
-    } else {
-      this._state = 'Coalescing';
-      this._loadData();
-    }
-  }
-
-  /**
-   * Internal implementation: called directly by `loadData`
-   * or by `coalesce` using stored parameters.
-   */
-  _loadData() {
-    if (!this._pendingCallback || !this._pendingLoadDataParams) {
-      assert(false);
-      return;
-    }
-    const callback = this._pendingCallback;
-    const params = this._pendingLoadDataParams;
-    delete this._pendingCallback;
-    delete this._pendingLoadDataParams;
-    this.loadGeoJSON(params, (err, data) => {
-      if (err || !data) {
-        return callback(err);
-      }
-      if (typeof data !== 'object') {
-        return callback(new Error('Input data is not a valid GeoJSON object.'));
-      }
+    try {
+      const data = this.loadGeoJSON(params);
       rewind(data, true);
-
-      try {
-        this._geoJSONIndex = params.cluster
-          ? supercluster(params.superclusterOptions).load(data.features)
-          : geojsonvt(data, params.geojsonVtOptions);
-      } catch (err) {
-        return callback(err);
-      }
-
+      this._geoJSONIndex = params.cluster
+        ? supercluster(params.superclusterOptions).load(data.features)
+        : geojsonvt(data, params.geojsonVtOptions);
       this.loaded = {};
-
-      const result = {};
-      callback(null, result);
-    });
-  }
-
-  /**
-   * While processing `loadData`, we coalesce all further
-   * `loadData` messages into a single call to _loadData
-   * that will happen once we've finished processing the
-   * first message. {@link GeoJSONSource#_updateWorkerData}
-   * is responsible for sending us the `coalesce` message
-   * at the time it receives a response from `loadData`
-   *
-   *          State: Idle
-   *          ↑          |
-   *     'coalesce'   'loadData'
-   *          |     (triggers load)
-   *          |          ↓
-   *        State: Coalescing
-   *          ↑          |
-   *   (triggers load)   |
-   *     'coalesce'   'loadData'
-   *          |          ↓
-   *        State: NeedsLoadData
-   */
-  coalesce() {
-    if (this._state === 'Coalescing') {
-      this._state = 'Idle';
-    } else if (this._state === 'NeedsLoadData') {
-      this._state = 'Coalescing';
-      this._loadData();
+      callback();
+    } catch (err) {
+      callback(err);
     }
   }
 
@@ -186,23 +111,15 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param [params.data] Literal GeoJSON data. Must be provided.
    */
-  loadGeoJSON(params, callback) {
-    if (typeof params.data === 'string') {
-      try {
-        return callback(null, JSON.parse(params.data));
-      } catch (e) {
-        return callback(new Error('Input data is not a valid GeoJSON object.'));
-      }
-    } else {
-      return callback(new Error('Input data is not a valid GeoJSON object.'));
+  loadGeoJSON(params) {
+    try {
+      return JSON.parse(params.data);
+    } catch (e) {
+      throw new Error('Input data is not a valid GeoJSON object.');
     }
   }
 
   removeSource(params, callback) {
-    if (this._pendingCallback) {
-      // Don't leak callbacks
-      this._pendingCallback(null, { abandoned: true });
-    }
     callback();
   }
 }
