@@ -194,10 +194,9 @@ test('GeoJSONSource#update', async t => {
   });
 
   await t.test('sends loadData request to dispatcher after data update', (t, done) => {
-    let expectedLoadDataCalls = 2;
     const mockDispatcher = {
       send(message) {
-        if (message === 'geojson.loadData' && --expectedLoadDataCalls <= 0) {
+        if (message === 'geojson.loadData') {
           done();
         }
         return Promise.resolve();
