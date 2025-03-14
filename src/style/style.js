@@ -939,12 +939,12 @@ class Style extends Evented {
 
   // Callbacks from web workers
 
-  getImages(mapId, params, callback) {
-    this.imageManager.getImages(params.icons, callback);
+  getImages(_mapId, { icons }) {
+    return this.imageManager.getImages(icons);
   }
 
-  getGlyphs(mapId, params, callback) {
-    return this.glyphManager.getGlyphs(params.stacks, callback);
+  getGlyphs(_mapId, { stacks }) {
+    return this.glyphManager.getGlyphs(stacks);
   }
 }
 

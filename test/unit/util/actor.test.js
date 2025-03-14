@@ -18,8 +18,8 @@ test('Actor', async t => {
     t.stub(WebWorker, 'Worker').callsFake(function Worker(self) {
       this.self = self;
       this.actor = new Actor(self, this);
-      this.test = function (mapId, params, callback) {
-        setTimeout(() => callback(null, params), 0);
+      this.test = function (mapId, params) {
+        return Promise.resolve(params);
       };
     });
 
@@ -34,7 +34,7 @@ test('Actor', async t => {
     t.assert.deepEqual(responses[1], { value: 4104 });
   });
 
-  await t.test('targets worker-initiated messages to correct map instance', (t, done) => {
+  await t.test('targets worker-initiated messages to correct map instance', async t => {
     let workerActor;
 
     t.stub(WebWorker, 'Worker').callsFake(function Worker(self) {
@@ -43,12 +43,13 @@ test('Actor', async t => {
     });
 
     const worker = new WebWorker();
+    let calls = 0;
 
     new Actor(
       worker,
       {
-        test: function () {
-          done();
+        test() {
+          calls++;
         }
       },
       'map-1'
@@ -56,15 +57,15 @@ test('Actor', async t => {
     new Actor(
       worker,
       {
-        test: function () {
+        test() {
           t.assert.fail();
-          done();
         }
       },
       'map-2'
     );
 
-    workerActor.send('test', {}, 'map-1');
+    await workerActor.send('test', {}, 'map-1');
+    t.assert.equal(calls, 1);
   });
 
   await t.test('#remove unbinds event listener', (t, done) => {

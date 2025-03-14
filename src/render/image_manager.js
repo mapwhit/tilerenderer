@@ -45,8 +45,8 @@ class ImageManager {
     this.loaded = loaded;
 
     if (loaded) {
-      for (const { ids, callback } of this.requestors) {
-        this._notify(ids, callback);
+      for (const { ids, resolve } of this.requestors) {
+        this._notify(ids, resolve);
       }
       this.requestors = [];
     }
@@ -76,7 +76,7 @@ class ImageManager {
     return Object.keys(this.images);
   }
 
-  getImages(ids, callback) {
+  getImages(ids) {
     // If the sprite has been loaded, or if all the icon dependencies are already present
     // (i.e. if they've been addeded via runtime styling), then notify the requestor immediately.
     // Otherwise, delay notification until the sprite is loaded. At that point, if any of the
@@ -89,14 +89,16 @@ class ImageManager {
         }
       }
     }
+    const { resolve, promise } = Promise.withResolvers();
     if (this.isLoaded() || hasAllDependencies) {
-      this._notify(ids, callback);
+      this._notify(ids, resolve);
     } else {
-      this.requestors.push({ ids, callback });
+      this.requestors.push({ ids, resolve });
     }
+    return promise;
   }
 
-  _notify(ids, callback) {
+  _notify(ids, resolve) {
     const response = {};
 
     for (const id of ids) {
@@ -111,7 +113,7 @@ class ImageManager {
       }
     }
 
-    callback(null, response);
+    resolve(response);
   }
 
   // Pattern stuff
