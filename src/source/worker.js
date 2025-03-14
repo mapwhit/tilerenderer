@@ -41,45 +41,38 @@ class Worker {
     };
   }
 
-  setLayers(mapId, layers, callback) {
+  setLayers(mapId, layers) {
     this.getLayerIndex(mapId).replace(layers);
-    callback();
   }
 
-  updateLayers(mapId, params, callback) {
+  updateLayers(mapId, params) {
     this.getLayerIndex(mapId).update(params.layers, params.removedIds);
-    callback();
   }
 
-  loadTile(mapId, params, callback) {
+  loadTile(mapId, params) {
     assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source)
-      .loadTile(params)
-      .then(r => callback(null, r), callback);
+    return this.getWorkerSource(mapId, params.type, params.source).loadTile(params);
   }
 
-  loadDEMTile(mapId, params, callback) {
-    this.getDEMWorkerSource(mapId, params.source).loadTile(params, callback);
+  loadDEMTile(mapId, params) {
+    return this.getDEMWorkerSource(mapId, params.source).loadTile(params);
   }
 
-  reloadTile(mapId, params, callback) {
+  reloadTile(mapId, params) {
     assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source)
-      .reloadTile(params)
-      .then(r => callback(null, r), callback);
+    return this.getWorkerSource(mapId, params.type, params.source).reloadTile(params);
   }
 
-  removeTile(mapId, params, callback) {
+  removeTile(mapId, params) {
     assert(params.type);
     this.getWorkerSource(mapId, params.type, params.source).removeTile(params);
-    callback();
   }
 
   removeDEMTile(mapId, params) {
     this.getDEMWorkerSource(mapId, params.source).removeTile(params);
   }
 
-  removeSource(mapId, params, callback) {
+  removeSource(mapId, params) {
     const { type, source } = params;
     assert(type);
     assert(source);
@@ -89,7 +82,6 @@ class Worker {
       delete this.workerSources[mapId][type][source];
       worker.removeSource?.(params);
     }
-    callback();
   }
 
   /**
@@ -98,27 +90,16 @@ class Worker {
    * function taking `(name, workerSourceObject)`.
    *  @private
    */
-  loadWorkerSource(map, params, callback) {
-    try {
-      this.self.importScripts(params.url);
-      callback();
-    } catch (e) {
-      callback(e.toString());
-    }
+  loadWorkerSource(map, params) {
+    this.self.importScripts(params.url);
   }
 
-  loadRTLTextPlugin(map, pluginURL, callback) {
-    try {
+  loadRTLTextPlugin(map, pluginURL) {
+    if (!globalRTLTextPlugin.isLoaded()) {
+      this.self.importScripts(pluginURL);
       if (!globalRTLTextPlugin.isLoaded()) {
-        this.self.importScripts(pluginURL);
-        callback(
-          globalRTLTextPlugin.isLoaded()
-            ? null
-            : new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`)
-        );
+        throw new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`);
       }
-    } catch (e) {
-      callback(e.toString());
     }
   }
 

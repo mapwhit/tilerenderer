@@ -6,20 +6,15 @@ const _self = {
 };
 
 test('load tile', async t => {
-  await t.test('calls callback on error', (t, done) => {
+  await t.test('calls callback on error', async t => {
     const worker = new Worker(_self);
-    worker.loadTile(
-      0,
-      {
+    await t.assert.rejects(
+      worker.loadTile(0, {
         type: 'vector',
         source: 'source',
         uid: 0,
         tileID: { overscaledZ: 0, wrap: 0, canonical: { x: 0, y: 0, z: 0, w: 0 } }
-      },
-      err => {
-        t.assert.ok(err);
-        done();
-      }
+      })
     );
   });
 });
@@ -27,21 +22,17 @@ test('load tile', async t => {
 test("isolates different instances' data", t => {
   const worker = new Worker(_self);
 
-  worker.setLayers(0, [{ id: 'one', type: 'circle' }], () => {});
+  worker.setLayers(0, [{ id: 'one', type: 'circle' }]);
 
-  worker.setLayers(
-    1,
-    [
-      { id: 'one', type: 'circle' },
-      { id: 'two', type: 'circle' }
-    ],
-    () => {}
-  );
+  worker.setLayers(1, [
+    { id: 'one', type: 'circle' },
+    { id: 'two', type: 'circle' }
+  ]);
 
   t.assert.notEqual(worker.layerIndexes[0], worker.layerIndexes[1]);
 });
 
-test('worker source messages dispatched to the correct map instance', (t, done) => {
+test('worker source messages dispatched to the correct map instance', async t => {
   const worker = new Worker(_self);
 
   worker.actor.send = function (type, data, mapId) {
@@ -58,5 +49,5 @@ test('worker source messages dispatched to the correct map instance', (t, done) 
     };
   });
 
-  worker.loadTile(999, { type: 'test' }, done);
+  await worker.loadTile(999, { type: 'test' });
 });

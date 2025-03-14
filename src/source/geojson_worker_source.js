@@ -75,25 +75,20 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param callback
    */
-  loadData(params, callback) {
-    try {
-      const data = this.loadGeoJSON(params);
-      this._geoJSONIndex = null;
-      this._createGeoJSONIndex = params.cluster
-        ? () => {
-            rewind(data, true);
-            return supercluster(params.superclusterOptions).load(data.features);
-          }
-        : () => {
-            rewind(data, true);
-            return geojsonvt(data, params.geojsonVtOptions);
-          };
+  loadData(params) {
+    const data = this.loadGeoJSON(params);
+    this._geoJSONIndex = null;
+    this._createGeoJSONIndex = params.cluster
+      ? () => {
+          rewind(data, true);
+          return supercluster(params.superclusterOptions).load(data.features);
+        }
+      : () => {
+          rewind(data, true);
+          return geojsonvt(data, params.geojsonVtOptions);
+        };
 
-      this.loaded = {};
-      callback();
-    } catch (err) {
-      callback(err);
-    }
+    this.loaded = {};
   }
 
   /**
