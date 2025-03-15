@@ -37,7 +37,7 @@ test('GlyphManager requests remote CJK PBF', async t => {
   t.assert.equal(result['Arial Unicode MS'][0x5e73], null, 'The fixture returns a PBF without the glyph we requested');
 });
 
-test('GlyphManager generates CJK PBF locally', (t, done) => {
+test('GlyphManager generates CJK PBF locally', async t => {
   t.stub(GlyphManager, 'TinySDF').value(
     class {
       // Return empty 30x30 bitmap (24 fontsize + 3 * 2 buffer)
@@ -50,9 +50,6 @@ test('GlyphManager generates CJK PBF locally', (t, done) => {
   const manager = new GlyphManager('sans-serif');
   manager.setGlyphsLoader(() => {});
 
-  manager.getGlyphs({ 'Arial Unicode MS': [0x5e73] }, (err, glyphs) => {
-    t.assert.ifError(err);
-    t.assert.equal(glyphs['Arial Unicode MS'][0x5e73].metrics.advance, 24);
-    done();
-  });
+  const glyphs = await manager.getGlyphs({ 'Arial Unicode MS': [0x5e73] });
+  t.assert.equal(glyphs['Arial Unicode MS'][0x5e73].metrics.advance, 24);
 });
