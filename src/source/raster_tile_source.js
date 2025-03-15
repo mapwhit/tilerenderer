@@ -57,7 +57,7 @@ class RasterTileSource extends Evented {
   async loadTile(tile) {
     try {
       tile.abortController = new window.AbortController();
-      const data = await this.tiles(tile.tileID.canonical, tile.abortController);
+      const data = await this.tiles(tile.tileID.canonical, tile.abortController).catch(() => {});
       if (!data) {
         const err = new Error('Tile could not be loaded');
         err.status = 404; // will try to use the parent/child tile
