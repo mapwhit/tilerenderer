@@ -14,6 +14,7 @@ class Worker {
     this.self = self;
     this.actor = new Actor(self, this);
 
+    this.actors = {};
     this.layerIndexes = {};
 
     this.workerSourceTypes = {
@@ -93,23 +94,22 @@ class Worker {
     return (this.layerIndexes[mapId] ??= new StyleLayerIndex());
   }
 
+  getActor(mapId) {
+    return (this.actors[mapId] ??= {
+      send: (type, data) => this.actor.send(type, data, mapId)
+    });
+  }
+
   getWorkerSource(mapId, type, source) {
     this.workerSources[mapId] ??= {};
     this.workerSources[mapId][type] ??= {};
 
-    let s = this.workerSources[mapId][type][source];
-    if (!s) {
-      // use a wrapped actor so that we can attach a target mapId param
-      // to any messages invoked by the WorkerSource
-      const actor = {
-        send: (type, data) => this.actor.send(type, data, mapId)
-      };
+    return (this.workerSources[mapId][type][source] ??= this.createWorkerSource(type, mapId));
+  }
 
-      const WorkerSource = this.workerSourceTypes[type];
-      s = this.workerSources[mapId][type][source] = new WorkerSource(actor, this.getLayerIndex(mapId));
-    }
-
-    return s;
+  createWorkerSource(type, mapId) {
+    const WorkerSource = this.workerSourceTypes[type];
+    return new WorkerSource(this.getActor(mapId), this.getLayerIndex(mapId));
   }
 }
 
