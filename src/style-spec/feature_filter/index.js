@@ -31,8 +31,9 @@ function isExpressionFilter(filter) {
 
     case 'any':
     case 'all':
-      for (const f of filter.slice(1)) {
-        if (!isExpressionFilter(f) && typeof f !== 'boolean') {
+      for (let i = 1; i < filter.length; i++) {
+        const f = filter[i];
+        if (typeof f !== 'boolean' && !isExpressionFilter(f)) {
           return false;
         }
       }
@@ -86,34 +87,37 @@ function compare(a, b) {
 
 function convertFilter(filter) {
   if (!filter) return true;
-  const op = filter[0];
+  const [op, ...args] = filter;
   if (filter.length <= 1) return op !== 'any';
-  const converted =
-    op === '=='
-      ? convertComparisonOp(filter[1], filter[2], '==')
-      : op === '!='
-        ? convertNegation(convertComparisonOp(filter[1], filter[2], '=='))
-        : op === '<' || op === '>' || op === '<=' || op === '>='
-          ? convertComparisonOp(filter[1], filter[2], op)
-          : op === 'any'
-            ? convertDisjunctionOp(filter.slice(1))
-            : op === 'all'
-              ? ['all'].concat(filter.slice(1).map(convertFilter))
-              : op === 'none'
-                ? ['all'].concat(filter.slice(1).map(convertFilter).map(convertNegation))
-                : op === 'in'
-                  ? convertInOp(filter[1], filter.slice(2))
-                  : op === '!in'
-                    ? convertNegation(convertInOp(filter[1], filter.slice(2)))
-                    : op === 'has'
-                      ? convertHasOp(filter[1])
-                      : op === '!has'
-                        ? convertNegation(convertHasOp(filter[1]))
-                        : true;
-  return converted;
+  switch (op) {
+    case '!=':
+      return convertNegation(convertComparisonOp('==', ...args));
+    case '==':
+    case '<':
+    case '>':
+    case '<=':
+    case '>=':
+      return convertComparisonOp(op, ...args);
+    case 'any':
+      return convertDisjunctionOp(args);
+    case 'all':
+      return ['all', ...args.map(convertFilter)];
+    case 'none':
+      return ['all', ...args.map(convertFilter).map(convertNegation)];
+    case 'in':
+      return convertInOp(args);
+    case '!in':
+      return convertNegation(convertInOp(args));
+    case 'has':
+      return convertHasOp(args[0]);
+    case '!has':
+      return convertNegation(convertHasOp(args[0]));
+    default:
+      return true;
+  }
 }
 
-function convertComparisonOp(property, value, op) {
+function convertComparisonOp(op, property, value) {
   switch (property) {
     case '$type':
       return [`filter-type-${op}`, value];
@@ -125,10 +129,10 @@ function convertComparisonOp(property, value, op) {
 }
 
 function convertDisjunctionOp(filters) {
-  return ['any'].concat(filters.map(convertFilter));
+  return ['any', ...filters.map(convertFilter)];
 }
 
-function convertInOp(property, values) {
+function convertInOp([property, ...values]) {
   if (values.length === 0) {
     return false;
   }
@@ -138,11 +142,16 @@ function convertInOp(property, values) {
     case '$id':
       return ['filter-id-in', ['literal', values]];
     default:
-      if (values.length > 200 && !values.some(v => typeof v !== typeof values[0])) {
-        return ['filter-in-large', property, ['literal', values.sort(compare)]];
-      }
-      return ['filter-in-small', property, ['literal', values]];
+      return isUniformLarge(values)
+        ? ['filter-in-large', property, ['literal', values.sort(compare)]]
+        : ['filter-in-small', property, ['literal', values]];
   }
+}
+
+function isUniformLarge(values) {
+  if (values.length < 200) return false;
+  const type = typeof values[0];
+  return values.every(v => typeof v === type);
 }
 
 function convertHasOp(property) {
