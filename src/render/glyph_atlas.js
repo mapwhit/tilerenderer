@@ -1,7 +1,7 @@
 const ShelfPack = require('@mapbox/shelf-pack');
 
 const { AlphaImage } = require('../util/image');
-const { register } = require('../util/web_worker_transfer');
+const { register } = require('../util/transfer_registry');
 
 const padding = 1;
 

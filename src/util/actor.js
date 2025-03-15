@@ -15,24 +15,16 @@ module.exports = actor;
  */
 
 function actor(target, parent, mapId, name) {
-  const callbacks = {};
-  let callbackID = 0;
+  const promises = new Map();
+  let callbackID = Number.MIN_SAFE_INTEGER;
   target.addEventListener('message', receive, false);
 
-  function postMessage(targetMapId, id, type, data, err) {
-    const buffers = [];
-    const payload = {
-      targetMapId,
-      sourceMapId: mapId,
-      type,
-      id,
-      data: serialize(data, buffers)
-    };
-    if (err) {
-      payload.error = serialize(err);
-    }
-    target.postMessage(payload, buffers);
-  }
+  return {
+    send,
+    receive,
+    remove,
+    name
+  };
 
   /**
    * Sends a message from a main-thread map to a Worker or from a Worker back to
@@ -42,13 +34,12 @@ function actor(target, parent, mapId, name) {
    * @param targetMapId A particular mapId to which to send this message.
    * @private
    */
-  function send(type, data, callback, targetMapId) {
-    let id = 'null';
-    if (callback) {
-      id = `${mapId}:${callbackID++}`;
-      callbacks[id] = callback;
-    }
+  function send(type, data, targetMapId) {
+    const id = `${mapId}:${callbackID++}`;
+    const p = Promise.withResolvers();
+    promises.set(id, p);
     postMessage(targetMapId, id, type, data);
+    return p.promise;
   }
 
   function receive(message) {
@@ -57,22 +48,21 @@ function actor(target, parent, mapId, name) {
 
     if (targetMapId && mapId !== targetMapId) return;
 
-    const done = (err, data) => postMessage(undefined, id, '<response>', data, err);
-
     if (type === '<response>') {
-      const callback = callbacks[id];
-      delete callbacks[id];
-      if (callback) {
+      const p = promises.get(id);
+      if (p) {
+        promises.delete(id);
         if (data.error) {
-          callback(deserialize(data.error));
+          p.reject(deserialize(data.error));
         } else {
-          callback(null, deserialize(data.data));
+          p.resolve(deserialize(data.data));
         }
       }
       return;
     }
 
     if (typeof id !== 'undefined') {
+      const done = (err, data) => postMessage(undefined, id, '<response>', data, err);
       if (parent[type]) {
         // data.type == 'loadTile', 'removeTile', etc.
         parent[type](data.sourceMapId, deserialize(data.data), done);
@@ -95,10 +85,18 @@ function actor(target, parent, mapId, name) {
     target.removeEventListener('message', receive, false);
   }
 
-  return {
-    send,
-    receive,
-    remove,
-    name
-  };
+  function postMessage(targetMapId, id, type, data, err) {
+    const buffers = [];
+    const payload = {
+      targetMapId,
+      sourceMapId: mapId,
+      type,
+      id,
+      data: serialize(data, buffers)
+    };
+    if (err) {
+      payload.error = serialize(err);
+    }
+    target.postMessage(payload, buffers);
+  }
 }

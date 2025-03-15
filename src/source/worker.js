@@ -1,3 +1,5 @@
+require('../util/polyfill');
+
 const Actor = require('../util/actor');
 
 const StyleLayerIndex = require('../style/style_layer_index');
@@ -64,11 +66,6 @@ class Worker {
   reloadTile(mapId, params, callback) {
     assert(params.type);
     this.getWorkerSource(mapId, params.type, params.source).reloadTile(params, callback);
-  }
-
-  abortTile(mapId, params, callback) {
-    assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).abortTile(params, callback);
   }
 
   removeTile(mapId, params, callback) {
@@ -148,9 +145,7 @@ class Worker {
       // use a wrapped actor so that we can attach a target mapId param
       // to any messages invoked by the WorkerSource
       const actor = {
-        send: (type, data, callback) => {
-          this.actor.send(type, data, callback, mapId);
-        }
+        send: (type, data) => this.actor.send(type, data, mapId)
       };
 
       this.workerSources[mapId][type][source] = new this.workerSourceTypes[type](actor, this.getLayerIndex(mapId));

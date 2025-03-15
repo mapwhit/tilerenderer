@@ -5,13 +5,16 @@ const { OverscaledTileID } = require('../../../src/source/tile_id');
 const { Evented } = require('../../../src/util/evented');
 
 function createSource(options) {
-  options.tiles = options.tiles ?? loadTile;
+  options.tiles ??= loadTile;
   const source = new VectorTileSource(
     'id',
     options,
     {
-      send: function () {},
-      broadcast: function () {}
+      async send() {},
+      async broadcast() {},
+      nextWorkerId() {
+        return 0;
+      }
     },
     options.eventedParent
   );
@@ -107,10 +110,9 @@ test('VectorTileSource', async t => {
   await t.test('reloads a loading tile properly', (t, done) => {
     const source = createSource({});
     const events = [];
-    source.dispatcher.send = function (type, params, cb) {
+    source.dispatcher.send = function (type) {
       events.push(type);
-      setTimeout(cb, 0);
-      return 1;
+      return Promise.resolve();
     };
 
     source.on('data', e => {
@@ -118,17 +120,32 @@ test('VectorTileSource', async t => {
         const tile = {
           tileID: new OverscaledTileID(10, 0, 10, 5, 5),
           state: 'loading',
-          loadVectorData: function () {
+          loadVectorData() {
             this.state = 'loaded';
             events.push('tileLoaded');
           }
         };
-        source.loadTile(tile, () => {});
+        const promises = [source.loadTile(tile)];
         t.assert.equal(tile.state, 'loading');
-        source.loadTile(tile, () => {
-          t.assert.deepEqual(events, ['loadTile', 'tileLoaded', 'reloadTile', 'tileLoaded']);
-          done();
-        });
+        promises.push(source.loadTile(tile));
+        promises.push(source.loadTile(tile));
+
+        Promise.all(promises).then(
+          () => {
+            t.assert.deepEqual(events, [
+              'loadTile',
+              'reloadTile',
+              'reloadTile',
+              'tileLoaded',
+              'tileLoaded',
+              'tileLoaded'
+            ]);
+            done();
+          },
+          err => {
+            done(err);
+          }
+        );
       }
     });
   });

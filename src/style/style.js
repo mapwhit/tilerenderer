@@ -46,7 +46,9 @@ class Style extends Evented {
 
     const self = this;
     this._rtlTextPluginCallback = Style.registerForPluginAvailability(args => {
-      self.dispatcher.broadcast('loadRTLTextPlugin', args.pluginURL, args.completionCallback);
+      self.dispatcher
+        .broadcast('loadRTLTextPlugin', args.pluginURL)
+        .then(_ => args.completionCallback(), args.completionCallback);
       for (const id in self.sourceCaches) {
         self.sourceCaches[id].reload(); // Should be a no-op if the plugin loads before any tiles load
       }
@@ -93,18 +95,18 @@ class Style extends Evented {
     }
 
     if (json.sprite) {
-      loadSprite(json.sprite, (err, images) => {
-        if (err) {
-          this.fire(new ErrorEvent(err));
-        } else if (images) {
-          for (const id in images) {
-            this.imageManager.addImage(id, images[id]);
+      loadSprite(json.sprite)
+        .then(images => {
+          if (images) {
+            for (const id in images) {
+              this.imageManager.addImage(id, images[id]);
+            }
           }
-        }
 
-        this.imageManager.setLoaded(true);
-        this.fire(new Event('data', { dataType: 'style' }));
-      });
+          this.imageManager.setLoaded(true);
+          this.fire(new Event('data', { dataType: 'style' }));
+        })
+        .catch(err => this.fire(new ErrorEvent(err)));
     } else {
       this.imageManager.setLoaded(true);
     }
@@ -776,14 +778,12 @@ class Style extends Evented {
       return callback(null, null);
     }
 
-    this.dispatcher.broadcast(
-      'loadWorkerSource',
-      {
+    this.dispatcher
+      .broadcast('loadWorkerSource', {
         name: name,
         url: SourceType.workerSourceURL
-      },
-      callback
-    );
+      })
+      .then(data => callback(null, data), callback);
   }
 
   getLight() {

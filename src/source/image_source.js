@@ -61,19 +61,15 @@ class ImageSource extends Evented {
     this.options = options;
   }
 
-  load() {
+  async load() {
     this.fire(new Event('dataloading', { dataType: 'source' }));
-
     this.url = this.options.url;
-
-    loadImage(this.url, (err, image) => {
-      if (err) {
-        this.fire(new ErrorEvent(err));
-      } else if (image) {
-        this.image = image;
-        this._finishLoading();
-      }
-    });
+    try {
+      this.image = await loadImage(this.url);
+      this._finishLoading();
+    } catch (err) {
+      this.fire(new ErrorEvent(err));
+    }
   }
 
   _finishLoading() {
@@ -180,7 +176,7 @@ class ImageSource extends Evented {
     }
   }
 
-  loadTile(tile, callback) {
+  loadTile(tile) {
     // We have a single tile -- whoose coordinates are this.tileID -- that
     // covers the image we want to render.  If that's the one being
     // requested, set it up with the image; otherwise, mark the tile as
@@ -190,11 +186,10 @@ class ImageSource extends Evented {
     if (this.tileID?.equals(tile.tileID.canonical)) {
       this.tiles[String(tile.tileID.wrap)] = tile;
       tile.buckets = {};
-      callback(null);
     } else {
       tile.state = 'errored';
-      callback(null);
     }
+    return Promise.resolve();
   }
 
   serialize() {

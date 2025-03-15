@@ -1,4 +1,4 @@
-const { bindAll, deepEqual } = require('../util/object');
+const { deepEqual } = require('../util/object');
 const { clamp, wrap, ease: defaultEasing } = require('../util/util');
 const warn = require('../util/warn');
 const interpolate = require('../util/interpolate');
@@ -53,8 +53,6 @@ class Camera extends Evented {
     this._zooming = false;
     this.transform = transform;
     this._bearingSnap = options.bearingSnap;
-
-    bindAll(['_renderFrameCallback'], this);
   }
 
   /**
@@ -96,9 +94,9 @@ class Camera extends Evented {
    * @returns {Map} `this`
    * @see [Navigate the map with game-like controls](https://www.mapbox.com/mapbox-gl-js/example/game-controls/)
    */
-  panBy(offset, options, eventData) {
+  panBy(offset, options = {}, eventData) {
     offset = Point.convert(offset).mult(-1);
-    return this.panTo(this.transform.center, Object.assign({ offset }, options), eventData);
+    return this.panTo(this.transform.center, { offset, ...options }, eventData);
   }
 
   /**
@@ -112,16 +110,8 @@ class Camera extends Evented {
    * @fires moveend
    * @returns {Map} `this`
    */
-  panTo(lnglat, options, eventData) {
-    return this.easeTo(
-      Object.assign(
-        {
-          center: lnglat
-        },
-        options
-      ),
-      eventData
-    );
+  panTo(lnglat, options = {}, eventData) {
+    return this.easeTo({ center: lnglat, ...options }, eventData);
   }
 
   /**
@@ -171,16 +161,8 @@ class Camera extends Evented {
    * @fires zoomend
    * @returns {Map} `this`
    */
-  zoomTo(zoom, options, eventData) {
-    return this.easeTo(
-      Object.assign(
-        {
-          zoom: zoom
-        },
-        options
-      ),
-      eventData
-    );
+  zoomTo(zoom, options = {}, eventData) {
+    return this.easeTo({ zoom, ...options }, eventData);
   }
 
   /**
@@ -266,16 +248,8 @@ class Camera extends Evented {
    * @fires moveend
    * @returns {Map} `this`
    */
-  rotateTo(bearing, options, eventData) {
-    return this.easeTo(
-      Object.assign(
-        {
-          bearing: bearing
-        },
-        options
-      ),
-      eventData
-    );
+  rotateTo(bearing, options = {}, eventData) {
+    return this.easeTo({ bearing, ...options }, eventData);
   }
 
   /**
@@ -288,8 +262,8 @@ class Camera extends Evented {
    * @fires moveend
    * @returns {Map} `this`
    */
-  resetNorth(options, eventData) {
-    this.rotateTo(0, Object.assign({ duration: 1000 }, options), eventData);
+  resetNorth(options = {}, eventData) {
+    this.rotateTo(0, { duration: 1000, ...options }, eventData);
     return this;
   }
 
@@ -364,19 +338,17 @@ class Camera extends Evented {
    * @see [Fit a map to a bounding box](https://www.mapbox.com/mapbox-gl-js/example/fitbounds/)
    */
   fitBounds(bounds, options, eventData) {
-    options = Object.assign(
-      {
-        padding: {
-          top: 0,
-          bottom: 0,
-          right: 0,
-          left: 0
-        },
-        offset: [0, 0],
-        maxZoom: this.transform.maxZoom
+    options = {
+      padding: {
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0
       },
-      options
-    );
+      offset: [0, 0],
+      maxZoom: this.transform.maxZoom,
+      ...options
+    };
 
     if (typeof options.padding === 'number') {
       const p = options.padding;
@@ -534,14 +506,12 @@ class Camera extends Evented {
   easeTo(options, eventData) {
     this.stop();
 
-    options = Object.assign(
-      {
-        offset: [0, 0],
-        duration: 500,
-        easing: defaultEasing
-      },
-      options
-    );
+    options = {
+      offset: [0, 0],
+      duration: 500,
+      easing: defaultEasing,
+      ...options
+    };
 
     if (options.animate === false) options.duration = 0;
 
@@ -732,15 +702,13 @@ class Camera extends Evented {
 
     this.stop();
 
-    options = Object.assign(
-      {
-        offset: [0, 0],
-        speed: 1.2,
-        curve: 1.42,
-        easing: defaultEasing
-      },
-      options
-    );
+    options = {
+      offset: [0, 0],
+      speed: 1.2,
+      curve: 1.42,
+      easing: defaultEasing,
+      ...options
+    };
 
     const tr = this.transform;
     const startZoom = this.getZoom();

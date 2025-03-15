@@ -5,50 +5,41 @@
  * @private
  */
 class SourceFeatureState {
-  constructor() {
-    this.state = {};
-    this.stateChanges = {};
-  }
+  #state = {};
+  #stateChanges = {};
 
   updateState(sourceLayer, feature, state) {
-    feature = String(feature);
-    this.stateChanges[sourceLayer] = this.stateChanges[sourceLayer] || {};
-    this.stateChanges[sourceLayer][feature] = this.stateChanges[sourceLayer][feature] || {};
-    Object.assign(this.stateChanges[sourceLayer][feature], state);
+    const changes = (this.#stateChanges[sourceLayer] ??= {});
+    const featureState = (changes[feature] ??= {});
+    Object.assign(featureState, state);
   }
 
   getState(sourceLayer, feature) {
-    feature = String(feature);
-    const base = this.state[sourceLayer] || {};
-    const changes = this.stateChanges[sourceLayer] || {};
-    return Object.assign({}, base[feature], changes[feature]);
+    const base = this.#state[sourceLayer];
+    const changes = this.#stateChanges[sourceLayer];
+    return Object.assign({}, base?.[feature], changes?.[feature]);
   }
 
   initializeTileState(tile, painter) {
-    tile.setFeatureState(this.state, painter);
+    tile.setFeatureState(this.#state, painter);
   }
 
   coalesceChanges(tiles, painter) {
     const changes = {};
-    for (const sourceLayer in this.stateChanges) {
-      this.state[sourceLayer] = this.state[sourceLayer] || {};
+    for (const sourceLayer in this.#stateChanges) {
+      this.#state[sourceLayer] ??= {};
       const layerStates = {};
-      for (const id in this.stateChanges[sourceLayer]) {
-        if (!this.state[sourceLayer][id]) {
-          this.state[sourceLayer][id] = {};
-        }
-        Object.assign(this.state[sourceLayer][id], this.stateChanges[sourceLayer][id]);
-        layerStates[id] = this.state[sourceLayer][id];
+      for (const id in this.#stateChanges[sourceLayer]) {
+        this.#state[sourceLayer][id] ??= {};
+        Object.assign(this.#state[sourceLayer][id], this.#stateChanges[sourceLayer][id]);
+        layerStates[id] = this.#state[sourceLayer][id];
       }
       changes[sourceLayer] = layerStates;
     }
-    this.stateChanges = {};
+    this.#stateChanges = {};
     if (Object.keys(changes).length === 0) return;
 
-    for (const id in tiles) {
-      const tile = tiles[id];
-      tile.setFeatureState(changes, painter);
-    }
+    Object.values(tiles).forEach(tile => tile.setFeatureState(changes, painter));
   }
 }
 

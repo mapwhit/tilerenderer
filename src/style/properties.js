@@ -4,7 +4,7 @@ const { clone } = require('../util/object');
 const { easeCubicInOut } = require('../util/util');
 const interpolate = require('../style-spec/util/interpolate');
 const { normalizePropertyExpression } = require('../style-spec/expression');
-const { register } = require('../util/web_worker_transfer');
+const { register } = require('../util/transfer_registry');
 const EvaluationParameters = require('./evaluation_parameters');
 
 /**

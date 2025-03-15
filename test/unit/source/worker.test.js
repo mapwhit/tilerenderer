@@ -44,9 +44,10 @@ test("isolates different instances' data", t => {
 test('worker source messages dispatched to the correct map instance', (t, done) => {
   const worker = new Worker(_self);
 
-  worker.actor.send = function (type, data, callback, mapId) {
+  worker.actor.send = function (type, data, mapId) {
     t.assert.equal(type, 'main thread task');
     t.assert.equal(mapId, 999);
+    t.assert.deepEqual(data, { type: 'test' });
     done();
   };
 
@@ -54,7 +55,7 @@ test('worker source messages dispatched to the correct map instance', (t, done) 
     this.loadTile = function () {
       // we expect the map id to get appended in the call to the "real"
       // actor.send()
-      actor.send('main thread task', {}, () => {}, null);
+      actor.send('main thread task', { type: 'test' });
     };
   });
 

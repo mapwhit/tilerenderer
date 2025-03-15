@@ -2,36 +2,6 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 
-test('VectorTileWorkerSource#abortTile aborts pending request', t => {
-  const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-
-  source.loadTile(
-    {
-      source: 'tiles',
-      uid: 0,
-      tileID: { overscaledZ: 0, wrap: 0, canonical: { x: 0, y: 0, z: 0, w: 0 } },
-      response: {}
-    },
-    (err, res) => {
-      t.assert.notOk(err);
-      t.assert.notOk(res);
-    }
-  );
-
-  source.abortTile(
-    {
-      source: 'tiles',
-      uid: 0
-    },
-    (err, res) => {
-      t.assert.notOk(err);
-      t.assert.notOk(res);
-    }
-  );
-
-  t.assert.deepEqual(source.loading, undefined);
-});
-
 test('VectorTileWorkerSource#removeTile removes loaded tile', t => {
   const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
 

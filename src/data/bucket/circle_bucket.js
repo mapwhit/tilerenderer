@@ -6,7 +6,7 @@ const { ProgramConfigurationSet } = require('../program_configuration');
 const { TriangleIndexArray } = require('../index_array_type');
 const loadGeometry = require('../load_geometry');
 const EXTENT = require('../extent');
-const { register } = require('../../util/web_worker_transfer');
+const { register } = require('../../util/transfer_registry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
 
 function addCircleVertex(layoutVertexArray, x, y, extrudeX, extrudeY) {

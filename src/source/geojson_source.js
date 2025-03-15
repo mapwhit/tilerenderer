@@ -176,34 +176,29 @@ class GeoJSONSource extends Evented {
         // target {this.type}.loadData rather than literally geojson.loadData,
         // so that other geojson-like source types can easily reuse this
         // implementation
-        this.workerID = this.dispatcher.send(
-          `${this.type}.loadData`,
-          options,
-          (err, result) => {
-            if (this._removed || result?.abandoned) {
-              return;
-            }
+        const done = (err, result) => {
+          if (this._removed || result?.abandoned) {
+            return;
+          }
 
-            this._loaded = true;
+          this._loaded = true;
 
-            if (result?.resourceTiming?.[this.id]) this._resourceTiming = result.resourceTiming[this.id].slice(0);
-            // Any `loadData` calls that piled up while we were processing
-            // this one will get coalesced into a single call when this
-            // 'coalesce' message is processed.
-            // We would self-send from the worker if we had access to its
-            // message queue. Waiting instead for the 'coalesce' to round-trip
-            // through the foreground just means we're throttling the worker
-            // to run at a little less than full-throttle.
-            this.dispatcher.send(`${this.type}.coalesce`, { source: options.source }, null, this.workerID);
-            callback(err);
-          },
-          this.workerID
-        );
+          // Any `loadData` calls that piled up while we were processing
+          // this one will get coalesced into a single call when this
+          // 'coalesce' message is processed.
+          // We would self-send from the worker if we had access to its
+          // message queue. Waiting instead for the 'coalesce' to round-trip
+          // through the foreground just means we're throttling the worker
+          // to run at a little less than full-throttle.
+          this.dispatcher.send(`${this.type}.coalesce`, { source: options.source }, this.workerID);
+          callback(err);
+        };
+        this.workerID ??= this.dispatcher.nextWorkerId();
+        this.dispatcher.send(`${this.type}.loadData`, options, this.workerID).then(result => done(null, result), done);
       });
   }
 
-  loadTile(tile, callback) {
-    const message = tile.workerID === undefined ? 'loadTile' : 'reloadTile';
+  async loadTile(tile) {
     const params = {
       type: this.type,
       uid: tile.uid,
@@ -216,26 +211,12 @@ class GeoJSONSource extends Evented {
       showCollisionBoxes: this.map.showCollisionBoxes
     };
 
-    tile.workerID = this.dispatcher.send(
-      message,
-      params,
-      (err, data) => {
-        tile.unloadVectorData();
-
-        if (tile.aborted) {
-          return callback(null);
-        }
-
-        if (err) {
-          return callback(err);
-        }
-
-        tile.loadVectorData(data, this.map.painter, message === 'reloadTile');
-
-        return callback(null);
-      },
-      this.workerID
-    );
+    const message = tile.workerID === undefined ? 'loadTile' : 'reloadTile';
+    tile.workerID ??= this.dispatcher.nextWorkerId(this.workerID);
+    const data = await this.dispatcher.send(message, params, tile.workerID).finally(() => tile.unloadVectorData());
+    if (!tile.aborted) {
+      tile.loadVectorData(data, this.map.painter, message === 'reloadTile');
+    }
   }
 
   abortTile(tile) {
@@ -244,12 +225,12 @@ class GeoJSONSource extends Evented {
 
   unloadTile(tile) {
     tile.unloadVectorData();
-    this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, null, tile.workerID);
+    return this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   onRemove() {
     this._removed = true;
-    this.dispatcher.send('removeSource', { type: this.type, source: this.id }, null, this.workerID);
+    return this.dispatcher.send('removeSource', { type: this.type, source: this.id }, this.workerID);
   }
 
   serialize() {

@@ -2,26 +2,23 @@ const loadGeometry = require('./load_geometry');
 const EXTENT = require('./extent');
 const featureFilter = require('../style-spec/feature_filter');
 const Grid = require('grid-index');
-const DictionaryCoder = require('../util/dictionary_coder');
+const dictionaryCoder = require('../util/dictionary_coder');
 const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const GeoJSONFeature = require('../util/vectortile_to_geojson');
 const { arraysIntersect } = require('../util/object');
-const { register } = require('../util/web_worker_transfer');
+const { register } = require('../util/transfer_registry');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const { polygonIntersectsBox } = require('../util/intersection_tests');
 
 const { FeatureIndexArray } = require('./array_types');
 
 class FeatureIndex {
-  constructor(tileID, grid, featureIndexArray) {
+  constructor(tileID, grid = new Grid(EXTENT, 16, 0), featureIndexArray = new FeatureIndexArray()) {
     this.tileID = tileID;
-    this.x = tileID.canonical.x;
-    this.y = tileID.canonical.y;
-    this.z = tileID.canonical.z;
-    this.grid = grid || new Grid(EXTENT, 16, 0);
+    this.grid = grid;
     this.grid3D = new Grid(EXTENT, 16, 0);
-    this.featureIndexArray = featureIndexArray || new FeatureIndexArray();
+    this.featureIndexArray = featureIndexArray;
   }
 
   insert(feature, geometry, featureIndex, sourceLayerIndex, bucketIndex, is3D) {
@@ -30,25 +27,10 @@ class FeatureIndex {
 
     const grid = is3D ? this.grid3D : this.grid;
 
-    for (let r = 0; r < geometry.length; r++) {
-      const ring = geometry[r];
-
-      const bbox = [
-        Number.POSITIVE_INFINITY,
-        Number.POSITIVE_INFINITY,
-        Number.NEGATIVE_INFINITY,
-        Number.NEGATIVE_INFINITY
-      ];
-      for (let i = 0; i < ring.length; i++) {
-        const p = ring[i];
-        bbox[0] = Math.min(bbox[0], p.x);
-        bbox[1] = Math.min(bbox[1], p.y);
-        bbox[2] = Math.max(bbox[2], p.x);
-        bbox[3] = Math.max(bbox[3], p.y);
-      }
-
-      if (bbox[0] < EXTENT && bbox[1] < EXTENT && bbox[2] >= 0 && bbox[3] >= 0) {
-        grid.insert(key, bbox[0], bbox[1], bbox[2], bbox[3]);
+    for (const ring of geometry) {
+      const { minX, minY, maxX, maxY } = getBounds(ring);
+      if (minX < EXTENT && minY < EXTENT && maxX >= 0 && maxY >= 0) {
+        grid.insert(key, minX, minY, maxX, maxY);
       }
     }
   }
@@ -56,9 +38,7 @@ class FeatureIndex {
   loadVTLayers() {
     if (!this.vtLayers) {
       this.vtLayers = new vt.VectorTile(new Protobuf(this.rawTileData)).layers;
-      this.sourceLayerCoder = new DictionaryCoder(
-        this.vtLayers ? Object.keys(this.vtLayers).sort() : ['_geojsonTileLayer']
-      );
+      this.sourceLayerCoder = dictionaryCoder(this.vtLayers ? Object.keys(this.vtLayers) : ['_geojsonTileLayer']);
     }
     return this.vtLayers;
   }
@@ -99,10 +79,7 @@ class FeatureIndex {
       }
     );
 
-    for (const key of matching3D) {
-      matching.push(key);
-    }
-
+    matching.push(...matching3D);
     matching.sort(topDownFeatureComparator);
 
     const result = {};
@@ -116,6 +93,26 @@ class FeatureIndex {
 
       const match = this.featureIndexArray.get(index);
       let featureGeometry = null;
+      const intersectionTest = (feature, styleLayer) => {
+        if (!featureGeometry) {
+          featureGeometry = loadGeometry(feature);
+        }
+        let featureState = {};
+        if (feature.id) {
+          // `feature-state` expression evaluation requires feature state to be available
+          featureState = sourceFeatureState.getState(styleLayer.sourceLayer || '_geojsonTileLayer', String(feature.id));
+        }
+        return styleLayer.queryIntersectsFeature(
+          queryGeometry,
+          feature,
+          featureState,
+          featureGeometry,
+          this.tileID.canonical.z,
+          args.transform,
+          pixelsToTileUnits,
+          args.pixelPosMatrix
+        );
+      };
       this.loadMatchingFeature(
         result,
         match.bucketIndex,
@@ -124,29 +121,7 @@ class FeatureIndex {
         filter,
         params.layers,
         styleLayers,
-        (feature, styleLayer) => {
-          if (!featureGeometry) {
-            featureGeometry = loadGeometry(feature);
-          }
-          let featureState = {};
-          if (feature.id) {
-            // `feature-state` expression evaluation requires feature state to be available
-            featureState = sourceFeatureState.getState(
-              styleLayer.sourceLayer || '_geojsonTileLayer',
-              String(feature.id)
-            );
-          }
-          return styleLayer.queryIntersectsFeature(
-            queryGeometry,
-            feature,
-            featureState,
-            featureGeometry,
-            this.z,
-            args.transform,
-            pixelsToTileUnits,
-            args.pixelPosMatrix
-          );
-        }
+        intersectionTest
       );
     }
 
@@ -172,10 +147,9 @@ class FeatureIndex {
 
     if (!filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) return;
 
-    for (let l = 0; l < layerIDs.length; l++) {
-      const layerID = layerIDs[l];
-
-      if (filterLayerIDs && filterLayerIDs.indexOf(layerID) < 0) {
+    const { x, y, z } = this.tileID.canonical;
+    for (const layerID of layerIDs) {
+      if (filterLayerIDs && !filterLayerIDs.includes(layerID)) {
         continue;
       }
 
@@ -188,13 +162,10 @@ class FeatureIndex {
         continue;
       }
 
-      const geojsonFeature = new GeoJSONFeature(feature, this.z, this.x, this.y);
+      const geojsonFeature = new GeoJSONFeature(feature, z, x, y);
       geojsonFeature.layer = styleLayer.serialize();
-      let layerResult = result[layerID];
-      if (layerResult === undefined) {
-        layerResult = result[layerID] = [];
-      }
-      layerResult.push({ featureIndex: featureIndex, feature: geojsonFeature, intersectionZ });
+      const layerResult = (result[layerID] ??= []);
+      layerResult.push({ featureIndex, feature: geojsonFeature, intersectionZ });
     }
   }
 
@@ -219,16 +190,6 @@ class FeatureIndex {
     }
     return result;
   }
-
-  hasLayer(id) {
-    for (const layerIDs of this.bucketLayerIDs) {
-      for (const layerID of layerIDs) {
-        if (id === layerID) return true;
-      }
-    }
-
-    return false;
-  }
 }
 
 register('FeatureIndex', FeatureIndex, { omit: ['rawTileData', 'sourceLayerCoder'] });
@@ -240,11 +201,11 @@ function getBounds(geometry) {
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let maxY = Number.NEGATIVE_INFINITY;
-  for (const p of geometry) {
-    minX = Math.min(minX, p.x);
-    minY = Math.min(minY, p.y);
-    maxX = Math.max(maxX, p.x);
-    maxY = Math.max(maxY, p.y);
+  for (const { x, y } of geometry) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
   }
   return { minX, minY, maxX, maxY };
 }

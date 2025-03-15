@@ -81,34 +81,6 @@ test('reloadTile', async t => {
   });
 });
 
-test('resourceTiming', async t => {
-  const layers = [
-    {
-      id: 'mylayer',
-      source: 'sourceId',
-      type: 'symbol'
-    }
-  ];
-  const geoJson = {
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [0, 0]
-    }
-  };
-
-  await t.test('loadData - data', (t, done) => {
-    const layerIndex = new StyleLayerIndex(layers);
-    const source = new GeoJSONWorkerSource(null, layerIndex);
-
-    source.loadData({ source: 'testSource', data: JSON.stringify(geoJson) }, (err, result) => {
-      t.assert.equal(err, null);
-      t.assert.equal(result.resourceTiming, undefined, 'no resourceTiming property when loadData is not sent a URL');
-      done();
-    });
-  });
-});
-
 test('loadData', async t => {
   const layers = [
     {
