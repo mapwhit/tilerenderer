@@ -1,4 +1,3 @@
-const config = require('../util/config');
 const { Event, ErrorEvent, Evented } = require('../util/evented');
 const { pick } = require('../util/object');
 const loadTileJSON = require('./load_tilejson');
@@ -28,9 +27,6 @@ class VectorTileSource extends Evented {
     if (this.tileSize !== 512) {
       throw new Error('vector tile sources must have a tileSize of 512');
     }
-
-    this.updateWorkerConfig(config);
-    config.on('change', c => this.updateWorkerConfig(c));
 
     this.setEventedParent(eventedParent);
   }
@@ -129,12 +125,6 @@ class VectorTileSource extends Evented {
 
   hasTransition() {
     return false;
-  }
-
-  updateWorkerConfig() {
-    return this.dispatcher.broadcast('vector.updateConfig', {
-      source: this.id
-    });
   }
 }
 

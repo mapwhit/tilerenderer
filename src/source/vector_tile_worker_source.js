@@ -109,8 +109,6 @@ class VectorTileWorkerSource {
     }
     callback();
   }
-
-  updateConfig() {}
 }
 
 module.exports = VectorTileWorkerSource;
