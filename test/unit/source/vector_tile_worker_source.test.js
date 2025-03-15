@@ -1,77 +1,84 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
+const WorkerTile = require('../../../src/source/worker_tile');
 
-test('VectorTileWorkerSource#removeTile removes loaded tile', t => {
-  const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
+test('VectorTileWorkerSource#constructor', t => {
+  const actor = {};
+  const layerIndex = new StyleLayerIndex();
+  const source = new VectorTileWorkerSource(actor, layerIndex);
 
-  source.loaded = {
-    0: {}
-  };
-
-  source.removeTile({
-    source: 'source',
-    uid: 0
-  });
-
-  t.assert.deepEqual(source.loaded, {});
+  t.assert.equal(source.actor, actor);
+  t.assert.equal(source.layerIndex, layerIndex);
 });
 
-test('VectorTileWorkerSource#reloadTile reloads a previously-loaded tile', async t => {
-  const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy(() => Promise.resolve({}));
+test('VectorTileWorkerSource#loadTile - success', async t => {
+  const actor = {};
+  const layerIndex = new StyleLayerIndex();
+  const source = new VectorTileWorkerSource(actor, layerIndex);
 
-  source.loaded = {
-    0: {
-      status: 'done',
-      parse
+  const params = {
+    tileID: {
+      overscaledZ: 0,
+      wrap: 0,
+      canonical: {
+        z: 0,
+        x: 0,
+        y: 0
+      }
+    },
+    response: {
+      data: new ArrayBuffer(8)
     }
   };
 
-  await source.reloadTile({ uid: 0 });
-  t.assert.equal(parse.callCount, 1);
+  t.stub(WorkerTile.prototype, 'parse').resolves({ parsed: true });
+
+  const result = await source.loadTile(params);
+
+  t.assert.ok(result.rawTileData);
+  t.assert.ok(result.parsed);
 });
 
-test('VectorTileWorkerSource#reloadTile queues a reload when parsing is in progress', async t => {
-  const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy(() => Promise.resolve({}));
+test('VectorTileWorkerSource#loadTile - no response', async t => {
+  const actor = {};
+  const layerIndex = new StyleLayerIndex();
+  const source = new VectorTileWorkerSource(actor, layerIndex);
 
-  source.loaded = {
-    0: {
-      status: 'done',
-      parse
-    }
+  const params = {
+    tileID: {
+      overscaledZ: 0,
+      wrap: 0,
+      canonical: {
+        z: 0,
+        x: 0,
+        y: 0
+      }
+    },
+    response: null
   };
 
-  source.reloadTile({ uid: 0 });
-  t.assert.equal(parse.callCount, 1);
-
-  const p2 = source.reloadTile({ uid: 0 });
-  t.assert.equal(parse.callCount, 1);
-
-  await p2;
-  t.assert.equal(parse.callCount, 2);
+  await t.assert.rejects(source.loadTile(params), { message: 'no tile data' });
 });
 
-test('VectorTileWorkerSource#reloadTile handles multiple pending reloads', async t => {
-  // https://github.com/mapbox/mapbox-gl-js/issues/6308
-  const source = new VectorTileWorkerSource(null, new StyleLayerIndex());
-  const parse = t.spy(() => Promise.resolve({}));
+test('VectorTileWorkerSource#loadTile - no data', async t => {
+  const actor = {};
+  const layerIndex = new StyleLayerIndex();
+  const source = new VectorTileWorkerSource(actor, layerIndex);
 
-  source.loaded = {
-    0: {
-      status: 'done',
-      parse
-    }
+  const params = {
+    tileID: {
+      overscaledZ: 0,
+      wrap: 0,
+      canonical: {
+        z: 0,
+        x: 0,
+        y: 0
+      }
+    },
+    response: {}
   };
 
-  source.reloadTile({ uid: 0 });
-  t.assert.equal(parse.callCount, 1);
-
-  source.reloadTile({ uid: 0 });
-  t.assert.equal(parse.callCount, 1);
-  const p3 = source.reloadTile({ uid: 0 });
-
-  await p3;
-  t.assert.equal(parse.callCount, 3);
+  const result = await source.loadTile(params);
+  t.assert.equal(result, null);
 });

@@ -64,7 +64,7 @@ function actor(target, parent, mapId, name) {
     if (typeof id !== 'undefined') {
       let perform;
       if (parent[type]) {
-        // data.type == 'loadTile', 'removeTile', etc.
+        // data.type == 'loadTile' etc.
         perform = () => parent[type](data.sourceMapId, deserialize(data.data));
       } else if (parent.getWorkerSource) {
         // data.type == sourcetype.method

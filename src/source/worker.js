@@ -58,16 +58,6 @@ class Worker {
     return new DEMData(uid, rawImageData, encoding);
   }
 
-  reloadTile(mapId, params) {
-    assert(params.type);
-    return this.getWorkerSource(mapId, params.type, params.source).reloadTile(params);
-  }
-
-  removeTile(mapId, params) {
-    assert(params.type);
-    this.getWorkerSource(mapId, params.type, params.source).removeTile(params);
-  }
-
   removeSource(mapId, params) {
     const { type, source } = params;
     assert(type);

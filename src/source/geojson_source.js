@@ -187,11 +187,11 @@ class GeoJSONSource extends Evented {
       showCollisionBoxes: this.map.showCollisionBoxes
     };
 
-    const message = tile.workerID === undefined ? 'loadTile' : 'reloadTile';
+    const justReloaded = tile.workerID != null;
     tile.workerID ??= this.dispatcher.nextWorkerId(this.workerID);
-    const data = await this.dispatcher.send(message, params, tile.workerID).finally(() => tile.unloadVectorData());
+    const data = await this.dispatcher.send('loadTile', params, tile.workerID).finally(() => tile.unloadVectorData());
     if (!tile.aborted) {
-      tile.loadVectorData(data, this.map.painter, message === 'reloadTile');
+      tile.loadVectorData(data, this.map.painter, justReloaded);
     }
   }
 
@@ -201,7 +201,6 @@ class GeoJSONSource extends Evented {
 
   unloadTile(tile) {
     tile.unloadVectorData();
-    return this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   onRemove() {

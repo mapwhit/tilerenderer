@@ -96,12 +96,8 @@ class VectorTileSource extends Evented {
         pixelRatio: browser.devicePixelRatio,
         showCollisionBoxes: this.map.showCollisionBoxes
       };
-      let message = 'reloadTile';
-      if (tile.workerID === undefined || tile.state === 'expired') {
-        message = 'loadTile';
-        tile.workerID ??= this.dispatcher.nextWorkerId();
-      }
-      const data = await this.dispatcher.send(message, params, tile.workerID);
+      tile.workerID ??= this.dispatcher.nextWorkerId();
+      const data = await this.dispatcher.send('loadTile', params, tile.workerID);
       tile.loadVectorData(data, this.map.painter);
     } catch (err) {
       if (tile.aborted) {
@@ -120,7 +116,6 @@ class VectorTileSource extends Evented {
 
   unloadTile(tile) {
     tile.unloadVectorData();
-    return this.dispatcher.send('removeTile', { uid: tile.uid, type: this.type, source: this.id }, tile.workerID);
   }
 
   hasTransition() {

@@ -87,21 +87,6 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
           rewind(data, true);
           return geojsonvt(data, params.geojsonVtOptions);
         };
-
-    this.loaded = {};
-  }
-
-  /**
-   * Implements {@link WorkerSource#reloadTile}.
-   *
-   * If the tile is loaded, uses the implementation in VectorTileWorkerSource.
-   * Otherwise, such as after a setData() call, we load the tile fresh.
-   *
-   * @param params
-   * @param params.uid The UID for this tile.
-   */
-  reloadTile(params) {
-    return this.loaded?.[params.uid] ? super.reloadTile(params) : this.loadTile(params);
   }
 
   /**
@@ -118,10 +103,6 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
     } catch (e) {
       throw new Error('Input data is not a valid GeoJSON object.');
     }
-  }
-
-  removeSource(params, callback) {
-    callback();
   }
 }
 

@@ -36,7 +36,6 @@ class VectorTileWorkerSource {
     this.actor = actor;
     this.layerIndex = layerIndex;
     this.loadVectorData = loadVectorData;
-    this.loaded = {};
   }
 
   /**
@@ -46,58 +45,16 @@ class VectorTileWorkerSource {
    */
   async loadTile(params) {
     const workerTile = new WorkerTile(params);
-    try {
-      const uid = params.uid;
 
-      const response = this.loadVectorData(params);
-      if (!response) {
-        return;
-      }
-
-      workerTile.vectorTile = response.vectorTile;
-      // Transferring a copy of rawTileData because the worker needs to retain its copy.
-      workerTile.parsingPromise = workerTile.parse(response.vectorTile, this.layerIndex, this.actor);
-
-      this.loaded ??= {};
-      this.loaded[uid] = workerTile;
-      const result = await workerTile.parsingPromise;
-
-      const rawTileData = response.rawData;
-      return { rawTileData: rawTileData.slice(0), ...result };
-    } finally {
-      delete workerTile.parsingPromise;
-    }
-  }
-
-  /**
-   * Implements {@link WorkerSource#reloadTile}.
-   */
-  async reloadTile(params) {
-    const workerTile = this.loaded?.[params.uid];
-    if (!workerTile) {
+    const response = this.loadVectorData(params);
+    if (!response) {
       return;
     }
-    while (workerTile.parsingPromise) {
-      // If the tile is already being parsed, wait for the parsing to finish
-      await workerTile.parsingPromise;
-    }
-    try {
-      workerTile.showCollisionBoxes = params.showCollisionBoxes;
-      workerTile.parsingPromise = workerTile.parse(workerTile.vectorTile, this.layerIndex, this.actor);
-      return await workerTile.parsingPromise;
-    } finally {
-      delete workerTile.parsingPromise;
-    }
-  }
 
-  /**
-   * Implements {@link WorkerSource#removeTile}.
-   *
-   * @param params
-   * @param params.uid The UID for this tile.
-   */
-  removeTile(params) {
-    delete this.loaded?.[params.uid];
+    const { vectorTile, rawData: rawTileData } = response;
+    workerTile.vectorTile = vectorTile;
+    const result = await workerTile.parse(vectorTile, this.layerIndex, this.actor);
+    return { rawTileData, ...result };
   }
 }
 
