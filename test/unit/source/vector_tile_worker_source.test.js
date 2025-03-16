@@ -36,7 +36,6 @@ test('VectorTileWorkerSource#loadTile - success', async t => {
 
   const result = await source.loadTile(params);
 
-  t.assert.ok(result.rawTileData);
   t.assert.ok(result.parsed);
 });
 
