@@ -119,6 +119,7 @@ exports.run = function (implementation, ignores, render) {
     options.shuffle = checkParameter('--shuffle');
     options.recycleMap = checkParameter('--recycle-map');
     options.seed = checkValueParameter(options.seed, '--seed');
+    options.testReporter = checkValueParameter('verbose', '--test-reporter');
   }
 
   const directory = path.join(__dirname, '../render-tests');
