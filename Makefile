@@ -116,8 +116,9 @@ dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
 
+ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 distclean: clean
-	rm -fr $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
+	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
 
 clean:
 	rm -fr build
