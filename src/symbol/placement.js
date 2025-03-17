@@ -323,7 +323,7 @@ class Placement {
         assert(bucket.bucketInstanceId !== 0);
 
         this.placements[symbolInstance.crossTileID] = new JointPlacement(
-          placeText || alwaysShowText,
+          placeText || (alwaysShowText && placedGlyphBoxes),
           placeIcon || alwaysShowIcon,
           offscreen || bucket.justReloaded
         );
