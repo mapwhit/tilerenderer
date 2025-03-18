@@ -24,7 +24,7 @@
     "grid-index": "^1.1.0",
     "murmurhash-js": "^1.0.0",
     "potpack": "^1.0.1",
-    "quickselect": "^2.0.0",
+    "quickselect": "^3.0.0",
     "supercluster": "^2.0.1",
     "tinyqueue": "^1.1.0"
   },
