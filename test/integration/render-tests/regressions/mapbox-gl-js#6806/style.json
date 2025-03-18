@@ -4,7 +4,9 @@
     "test": {
       "height": 64,
       "width": 64,
-      "description": "Contains two expected images (for ubyte-based rendering and half-float-based); one of them should pass depending on platform."
+      "description": "Contains two expected images (for ubyte-based rendering and half-float-based); one of them should pass depending on platform.",
+      "diff": 0.0008,
+      "diff-comment": "Needed to pass on Ubuntu 22"
     }
   },
   "center": [
