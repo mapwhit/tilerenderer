@@ -70,6 +70,7 @@ build/$(PROJECT).js: $(SRC) | dependencies
 	esbuild --bundle src/index.js \
 		$(ESBUILD_OPTIONS) \
 		--global-name=mapboxgl \
+		--tree-shaking=true \
 		--minify \
 		--target=es2020 \
 		--metafile=${@:.js=.meta.json} \
@@ -78,6 +79,7 @@ build/$(PROJECT).js: $(SRC) | dependencies
 build/$(PROJECT)-worker.js: $(SRC) | dependencies
 	esbuild --bundle src/source/worker.js  \
 		$(ESBUILD_OPTIONS) \
+		--tree-shaking=true \
 		--minify \
 		--target=es2020 \
 		--metafile=${@:.js=.meta.json} \
