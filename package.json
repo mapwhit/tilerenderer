@@ -26,7 +26,7 @@
     "potpack": "^1.0.1",
     "quickselect": "^3.0.0",
     "supercluster": "^2.0.1",
-    "tinyqueue": "^1.1.0"
+    "tinyqueue": "^3.0.0"
   },
   "browser": {
     "assert": "@pirxpilot/nanoassert",
