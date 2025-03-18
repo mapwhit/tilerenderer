@@ -5,7 +5,7 @@ const SegmentVector = require('../segment');
 const { ProgramConfigurationSet } = require('../program_configuration');
 const { TriangleIndexArray } = require('../index_array_type');
 const EXTENT = require('../extent');
-const earcut = require('earcut');
+const { default: earcut } = require('earcut');
 const {
   VectorTileFeature: { types: vectorTileFeatureTypes }
 } = require('@mapwhit/vector-tile');
