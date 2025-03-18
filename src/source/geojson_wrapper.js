@@ -1,5 +1,5 @@
 const Point = require('@mapbox/point-geometry');
-const { VectorTileFeature } = require('@mapbox/vector-tile');
+const { VectorTileFeature } = require('@mapwhit/vector-tile');
 const EXTENT = require('../data/extent');
 
 const { toGeoJSON } = VectorTileFeature.prototype;
