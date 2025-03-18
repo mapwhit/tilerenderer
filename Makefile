@@ -103,6 +103,11 @@ test-expression: dependencies dependencies-integration
 test-render: dependencies dependencies-integration
 	node test/render.test.js
 
+test-render-slow: dependencies dependencies-integration
+	find test/integration/render-tests -name style.json -printf '%P\n' | \
+		sed -e 's|/style.json||' | \
+		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js --test-reporter=dot
+
 test-query: dependencies dependencies-integration
 	node test/query.test.js
 
@@ -111,8 +116,9 @@ dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
 
+ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 distclean: clean
-	rm -fr $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
+	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
 
 clean:
 	rm -fr build

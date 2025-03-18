@@ -7,13 +7,14 @@ const { promisify } = require('node:util');
 const colors = require('chalk');
 const template = require('lodash.template');
 const shuffler = require('shuffle-seed');
+const { report } = require('node:process');
 
 module.exports = harness;
 
 async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
   const runTest = promisify(run);
-  const tests = await runSequence(sequence, runTest);
+  const tests = await runSequence(sequence, runTest, { testReporter: options.testReporter });
 
   if (process.env.UPDATE) {
     console.log(`Updated ${tests.length} tests.`);
@@ -73,39 +74,19 @@ async function harness(cwd, implementation, options, run) {
   }
 }
 
-async function runSequence(sequence, runTest) {
+async function runSequence(sequence, runTest, { testReporter }) {
   const tests = [];
 
   for (const style of sequence) {
     const test = style.metadata.test;
-
+    const reporter = testReporter === 'dot' ? dotReporter(test) : verboseReporter(test);
     try {
-      console.log(colors.blue(`* testing ${test.id}`));
+      reporter.start();
       await runTest(style, test);
     } catch (error) {
       test.error = error;
     } finally {
-      if (test.ignored && !test.ok) {
-        test.color = '#9E9E9E';
-        test.status = 'ignored failed';
-        console.log(colors.white(`* ignore ${test.id} (${test.ignored})`));
-      } else if (test.ignored) {
-        test.color = '#E8A408';
-        test.status = 'ignored passed';
-        console.log(colors.yellow(`* ignore ${test.id} (${test.ignored})`));
-      } else if (test.error) {
-        test.color = 'red';
-        test.status = 'errored';
-        console.log(colors.red(`* errored ${test.id}`));
-      } else if (!test.ok) {
-        test.color = 'red';
-        test.status = 'failed';
-        console.log(colors.red(`* failed ${test.id}`));
-      } else {
-        test.color = 'green';
-        test.status = 'passed';
-        console.log(colors.green(`* passed ${test.id}`));
-      }
+      reporter.end();
     }
     tests.push(test);
   }
@@ -202,3 +183,69 @@ async function writeResults(cwd, options, tests) {
     yield footer;
   }
 }
+
+function verboseReporter(test) {
+  return {
+    start,
+    end
+  };
+
+  function start() {
+    console.log(colors.blue(`* testing ${test.id}`));
+  }
+
+  function end() {
+    if (test.ignored && !test.ok) {
+      test.color = '#9E9E9E';
+      test.status = 'ignored failed';
+      console.log(colors.white(`* ignore ${test.id} (${test.ignored})`));
+    } else if (test.ignored) {
+      test.color = '#E8A408';
+      test.status = 'ignored passed';
+      console.log(colors.yellow(`* ignore ${test.id} (${test.ignored})`));
+    } else if (test.error) {
+      test.color = 'red';
+      test.status = 'errored';
+      console.log(colors.red(`* errored ${test.id}`));
+    } else if (!test.ok) {
+      test.color = 'red';
+      test.status = 'failed';
+      console.log(colors.red(`* failed ${test.id}`));
+    } else {
+      test.color = 'green';
+      test.status = 'passed';
+      console.log(colors.green(`* passed ${test.id}`));
+    }
+  }
+}
+
+function dotReporter(test) {
+  return {
+    start,
+    end
+  };
+
+  function start() {}
+
+  function end() {
+    if (test.ignored && !test.ok) {
+      test.status = 'ignored failed';
+      process.stdout.write(colors.white('*'));
+    } else if (test.ignored) {
+      test.status = 'ignored passed';
+      process.stdout.write(colors.yellow('*'));
+    } else if (test.error) {
+      test.color = 'red';
+      test.status = 'errored';
+      console.log(colors.red(`\n* errored ${test.id}`));
+    } else if (!test.ok) {
+      test.color = 'red';
+      test.status = 'failed';
+      console.log(colors.red(`\n* failed ${test.id}`));
+    } else {
+      test.color = 'green';
+      test.status = 'passed';
+      process.stdout.write(colors.green('.'));
+    }
+  }
+} // end of dotReporter
