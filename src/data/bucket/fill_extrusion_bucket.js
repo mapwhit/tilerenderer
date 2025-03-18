@@ -8,7 +8,7 @@ const EXTENT = require('../extent');
 const earcut = require('earcut');
 const {
   VectorTileFeature: { types: vectorTileFeatureTypes }
-} = require('@mapbox/vector-tile');
+} = require('@mapwhit/vector-tile');
 const classifyRings = require('../../util/classify_rings');
 const assert = require('assert');
 const EARCUT_MAX_RINGS = 500;
