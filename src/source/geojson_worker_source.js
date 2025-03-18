@@ -5,16 +5,14 @@ const supercluster = require('supercluster');
 const geojsonvt = require('geojson-vt');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
-function loadGeoJSONTile(params, callback) {
+function loadGeoJSONTile(params) {
   if (!this._geoJSONIndex) {
     if (!this._createGeoJSONIndex) {
-      return callback(null, null); // we couldn't load the file
+      return; // we couldn't load the file
     }
 
     try {
       this._geoJSONIndex = this._createGeoJSONIndex();
-    } catch (e) {
-      return callback(e);
     } finally {
       this._createGeoJSONIndex = null;
     }
@@ -23,7 +21,7 @@ function loadGeoJSONTile(params, callback) {
   const { z, x, y } = params.tileID.canonical;
   const geoJSONTile = this._geoJSONIndex.getTile(z, x, y);
   if (!geoJSONTile) {
-    return callback(null, null); // nothing in the given tile
+    return; // nothing in the given tile
   }
 
   const geojsonWrapper = new GeoJSONWrapper(geoJSONTile.features);
@@ -37,10 +35,10 @@ function loadGeoJSONTile(params, callback) {
     pbf = new Uint8Array(pbf);
   }
 
-  callback(null, {
+  return {
     vectorTile: geojsonWrapper,
     rawData: pbf.buffer
-  });
+  };
 }
 
 /**
@@ -77,44 +75,18 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param params
    * @param callback
    */
-  loadData(params, callback) {
-    try {
-      const data = this.loadGeoJSON(params);
-      this._geoJSONIndex = null;
-      this._createGeoJSONIndex = params.cluster
-        ? () => {
-            rewind(data, true);
-            return supercluster(params.superclusterOptions).load(data.features);
-          }
-        : () => {
-            rewind(data, true);
-            return geojsonvt(data, params.geojsonVtOptions);
-          };
-
-      this.loaded = {};
-      callback();
-    } catch (err) {
-      callback(err);
-    }
-  }
-
-  /**
-   * Implements {@link WorkerSource#reloadTile}.
-   *
-   * If the tile is loaded, uses the implementation in VectorTileWorkerSource.
-   * Otherwise, such as after a setData() call, we load the tile fresh.
-   *
-   * @param params
-   * @param params.uid The UID for this tile.
-   */
-  reloadTile(params, callback) {
-    const loaded = this.loaded;
-    const uid = params.uid;
-
-    if (loaded?.[uid]) {
-      return super.reloadTile(params, callback);
-    }
-    return this.loadTile(params, callback);
+  loadData(params) {
+    const data = this.loadGeoJSON(params);
+    this._geoJSONIndex = null;
+    this._createGeoJSONIndex = params.cluster
+      ? () => {
+          rewind(data, true);
+          return supercluster(params.superclusterOptions).load(data.features);
+        }
+      : () => {
+          rewind(data, true);
+          return geojsonvt(data, params.geojsonVtOptions);
+        };
   }
 
   /**
@@ -131,10 +103,6 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
     } catch (e) {
       throw new Error('Input data is not a valid GeoJSON object.');
     }
-  }
-
-  removeSource(params, callback) {
-    callback();
   }
 }
 

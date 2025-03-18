@@ -2,18 +2,18 @@ const vt = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
 
-function loadVectorTile(params, callback) {
+function loadVectorTile(params) {
   if (!params.response) {
-    return callback(new Error('no tile data'));
+    throw new Error('no tile data');
   }
   const { data } = params.response;
   if (!data) {
-    return callback();
+    return;
   }
-  callback(null, {
+  return {
     vectorTile: new vt.VectorTile(new Protobuf(data)),
     rawData: data
-  });
+  };
 }
 
 /**
@@ -32,11 +32,10 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(actor, layerIndex, loadVectorData) {
+  constructor(actor, layerIndex, loadVectorData = loadVectorTile) {
     this.actor = actor;
     this.layerIndex = layerIndex;
-    this.loadVectorData = loadVectorData || loadVectorTile.bind(this);
-    this.loaded = {};
+    this.loadVectorData = loadVectorData;
   }
 
   /**
@@ -44,73 +43,19 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadVectorData} (which by default expects
    * a `params.url` property) for fetching and producing a VectorTile object.
    */
-  loadTile(params, callback) {
-    const uid = params.uid;
-
+  async loadTile(params) {
     const workerTile = new WorkerTile(params);
-    this.loadVectorData(params, (err, response) => {
-      if (err || !response) {
-        return callback(err);
-      }
 
-      const rawTileData = response.rawData;
-      workerTile.vectorTile = response.vectorTile;
-      workerTile.parse(response.vectorTile, this.layerIndex, this.actor, (err, result) => {
-        if (err || !result) return callback(err);
-
-        // Transferring a copy of rawTileData because the worker needs to retain its copy.
-        callback(null, Object.assign({ rawTileData: rawTileData.slice(0) }, result));
-      });
-
-      this.loaded = this.loaded || {};
-      this.loaded[uid] = workerTile;
-    });
-  }
-
-  /**
-   * Implements {@link WorkerSource#reloadTile}.
-   */
-  reloadTile(params, callback) {
-    const loaded = this.loaded;
-    const uid = params.uid;
-    const vtSource = this;
-    if (loaded?.[uid]) {
-      const workerTile = loaded[uid];
-      workerTile.showCollisionBoxes = params.showCollisionBoxes;
-
-      const done = (err, data) => {
-        const reloadCallback = workerTile.reloadCallback;
-        if (reloadCallback) {
-          delete workerTile.reloadCallback;
-          workerTile.parse(workerTile.vectorTile, vtSource.layerIndex, vtSource.actor, reloadCallback);
-        }
-        callback(err, data);
-      };
-
-      if (workerTile.status === 'parsing') {
-        workerTile.reloadCallback = done;
-      } else if (workerTile.status === 'done') {
-        workerTile.parse(workerTile.vectorTile, this.layerIndex, this.actor, done);
-      }
+    const response = this.loadVectorData(params);
+    if (!response) {
+      return;
     }
-  }
 
-  /**
-   * Implements {@link WorkerSource#removeTile}.
-   *
-   * @param params
-   * @param params.uid The UID for this tile.
-   */
-  removeTile(params, callback) {
-    const loaded = this.loaded;
-    const uid = params.uid;
-    if (loaded?.[uid]) {
-      delete loaded[uid];
-    }
-    callback();
+    const { vectorTile, rawData: rawTileData } = response;
+    workerTile.vectorTile = vectorTile;
+    const result = await workerTile.parse(vectorTile, this.layerIndex, this.actor);
+    return { rawTileData, ...result };
   }
-
-  updateConfig() {}
 }
 
 module.exports = VectorTileWorkerSource;

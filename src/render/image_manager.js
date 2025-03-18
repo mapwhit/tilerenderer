@@ -22,10 +22,9 @@ const padding = 1;
     to refactor this.
 */
 class ImageManager {
+  #loadedState = Promise.withResolvers();
   constructor() {
     this.images = {};
-    this.loaded = false;
-    this.requestors = [];
 
     this.shelfPack = new ShelfPack(64, 64, { autoResize: true });
     this.patterns = {};
@@ -34,22 +33,15 @@ class ImageManager {
   }
 
   isLoaded() {
-    return this.loaded;
+    return !!this.#loadedState.loaded;
   }
 
-  setLoaded(loaded) {
-    if (this.loaded === loaded) {
+  setLoaded() {
+    if (this.#loadedState.loaded) {
       return;
     }
-
-    this.loaded = loaded;
-
-    if (loaded) {
-      for (const { ids, callback } of this.requestors) {
-        this._notify(ids, callback);
-      }
-      this.requestors = [];
-    }
+    this.#loadedState.loaded = true;
+    this.#loadedState.resolve();
   }
 
   getImage(id) {
@@ -76,29 +68,10 @@ class ImageManager {
     return Object.keys(this.images);
   }
 
-  getImages(ids, callback) {
-    // If the sprite has been loaded, or if all the icon dependencies are already present
-    // (i.e. if they've been addeded via runtime styling), then notify the requestor immediately.
-    // Otherwise, delay notification until the sprite is loaded. At that point, if any of the
-    // dependencies are still unavailable, we'll just assume they are permanently missing.
-    let hasAllDependencies = true;
-    if (!this.isLoaded()) {
-      for (const id of ids) {
-        if (!this.images[id]) {
-          hasAllDependencies = false;
-        }
-      }
-    }
-    if (this.isLoaded() || hasAllDependencies) {
-      this._notify(ids, callback);
-    } else {
-      this.requestors.push({ ids, callback });
-    }
-  }
+  async getImages(ids) {
+    await this.#loadedState.promise;
 
-  _notify(ids, callback) {
     const response = {};
-
     for (const id of ids) {
       const image = this.images[id];
       if (image) {
@@ -110,8 +83,7 @@ class ImageManager {
         };
       }
     }
-
-    callback(null, response);
+    return response;
   }
 
   // Pattern stuff

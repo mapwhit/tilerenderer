@@ -107,49 +107,6 @@ test('VectorTileSource', async t => {
     });
   });
 
-  await t.test('reloads a loading tile properly', (t, done) => {
-    const source = createSource({});
-    const events = [];
-    source.dispatcher.send = function (type) {
-      events.push(type);
-      return Promise.resolve();
-    };
-
-    source.on('data', e => {
-      if (e.sourceDataType === 'metadata') {
-        const tile = {
-          tileID: new OverscaledTileID(10, 0, 10, 5, 5),
-          state: 'loading',
-          loadVectorData() {
-            this.state = 'loaded';
-            events.push('tileLoaded');
-          }
-        };
-        const promises = [source.loadTile(tile)];
-        t.assert.equal(tile.state, 'loading');
-        promises.push(source.loadTile(tile));
-        promises.push(source.loadTile(tile));
-
-        Promise.all(promises).then(
-          () => {
-            t.assert.deepEqual(events, [
-              'loadTile',
-              'reloadTile',
-              'reloadTile',
-              'tileLoaded',
-              'tileLoaded',
-              'tileLoaded'
-            ]);
-            done();
-          },
-          err => {
-            done(err);
-          }
-        );
-      }
-    });
-  });
-
   await t.test('respects TileJSON.bounds', (t, done) => {
     const source = createSource({
       minzoom: 0,

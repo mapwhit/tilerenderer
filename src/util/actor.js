@@ -42,7 +42,7 @@ function actor(target, parent, mapId, name) {
     return p.promise;
   }
 
-  function receive(message) {
+  async function receive(message) {
     const { data } = message;
     const { id, type, targetMapId } = data;
 
@@ -62,20 +62,26 @@ function actor(target, parent, mapId, name) {
     }
 
     if (typeof id !== 'undefined') {
-      const done = (err, data) => postMessage(undefined, id, '<response>', data, err);
+      let perform;
       if (parent[type]) {
-        // data.type == 'loadTile', 'removeTile', etc.
-        parent[type](data.sourceMapId, deserialize(data.data), done);
-        return;
-      }
-      if (parent.getWorkerSource) {
+        // data.type == 'loadTile' etc.
+        perform = () => parent[type](data.sourceMapId, deserialize(data.data));
+      } else if (parent.getWorkerSource) {
         // data.type == sourcetype.method
         const [sourcetype, method] = type.split('.');
         const params = deserialize(data.data);
         const workerSource = parent.getWorkerSource(data.sourceMapId, sourcetype, params.source);
-        workerSource[method](params, done);
+        perform = () => workerSource[method](params);
+      } else {
         return;
       }
+      try {
+        const result = await perform();
+        postMessage(data.sourceMapId, id, '<response>', result);
+      } catch (err) {
+        postMessage(data.sourceMapId, id, '<response>', undefined, err);
+      }
+      return;
     }
 
     parent[type](deserialize(data.data));
