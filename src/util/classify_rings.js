@@ -1,4 +1,4 @@
-const quickselect = require('quickselect');
+const { default: quickselect } = require('quickselect');
 
 const { calculateSignedArea } = require('./util');
 
