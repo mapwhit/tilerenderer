@@ -22,7 +22,7 @@
     "csscolorparser": "^1.0.3",
     "earcut": "^2.0.3",
     "geojson-vt": "^3.1.2",
-    "gl-matrix": "^2.6.1",
+    "gl-matrix": "^3.4.3",
     "grid-index": "^1.1.0",
     "quickselect": "^2.0.0",
     "supercluster": "^2.0.1",
