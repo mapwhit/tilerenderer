@@ -111,7 +111,7 @@ test-render-slow: dependencies dependencies-integration
 test-query: dependencies dependencies-integration
 	node test/query.test.js
 
-DEPENDENCIES_INTEGRATION = test/integration/node_modules test/integration/tiles/node_modules
+DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
