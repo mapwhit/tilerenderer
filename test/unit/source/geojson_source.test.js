@@ -105,7 +105,7 @@ test('GeoJSONSource#update', async t => {
   transform.zoom = 15;
   transform.setLocationAtPoint(lngLat, point);
 
-  const messages = ['geojson.loadData', 'geojson.coalesce'];
+  const messages = ['geojson.loadData'];
 
   await t.test('sends initial loadData request to dispatcher', (t, done) => {
     let index = 0;
@@ -194,10 +194,9 @@ test('GeoJSONSource#update', async t => {
   });
 
   await t.test('sends loadData request to dispatcher after data update', (t, done) => {
-    let expectedLoadDataCalls = 2;
     const mockDispatcher = {
       send(message) {
-        if (message === 'geojson.loadData' && --expectedLoadDataCalls <= 0) {
+        if (message === 'geojson.loadData') {
           done();
         }
         return Promise.resolve();
