@@ -2,7 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test.js');
 const fs = require('fs');
 const path = require('path');
 const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapbox/vector-tile');
+const { VectorTile } = require('@mapwhit/vector-tile');
 const loadGeometry = require('../../../src/data/load_geometry.js');
 
 // Load a line feature from fixture tile.
