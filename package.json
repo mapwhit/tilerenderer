@@ -11,7 +11,7 @@
   "dependencies": {
     "@mapbox/gl-matrix": "^0.0.1",
     "@mapbox/point-geometry": "^0.1.0",
-    "@mapbox/tiny-sdf": "^1.1.0",
+    "@mapbox/tiny-sdf": "^2.0.6",
     "@mapbox/unitbezier": "^0.0.0",
     "@mapbox/whoots-js": "^3.0.0",
     "@mapwhit/geojson-rewind": "^1.0.0",
