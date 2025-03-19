@@ -1,6 +1,6 @@
 const loadGlyphRange = require('../style/load_glyph_range');
 
-const TinySDF = require('@mapbox/tiny-sdf');
+const { default: TinySDF } = require('@mapbox/tiny-sdf');
 const isChar = require('../util/is_char_in_unicode_block');
 const { AlphaImage } = require('../util/image');
 
