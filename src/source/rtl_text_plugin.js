@@ -1,4 +1,5 @@
 const { Event, Evented } = require('../util/evented');
+const browser = require('../util/browser');
 
 let pluginRequested = false;
 let pluginURL = null;
@@ -27,7 +28,7 @@ function setRTLTextPlugin(url, callback) {
     throw new Error('setRTLTextPlugin cannot be called multiple times.');
   }
   pluginRequested = true;
-  pluginURL = url;
+  pluginURL = browser.resolveURL(url);
   _completionCallback = error => {
     if (error) {
       // Clear loaded state to allow retries

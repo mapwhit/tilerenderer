@@ -10,17 +10,17 @@ const styleLayer = {
 function makeSymbolInstance(x, y, key) {
   return {
     anchor: new Anchor(x, y),
-    key: key
+    key
   };
 }
 
 function makeTile(tileID, symbolInstances) {
   const bucket = {
-    symbolInstances: symbolInstances,
+    symbolInstances,
     layerIds: ['test']
   };
   return {
-    tileID: tileID,
+    tileID,
     getBucket: () => bucket,
     latestFeatureIndex: {}
   };

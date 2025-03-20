@@ -190,6 +190,9 @@ class Map extends Camera {
 
     this._setupContainer();
     this._setupPainter();
+    if (this.painter === undefined) {
+      throw new Error('Failed to initialize WebGL.');
+    }
 
     this.on('move', this._update.bind(this, false));
     this.on('moveend', this._update.bind(this, false));

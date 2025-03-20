@@ -39,6 +39,8 @@ class CollisionIndex {
 
     this.screenRightBoundary = transform.width + viewportPadding;
     this.screenBottomBoundary = transform.height + viewportPadding;
+    this.gridRightBoundary = transform.width + 2 * viewportPadding;
+    this.gridBottomBoundary = transform.height + 2 * viewportPadding;
   }
 
   placeCollisionBox(collisionBox, allowOverlap, textPixelRatio, posMatrix, collisionGroupPredicate) {
@@ -53,14 +55,16 @@ class CollisionIndex {
     const brX = collisionBox.x2 * tileToViewport + projectedPoint.point.x;
     const brY = collisionBox.y2 * tileToViewport + projectedPoint.point.y;
 
-    if (!allowOverlap) {
-      if (this.grid.hitTest(tlX, tlY, brX, brY, collisionGroupPredicate)) {
-        return {
-          box: [],
-          offscreen: false
-        };
-      }
+    if (
+      !this.isInsideGrid(tlX, tlY, brX, brY) ||
+      (!allowOverlap && this.grid.hitTest(tlX, tlY, brX, brY, collisionGroupPredicate))
+    ) {
+      return {
+        box: [],
+        offscreen: false
+      };
     }
+
     return {
       box: [tlX, tlY, brX, brY],
       offscreen: this.isOffscreen(tlX, tlY, brX, brY)
@@ -135,6 +139,7 @@ class CollisionIndex {
     );
 
     let collisionDetected = false;
+    let inGrid = false;
     let entirelyOffscreen = true;
 
     const tileToViewport = projectedAnchor.perspectiveRatio * textPixelRatio;
@@ -211,14 +216,12 @@ class CollisionIndex {
       placedCollisionCircles.push(projectedPoint.x, projectedPoint.y, radius, collisionBoxArrayIndex);
       markCollisionCircleUsed(collisionCircles, k, true);
 
-      entirelyOffscreen =
-        entirelyOffscreen &&
-        this.isOffscreen(
-          projectedPoint.x - radius,
-          projectedPoint.y - radius,
-          projectedPoint.x + radius,
-          projectedPoint.y + radius
-        );
+      const x1 = projectedPoint.x - radius;
+      const y1 = projectedPoint.y - radius;
+      const x2 = projectedPoint.x + radius;
+      const y2 = projectedPoint.y + radius;
+      entirelyOffscreen = entirelyOffscreen && this.isOffscreen(x1, y1, x2, y2);
+      inGrid = inGrid || this.isInsideGrid(x1, y1, x2, y2);
 
       if (!allowOverlap) {
         if (this.grid.hitTestCircle(projectedPoint.x, projectedPoint.y, radius, collisionGroupPredicate)) {
@@ -236,7 +239,7 @@ class CollisionIndex {
     }
 
     return {
-      circles: collisionDetected ? [] : placedCollisionCircles,
+      circles: collisionDetected || !inGrid ? [] : placedCollisionCircles,
       offscreen: entirelyOffscreen
     };
   }
@@ -369,6 +372,10 @@ class CollisionIndex {
     return (
       x2 < viewportPadding || x1 >= this.screenRightBoundary || y2 < viewportPadding || y1 > this.screenBottomBoundary
     );
+  }
+
+  isInsideGrid(x1, y1, x2, y2) {
+    return x2 >= 0 && x1 < this.gridRightBoundary && y2 >= 0 && y1 < this.gridBottomBoundary;
   }
 }
 

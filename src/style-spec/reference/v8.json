@@ -80,7 +80,7 @@
     },
     "transition": {
       "type": "transition",
-      "doc": "A global transition definition to use as a default across properties.",
+      "doc": "A global transition definition to use as a default across properties, to be used for timing transitions between one value and the next when no property-specific transition is set. Collision-based symbol fading is controlled independently of the style's `transition` property.",
       "example": {
         "duration": 300,
         "delay": 0
@@ -2621,7 +2621,7 @@
         }
       },
       "feature-state": {
-        "doc": "Retrieves a property value from the current feature's state. Returns null if the requested property is not present on the feature's state object.",
+        "doc": "Retrieves a property value from the current feature's state. Returns null if the requested property is not present on the feature's state. A feature's state is not part of the GeoJSON or vector tile data, and must be set programmatically on each feature. Note that [\"feature-state\"] can only be used with paint properties that support data-driven styling.",
         "group": "Feature data",
         "sdk-support": {
           "basic functionality": {
