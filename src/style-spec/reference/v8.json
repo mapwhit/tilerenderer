@@ -150,6 +150,19 @@
       ],
       "doc": "An array containing the longitude and latitude of the southwest and northeast corners of the source's bounding box in the following order: `[sw.lng, sw.lat, ne.lng, ne.lat]`. When this property is included in a source, no tiles outside of the given bounds are requested by Mapbox GL."
     },
+    "scheme": {
+      "type": "enum",
+      "values": {
+        "xyz": {
+          "doc": "Slippy map tilenames scheme."
+        },
+        "tms": {
+          "doc": "OSGeo spec scheme."
+        }
+      },
+      "default": "xyz",
+      "doc": "Influences the y direction of the tile coordinates. The global-mercator (aka Spherical Mercator) profile is assumed."
+    },
     "minzoom": {
       "type": "number",
       "default": 0,
@@ -559,7 +572,7 @@
     },
     "filter": {
       "type": "filter",
-      "doc": "A expression specifying conditions on source features. Only features that match the filter are displayed."
+      "doc": "A expression specifying conditions on source features. Only features that match the filter are displayed. The `feature-state` expression is not supported in filter expressions."
     },
     "layout": {
       "type": "layout",
@@ -3270,7 +3283,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3303,7 +3317,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3338,7 +3353,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3480,7 +3496,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3592,7 +3609,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3625,7 +3643,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3673,7 +3692,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3706,7 +3726,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3793,7 +3814,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3823,7 +3845,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3852,7 +3875,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3882,7 +3906,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -3999,7 +4024,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4027,7 +4053,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4055,7 +4082,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4085,7 +4113,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4233,7 +4262,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4261,7 +4291,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4291,7 +4322,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4323,7 +4355,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4352,7 +4385,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4476,7 +4510,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4507,7 +4542,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4538,7 +4574,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4571,7 +4608,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4604,7 +4642,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4701,7 +4740,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4732,7 +4772,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4763,7 +4804,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4796,7 +4838,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
@@ -4829,7 +4872,8 @@
         "interpolated": true,
         "parameters": [
           "zoom",
-          "feature"
+          "feature",
+          "feature-state"
         ]
       },
       "property-type": "data-driven"
