@@ -86,7 +86,7 @@ class VectorTileSource extends Evented {
         throw err;
       }
       const params = {
-        response: { data: rawData },
+        response: { data: rawData.slice() },
         uid: tile.uid,
         tileID: tile.tileID,
         zoom: tile.tileID.overscaledZ,
@@ -98,6 +98,7 @@ class VectorTileSource extends Evented {
       };
       tile.workerID ??= this.dispatcher.nextWorkerId();
       const data = await this.dispatcher.send('loadTile', params, tile.workerID);
+      data.rawTileData = rawData;
       tile.loadVectorData(data, this.map.painter);
     } catch (err) {
       if (tile.aborted) {

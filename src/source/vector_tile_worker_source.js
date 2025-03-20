@@ -1,4 +1,4 @@
-const vt = require('@mapbox/vector-tile');
+const { VectorTile } = require('@mapbox/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
 
@@ -11,8 +11,7 @@ function loadVectorTile(params) {
     return;
   }
   return {
-    vectorTile: new vt.VectorTile(new Protobuf(data)),
-    rawData: data
+    vectorTile: new VectorTile(new Protobuf(data))
   };
 }
 
@@ -44,17 +43,18 @@ class VectorTileWorkerSource {
    * a `params.url` property) for fetching and producing a VectorTile object.
    */
   async loadTile(params) {
-    const workerTile = new WorkerTile(params);
-
     const response = this.loadVectorData(params);
     if (!response) {
       return;
     }
-
-    const { vectorTile, rawData: rawTileData } = response;
+    const { vectorTile, rawData } = response;
+    const workerTile = new WorkerTile(params);
     workerTile.vectorTile = vectorTile;
     const result = await workerTile.parse(vectorTile, this.layerIndex, this.actor);
-    return { rawTileData, ...result };
+    if (rawData) {
+      result.rawTileData = rawData;
+    }
+    return result;
   }
 }
 
