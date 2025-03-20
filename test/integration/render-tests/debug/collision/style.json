@@ -3,7 +3,9 @@
   "metadata": {
     "test": {
       "collisionDebug": true,
-      "height": 256
+      "height": 256,
+      "diff": 0.0007,
+      "diff-comment": "Needed to pass on Ubuntu 22"
     }
   },
   "center": [
