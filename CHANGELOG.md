@@ -1,4 +1,21 @@
 
+0.47.2 / 2025-03-20
+===================
+
+ * make most of the workers API stateless
+ * make worker API async
+ * Don't place symbols entirely outside range of collision grid. Fixes issue #5654, brings gl-js behavior in line with gl-native. symbol-placement/line-overscaled functions as a regression test.
+ * Add render test for collator expressions. The expression test suite is a more natural home for collator tests, but we don't have the expression test suite hooked up on Android and the collator expression has Android-specific functionality that needs testing.
+ * Remove icon/text-collision-group from style spec. Re-implement basic collision group support based on a global "crossSourceCollisions" map option that replicates pre-#5150 behavior. Render tests maintain the same structure/results, but are now based on grouping-by-source.
+ * Render tests for text-collision-group and icon-collision-group.
+ * Split new bounds calculation out of fitBounds into new method
+ * Clarify transition type + global transition
+ * Allow for relative paths when loading RTL plugin
+ * Map constructor should fail if WebGL init fails.
+ * Improve documentation for feature-state expression in style-spec
+ * Cherry pick #6555 fix from master. Don't load FeatureIndex#vtLayers from outside FeatureIndex code. (#6559)
+ * Only run placement for first layer per SymbolBucket. Fixes issue #6548. Restores behavior from before PR #5150 -- all layers that share the same bucket (and thus same layout properties) share the same placement. Before this fix, two layers with the same layout properties could collide against each other, and because they shared CrossTileIDs, _both_ layers could end up hidden.
+
 0.47.1 / 2025-03-07
 ===================
 
