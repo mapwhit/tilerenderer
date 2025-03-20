@@ -768,18 +768,6 @@ class Map extends Camera {
   }
 
   /**
-   * Adds a [custom source type](#Custom Sources), making it available for use with
-   * {@link Map#addSource}.
-   * @private
-   * @param {string} name The name of the source type; source definition objects use this name in the `{type: ...}` field.
-   * @param {Function} SourceType A {@link Source} constructor.
-   * @param {Function} callback Called when the source type is ready or with an error argument if there is an error.
-   */
-  addSourceType(name, SourceType, callback) {
-    return this.style.addSourceType(name, SourceType, callback);
-  }
-
-  /**
    * Removes a source from the map's style.
    *
    * @param {string} id The ID of the source to remove.
