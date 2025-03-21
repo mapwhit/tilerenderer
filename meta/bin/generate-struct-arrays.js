@@ -152,6 +152,7 @@ const {
   collisionCircleLayout,
   collisionVertexAttributes,
   placement,
+  symbolInstance,
   glyphOffset,
   lineVertex
 } = require('../../src/data/bucket/symbol_attributes');
@@ -164,6 +165,7 @@ createStructArrayType('collision_box_layout', collisionBoxLayout);
 createStructArrayType('collision_circle_layout', collisionCircleLayout);
 createStructArrayType('collision_vertex', collisionVertexAttributes);
 extras.push(createStructArrayType('placed_symbol', placement, true));
+extras.push(createStructArrayType('symbol_instance', symbolInstance, true));
 extras.push(createStructArrayType('glyph_offset', glyphOffset, true));
 extras.push(createStructArrayType('symbol_line_vertex', lineVertex, true));
 

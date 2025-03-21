@@ -5,6 +5,9 @@ module.exports = createFilter;
 createFilter.isExpressionFilter = isExpressionFilter;
 
 function isExpressionFilter(filter) {
+  if (filter === true || filter === false) {
+    return true;
+  }
   if (!Array.isArray(filter) || filter.length === 0) {
     return false;
   }
@@ -61,7 +64,7 @@ const filterSpec = {
  * @returns {Function} filter-evaluating function
  */
 function createFilter(filter) {
-  if (!filter) {
+  if (filter === null || filter === undefined) {
     return () => true;
   }
 

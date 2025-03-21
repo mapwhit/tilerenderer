@@ -1,5 +1,4 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const Anchor = require('../../../src/symbol/anchor');
 const CrossTileSymbolIndex = require('../../../src/symbol/cross_tile_symbol_index');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
@@ -9,14 +8,20 @@ const styleLayer = {
 
 function makeSymbolInstance(x, y, key) {
   return {
-    anchor: new Anchor(x, y),
+    anchorX: x,
+    anchorY: y,
     key
   };
 }
 
 function makeTile(tileID, symbolInstances) {
   const bucket = {
-    symbolInstances,
+    symbolInstances: {
+      get(i) {
+        return symbolInstances[i];
+      },
+      length: symbolInstances.length
+    },
     layerIds: ['test']
   };
   return {

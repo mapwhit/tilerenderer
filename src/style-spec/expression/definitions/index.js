@@ -18,7 +18,6 @@ const Let = require('./let');
 const Var = require('./var');
 const Literal = require('./literal');
 const Assertion = require('./assertion');
-const ArrayAssertion = require('./array');
 const Coercion = require('./coercion');
 const At = require('./at');
 const Match = require('./match');
@@ -39,7 +38,7 @@ const expressions = {
   '<': LessThan,
   '>=': GreaterThanOrEqual,
   '<=': LessThanOrEqual,
-  array: ArrayAssertion,
+  array: Assertion,
   at: At,
   boolean: Assertion,
   case: Case,

@@ -1,6 +1,15 @@
 const assert = require('assert');
 
-const { ObjectType, ValueType, StringType, NumberType, BooleanType, checkSubtype, toString } = require('../types');
+const {
+  ObjectType,
+  ValueType,
+  StringType,
+  NumberType,
+  BooleanType,
+  checkSubtype,
+  toString,
+  array
+} = require('../types');
 const RuntimeError = require('../runtime_error');
 const { typeOf } = require('../values');
 
@@ -20,13 +29,39 @@ class Assertion {
   static parse(args, context) {
     if (args.length < 2) return context.error('Expected at least one argument.');
 
-    const name = args[0];
-    assert(types[name], name);
+    let i = 1;
+    let type;
 
-    const type = types[name];
+    const name = args[0];
+    if (name === 'array') {
+      let itemType;
+      if (args.length > 2) {
+        const type = args[1];
+        if (typeof type !== 'string' || !(type in types) || type === 'object')
+          return context.error('The item type argument of "array" must be one of string, number, boolean', 1);
+        itemType = types[type];
+        i++;
+      } else {
+        itemType = ValueType;
+      }
+
+      let N;
+      if (args.length > 3) {
+        if (args[2] !== null && (typeof args[2] !== 'number' || args[2] < 0 || args[2] !== Math.floor(args[2]))) {
+          return context.error('The length argument to "array" must be a positive integer literal', 2);
+        }
+        N = args[2];
+        i++;
+      }
+
+      type = array(itemType, N);
+    } else {
+      assert(types[name], name);
+      type = types[name];
+    }
 
     const parsed = [];
-    for (let i = 1; i < args.length; i++) {
+    for (; i < args.length; i++) {
       const input = context.parse(args[i], i, ValueType);
       if (!input) return null;
       parsed.push(input);
@@ -62,7 +97,19 @@ class Assertion {
   }
 
   serialize() {
-    return [this.type.kind].concat(this.args.map(arg => arg.serialize()));
+    const type = this.type;
+    const serialized = [type.kind];
+    if (type.kind === 'array') {
+      const itemType = type.itemType;
+      if (itemType.kind === 'string' || itemType.kind === 'number' || itemType.kind === 'boolean') {
+        serialized.push(itemType.kind);
+        const N = type.N;
+        if (typeof N === 'number' || this.args.length > 1) {
+          serialized.push(N);
+        }
+      }
+    }
+    return serialized.concat(this.args.map(arg => arg.serialize()));
   }
 }
 

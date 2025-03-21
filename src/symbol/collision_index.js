@@ -99,7 +99,6 @@ class CollisionIndex {
     allowOverlap,
     scale,
     textPixelRatio,
-    key,
     symbol,
     lineVertexArray,
     glyphOffsetArray,

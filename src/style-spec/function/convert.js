@@ -3,85 +3,64 @@ const assert = require('assert');
 module.exports = convertFunction;
 
 function convertFunction(parameters, propertySpec) {
-  let expression;
-
-  parameters = { ...parameters };
-  let defaultExpression;
-  if (typeof parameters.default !== 'undefined') {
-    defaultExpression = convertValue(parameters.default, propertySpec);
-  } else {
-    defaultExpression = convertValue(propertySpec.default, propertySpec);
-    if (defaultExpression === null) {
-      defaultExpression = ['error', 'No default property value available.'];
-    }
-  }
-
-  if (parameters.stops) {
-    const zoomAndFeatureDependent = parameters.stops && typeof parameters.stops[0][0] === 'object';
-    const featureDependent = zoomAndFeatureDependent || parameters.property !== undefined;
-    const zoomDependent = zoomAndFeatureDependent || !featureDependent;
-
-    const stops = parameters.stops.map(stop => {
-      if (!featureDependent && propertySpec.tokens && typeof stop[1] === 'string') {
-        return [stop[0], convertTokenString(stop[1])];
-      }
-      return [stop[0], convertValue(stop[1], propertySpec)];
-    });
-
-    if (parameters.colorSpace && parameters.colorSpace !== 'rgb') {
-      throw new Error('Unimplemented');
-    }
-
-    if (zoomAndFeatureDependent) {
-      expression = convertZoomAndPropertyFunction(parameters, propertySpec, stops, defaultExpression);
-    } else if (zoomDependent) {
-      expression = convertZoomFunction(parameters, propertySpec, stops);
-    } else {
-      expression = convertPropertyFunction(parameters, propertySpec, stops, defaultExpression);
-    }
-  } else {
+  let stops = parameters.stops;
+  if (!stops) {
     // identity function
-    expression = convertIdentityFunction(parameters, propertySpec, defaultExpression);
+    return convertIdentityFunction(parameters, propertySpec);
   }
 
+  const zoomAndFeatureDependent = stops && typeof stops[0][0] === 'object';
+  const featureDependent = zoomAndFeatureDependent || parameters.property !== undefined;
+  const zoomDependent = zoomAndFeatureDependent || !featureDependent;
+
+  stops = stops.map(stop => {
+    if (!featureDependent && propertySpec.tokens && typeof stop[1] === 'string') {
+      return [stop[0], convertTokenString(stop[1])];
+    }
+    return [stop[0], ['literal', stop[1]]];
+  });
+
+  if (zoomAndFeatureDependent) {
+    return convertZoomAndPropertyFunction(parameters, propertySpec, stops);
+  }
+  if (zoomDependent) {
+    return convertZoomFunction(parameters, propertySpec, stops);
+  }
+  return convertPropertyFunction(parameters, propertySpec, stops);
+}
+
+function convertIdentityFunction(parameters, propertySpec) {
+  const get = ['get', parameters.property];
+
+  if (parameters.default === undefined) {
+    return get;
+  }
+  if (propertySpec.type === 'enum') {
+    return ['match', get, Object.keys(propertySpec.values), get, parameters.default];
+  }
+  const expression = [
+    propertySpec.type === 'color' ? 'to-color' : propertySpec.type,
+    get,
+    ['literal', parameters.default]
+  ];
+  if (propertySpec.type === 'array') {
+    expression.splice(1, 0, propertySpec.value, propertySpec.length || null);
+  }
   return expression;
 }
 
-function convertIdentityFunction(parameters, propertySpec, defaultExpression) {
-  const get = ['get', parameters.property];
-
-  if (propertySpec.type === 'color') {
-    return parameters.default === undefined ? get : ['to-color', get, parameters.default];
+function getInterpolateOperator(parameters) {
+  switch (parameters.colorSpace) {
+    case 'hcl':
+      return 'interpolate-hcl';
+    case 'lab':
+      return 'interpolate-lab';
+    default:
+      return 'interpolate';
   }
-  if (propertySpec.type === 'array' && typeof propertySpec.length === 'number') {
-    return ['array', propertySpec.value, propertySpec.length, get];
-  }
-  if (propertySpec.type === 'array') {
-    return ['array', propertySpec.value, get];
-  }
-  if (propertySpec.type === 'enum') {
-    return [
-      'let',
-      'property_value',
-      ['string', get],
-      ['match', ['var', 'property_value'], propertySpec.values, ['var', 'property_value'], defaultExpression]
-    ];
-  }
-  return parameters.default === undefined ? get : [propertySpec.type, get, parameters.default];
 }
 
-function convertValue(value, spec) {
-  if (typeof value === 'undefined' || value === null) return null;
-  if (spec.type === 'color') {
-    return value;
-  }
-  if (spec.type === 'array') {
-    return ['literal', value];
-  }
-  return value;
-}
-
-function convertZoomAndPropertyFunction(parameters, propertySpec, stops, defaultExpression) {
+function convertZoomAndPropertyFunction(parameters, propertySpec, stops) {
   const featureFunctionParameters = {};
   const featureFunctionStops = {};
   const zoomStops = [];
@@ -107,15 +86,10 @@ function convertZoomAndPropertyFunction(parameters, propertySpec, stops, default
   // otherwise.
   const functionType = getFunctionType({}, propertySpec);
   if (functionType === 'exponential') {
-    const expression = ['interpolate', ['linear'], ['zoom']];
+    const expression = [getInterpolateOperator(parameters), ['linear'], ['zoom']];
 
     for (const z of zoomStops) {
-      const output = convertPropertyFunction(
-        featureFunctionParameters[z],
-        propertySpec,
-        featureFunctionStops[z],
-        defaultExpression
-      );
+      const output = convertPropertyFunction(featureFunctionParameters[z], propertySpec, featureFunctionStops[z]);
       appendStopPair(expression, z, output, false);
     }
 
@@ -124,12 +98,7 @@ function convertZoomAndPropertyFunction(parameters, propertySpec, stops, default
   const expression = ['step', ['zoom']];
 
   for (const z of zoomStops) {
-    const output = convertPropertyFunction(
-      featureFunctionParameters[z],
-      propertySpec,
-      featureFunctionStops[z],
-      defaultExpression
-    );
+    const output = convertPropertyFunction(featureFunctionParameters[z], propertySpec, featureFunctionStops[z]);
     appendStopPair(expression, z, output, true);
   }
 
@@ -138,43 +107,52 @@ function convertZoomAndPropertyFunction(parameters, propertySpec, stops, default
   return expression;
 }
 
-function convertPropertyFunction(parameters, propertySpec, stops, defaultExpression) {
-  const type = getFunctionType(parameters, propertySpec);
+function coalesce(a, b) {
+  if (a !== undefined) return a;
+  if (b !== undefined) return b;
+}
 
-  let expression;
-  let isStep = false;
+function convertPropertyFunction(parameters, propertySpec, stops) {
+  const type = getFunctionType(parameters, propertySpec);
+  const get = ['get', parameters.property];
   if (type === 'categorical' && typeof stops[0][0] === 'boolean') {
     assert(parameters.stops.length > 0 && parameters.stops.length <= 2);
-    expression = ['case'];
+    const expression = ['case'];
     for (const stop of stops) {
-      expression.push(['==', ['get', parameters.property], stop[0]], stop[1]);
+      expression.push(['==', get, stop[0]], stop[1]);
     }
-    expression.push(defaultExpression);
+    expression.push(['literal', coalesce(parameters.default, propertySpec.default)]);
     return expression;
   }
   if (type === 'categorical') {
-    expression = ['match', ['get', parameters.property]];
-  } else if (type === 'interval') {
-    expression = ['step', ['number', ['get', parameters.property]]];
-    isStep = true;
-  } else if (type === 'exponential') {
+    const expression = ['match', get];
+    for (const stop of stops) {
+      appendStopPair(expression, stop[0], stop[1], false);
+    }
+    expression.push(['literal', coalesce(parameters.default, propertySpec.default)]);
+    return expression;
+  }
+  if (type === 'interval') {
+    const expression = ['step', ['number', get]];
+    for (const stop of stops) {
+      appendStopPair(expression, stop[0], stop[1], true);
+    }
+    fixupDegenerateStepCurve(expression);
+    return parameters.default === undefined
+      ? expression
+      : ['case', ['==', ['typeof', get], 'number'], expression, ['literal', parameters.default]];
+  }
+  if (type === 'exponential') {
     const base = parameters.base !== undefined ? parameters.base : 1;
-    expression = ['interpolate', ['exponential', base], ['number', ['get', parameters.property]]];
-  } else {
-    throw new Error(`Unknown property function type ${type}`);
+    const expression = [getInterpolateOperator(parameters), ['exponential', base], ['number', get]];
+    for (const stop of stops) {
+      appendStopPair(expression, stop[0], stop[1], false);
+    }
+    return parameters.default === undefined
+      ? expression
+      : ['case', ['==', ['typeof', get], 'number'], expression, ['literal', parameters.default]];
   }
-
-  for (const stop of stops) {
-    appendStopPair(expression, stop[0], stop[1], isStep);
-  }
-
-  if (expression[0] === 'match') {
-    expression.push(defaultExpression);
-  }
-
-  fixupDegenerateStepCurve(expression);
-
-  return expression;
+  throw new Error(`Unknown property function type ${type}`);
 }
 
 function convertZoomFunction(parameters, propertySpec, stops, input = ['zoom']) {
@@ -186,7 +164,7 @@ function convertZoomFunction(parameters, propertySpec, stops, input = ['zoom']) 
     isStep = true;
   } else if (type === 'exponential') {
     const base = parameters.base !== undefined ? parameters.base : 1;
-    expression = ['interpolate', ['exponential', base], input];
+    expression = [getInterpolateOperator(parameters), ['exponential', base], input];
   } else {
     throw new Error(`Unknown zoom function type "${type}"`);
   }
