@@ -1,4 +1,31 @@
 
+0.48.0 / 2025-03-21
+===================
+
+ * remove Map.addSourceType functionality
+ * Add interpolate-{hcl,lab} expression operators
+ * Don't default-show text/icons that depend on the placement of a paired icon/text (#7032)
+ * Update to mapbox-gl-rtl-text 0.2.0 for formatted text support. Add test using new formatted RTL functionality.
+ * Support implicit argument coercions for compound expressions with multiple overloads.
+ * Support `string->formatted` coercion (currently unused).
+ * Introduce "format" expression.
+ * Set tile#queryPadding per feature
+ * Clamp latitude value to valid Web Mercator range when projection to y coordinate
+ * Relax typing for equality and inequality expressions (#6961)
+ * fix local non-integer pixel ratio render test fail (#7007)
+ * Require feature id in Map#setFeatureState
+ * Use correct labelLength scale for text-max-angle/line-center.
+ * Fix getBounds() for bearings between 90 and 270
+ * map.getBounds() works with rotated map (#6867)
+ * Support collators in feature filter expressions.
+ * Fix ScrollZoom handler setting tr.zoom = NaN (#6924)
+ * Add feature-state parameter to style spec
+ * Add ids to 121points.geojson
+ * Round symbol-sorting y-position to integer values.
+ * Use updateData instead of re-creating buffers for repopulated paint arrays.
+ * Add scheme option to vector source spec (#6847)
+ * do not reload errored tiles (#6813)
+
 0.47.2 / 2025-03-20
 ===================
 
