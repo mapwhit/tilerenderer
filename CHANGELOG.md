@@ -1,4 +1,19 @@
 
+0.49.0 / 2025-03-21
+===================
+
+ * fix missing repeats of CanvasSource when it crosses the antimeridian (#7273) (#7275)
+ * update platform support tables for `*-pattern` (#7232)
+ * make sure there are no zero-area textures
+ * Add symbol-z-order property to symbol layout style spec
+ * Improve image/glyph atlas packing algorithm (#7171)
+ * Add migration to expressions into gl-style-migrate
+ * Merge ArrayAssertion into Assertion
+ * Extend array assertion to permit fallbacks
+ * Make symbolInstance lookups per SymbolBucket sort linear in number of symbols.
+ * Make symbolInstances array transferrable.
+ * Use murmur hash on symbol instance keys to reduce worker transfer costs.
+
 0.48.0 / 2025-03-21
 ===================
 
