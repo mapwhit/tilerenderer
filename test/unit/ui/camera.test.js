@@ -573,7 +573,7 @@ test('camera', async t => {
       t.assert.equal(camera.getBearing(), 90);
       t.assert.deepEqual(
         fixedLngLat(camera.getCenter()),
-        fixedLngLat({ lng: 4.999999999999972, lat: 0.000014144426558004852 })
+        fixedLngLat({ lng: 4.999999999999972, lat: 0.000002552471840999715 })
       );
     });
 
@@ -588,7 +588,7 @@ test('camera', async t => {
       const camera = createCamera({ zoom: 0 });
       camera.rotateTo(90, { offset: [100, 0], duration: 0 });
       t.assert.equal(camera.getBearing(), 90);
-      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: 70.3125, lat: 0.000014144426558004852 }));
+      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: 70.3125, lat: 0.000002552471840999715 }));
     });
 
     await t.test('rotates with specified offset relative to viewport on a rotated camera', t => {
@@ -753,14 +753,14 @@ test('camera', async t => {
       const camera = createCamera();
       camera.easeTo({ bearing: 90, offset: [100, 0], duration: 0 });
       t.assert.equal(camera.getBearing(), 90);
-      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: 70.3125, lat: 0.0000141444 }));
+      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: 70.3125, lat: 0.000002552471840999715 }));
     });
 
     await t.test('rotates with specified offset relative to viewport on a rotated camera', t => {
       const camera = createCamera({ bearing: 180 });
       camera.easeTo({ bearing: 90, offset: [100, 0], duration: 0 });
       t.assert.equal(camera.getBearing(), 90);
-      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: -70.3125, lat: 0.0000141444 }));
+      t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat({ lng: -70.3125, lat: 0.000002552471840999715 }));
     });
 
     await t.test('emits move, zoom, rotate, and pitch events, preserving eventData', { plan: 18 }, (t, done) => {

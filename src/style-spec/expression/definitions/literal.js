@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { isValue, typeOf, Color } = require('../values');
+const { Formatted } = require('./formatted');
 
 class Literal {
   constructor(type, value) {
@@ -50,6 +51,10 @@ class Literal {
       // couldn't actually generate with a "literal" expression,
       // so we have to implement an equivalent serialization here
       return ['rgba'].concat(this.value.toArray());
+    }
+    if (this.value instanceof Formatted) {
+      // Same as Color
+      return this.value.serialize();
     }
     assert(
       this.value === null ||

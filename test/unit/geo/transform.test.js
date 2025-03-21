@@ -12,6 +12,7 @@ test('transform', async t => {
     const transform = new Transform();
     transform.resize(500, 500);
     t.assert.equal(transform.unmodified, true);
+    t.assert.equal(transform.maxValidLatitude, 85.051129);
     t.assert.equal(transform.tileSize, 512, 'tileSize');
     t.assert.equal(transform.worldSize, 512, 'worldSize');
     t.assert.equal(transform.width, 500, 'width');
@@ -205,6 +206,13 @@ test('transform', async t => {
     options.roundZoom = true;
 
     t.assert.deepEqual(transform.coveringZoomLevel(options), 13);
+  });
+
+  await t.test('clamps latitude', t => {
+    const transform = new Transform();
+
+    t.assert.equal(transform.latY(-90), transform.latY(-transform.maxValidLatitude));
+    t.assert.equal(transform.latY(90), transform.latY(transform.maxValidLatitude));
   });
 
   await t.test('clamps pitch', t => {

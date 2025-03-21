@@ -31,6 +31,7 @@ const { verticalizedCharacterMap } = require('../../util/verticalize_punctuation
 const { getSizeData } = require('../../symbol/symbol_size');
 const { register } = require('../../util/transfer_registry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
+const { Formatted } = require('../../style-spec/expression/definitions/formatted');
 
 // Opacity arrays are frequently updated but don't contain a lot of information, so we pack them
 // tight. Each Uint32 is actually four duplicate Uint8s for the four corners of a glyph
@@ -221,6 +222,18 @@ class SymbolBucket {
     this.lineVertexArray = new SymbolLineVertexArray();
   }
 
+  calculateGlyphDependencies(text, stack, textAlongLine, doesAllowVerticalWritingMode) {
+    for (let i = 0; i < text.length; i++) {
+      stack[text.charCodeAt(i)] = true;
+      if (textAlongLine && doesAllowVerticalWritingMode) {
+        const verticalChar = verticalizedCharacterMap[text.charAt(i)];
+        if (verticalChar) {
+          stack[verticalChar.charCodeAt(0)] = true;
+        }
+      }
+    }
+  }
+
   populate(features, options) {
     const layer = this.layers[0];
     const layout = layer.layout;
@@ -229,7 +242,7 @@ class SymbolBucket {
     const textField = layout.get('text-field');
     const iconImage = layout.get('icon-image');
     const hasText =
-      (textField.value.kind !== 'constant' || textField.value.value.length > 0) &&
+      (textField.value.kind !== 'constant' || textField.value.value.toString().length > 0) &&
       (textFont.value.kind !== 'constant' || textFont.value.value.length > 0);
     const hasIcon = iconImage.value.kind !== 'constant' || (iconImage.value.value && iconImage.value.value.length > 0);
 
@@ -286,15 +299,16 @@ class SymbolBucket {
         const stack = (stacks[fontStack] = stacks[fontStack] || {});
         const textAlongLine =
           layout.get('text-rotation-alignment') === 'map' && layout.get('symbol-placement') !== 'point';
-        const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text);
-        for (let i = 0; i < text.length; i++) {
-          stack[text.charCodeAt(i)] = true;
-          if (textAlongLine && doesAllowVerticalWritingMode) {
-            const verticalChar = verticalizedCharacterMap[text.charAt(i)];
-            if (verticalChar) {
-              stack[verticalChar.charCodeAt(0)] = true;
-            }
+        if (text instanceof Formatted) {
+          for (const section of text.sections) {
+            const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text.toString());
+            const sectionFont = section.fontStack || fontStack;
+            const sectionStack = (stacks[sectionFont] = stacks[sectionFont] || {});
+            this.calculateGlyphDependencies(section.text, sectionStack, textAlongLine, doesAllowVerticalWritingMode);
           }
+        } else {
+          const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text);
+          this.calculateGlyphDependencies(text, stack, textAlongLine, doesAllowVerticalWritingMode);
         }
       }
     }

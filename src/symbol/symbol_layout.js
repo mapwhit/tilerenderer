@@ -12,6 +12,7 @@ const classifyRings = require('../util/classify_rings');
 const EXTENT = require('../data/extent');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const EvaluationParameters = require('../style/evaluation_parameters');
+const { Formatted } = require('../style-spec/expression/definitions/formatted');
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
 // `icon-size` at up to three:
@@ -73,18 +74,18 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
 
   for (const feature of bucket.features) {
     const fontstack = layout.get('text-font').evaluate(feature, {}).join(',');
-    const glyphs = glyphMap[fontstack] || {};
-    const glyphPositionMap = glyphPositions[fontstack] || {};
+    const glyphPositionMap = glyphPositions;
 
     const shapedTextOrientations = {};
     const text = feature.text;
     if (text) {
+      const unformattedText = text instanceof Formatted ? text.toString() : text;
       const textOffset = layout
         .get('text-offset')
         .evaluate(feature, {})
         .map(t => t * oneEm);
       const spacing = layout.get('text-letter-spacing').evaluate(feature, {}) * oneEm;
-      const spacingIfAllowed = allowsLetterSpacing(text) ? spacing : 0;
+      const spacingIfAllowed = allowsLetterSpacing(unformattedText) ? spacing : 0;
       const textAnchor = layout.get('text-anchor').evaluate(feature, {});
       const textJustify = layout.get('text-justify').evaluate(feature, {});
       const maxWidth =
@@ -92,7 +93,8 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
 
       shapedTextOrientations.horizontal = shapeText(
         text,
-        glyphs,
+        glyphMap,
+        fontstack,
         maxWidth,
         lineHeight,
         textAnchor,
@@ -102,10 +104,11 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
         oneEm,
         WritingMode.horizontal
       );
-      if (allowsVerticalWritingMode(text) && textAlongLine && keepUpright) {
+      if (allowsVerticalWritingMode(unformattedText) && textAlongLine && keepUpright) {
         shapedTextOrientations.vertical = shapeText(
           text,
-          glyphs,
+          glyphMap,
+          fontstack,
           maxWidth,
           lineHeight,
           textAnchor,

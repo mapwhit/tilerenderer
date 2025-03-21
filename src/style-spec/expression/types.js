@@ -7,6 +7,7 @@ const ObjectType = { kind: 'object' };
 const ValueType = { kind: 'value' };
 const ErrorType = { kind: 'error' };
 const CollatorType = { kind: 'collator' };
+const FormattedType = { kind: 'formatted' };
 
 function array(itemType, N) {
   return {
@@ -28,7 +29,16 @@ function toString(type) {
   return type.kind;
 }
 
-const valueMemberTypes = [NullType, NumberType, StringType, BooleanType, ColorType, ObjectType, array(ValueType)];
+const valueMemberTypes = [
+  NullType,
+  NumberType,
+  StringType,
+  BooleanType,
+  ColorType,
+  FormattedType,
+  ObjectType,
+  array(ValueType)
+];
 
 /**
  * Returns null if `t` is a subtype of `expected`; otherwise returns an
@@ -67,6 +77,7 @@ module.exports = {
   StringType,
   BooleanType,
   ColorType,
+  FormattedType,
   ObjectType,
   ValueType,
   ErrorType,
