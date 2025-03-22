@@ -1,32 +1,6 @@
 const { NumberType, ValueType, FormattedType, array, StringType } = require('../types');
-
-class FormattedSection {
-  constructor(text, scale, fontStack) {
-    this.text = text;
-    this.scale = scale;
-    this.fontStack = fontStack;
-  }
-}
-
-class Formatted {
-  constructor(sections) {
-    this.sections = sections;
-  }
-
-  toString() {
-    return this.sections.map(section => section.text).join('');
-  }
-
-  serialize() {
-    const serialized = ['format'];
-    for (const section of this.sections) {
-      serialized.push(section.text);
-      const fontStack = section.fontStack ? ['literal', section.fontStack.split(',')] : null;
-      serialized.push({ 'text-font': fontStack, 'font-scale': section.scale });
-    }
-    return serialized;
-  }
-}
+const { Formatted, FormattedSection } = require('../types/formatted');
+const { toString } = require('../values');
 
 class FormatExpression {
   constructor(sections) {
@@ -77,7 +51,7 @@ class FormatExpression {
       this.sections.map(
         section =>
           new FormattedSection(
-            section.text.evaluate(ctx) || '',
+            toString(section.text.evaluate(ctx)),
             section.scale ? section.scale.evaluate(ctx) : null,
             section.font ? section.font.evaluate(ctx).join(',') : null
           )

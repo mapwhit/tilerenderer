@@ -32,7 +32,7 @@ const { verticalizedCharacterMap } = require('../../util/verticalize_punctuation
 const { getSizeData } = require('../../symbol/symbol_size');
 const { register } = require('../../util/transfer_registry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
-const { Formatted } = require('../../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../../style-spec/expression/types/formatted');
 
 // Opacity arrays are frequently updated but don't contain a lot of information, so we pack them
 // tight. Each Uint32 is actually four duplicate Uint8s for the four corners of a glyph
@@ -267,8 +267,15 @@ class SymbolBucket {
 
       let text;
       if (hasText) {
-        text = layer.getValueAndResolveTokens('text-field', feature);
-        text = transformText(text, layer, feature);
+        // Expression evaluation will automatically coerce to Formatted
+        // but plain string token evaluation skips that pathway so do the
+        // conversion here.
+        const resolvedTokens = layer.getValueAndResolveTokens('text-field', feature);
+        text = transformText(
+          resolvedTokens instanceof Formatted ? resolvedTokens : Formatted.fromString(resolvedTokens),
+          layer,
+          feature
+        );
       }
 
       let icon;
@@ -300,19 +307,13 @@ class SymbolBucket {
 
       if (text) {
         const fontStack = textFont.evaluate(feature, {}).join(',');
-        const stack = (stacks[fontStack] = stacks[fontStack] || {});
         const textAlongLine =
           layout.get('text-rotation-alignment') === 'map' && layout.get('symbol-placement') !== 'point';
-        if (text instanceof Formatted) {
-          for (const section of text.sections) {
-            const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text.toString());
-            const sectionFont = section.fontStack || fontStack;
-            const sectionStack = (stacks[sectionFont] = stacks[sectionFont] || {});
-            this.calculateGlyphDependencies(section.text, sectionStack, textAlongLine, doesAllowVerticalWritingMode);
-          }
-        } else {
-          const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text);
-          this.calculateGlyphDependencies(text, stack, textAlongLine, doesAllowVerticalWritingMode);
+        for (const section of text.sections) {
+          const doesAllowVerticalWritingMode = allowsVerticalWritingMode(text.toString());
+          const sectionFont = section.fontStack || fontStack;
+          const sectionStack = (stacks[sectionFont] = stacks[sectionFont] || {});
+          this.calculateGlyphDependencies(section.text, sectionStack, textAlongLine, doesAllowVerticalWritingMode);
         }
       }
     }

@@ -18,17 +18,12 @@ class StyleExpression {
   constructor(expression, propertySpec) {
     this.expression = expression;
     this._warningHistory = {};
+    this._evaluator = new EvaluationContext();
     this._defaultValue = getDefaultValue(propertySpec);
-    if (propertySpec.type === 'enum') {
-      this._enumValues = propertySpec.values;
-    }
+    this._enumValues = propertySpec.type === 'enum' ? propertySpec.values : null;
   }
 
   evaluateWithoutErrorHandling(globals, feature, featureState) {
-    if (!this._evaluator) {
-      this._evaluator = new EvaluationContext();
-    }
-
     this._evaluator.globals = globals;
     this._evaluator.feature = feature;
     this._evaluator.featureState = featureState;
@@ -37,13 +32,9 @@ class StyleExpression {
   }
 
   evaluate(globals, feature, featureState) {
-    if (!this._evaluator) {
-      this._evaluator = new EvaluationContext();
-    }
-
     this._evaluator.globals = globals;
-    this._evaluator.feature = feature;
-    this._evaluator.featureState = featureState;
+    this._evaluator.feature = feature || null;
+    this._evaluator.featureState = featureState || null;
 
     try {
       const val = this.expression.evaluate(this._evaluator);
@@ -90,7 +81,16 @@ function isExpression(expression) {
  */
 function createExpression(expression, propertySpec) {
   const parser = new ParsingContext(definitions, [], getExpectedType(propertySpec));
-  const parsed = parser.parse(expression);
+
+  // For string-valued properties, coerce to string at the top level rather than asserting.
+  const parsed = parser.parse(
+    expression,
+    undefined,
+    undefined,
+    undefined,
+    propertySpec.type === 'string' ? { typeAnnotation: 'coerce' } : undefined
+  );
+
   if (!parsed) {
     assert(parser.errors.length > 0);
     return error(parser.errors);
@@ -283,7 +283,7 @@ function findZoomCurve(expression) {
   return result;
 }
 
-const { ColorType, StringType, NumberType, BooleanType, ValueType, array } = require('./types');
+const { ColorType, StringType, NumberType, BooleanType, ValueType, FormattedType, array } = require('./types');
 
 function getExpectedType(spec) {
   const types = {
@@ -291,14 +291,15 @@ function getExpectedType(spec) {
     string: StringType,
     number: NumberType,
     enum: StringType,
-    boolean: BooleanType
+    boolean: BooleanType,
+    formatted: FormattedType
   };
 
   if (spec.type === 'array') {
     return array(types[spec.value] || ValueType, spec.length);
   }
 
-  return types[spec.type] || null;
+  return types[spec.type];
 }
 
 function getDefaultValue(spec) {

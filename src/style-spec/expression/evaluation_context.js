@@ -4,6 +4,9 @@ const geometryTypes = ['Unknown', 'Point', 'LineString', 'Polygon'];
 
 class EvaluationContext {
   constructor() {
+    this.globals = null;
+    this.feature = null;
+    this.featureState = null;
     this._parseColorCache = {};
   }
 

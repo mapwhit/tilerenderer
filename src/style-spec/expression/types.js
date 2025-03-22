@@ -53,7 +53,7 @@ function checkSubtype(expected, t) {
   if (expected.kind === 'array') {
     if (
       t.kind === 'array' &&
-      !checkSubtype(expected.itemType, t.itemType) &&
+      ((t.N === 0 && t.itemType.kind === 'value') || !checkSubtype(expected.itemType, t.itemType)) &&
       (typeof expected.N !== 'number' || expected.N === t.N)
     ) {
       return null;

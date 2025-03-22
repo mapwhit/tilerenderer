@@ -12,7 +12,7 @@ const classifyRings = require('../util/classify_rings');
 const EXTENT = require('../data/extent');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const EvaluationParameters = require('../style/evaluation_parameters');
-const { Formatted } = require('../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../style-spec/expression/types/formatted');
 const murmur3 = require('murmurhash-js');
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
@@ -79,7 +79,7 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
     const shapedTextOrientations = {};
     const text = feature.text;
     if (text) {
-      const unformattedText = text instanceof Formatted ? text.toString() : text;
+      const unformattedText = text.toString();
       const textOffset = layout
         .get('text-offset')
         .evaluate(feature, {})

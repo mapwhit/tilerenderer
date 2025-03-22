@@ -1,6 +1,6 @@
 const assert = require('assert');
 const { isValue, typeOf, Color } = require('../values');
-const { Formatted } = require('./formatted');
+const { Formatted } = require('../types/formatted');
 
 class Literal {
   constructor(type, value) {

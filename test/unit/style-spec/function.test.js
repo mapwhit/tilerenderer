@@ -1,6 +1,7 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const { createFunction } = require('../../../src/style-spec/function');
 const Color = require('../../../src/style-spec/util/color');
+const { Formatted } = require('../../../src/style-spec/expression/types/formatted');
 
 test('binary search', async t => {
   await t.test('will eventually terminate.', t => {
@@ -1156,6 +1157,23 @@ test('identity function', async t => {
     ).evaluate;
 
     t.assert.equal(f({ zoom: 0 }, { properties: { foo: 3 } }), 'def');
+  });
+
+  await t.test('formatted', t => {
+    const f = createFunction(
+      {
+        property: 'foo',
+        type: 'identity'
+      },
+      {
+        type: 'formatted'
+      }
+    ).evaluate;
+
+    t.assert.deepEqual(f({ zoom: 0 }, { properties: { foo: 'foo' } }), Formatted.fromString('foo'));
+    t.assert.deepEqual(f({ zoom: 1 }, { properties: { foo: 'bar' } }), Formatted.fromString('bar'));
+    t.assert.deepEqual(f({ zoom: 2 }, { properties: { foo: 2 } }), Formatted.fromString('2'));
+    t.assert.deepEqual(f({ zoom: 3 }, { properties: { foo: true } }), Formatted.fromString('true'));
   });
 });
 

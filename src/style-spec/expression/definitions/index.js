@@ -8,10 +8,10 @@ const {
   ErrorType,
   CollatorType,
   array,
-  toString
+  toString: typeToString
 } = require('../types');
 
-const { typeOf, Color, validateRGBA } = require('../values');
+const { typeOf, Color, validateRGBA, toString: valueToString } = require('../values');
 const CompoundExpression = require('../compound_expression');
 const RuntimeError = require('../runtime_error');
 const Let = require('./let');
@@ -27,7 +27,7 @@ const Interpolate = require('./interpolate');
 const Coalesce = require('./coalesce');
 const { Equals, NotEquals, LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual } = require('./comparison');
 const { CollatorExpression } = require('./collator');
-const { Formatted, FormatExpression } = require('./formatted');
+const { FormatExpression } = require('./format');
 const Length = require('./length');
 
 const expressions = {
@@ -56,8 +56,10 @@ const expressions = {
   object: Assertion,
   step: Step,
   string: Assertion,
+  'to-boolean': Coercion,
   'to-color': Coercion,
   'to-number': Coercion,
+  'to-string': Coercion,
   var: Var
 };
 
@@ -102,26 +104,7 @@ CompoundExpression.register(expressions, {
       throw new RuntimeError(v.evaluate(ctx));
     }
   ],
-  typeof: [StringType, [ValueType], (ctx, [v]) => toString(typeOf(v.evaluate(ctx)))],
-  'to-string': [
-    StringType,
-    [ValueType],
-    (ctx, [v]) => {
-      v = v.evaluate(ctx);
-      const type = typeof v;
-      if (v === null) {
-        return '';
-      }
-      if (type === 'string' || type === 'number' || type === 'boolean') {
-        return String(v);
-      }
-      if (v instanceof Color || v instanceof Formatted) {
-        return v.toString();
-      }
-      return JSON.stringify(v);
-    }
-  ],
-  'to-boolean': [BooleanType, [ValueType], (ctx, [v]) => Boolean(v.evaluate(ctx))],
+  typeof: [StringType, [ValueType], (ctx, [v]) => typeToString(typeOf(v.evaluate(ctx)))],
   'to-rgba': [
     array(NumberType, 4),
     [ColorType],
@@ -349,7 +332,7 @@ CompoundExpression.register(expressions, {
   ],
   upcase: [StringType, [StringType], (ctx, [s]) => s.evaluate(ctx).toUpperCase()],
   downcase: [StringType, [StringType], (ctx, [s]) => s.evaluate(ctx).toLowerCase()],
-  concat: [StringType, varargs(StringType), (ctx, args) => args.map(arg => arg.evaluate(ctx)).join('')],
+  concat: [StringType, varargs(ValueType), (ctx, args) => args.map(arg => valueToString(arg.evaluate(ctx))).join('')],
   'resolved-locale': [StringType, [CollatorType], (ctx, [collator]) => collator.evaluate(ctx).resolvedLocale()]
 });
 

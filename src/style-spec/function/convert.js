@@ -2,6 +2,10 @@ const assert = require('assert');
 
 module.exports = convertFunction;
 
+function convertLiteral(value) {
+  return typeof value === 'object' ? ['literal', value] : value;
+}
+
 function convertFunction(parameters, propertySpec) {
   let stops = parameters.stops;
   if (!stops) {
@@ -17,7 +21,7 @@ function convertFunction(parameters, propertySpec) {
     if (!featureDependent && propertySpec.tokens && typeof stop[1] === 'string') {
       return [stop[0], convertTokenString(stop[1])];
     }
-    return [stop[0], ['literal', stop[1]]];
+    return [stop[0], convertLiteral(stop[1])];
   });
 
   if (zoomAndFeatureDependent) {
@@ -33,7 +37,9 @@ function convertIdentityFunction(parameters, propertySpec) {
   const get = ['get', parameters.property];
 
   if (parameters.default === undefined) {
-    return get;
+    // By default, expressions for string-valued properties get coerced. To preserve
+    // legacy function semantics, insert an explicit assertion instead.
+    return propertySpec.type === 'string' ? ['string', get] : get;
   }
   if (propertySpec.type === 'enum') {
     return ['match', get, Object.keys(propertySpec.values), get, parameters.default];
@@ -41,7 +47,7 @@ function convertIdentityFunction(parameters, propertySpec) {
   const expression = [
     propertySpec.type === 'color' ? 'to-color' : propertySpec.type,
     get,
-    ['literal', parameters.default]
+    convertLiteral(parameters.default)
   ];
   if (propertySpec.type === 'array') {
     expression.splice(1, 0, propertySpec.value, propertySpec.length || null);
@@ -121,7 +127,7 @@ function convertPropertyFunction(parameters, propertySpec, stops) {
     for (const stop of stops) {
       expression.push(['==', get, stop[0]], stop[1]);
     }
-    expression.push(['literal', coalesce(parameters.default, propertySpec.default)]);
+    expression.push(convertLiteral(coalesce(parameters.default, propertySpec.default)));
     return expression;
   }
   if (type === 'categorical') {
@@ -129,7 +135,7 @@ function convertPropertyFunction(parameters, propertySpec, stops) {
     for (const stop of stops) {
       appendStopPair(expression, stop[0], stop[1], false);
     }
-    expression.push(['literal', coalesce(parameters.default, propertySpec.default)]);
+    expression.push(convertLiteral(coalesce(parameters.default, propertySpec.default)));
     return expression;
   }
   if (type === 'interval') {
@@ -140,7 +146,7 @@ function convertPropertyFunction(parameters, propertySpec, stops) {
     fixupDegenerateStepCurve(expression);
     return parameters.default === undefined
       ? expression
-      : ['case', ['==', ['typeof', get], 'number'], expression, ['literal', parameters.default]];
+      : ['case', ['==', ['typeof', get], 'number'], expression, convertLiteral(parameters.default)];
   }
   if (type === 'exponential') {
     const base = parameters.base !== undefined ? parameters.base : 1;
@@ -150,7 +156,7 @@ function convertPropertyFunction(parameters, propertySpec, stops) {
     }
     return parameters.default === undefined
       ? expression
-      : ['case', ['==', ['typeof', get], 'number'], expression, ['literal', parameters.default]];
+      : ['case', ['==', ['typeof', get], 'number'], expression, convertLiteral(parameters.default)];
   }
   throw new Error(`Unknown property function type ${type}`);
 }
@@ -217,7 +223,7 @@ function convertTokenString(s) {
     const literal = s.slice(pos, re.lastIndex - match[0].length);
     pos = re.lastIndex;
     if (literal.length > 0) result.push(literal);
-    result.push(['to-string', ['get', match[1]]]);
+    result.push(['get', match[1]]);
   }
 
   if (result.length === 1) {
@@ -227,7 +233,7 @@ function convertTokenString(s) {
   if (pos < s.length) {
     result.push(s.slice(pos));
   } else if (result.length === 2) {
-    return result[1];
+    return ['to-string', result[1]];
   }
 
   return result;

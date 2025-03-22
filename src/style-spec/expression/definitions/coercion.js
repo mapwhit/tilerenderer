@@ -1,13 +1,16 @@
 const assert = require('assert');
 
-const { ColorType, ValueType, NumberType } = require('../types');
-const { Color, validateRGBA } = require('../values');
+const { BooleanType, ColorType, NumberType, StringType, ValueType } = require('../types');
+const { Color, toString: valueToString, validateRGBA } = require('../values');
 const RuntimeError = require('../runtime_error');
-const { Formatted, FormattedSection } = require('./formatted');
+const { FormatExpression } = require('../definitions/format');
+const { Formatted } = require('../types/formatted');
 
 const types = {
+  'to-boolean': BooleanType,
+  'to-color': ColorType,
   'to-number': NumberType,
-  'to-color': ColorType
+  'to-string': StringType
 };
 
 /**
@@ -29,6 +32,9 @@ class Coercion {
     const name = args[0];
     assert(types[name], name);
 
+    if ((name === 'to-boolean' || name === 'to-string') && args.length !== 2)
+      return context.error('Expected one argument.');
+
     const type = types[name];
 
     const parsed = [];
@@ -42,12 +48,18 @@ class Coercion {
   }
 
   evaluate(ctx) {
+    if (this.type.kind === 'boolean') {
+      return Boolean(this.args[0].evaluate(ctx));
+    }
     if (this.type.kind === 'color') {
       let input;
       let error;
       for (const arg of this.args) {
         input = arg.evaluate(ctx);
         error = null;
+        if (input instanceof Color) {
+          return input;
+        }
         if (typeof input === 'string') {
           const c = ctx.parseColor(input);
           if (c) return c;
@@ -66,27 +78,23 @@ class Coercion {
         error || `Could not parse color from value '${typeof input === 'string' ? input : JSON.stringify(input)}'`
       );
     }
-    if (this.type.kind === 'formatted') {
-      let input;
+    if (this.type.kind === 'number') {
+      let value = null;
       for (const arg of this.args) {
-        input = arg.evaluate(ctx);
-        if (typeof input === 'string') {
-          return new Formatted([new FormattedSection(input, null, null)]);
-        }
+        value = arg.evaluate(ctx);
+        if (value === null) return 0;
+        const num = Number(value);
+        if (isNaN(num)) continue;
+        return num;
       }
-      throw new RuntimeError(
-        `Could not parse formatted text from value '${typeof input === 'string' ? input : JSON.stringify(input)}'`
-      );
+      throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`);
     }
-    let value = null;
-    for (const arg of this.args) {
-      value = arg.evaluate(ctx);
-      if (value === null) continue;
-      const num = Number(value);
-      if (isNaN(num)) continue;
-      return num;
+    if (this.type.kind === 'formatted') {
+      // There is no explicit 'to-formatted' but this coercion can be implicitly
+      // created by properties that expect the 'formatted' type.
+      return Formatted.fromString(valueToString(this.args[0].evaluate(ctx)));
     }
-    throw new RuntimeError(`Could not convert ${JSON.stringify(value)} to number.`);
+    return valueToString(this.args[0].evaluate(ctx));
   }
 
   eachChild(fn) {
@@ -98,6 +106,9 @@ class Coercion {
   }
 
   serialize() {
+    if (this.type.kind === 'formatted') {
+      return new FormatExpression([{ text: this.args[0], scale: null, font: null }]).serialize();
+    }
     const serialized = [`to-${this.type.kind}`];
     this.eachChild(child => {
       serialized.push(child.serialize());

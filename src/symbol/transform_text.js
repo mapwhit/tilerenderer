@@ -1,5 +1,5 @@
 const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
-const { Formatted } = require('../style-spec/expression/definitions/formatted');
+const { Formatted } = require('../style-spec/expression/types/formatted');
 
 function transformText(text, layer, feature) {
   const transform = layer.layout.get('text-transform').evaluate(feature, {});
@@ -17,11 +17,8 @@ function transformText(text, layer, feature) {
 }
 
 module.exports = function (text, layer, feature) {
-  if (text instanceof Formatted) {
-    text.sections.forEach(section => {
-      section.text = transformText(section.text, layer, feature);
-    });
-    return text;
-  }
-  return transformText(text, layer, feature);
+  text.sections.forEach(section => {
+    section.text = transformText(section.text, layer, feature);
+  });
+  return text;
 };

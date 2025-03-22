@@ -1,7 +1,8 @@
 const assert = require('assert');
 
 const Color = require('../util/color');
-const { Collator } = require('./definitions/collator');
+const { Collator } = require('./types/collator');
+const { Formatted } = require('./types/formatted');
 const {
   NullType,
   NumberType,
@@ -11,6 +12,7 @@ const {
   ObjectType,
   ValueType,
   CollatorType,
+  FormattedType,
   array
 } = require('./types');
 
@@ -58,6 +60,9 @@ function isValue(mixed) {
   if (mixed instanceof Collator) {
     return true;
   }
+  if (mixed instanceof Formatted) {
+    return true;
+  }
   if (Array.isArray(mixed)) {
     for (const item of mixed) {
       if (!isValue(item)) {
@@ -96,6 +101,9 @@ function typeOf(value) {
   if (value instanceof Collator) {
     return CollatorType;
   }
+  if (value instanceof Formatted) {
+    return FormattedType;
+  }
   if (Array.isArray(value)) {
     const length = value.length;
     let itemType;
@@ -117,7 +125,22 @@ function typeOf(value) {
   return ObjectType;
 }
 
+function toString(value) {
+  const type = typeof value;
+  if (value === null) {
+    return '';
+  }
+  if (type === 'string' || type === 'number' || type === 'boolean') {
+    return String(value);
+  }
+  if (value instanceof Color || value instanceof Formatted) {
+    return value.toString();
+  }
+  return JSON.stringify(value);
+}
+
 module.exports = {
+  toString,
   Color,
   Collator,
   validateRGBA,
