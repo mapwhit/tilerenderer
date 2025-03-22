@@ -1,4 +1,27 @@
 
+0.50.0 / 2025-03-21
+===================
+
+ * Fix identity functions for 'text-field' (i.e. 'formatted' type) (#7311).
+ * less verbose function -> expression convertion
+ * Avoid deoptimizations in expression evaluation (#7334)
+ * Preserve expected type when parsing 'let' expressions (#7301)
+ * Make 'formatted' serialization slightly less verbose.
+ * Add expression test cases for implicit format type annotations.
+ * Complete transition to coercing 'text-field' to 'formatted' at evaluation time.
+ * Fix implicit conversions for "formatted" type
+ * Auto-convert format arguments to strings
+ * Simplify how token strings are converted
+ * For string-valued properties, do coercion rather than assertion
+ * Auto-convert concat arguments to strings
+ * Increase `fill_extrusion` base/height precision. Fixes issue (#7247)
+ * add test for invalid pattern (#7286)
+ * Make "to-number" of null behave as documented
+ * Add an explicit test for array assertion fallback behavior
+ * ["to-array", <item type>, <empty array>] should work for any item type
+ * to-color should be idempotent
+ * Mark allow-overlap symbols visible even outside of collision grid. (#7172)
+
 0.49.0 / 2025-03-21
 ===================
 
