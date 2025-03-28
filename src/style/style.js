@@ -928,8 +928,8 @@ class Style extends Evented {
     return this.imageManager.getImages(icons);
   }
 
-  getGlyphs(_mapId, { stacks }) {
-    return this.glyphManager.getGlyphs(stacks);
+  loadGlyphRange(_mapId, { stack, range }) {
+    return this.glyphManager.loadGlyphRange(stack, range);
   }
 }
 
