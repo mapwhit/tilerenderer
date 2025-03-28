@@ -33,7 +33,7 @@ class WorkerTile {
     this.showCollisionBoxes = params.showCollisionBoxes;
   }
 
-  async parse(data, layerIndex, actor) {
+  async parse(data, layerIndex, resources) {
     this.status = 'parsing';
     this.data = data;
 
@@ -103,9 +103,9 @@ class WorkerTile {
     const icons = Object.keys(options.iconDependencies);
     const patterns = Object.keys(options.patternDependencies);
     const tasks = [
-      Object.keys(stacks).length ? actor.send('getGlyphs', { uid: this.uid, stacks }) : {},
-      icons.length ? actor.send('getImages', { icons }) : {},
-      patterns.length ? actor.send('getImages', { icons: patterns }) : {}
+      Object.keys(stacks).length ? resources.getGlyphs({ uid: this.uid, stacks }) : {},
+      icons.length ? resources.getImages({ icons }) : {},
+      patterns.length ? resources.getImages({ icons: patterns }) : {}
     ];
     const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
     const glyphAtlas = new GlyphAtlas(glyphMap);

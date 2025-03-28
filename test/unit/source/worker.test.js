@@ -31,23 +31,3 @@ test("isolates different instances' data", t => {
 
   t.assert.notEqual(worker.layerIndexes[0], worker.layerIndexes[1]);
 });
-
-test('worker source messages dispatched to the correct map instance', async t => {
-  const worker = new Worker(_self);
-
-  worker.actor.send = function (type, data, mapId) {
-    t.assert.equal(type, 'main thread task');
-    t.assert.equal(mapId, 999);
-    t.assert.deepEqual(data, { type: 'test' });
-  };
-
-  _self.registerWorkerSource('test', function (actor) {
-    this.loadTile = function () {
-      // we expect the map id to get appended in the call to the "real" actor.send()
-      actor.send('main thread task', { type: 'test' });
-      return Promise.resolve();
-    };
-  });
-
-  await worker.loadTile(999, { type: 'test' });
-});

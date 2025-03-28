@@ -46,7 +46,7 @@ function loadGeoJSONTile(params) {
  * This class is designed to be easily reused to support custom source types
  * for data formats that can be parsed/converted into an in-memory GeoJSON
  * representation.  To do so, create it with
- * `new GeoJSONWorkerSource(actor, layerIndex, customLoadGeoJSONFunction)`.
+ * `new GeoJSONWorkerSource(resources, layerIndex, customLoadGeoJSONFunction)`.
  * For a full example, see [mapbox-gl-topojson](https://github.com/developmentseed/mapbox-gl-topojson).
  *
  */
@@ -56,8 +56,8 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * GeoJSON based on parameters passed from the main-thread Source.
    * See {@link GeoJSONWorkerSource#loadGeoJSON}.
    */
-  constructor(actor, layerIndex, loadGeoJSON) {
-    super(actor, layerIndex, loadGeoJSONTile);
+  constructor(resources, layerIndex, loadGeoJSON) {
+    super(resources, layerIndex, loadGeoJSONTile);
     if (loadGeoJSON) {
       this.loadGeoJSON = loadGeoJSON;
     }
