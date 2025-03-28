@@ -32,7 +32,7 @@ class Style extends Evented {
     this.map = map;
     this.dispatcher = dispatcher(getWorkerPool(), this);
     this.imageManager = new ImageManager();
-    this.glyphManager = new GlyphManager(options.localIdeographFontFamily);
+    this.glyphManager = new GlyphManager();
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
 
