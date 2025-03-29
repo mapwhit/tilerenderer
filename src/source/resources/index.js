@@ -1,9 +1,12 @@
 const makeGlyphs = require('./glyphs');
+const makeImages = require('./images');
 
 module.exports = { resources };
 
 function resources(actor, mapId) {
   const glyphs = makeGlyphs({ actor, mapId });
+  const images = makeImages({ actor, mapId });
+
   return {
     getGlyphs,
     getImages
@@ -14,6 +17,6 @@ function resources(actor, mapId) {
   }
 
   function getImages(params) {
-    return actor.send('getImages', params, mapId);
+    return images.getImages(params);
   }
 }
