@@ -10,6 +10,7 @@ module.exports = {
   Point: require('@mapbox/point-geometry'),
   Evented: require('./util/evented').Evented,
   config: require('./util/config'),
+  expression: require('./style-spec/expression'),
 
   get workerCount() {
     return this.config.WORKER_COUNT;
