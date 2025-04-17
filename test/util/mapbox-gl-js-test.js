@@ -1,5 +1,3 @@
-require('./mapbox-gl-js-test/glsl-loader');
-
 const test = require('node:test');
 const sinon = require('sinon');
 
