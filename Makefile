@@ -37,9 +37,14 @@ build/min/src/shaders/%.glsl.txt: src/shaders/%.glsl  | $$(@D)/.dir meta/node_mo
 		--ext=.txt \
 		$<
 
+%.glsl.js: %.glsl.txt
+	printf "module.exports=String.raw\`" > $@
+	cat $< >> $@
+	echo "\`" >> $@
+
 PREBUILD = \
 	build/min/package.json \
-	$(GLSL:%.glsl=build/min/%.glsl.txt)
+	$(GLSL:%.glsl=build/min/%.glsl.js)
 
 prebuild: $(PREBUILD)
 .PHONY: prebuild
