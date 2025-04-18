@@ -9,7 +9,6 @@ const Style = require('../style/style');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const Painter = require('../render/painter');
 const Transform = require('../geo/transform');
-const bindHandlers = require('./bind_handlers');
 const Camera = require('./camera');
 const LngLat = require('../geo/lng_lat');
 const LngLatBounds = require('../geo/lng_lat_bounds');
@@ -199,7 +198,7 @@ class Map extends Camera {
       window.addEventListener('resize', this._onWindowResize, false);
     }
 
-    bindHandlers(this, options);
+    options.mapGestures?.(this, options);
 
     this.jumpTo({
       center: options.center,
