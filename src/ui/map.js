@@ -129,6 +129,8 @@ const defaultOptions = {
  * @see [Display a map](https://www.mapbox.com/mapbox-gl-js/examples/)
  */
 class Map extends Camera {
+  #mapGestures;
+
   constructor(options) {
     options = Object.assign({}, defaultOptions, options);
 
@@ -198,7 +200,7 @@ class Map extends Camera {
       window.addEventListener('resize', this._onWindowResize, false);
     }
 
-    options.mapGestures?.(this, options);
+    this.#mapGestures = options.mapGestures?.(this, options);
 
     this.jumpTo({
       center: options.center,
@@ -460,27 +462,21 @@ class Map extends Camera {
    * Returns true if the map is panning, zooming, rotating, or pitching due to a camera animation or user gesture.
    */
   isMoving() {
-    return (
-      this._moving ||
-      this.dragPan.isActive() ||
-      this.dragRotate.isActive() ||
-      this.touchZoomRotate.isActive() ||
-      this.scrollZoom.isActive()
-    );
+    return !!(this._moving || this.#mapGestures?.isMoving());
   }
 
   /**
    * Returns true if the map is zooming due to a camera animation or user gesture.
    */
   isZooming() {
-    return this._zooming || this.touchZoomRotate.isActive() || this.scrollZoom.isZooming();
+    return !!(this._zooming || this.#mapGestures?.isZooming());
   }
 
   /**
    * Returns true if the map is rotating due to a camera animation or user gesture.
    */
   isRotating() {
-    return this._rotating || this.touchZoomRotate.isActive() || this.dragRotate.isActive();
+    return !!(this._rotating || this.#mapGestures?.isRotating());
   }
 
   /**
