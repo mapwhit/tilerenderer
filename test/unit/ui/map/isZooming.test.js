@@ -1,6 +1,5 @@
 const { test } = require('../../../util/mapbox-gl-js-test');
 const _window = require('../../../util/window');
-const browser = require('../../../../src/util/browser');
 const Map = require('../../../../src/ui/map');
 const DOM = require('../../../../src/util/dom');
 const simulate = require('../../../util/mapbox-gl-js-test/simulate_interaction');
