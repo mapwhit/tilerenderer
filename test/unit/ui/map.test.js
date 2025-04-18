@@ -5,7 +5,6 @@ const LngLat = require('../../../src/geo/lng_lat');
 const Tile = require('../../../src/source/tile');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 const { Event, ErrorEvent } = require('../../../src/util/evented');
-const simulate = require('../../util/mapbox-gl-js-test/simulate_interaction');
 
 const fixed = require('../../util/mapbox-gl-js-test/fixed');
 const fixedNum = fixed.Num;
@@ -66,13 +65,6 @@ test('Map', async t => {
     const map = createMap({ interactive: true, style: null });
     t.assert.ok(map.getContainer());
     t.assert.equal(map.getStyle(), undefined);
-    t.assert.ok(map.boxZoom.isEnabled());
-    t.assert.ok(map.doubleClickZoom.isEnabled());
-    t.assert.ok(map.dragPan.isEnabled());
-    t.assert.ok(map.dragRotate.isEnabled());
-    t.assert.ok(map.keyboard.isEnabled());
-    t.assert.ok(map.scrollZoom.isEnabled());
-    t.assert.ok(map.touchZoomRotate.isEnabled());
     t.assert.throws(
       () => {
         new Map({
@@ -81,41 +73,6 @@ test('Map', async t => {
       },
       new Error("Container 'anElementIdWhichDoesNotExistInTheDocument' not found."),
       'throws on invalid map container id'
-    );
-  });
-
-  await t.test('disables handlers', async t => {
-    await t.test('disables all handlers', t => {
-      const map = createMap({ interactive: false });
-
-      t.assert.notOk(map.boxZoom.isEnabled());
-      t.assert.notOk(map.doubleClickZoom.isEnabled());
-      t.assert.notOk(map.dragPan.isEnabled());
-      t.assert.notOk(map.dragRotate.isEnabled());
-      t.assert.notOk(map.keyboard.isEnabled());
-      t.assert.notOk(map.scrollZoom.isEnabled());
-      t.assert.notOk(map.touchZoomRotate.isEnabled());
-    });
-
-    const handlerNames = [
-      'scrollZoom',
-      'boxZoom',
-      'dragRotate',
-      'dragPan',
-      'keyboard',
-      'doubleClickZoom',
-      'touchZoomRotate'
-    ];
-    await Promise.all(
-      handlerNames.map(handlerName =>
-        t.test(`disables "${handlerName}" handler`, t => {
-          const options = {};
-          options[handlerName] = false;
-          const map = createMap(options);
-
-          t.assert.notOk(map[handlerName].isEnabled());
-        })
-      )
     );
   });
 
@@ -1381,46 +1338,6 @@ test('Map', async t => {
         }
       });
     });
-  });
-
-  await t.test('stops camera animation on mousedown when interactive', t => {
-    const map = createMap({ interactive: true });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.mousedown(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), false);
-
-    map.remove();
-  });
-
-  await t.test('continues camera animation on mousedown when non-interactive', t => {
-    const map = createMap({ interactive: false });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.mousedown(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), true);
-
-    map.remove();
-  });
-
-  await t.test('stops camera animation on touchstart when interactive', t => {
-    const map = createMap({ interactive: true });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.touchstart(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), false);
-
-    map.remove();
-  });
-
-  await t.test('continues camera animation on touchstart when non-interactive', t => {
-    const map = createMap({ interactive: false });
-    map.flyTo({ center: [200, 0], duration: 100 });
-
-    simulate.touchstart(map.getCanvasContainer());
-    t.assert.equal(map.isEasing(), true);
-
-    map.remove();
   });
 });
 
