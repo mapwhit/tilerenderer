@@ -4,7 +4,6 @@
     "canvas": "~3",
     "gl": "~8",
     "jsdom": "~26",
-    "pirates": "~4",
     "pngjs": "^7.0.0",
     "sinon": "~19"
   },
