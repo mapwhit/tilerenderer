@@ -20,7 +20,7 @@ function loadVectorTile(params) {
  * This class is designed to be easily reused to support custom source types
  * for data formats that can be parsed/converted into an in-memory VectorTile
  * representation.  To do so, create it with
- * `new VectorTileWorkerSource(actor, styleLayers, customLoadVectorDataFunction)`.
+ * `new VectorTileWorkerSource(resources, styleLayers, customLoadVectorDataFunction)`.
  *
  * @private
  */
@@ -31,8 +31,8 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(actor, layerIndex, loadVectorData = loadVectorTile) {
-    this.actor = actor;
+  constructor(resources, layerIndex, loadVectorData = loadVectorTile) {
+    this.resources = resources;
     this.layerIndex = layerIndex;
     this.loadVectorData = loadVectorData;
   }
@@ -50,7 +50,7 @@ class VectorTileWorkerSource {
     const { vectorTile, rawData } = response;
     const workerTile = new WorkerTile(params);
     workerTile.vectorTile = vectorTile;
-    const result = await workerTile.parse(vectorTile, this.layerIndex, this.actor);
+    const result = await workerTile.parse(vectorTile, this.layerIndex, this.resources);
     if (rawData) {
       result.rawTileData = rawData;
     }

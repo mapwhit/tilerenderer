@@ -4,11 +4,11 @@ const StyleLayerIndex = require('../../../src/style/style_layer_index');
 const WorkerTile = require('../../../src/source/worker_tile');
 
 test('VectorTileWorkerSource#constructor', t => {
-  const actor = {};
+  const resources = {};
   const layerIndex = new StyleLayerIndex();
-  const source = new VectorTileWorkerSource(actor, layerIndex);
+  const source = new VectorTileWorkerSource(resources, layerIndex);
 
-  t.assert.equal(source.actor, actor);
+  t.assert.equal(source.resources, resources);
   t.assert.equal(source.layerIndex, layerIndex);
 });
 

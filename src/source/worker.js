@@ -8,8 +8,11 @@ const GeoJSONWorkerSource = require('./geojson_worker_source');
 const assert = require('assert');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
 const DEMData = require('../data/dem_data');
+const { resources } = require('./resources');
 
 class Worker {
+  #resources = {};
+
   constructor(self) {
     this.self = self;
     this.actor = new Actor(self, this);
@@ -85,10 +88,8 @@ class Worker {
     return (this.layerIndexes[mapId] ??= new StyleLayerIndex());
   }
 
-  getActor(mapId) {
-    return (this.actors[mapId] ??= {
-      send: (type, data) => this.actor.send(type, data, mapId)
-    });
+  getResources(mapId) {
+    return (this.#resources[mapId] ??= resources(this.actor, mapId));
   }
 
   getWorkerSource(mapId, type, source) {
@@ -100,7 +101,7 @@ class Worker {
 
   createWorkerSource(type, mapId) {
     const WorkerSource = this.workerSourceTypes[type];
-    return new WorkerSource(this.getActor(mapId), this.getLayerIndex(mapId));
+    return new WorkerSource(this.getResources(mapId), this.getLayerIndex(mapId));
   }
 }
 

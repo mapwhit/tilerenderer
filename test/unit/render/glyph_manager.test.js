@@ -1,55 +1,45 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const parseGlyphPBF = require('../../../src/style/parse_glyph_pbf');
 const GlyphManager = require('../../../src/render/glyph_manager');
-const fs = require('fs');
 
-const glyphs = {};
-for (const glyph of parseGlyphPBF(fs.readFileSync('./test/fixtures/0-255.pbf'))) {
-  glyphs[glyph.id] = glyph;
-}
+test('GlyphManager', async t => {
+  let glyphManager;
+  let mockLoader;
 
-test('GlyphManager requests 0-255 PBF', async t => {
-  function glyphLoader() {}
-
-  t.stub(GlyphManager, 'loadGlyphRange').callsFake((stack, range, load) => {
-    t.assert.equal(stack, 'Arial Unicode MS');
-    t.assert.equal(range, 0);
-    t.assert.equal(load, glyphLoader);
-    return Promise.resolve(glyphs);
+  t.beforeEach(t => {
+    mockLoader = t.stub();
+    glyphManager = new GlyphManager();
+    glyphManager.setGlyphsLoader(mockLoader);
   });
 
-  const manager = new GlyphManager();
-  manager.setGlyphsLoader(glyphLoader);
+  await t.test('should load glyph range', async () => {
+    const stack = 'Arial';
+    const range = 0;
+    const expectedResponse = [1, 2, 3];
 
-  const result = await manager.getGlyphs({ 'Arial Unicode MS': [55] });
-  t.assert.equal(result['Arial Unicode MS']['55'].metrics.advance, 12);
-});
+    mockLoader.withArgs(stack, range).resolves(expectedResponse);
 
-test('GlyphManager requests remote CJK PBF', async t => {
-  t.stub(GlyphManager, 'loadGlyphRange').callsFake(() => {
-    return Promise.resolve(glyphs);
+    const response = await glyphManager.loadGlyphRange(stack, range);
+
+    t.assert.deepStrictEqual(response, expectedResponse);
+    t.assert.strictEqual(mockLoader.callCount, 1);
+    t.assert.strictEqual(mockLoader.firstCall.args[0], stack);
+    t.assert.strictEqual(mockLoader.firstCall.args[1], range);
   });
 
-  const manager = new GlyphManager();
-  manager.setGlyphsLoader(() => {});
+  await t.test('should cache loaded glyph ranges', async () => {
+    const stack = 'Arial';
+    const range = 0;
+    const expectedResponse = [1, 2, 3];
 
-  const result = await manager.getGlyphs({ 'Arial Unicode MS': [0x5e73] });
-  t.assert.equal(result['Arial Unicode MS'][0x5e73], null, 'The fixture returns a PBF without the glyph we requested');
-});
+    mockLoader.withArgs(stack, range).resolves(expectedResponse);
 
-test('GlyphManager generates CJK PBF locally', async t => {
-  t.stub(GlyphManager, 'TinySDF').value(
-    class {
-      // Return empty 30x30 bitmap (24 fontsize + 3 * 2 buffer)
-      draw() {
-        return new Uint8ClampedArray(900);
-      }
-    }
-  );
+    const response1 = await glyphManager.loadGlyphRange(stack, range);
+    const response2 = await glyphManager.loadGlyphRange(stack, range);
 
-  const manager = new GlyphManager('sans-serif');
-  manager.setGlyphsLoader(() => {});
+    t.assert.deepStrictEqual(response1, expectedResponse);
+    t.assert.deepStrictEqual(response2, expectedResponse);
+    t.assert.strictEqual(mockLoader.callCount, 1);
 
-  const glyphs = await manager.getGlyphs({ 'Arial Unicode MS': [0x5e73] });
-  t.assert.equal(glyphs['Arial Unicode MS'][0x5e73].metrics.advance, 24);
+    t.assert.notEqual(response1, response2, 'should be cloned for each call');
+  });
 });
