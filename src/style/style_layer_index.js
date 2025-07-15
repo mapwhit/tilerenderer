@@ -1,6 +1,5 @@
 const createStyleLayer = require('./create_style_layer');
 
-const { values } = require('../util/object');
 const featureFilter = require('../style-spec/feature_filter');
 const groupByLayout = require('../style-spec/group_by_layout');
 
@@ -34,7 +33,7 @@ class StyleLayerIndex {
 
     this.familiesBySource = {};
 
-    const groups = groupByLayout(values(this.#layerConfigs));
+    const groups = groupByLayout(Object.values(this.#layerConfigs));
 
     for (const layerConfigs of groups) {
       const layers = layerConfigs.map(layerConfig => this.#layers[layerConfig.id]);
