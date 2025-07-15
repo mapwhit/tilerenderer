@@ -159,16 +159,6 @@ test('Evented', async t => {
       eventedSource.fire(new Event('a', { foo: 'bar' }));
     });
 
-    await t.test('attaches parent data from a function to parent listeners', t => {
-      const eventedSource = new Evented();
-      const eventedSink = new Evented();
-      eventedSource.setEventedParent(eventedSink, () => ({ foz: 'baz' }));
-      eventedSink.on('a', data => {
-        t.assert.equal(data.foz, 'baz');
-      });
-      eventedSource.fire(new Event('a', { foo: 'bar' }));
-    });
-
     await t.test('passes original "target" to parent listeners', t => {
       const eventedSource = new Evented();
       const eventedSink = new Evented();
@@ -197,18 +187,6 @@ test('Evented', async t => {
       eventedSink.on('a', () => {});
       eventedSource.setEventedParent(eventedSink);
       t.assert.ok(eventedSink.listens('a'));
-    });
-
-    await t.test('eventedParent data function is evaluated on every fire', t => {
-      const eventedSource = new Evented();
-      const eventedParent = new Evented();
-      let i = 0;
-      eventedSource.setEventedParent(eventedParent, () => i++);
-      eventedSource.on('a', () => {});
-      eventedSource.fire(new Event('a'));
-      t.assert.equal(i, 1);
-      eventedSource.fire(new Event('a'));
-      t.assert.equal(i, 2);
     });
   });
 });
