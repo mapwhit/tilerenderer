@@ -680,6 +680,17 @@ class Map extends Camera {
   }
 
   /**
+   * Returns the map's Mapbox style object, which can be used to recreate the map's style.
+   *
+   * @returns {Object} The map's style object.
+   */
+  getStyle() {
+    if (this.style) {
+      return { layers: this.style.getLayers() };
+    }
+  }
+
+  /**
    * Returns a Boolean indicating whether the map's style is fully loaded.
    *
    * @returns {boolean} A Boolean indicating whether the style is fully loaded.
