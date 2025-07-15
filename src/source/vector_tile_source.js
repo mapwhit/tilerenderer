@@ -58,10 +58,6 @@ class VectorTileSource extends Evented {
     this.load();
   }
 
-  serialize() {
-    return Object.assign({}, this._options);
-  }
-
   async loadTile(tile) {
     if (tile.workerID != null && tile.state === 'loading') {
       tile.reloadPromise ??= Promise.withResolvers();

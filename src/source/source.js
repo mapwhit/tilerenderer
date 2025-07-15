@@ -56,7 +56,7 @@ function create(id, specification, dispatcher, eventedParent) {
     throw new Error(`Expected Source id to be ${id} instead of ${source.id}`);
   }
 
-  bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
+  bindAll(['load', 'abort', 'unload', 'prepare'], source);
   return source;
 }
 
