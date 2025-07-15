@@ -85,8 +85,7 @@ class Evented {
 
       const parent = this.#parent;
       if (parent) {
-        const data = typeof this.#parentData === 'function' ? this.#parentData() : this.#parentData;
-        Object.assign(event, data);
+        Object.assign(event, this.#parentData);
         parent.fire(event);
       }
     } else if (event instanceof ErrorEvent) {

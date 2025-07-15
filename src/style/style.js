@@ -310,11 +310,9 @@ class Style extends Evented {
 
     const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, this.dispatcher));
     sourceCache.style = this;
-    sourceCache.setEventedParent(this, () => ({
-      isSourceLoaded: this.loaded(),
-      source: sourceCache.serialize(),
+    sourceCache.setEventedParent(this, {
       sourceId: id
-    }));
+    });
 
     sourceCache.onAdd(this.map);
     this._changed = true;
@@ -507,6 +505,10 @@ class Style extends Evented {
     return this._layers[id];
   }
 
+  getLayers() {
+    return this._order.map(id => this._layers[id].serialize());
+  }
+
   setLayerZoomRange(layerId, minzoom, maxzoom) {
     this._checkLoaded();
 
@@ -662,27 +664,6 @@ class Style extends Evented {
 
   getTransition() {
     return Object.assign({ duration: 300, delay: 0 }, this.stylesheet?.transition);
-  }
-
-  serialize() {
-    return filterObject(
-      {
-        version: this.stylesheet.version,
-        name: this.stylesheet.name,
-        metadata: this.stylesheet.metadata,
-        light: this.stylesheet.light,
-        center: this.stylesheet.center,
-        zoom: this.stylesheet.zoom,
-        bearing: this.stylesheet.bearing,
-        pitch: this.stylesheet.pitch,
-        sprite: this.stylesheet.sprite,
-        glyphs: this.stylesheet.glyphs,
-        transition: this.stylesheet.transition,
-        sources: mapObject(this.sourceCaches, source => source.serialize()),
-        layers: this._order.map(id => this._layers[id].serialize())
-      },
-      value => value !== undefined
-    );
   }
 
   _updateLayer(layer) {

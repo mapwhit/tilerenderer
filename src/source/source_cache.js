@@ -52,7 +52,6 @@ class SourceCache extends Evented {
 
     this._tiles = {};
     this._cache = new TileCache(0, this._unloadTile.bind(this));
-    this._maxTileCacheSize = null;
 
     this._isIdRenderable = this._isIdRenderable.bind(this);
     this._isIdRenderableForSymbols = this._isIdRenderableForSymbols.bind(this);
@@ -63,7 +62,6 @@ class SourceCache extends Evented {
 
   onAdd(map) {
     this.map = map;
-    this._maxTileCacheSize = map ? map._maxTileCacheSize : null;
     if (this._source?.onAdd) {
       this._source.onAdd(map);
     }
@@ -120,10 +118,6 @@ class SourceCache extends Evented {
 
   _abortTile(tile) {
     return this._source.abortTile?.(tile);
-  }
-
-  serialize() {
-    return this._source.serialize();
   }
 
   prepare(context) {
@@ -341,8 +335,7 @@ class SourceCache extends Evented {
   }
 
   /**
-   * Resizes the tile cache based on the current viewport's size
-   * or the maxTileCacheSize option passed during map creation
+   * Resizes the tile cache based on the current viewport's size.
    *
    * Larger viewports use more tiles and need larger caches. Larger viewports
    * are more likely to be found on devices with more memory and on pages where
@@ -355,12 +348,7 @@ class SourceCache extends Evented {
     const commonZoomRange = 5;
 
     const viewDependentMaxSize = Math.floor(approxTilesInView * commonZoomRange);
-    const maxSize =
-      typeof this._maxTileCacheSize === 'number'
-        ? Math.min(this._maxTileCacheSize, viewDependentMaxSize)
-        : viewDependentMaxSize;
-
-    this._cache.setMaxSize(maxSize);
+    this._cache.setMaxSize(viewDependentMaxSize);
   }
 
   handleWrapJump(lng) {

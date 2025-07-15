@@ -73,7 +73,6 @@ class GeoJSONSource extends Evented {
     this.setEventedParent(eventedParent);
 
     this._data = options.data;
-    this._options = Object.assign({}, options);
 
     if (options.maxzoom !== undefined) this.maxzoom = options.maxzoom;
     if (options.type) this.type = options.type;
@@ -206,13 +205,6 @@ class GeoJSONSource extends Evented {
   onRemove() {
     this._removed = true;
     return this.dispatcher.send('removeSource', { type: this.type, source: this.id }, this.workerID);
-  }
-
-  serialize() {
-    return Object.assign({}, this._options, {
-      type: this.type,
-      data: this._data
-    });
   }
 
   hasTransition() {
