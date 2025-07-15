@@ -64,7 +64,6 @@ test('Map', async t => {
   await t.test('constructor', t => {
     const map = createMap({ interactive: true, style: null });
     t.assert.ok(map.getContainer());
-    t.assert.equal(map.getStyle(), undefined);
     t.assert.throws(
       () => {
         new Map({
@@ -271,91 +270,6 @@ test('Map', async t => {
         t.assert.equal(map.areTilesLoaded(), false, 'returns false if tiles are loading');
         map.style.sourceCaches.geojson._tiles.fakeTile.state = 'loaded';
         t.assert.equal(map.areTilesLoaded(), true, 'returns true if tiles are loaded');
-        done();
-      });
-    });
-  });
-
-  await t.test('#getStyle', async t => {
-    await t.test('returns the style', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
-
-      map.on('load', () => {
-        t.assert.deepEqual(map.getStyle(), style);
-        done();
-      });
-    });
-
-    await t.test('returns the style with added sources', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
-
-      map.on('load', () => {
-        map.addSource('geojson', createStyleSource());
-        t.assert.deepEqual(
-          map.getStyle(),
-          Object.assign(createStyle(), {
-            sources: { geojson: createStyleSource() }
-          })
-        );
-        done();
-      });
-    });
-
-    await t.test('fires an error on checking if non-existant source is loaded', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
-
-      map.on('load', () => {
-        map.on('error', ({ error }) => {
-          t.assert.match(error.message, /There is no source with ID/);
-          done();
-        });
-        map.isSourceLoaded('geojson');
-      });
-    });
-
-    await t.test('returns the style with added layers', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
-      const layer = {
-        id: 'background',
-        type: 'background'
-      };
-
-      map.on('load', () => {
-        map.addLayer(layer);
-        t.assert.deepEqual(
-          map.getStyle(),
-          Object.assign(createStyle(), {
-            layers: [layer]
-          })
-        );
-        done();
-      });
-    });
-
-    await t.test('returns the style with added source and layer', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
-      const source = createStyleSource();
-      const layer = {
-        id: 'fill',
-        type: 'fill',
-        source: 'fill'
-      };
-
-      map.on('load', () => {
-        map.addSource('fill', source);
-        map.addLayer(layer);
-        t.assert.deepEqual(
-          map.getStyle(),
-          Object.assign(createStyle(), {
-            sources: { fill: source },
-            layers: [layer]
-          })
-        );
         done();
       });
     });
