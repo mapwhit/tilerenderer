@@ -39,7 +39,9 @@ class SourceFeatureState {
     this.#stateChanges = {};
     if (Object.keys(changes).length === 0) return;
 
-    Object.values(tiles).forEach(tile => tile.setFeatureState(changes, painter));
+    for (const tile of tiles) {
+      tile.setFeatureState(changes, painter);
+    }
   }
 }
 
