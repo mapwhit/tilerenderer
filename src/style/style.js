@@ -584,6 +584,10 @@ class Style extends Evented {
     return this._layers[id];
   }
 
+  getLayers() {
+    return this._order.map(id => this._layers[id].serialize());
+  }
+
   setLayerZoomRange(layerId, minzoom, maxzoom) {
     this._checkLoaded();
 

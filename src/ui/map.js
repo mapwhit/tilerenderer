@@ -676,14 +676,22 @@ class Map extends Camera {
   }
 
   /**
-   * Returns the map's Mapbox style object, which can be used to recreate the map's style.
-   *
+   * @deprecated use map.getLayers instead
    * @returns {Object} The map's style object.
    */
   getStyle() {
     if (this.style) {
-      return this.style.serialize();
+      return { layers: this.style.getLayers() };
     }
+  }
+
+  /**
+   * Returns the map's style ordered layers
+   *
+   * @returns {Array} ordered list of style layers.
+   */
+  getLayers() {
+    return this.style?.getLayers();
   }
 
   /**
