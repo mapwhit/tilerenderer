@@ -7,7 +7,7 @@ const SymbolBucket = require('../data/bucket/symbol_bucket');
 const LineBucket = require('../data/bucket/line_bucket');
 const FillBucket = require('../data/bucket/fill_bucket');
 const FillExtrusionBucket = require('../data/bucket/fill_extrusion_bucket');
-const { mapObject, values } = require('../util/object');
+const { mapObject } = require('../util/object');
 const warn = require('../util/warn');
 const assert = require('assert');
 const ImageAtlas = require('../render/image_atlas');
@@ -136,7 +136,7 @@ class WorkerTile {
 
     this.status = 'done';
     return {
-      buckets: values(buckets).filter(b => !b.isEmpty()),
+      buckets: Object.values(buckets).filter(b => !b.isEmpty()),
       featureIndex,
       collisionBoxArray: this.collisionBoxArray,
       glyphAtlasImage: glyphAtlas.image,
