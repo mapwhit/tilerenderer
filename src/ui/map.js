@@ -52,8 +52,6 @@ const defaultOptions = {
 
   renderWorldCopies: true,
 
-  refreshExpiredTiles: true,
-
   transformRequest: null,
   fadeDuration: 300,
   crossSourceCollisions: true
