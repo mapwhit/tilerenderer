@@ -2,7 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const fs = require('fs');
 const path = require('path');
 const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapbox/vector-tile');
+const { VectorTile } = require('@mapwhit/vector-tile');
 const classifyRings = require('../../../src/util/classify_rings');
 
 // Load a fill feature from fixture tile.

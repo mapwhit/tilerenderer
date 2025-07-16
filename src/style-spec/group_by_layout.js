@@ -1,33 +1,20 @@
 const refProperties = require('./util/ref_properties');
 
 function stringify(obj) {
+  if (obj == null) return 'null';
   const type = typeof obj;
-  if (type === 'number' || type === 'boolean' || type === 'string' || obj === undefined || obj === null)
-    return JSON.stringify(obj);
+  if (type === 'number' || type === 'boolean' || type === 'string') return obj;
 
   if (Array.isArray(obj)) {
-    let str = '[';
-    for (const val of obj) {
-      str += `${stringify(val)},`;
-    }
-    return `${str}]`;
+    return '[' + obj.map(val => stringify(val)).join(',') + ']';
   }
 
   const keys = Object.keys(obj).sort();
-
-  let str = '{';
-  for (let i = 0; i < keys.length; i++) {
-    str += `${JSON.stringify(keys[i])}:${stringify(obj[keys[i]])},`;
-  }
-  return `${str}}`;
+  return '{' + keys.map(key => `${key}:${stringify(obj[key])}`).join(',') + '}';
 }
 
 function getKey(layer) {
-  let key = '';
-  for (const k of refProperties) {
-    key += `/${stringify(layer[k])}`;
-  }
-  return key;
+  return refProperties.map(k => stringify(layer[k])).join('/');
 }
 
 module.exports = groupByLayout;
@@ -49,20 +36,11 @@ module.exports = groupByLayout;
 function groupByLayout(layers) {
   const groups = {};
 
-  for (let i = 0; i < layers.length; i++) {
-    const k = getKey(layers[i]);
-    let group = groups[k];
-    if (!group) {
-      group = groups[k] = [];
-    }
-    group.push(layers[i]);
+  for (const l of layers) {
+    const k = getKey(l);
+    const group = (groups[k] ??= []);
+    group.push(l);
   }
 
-  const result = [];
-
-  for (const k in groups) {
-    result.push(groups[k]);
-  }
-
-  return result;
+  return Object.values(groups);
 }

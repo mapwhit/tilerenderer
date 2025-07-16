@@ -1,4 +1,4 @@
-const Queue = require('tinyqueue');
+const { default: Queue } = require('tinyqueue');
 
 const Point = require('@mapbox/point-geometry');
 const { distToSegmentSquared } = require('./intersection_tests');
@@ -34,7 +34,7 @@ module.exports = function (polygonRings, precision = 1, debug = false) {
   let h = cellSize / 2;
 
   // a priority queue of cells in order of their "potential" (max distance to polygon)
-  const cellQueue = new Queue(null, compareMax);
+  const cellQueue = new Queue(undefined, compareMax);
 
   if (cellSize === 0) return new Point(minX, minY);
 

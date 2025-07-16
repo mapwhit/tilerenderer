@@ -2,7 +2,7 @@ const rewind = require('@mapwhit/geojson-rewind');
 const GeoJSONWrapper = require('./geojson_wrapper');
 const vtpbf = require('@mapwhit/vt-pbf');
 const supercluster = require('supercluster');
-const geojsonvt = require('geojson-vt');
+const { default: geojsonvt } = require('geojson-vt');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
 function loadGeoJSONTile(params) {

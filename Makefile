@@ -64,24 +64,21 @@ DEPENDENCIES = meta/node_modules $(CURDIR)/node_modules
 
 dependencies: | $(DEPENDENCIES)
 
-ESBUILD_OPTIONS = --define:global=globalThis --define:DEBUG=$(DEBUG_FLAG)
+define ESBUILD_OPTIONS
+	--define:global=globalThis \
+	--define:DEBUG=$(DEBUG_FLAG) \
+	--tree-shaking=true \
+	--minify \
+	--target=es2020 \
+	--metafile=${@:.js=.meta.json} \
+	--outfile=$@
+endef
 
 build/$(PROJECT).js: $(SRC) | dependencies
-	esbuild --bundle src/index.js \
-		$(ESBUILD_OPTIONS) \
-		--global-name=mapboxgl \
-		--minify \
-		--target=es2020 \
-		--metafile=${@:.js=.meta.json} \
-		--outfile=$@
+	esbuild --bundle src/index.js --global-name=mapboxgl $(ESBUILD_OPTIONS)
 
 build/$(PROJECT)-worker.js: $(SRC) | dependencies
-	esbuild --bundle src/source/worker.js  \
-		$(ESBUILD_OPTIONS) \
-		--minify \
-		--target=es2020 \
-		--metafile=${@:.js=.meta.json} \
-		--outfile=$@
+	esbuild --bundle src/source/worker.js $(ESBUILD_OPTIONS)
 
 lint: | meta/node_modules
 	$(NODE_BIN)/biome ci

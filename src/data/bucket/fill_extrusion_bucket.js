@@ -5,10 +5,10 @@ const SegmentVector = require('../segment');
 const { ProgramConfigurationSet } = require('../program_configuration');
 const { TriangleIndexArray } = require('../index_array_type');
 const EXTENT = require('../extent');
-const earcut = require('earcut');
+const { default: earcut } = require('earcut');
 const {
   VectorTileFeature: { types: vectorTileFeatureTypes }
-} = require('@mapbox/vector-tile');
+} = require('@mapwhit/vector-tile');
 const classifyRings = require('../../util/classify_rings');
 const assert = require('assert');
 const EARCUT_MAX_RINGS = 500;
