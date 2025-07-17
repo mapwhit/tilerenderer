@@ -21,30 +21,32 @@ const SourceFeatureState = require('./source_state');
  * @private
  */
 class SourceCache extends Evented {
+  // this.#sourceLoaded signifies that the TileJSON is loaded if applicable.
+  // if the source type does not come with a TileJSON, the flag signifies the
+  // source data has loaded (i.e geojson has been tiled on the worker and is ready)
+  #sourceLoaded = false;
+  #sourceErrored = false;
+  #paused = false;
+  #shouldReloadOnResume = false;
+
   constructor(id, options, dispatcher) {
     super();
     this.id = id;
     this.dispatcher = dispatcher;
 
     this.on('data', e => {
-      // this._sourceLoaded signifies that the TileJSON is loaded if applicable.
-      // if the source type does not come with a TileJSON, the flag signifies the
-      // source data has loaded (i.e geojson has been tiled on the worker and is ready)
-      if (e.dataType === 'source' && e.sourceDataType === 'metadata') this._sourceLoaded = true;
+      if (e.dataType !== 'source') return;
+      if (e.sourceDataType === 'metadata') this.#sourceLoaded = true;
 
       // for sources with mutable data, this event fires when the underlying data
       // to a source is changed. (i.e. GeoJSONSource#setData and ImageSource#serCoordinates)
-      if (this._sourceLoaded && !this._paused && e.dataType === 'source' && e.sourceDataType === 'content') {
+      if (this.#sourceLoaded && !this.#paused && e.sourceDataType === 'content') {
         this.reload();
-        if (this.transform) {
-          this.update(this.transform);
-        }
+        if (this.transform) this.update(this.transform);
       }
     });
 
-    this.on('error', () => {
-      this._sourceErrored = true;
-    });
+    this.on('error', () => (this.#sourceErrored = true));
 
     this._source = createSource(id, options, dispatcher, this);
 
@@ -69,12 +71,10 @@ class SourceCache extends Evented {
    * an additional API call is received.
    */
   loaded() {
-    if (this._sourceErrored) {
-      return true;
-    }
-    if (!this._sourceLoaded) {
-      return false;
-    }
+    if (this.#sourceErrored) return true;
+
+    if (!this.#sourceLoaded) return false;
+
     for (const tile of this._tiles.values()) {
       if (tile.state !== 'loaded' && tile.state !== 'errored') return false;
     }
@@ -86,14 +86,14 @@ class SourceCache extends Evented {
   }
 
   pause() {
-    this._paused = true;
+    this.#paused = true;
   }
 
   resume() {
-    if (!this._paused) return;
-    const shouldReload = this._shouldReloadOnResume;
-    this._paused = false;
-    this._shouldReloadOnResume = false;
+    if (!this.#paused) return;
+    const shouldReload = this.#shouldReloadOnResume;
+    this.#paused = false;
+    this.#shouldReloadOnResume = false;
     if (shouldReload) this.reload();
     if (this.transform) this.update(this.transform);
   }
@@ -155,8 +155,8 @@ class SourceCache extends Evented {
   }
 
   reload() {
-    if (this._paused) {
-      this._shouldReloadOnResume = true;
+    if (this.#paused) {
+      this.#shouldReloadOnResume = true;
       return;
     }
 
@@ -371,7 +371,7 @@ class SourceCache extends Evented {
    */
   update(transform) {
     this.transform = transform;
-    if (!this._sourceLoaded || this._paused) {
+    if (!this.#sourceLoaded || this.#paused) {
       return;
     }
 
@@ -617,8 +617,8 @@ class SourceCache extends Evented {
    * Remove all tiles from this pyramid
    */
   clearTiles() {
-    this._shouldReloadOnResume = false;
-    this._paused = false;
+    this.#shouldReloadOnResume = false;
+    this.#paused = false;
 
     for (const id of this._tiles.keys()) this._removeTile(id);
 
