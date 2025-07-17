@@ -30,7 +30,7 @@ class Tile {
     this.uid = uniqueId();
     this.uses = 0;
     this.tileSize = size;
-    this.buckets = {};
+    this.buckets = new Map();
     this.queryPadding = 0;
     this.hasSymbolBuckets = false;
 
@@ -88,22 +88,17 @@ class Tile {
     this.buckets = deserializeBucket(data.buckets, painter.style);
 
     this.hasSymbolBuckets = false;
-    const buckets = Object.values(this.buckets);
-    for (const bucket of buckets) {
+    this.queryPadding = 0;
+
+    for (const [id, bucket] of this.buckets) {
+      const padding = painter.style.getLayer(id).queryRadius(bucket);
+      if (padding > this.queryPadding) this.queryPadding = padding;
       if (bucket instanceof SymbolBucket) {
         this.hasSymbolBuckets = true;
         if (justReloaded) {
           bucket.justReloaded = true;
-        } else {
-          break;
         }
       }
-    }
-
-    this.queryPadding = 0;
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
-      this.queryPadding = Math.max(this.queryPadding, painter.style.getLayer(id).queryRadius(bucket));
     }
 
     if (data.imageAtlas) {
@@ -120,10 +115,10 @@ class Tile {
    * @private
    */
   unloadVectorData() {
-    for (const bucket of Object.values(this.buckets)) {
+    for (const bucket of this.buckets.values()) {
       bucket.destroy();
     }
-    this.buckets = {};
+    this.buckets.clear();
 
     this.imageAtlasTexture?.destroy();
     if (this.imageAtlas) {
@@ -141,15 +136,12 @@ class Tile {
   }
 
   getBucket(layer) {
-    return this.buckets[layer.id];
+    return this.buckets.get(layer.id);
   }
 
   upload(context) {
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
-      if (bucket.uploadPending()) {
-        bucket.upload(context);
-      }
+    for (const bucket of this.buckets.values()) {
+      if (bucket.uploadPending()) bucket.upload(context);
     }
 
     const gl = context.gl;
@@ -254,14 +246,10 @@ class Tile {
     // draw for this tile.
     this.segments.prepareSegment(0, maskedBoundsArray, indexArray);
 
-    const maskArray = Object.keys(mask);
-    for (let i = 0; i < maskArray.length; i++) {
-      const maskCoord = mask[maskArray[i]];
-      const vertexExtent = EXTENT >> maskCoord.z;
-      const tlVertex = new Point(maskCoord.x * vertexExtent, maskCoord.y * vertexExtent);
+    for (const { x, y, z } of Object.values(mask)) {
+      const vertexExtent = EXTENT >> z;
+      const tlVertex = new Point(x * vertexExtent, y * vertexExtent);
       const brVertex = new Point(tlVertex.x + vertexExtent, tlVertex.y + vertexExtent);
-
-      // not sure why flow is complaining here because it doesn't complain at L401
       const segment = this.segments.prepareSegment(4, maskedBoundsArray, indexArray);
 
       maskedBoundsArray.emplaceBack(tlVertex.x, tlVertex.y, tlVertex.x, tlVertex.y);
@@ -298,8 +286,7 @@ class Tile {
 
     const vtLayers = this.latestFeatureIndex.loadVTLayers();
 
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
+    for (const [id, bucket] of this.buckets) {
       // Buckets are grouped by common source-layer
       const sourceLayerId = bucket.layers[0]['sourceLayer'] || '_geojsonTileLayer';
       const sourceLayer = vtLayers[sourceLayerId];
