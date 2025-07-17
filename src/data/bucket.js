@@ -23,7 +23,7 @@
  */
 
 function deserialize(input, style) {
-  const output = {};
+  const output = new Map();
 
   // Guard against the case where the map's style has been set to null while
   // this bucket has been parsing.
@@ -41,7 +41,7 @@ function deserialize(input, style) {
     bucket.layers = layers;
     bucket.stateDependentLayers = layers.filter(l => l.isStateDependent());
     for (const layer of layers) {
-      output[layer.id] = bucket;
+      output.set(layer.id, bucket);
     }
   }
 
