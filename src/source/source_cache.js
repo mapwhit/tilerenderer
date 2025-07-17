@@ -644,29 +644,27 @@ class SourceCache extends Evented {
     const queryGeometry = pointQueryGeometry.map(p => transform.pointCoordinate(p));
     const cameraQueryGeometry = cameraPointQueryGeometry.map(p => transform.pointCoordinate(p));
 
-    const ids = this.getIds();
-
     let minX = Number.POSITIVE_INFINITY;
     let minY = Number.POSITIVE_INFINITY;
     let maxX = Number.NEGATIVE_INFINITY;
     let maxY = Number.NEGATIVE_INFINITY;
-    const z = queryGeometry[0].zoom;
 
-    for (const p of cameraQueryGeometry) {
-      minX = Math.min(minX, p.column);
-      minY = Math.min(minY, p.row);
-      maxX = Math.max(maxX, p.column);
-      maxY = Math.max(maxY, p.row);
+    for (const { column, row } of cameraQueryGeometry) {
+      if (column < minX) minX = column;
+      else if (column > maxX) maxX = column;
+      if (row < minY) minY = row;
+      else if (row > maxY) maxY = row;
     }
 
-    for (const id of ids) {
+    const z = queryGeometry[0].zoom;
+    for (const id of this.getIds()) {
       const tile = this._tiles.get(id);
       if (tile.holdingForFade()) {
         // Tiles held for fading are covered by tiles that are closer to ideal
         continue;
       }
-      const tileID = tile.tileID;
-      const scale = 2 ** (transform.zoom - tile.tileID.overscaledZ);
+      const { tileID } = tile;
+      const scale = 2 ** (transform.zoom - tileID.overscaledZ);
       const queryPadding = (maxPitchScaleFactor * tile.queryPadding * EXTENT) / tile.tileSize / scale;
 
       const tileSpaceBounds = [
@@ -697,11 +695,11 @@ class SourceCache extends Evented {
   }
 
   getVisibleCoordinates(symbolLayer) {
-    const coords = this.getRenderableIds(symbolLayer).map(id => this._tiles.get(id).tileID);
-    for (const coord of coords) {
-      coord.posMatrix = this.transform.calculatePosMatrix(coord.toUnwrapped());
-    }
-    return coords;
+    return this.getRenderableIds(symbolLayer).map(id => {
+      const { tileID } = this._tiles.get(id);
+      tileID.posMatrix = this.transform.calculatePosMatrix(tileID.toUnwrapped());
+      return tileID;
+    });
   }
 
   hasTransition() {
@@ -725,7 +723,7 @@ class SourceCache extends Evented {
    * @private
    */
   setFeatureState(sourceLayer, feature, state) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     this._state.updateState(sourceLayer, feature, state);
   }
 
@@ -734,7 +732,7 @@ class SourceCache extends Evented {
    * @private
    */
   getFeatureState(sourceLayer, feature) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     return this._state.getState(sourceLayer, feature);
   }
 }
