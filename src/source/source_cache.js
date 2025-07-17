@@ -118,14 +118,14 @@ class SourceCache extends Evented {
   }
 
   /**
-   * Return all tile ids ordered with z-order, and cast to numbers
+   * Return all tile ids ordered with z-order
    */
-  getIds(filter = () => true) {
+  getIds({ filter, map = it => it[0], sort = true } = {}) {
     const { angle } = this.transform ?? {};
-    return Array.from(this._tiles)
-      .filter(it => filter.call(this, it[1]))
-      .sort(compareKeyZoom)
-      .map(it => it[0]);
+    let items = Array.from(this._tiles);
+    if (filter) items = items.filter(it => filter.call(this, it[1]));
+    if (sort) items.sort(compareKeyZoom);
+    return items.map(map);
 
     function compareKeyZoom([, a_], [, b_]) {
       const a = a_.tileID;
@@ -136,9 +136,18 @@ class SourceCache extends Evented {
     }
   }
 
+  getAllTiles() {
+    return this.getIds({ map: it => it[1] });
+  }
+
   getRenderableIds(symbolLayer) {
     const filter = symbolLayer ? this.#isTileRenderableForSymbols : this.#isTileRenderable;
-    return this.getIds(filter);
+    return this.getIds({ filter });
+  }
+
+  getRenderableTiles(symbolLayer, sort = true) {
+    const filter = symbolLayer ? this.#isTileRenderableForSymbols : this.#isTileRenderable;
+    return this.getIds({ filter, map: it => it[1], sort });
   }
 
   hasRenderableParent(tileID) {
@@ -203,11 +212,9 @@ class SourceCache extends Evented {
    * @private
    */
   _backfillDEM(tile) {
-    const renderables = this.getRenderableIds();
-    for (let i = 0; i < renderables.length; i++) {
-      const borderId = renderables[i];
+    for (const borderId of this.getRenderableIds()) {
       if (tile.neighboringTiles?.[borderId]) {
-        const borderTile = this.getTileByID(borderId);
+        const borderTile = this._tiles.get(borderId);
         fillBorder(tile, borderTile);
         fillBorder(borderTile, tile);
       }
@@ -241,14 +248,7 @@ class SourceCache extends Evented {
    * Get a specific tile by TileID
    */
   getTile(tileID) {
-    return this.getTileByID(tileID.key);
-  }
-
-  /**
-   * Get a specific tile by id
-   */
-  getTileByID(id) {
-    return this._tiles.get(+id);
+    return this._tiles.get(tileID.key);
   }
 
   /**
@@ -657,8 +657,7 @@ class SourceCache extends Evented {
     }
 
     const z = queryGeometry[0].zoom;
-    for (const id of this.getIds()) {
-      const tile = this._tiles.get(id);
+    for (const tile of this.getAllTiles()) {
       if (tile.holdingForFade()) {
         // Tiles held for fading are covered by tiles that are closer to ideal
         continue;
@@ -695,8 +694,8 @@ class SourceCache extends Evented {
   }
 
   getVisibleCoordinates(symbolLayer) {
-    return this.getRenderableIds(symbolLayer).map(id => {
-      const { tileID } = this._tiles.get(id);
+    return this.getRenderableTiles(symbolLayer).map(tile => {
+      const { tileID } = tile;
       tileID.posMatrix = this.transform.calculatePosMatrix(tileID.toUnwrapped());
       return tileID;
     });

@@ -143,10 +143,7 @@ function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, 
 }
 
 function querySourceFeatures(sourceCache, params) {
-  const tiles = sourceCache.getRenderableIds().map(id => {
-    return sourceCache.getTileByID(id);
-  });
-
+  const tiles = sourceCache.getRenderableTiles();
   const result = [];
 
   const dataTiles = {};

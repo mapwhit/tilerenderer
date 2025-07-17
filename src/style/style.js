@@ -905,8 +905,7 @@ class Style extends Evented {
       if (!layerTiles[styleLayer.source]) {
         const sourceCache = this.sourceCaches[styleLayer.source];
         layerTiles[styleLayer.source] = sourceCache
-          .getRenderableIds(true)
-          .map(id => sourceCache.getTileByID(id))
+          .getRenderableTiles(true, false)
           .sort((a, b) => b.tileID.overscaledZ - a.tileID.overscaledZ || (a.tileID.isLessThan(b.tileID) ? -1 : 1));
       }
 
