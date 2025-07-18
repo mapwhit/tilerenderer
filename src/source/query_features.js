@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { mat4 } = require('@mapbox/gl-matrix');
 
 module.exports = {
@@ -18,55 +17,37 @@ function getPixelPosMatrix(transform, tileID) {
 }
 
 function queryIncludes3DLayer(layers, styleLayers, sourceID) {
-  if (layers) {
-    for (const layerID of layers) {
-      const layer = styleLayers[layerID];
-      if (layer && layer.source === sourceID && layer.type === 'fill-extrusion') {
-        return true;
-      }
-    }
-  } else {
-    for (const key in styleLayers) {
-      const layer = styleLayers[key];
-      if (layer.source === sourceID && layer.type === 'fill-extrusion') {
-        return true;
-      }
-    }
-  }
-  return false;
+  const layersToCheck = layers ?? styleLayers;
+  if (!layersToCheck) return false;
+  return Object.values(layersToCheck).some(layer => layer?.source === sourceID && layer.type === 'fill-extrusion');
 }
 
 function queryRenderedFeatures(sourceCache, styleLayers, queryGeometry, params, transform) {
   const has3DLayer = queryIncludes3DLayer(params?.layers, styleLayers, sourceCache.id);
   const maxPitchScaleFactor = transform.maxPitchScaleFactor();
-  const tilesIn = sourceCache.tilesIn(queryGeometry, maxPitchScaleFactor, has3DLayer);
-
-  tilesIn.sort(sortTilesIn);
-
-  const renderedFeatureLayers = [];
-  for (const tileIn of tilesIn) {
-    renderedFeatureLayers.push({
-      wrappedTileID: tileIn.tileID.wrapped().key,
-      queryResults: tileIn.tile.queryRenderedFeatures(
+  const renderedFeatureLayers = sourceCache
+    .tilesIn(queryGeometry, maxPitchScaleFactor, has3DLayer)
+    .sort(sortTilesIn)
+    .map(tile => ({
+      wrappedTileID: tile.tileID.wrapped().key,
+      queryResults: tile.tile.queryRenderedFeatures(
         styleLayers,
         sourceCache._state,
-        tileIn.queryGeometry,
-        tileIn.cameraQueryGeometry,
-        tileIn.scale,
+        tile.queryGeometry,
+        tile.cameraQueryGeometry,
+        tile.scale,
         params,
         transform,
         maxPitchScaleFactor,
-        getPixelPosMatrix(sourceCache.transform, tileIn.tileID)
+        getPixelPosMatrix(sourceCache.transform, tile.tileID)
       )
-    });
-  }
+    }));
 
   const result = mergeRenderedFeatureLayers(renderedFeatureLayers);
 
   // Merge state from SourceCache into the results
-  for (const layerID in result) {
-    result[layerID].forEach(featureWrapper => {
-      const feature = featureWrapper.feature;
+  for (const [layerID, layerResult] of Object.entries(result)) {
+    layerResult.forEach(({ feature }) => {
       const state = sourceCache.getFeatureState(feature.layer['source-layer'], feature.id);
       feature.source = feature.layer.source;
       if (feature.layer['source-layer']) {
@@ -79,14 +60,12 @@ function queryRenderedFeatures(sourceCache, styleLayers, queryGeometry, params, 
 }
 
 function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, collisionIndex, retainedQueryData) {
-  const result = {};
   const renderedSymbols = collisionIndex.queryRenderedSymbols(queryGeometry);
-  const bucketQueryData = [];
-  for (const bucketInstanceId of Object.keys(renderedSymbols).map(Number)) {
-    bucketQueryData.push(retainedQueryData[bucketInstanceId]);
-  }
-  bucketQueryData.sort(sortTilesIn);
+  const bucketQueryData = Object.keys(renderedSymbols)
+    .map(id => retainedQueryData[+id])
+    .sort(sortTilesIn);
 
+  const result = {};
   for (const queryData of bucketQueryData) {
     const bucketSymbols = queryData.featureIndex.lookupSymbolFeatures(
       renderedSymbols[queryData.bucketInstanceId],
@@ -97,40 +76,24 @@ function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, 
       styleLayers
     );
 
-    for (const layerID in bucketSymbols) {
-      const resultFeatures = (result[layerID] = result[layerID] || []);
-      const layerSymbols = bucketSymbols[layerID];
-      layerSymbols.sort((a, b) => {
-        // Match topDownFeatureComparator from FeatureIndex, but using
-        // most recent sorting of features from bucket.sortFeatures
-        const featureSortOrder = queryData.featureSortOrder;
-        if (featureSortOrder) {
-          // queryRenderedSymbols documentation says we'll return features in
-          // "top-to-bottom" rendering order (aka last-to-first).
-          // Actually there can be multiple symbol instances per feature, so
-          // we sort each feature based on the first matching symbol instance.
-          const sortedA = featureSortOrder.indexOf(a.featureIndex);
-          const sortedB = featureSortOrder.indexOf(b.featureIndex);
-          assert(sortedA >= 0);
-          assert(sortedB >= 0);
-          return sortedB - sortedA;
-        }
-        // Bucket hasn't been re-sorted based on angle, so use the
-        // reverse of the order the features appeared in the data.
-        return b.featureIndex - a.featureIndex;
-      });
-      for (const symbolFeature of layerSymbols) {
-        resultFeatures.push(symbolFeature);
+    const { featureSortOrder } = queryData;
+    const sortFeatures = featureSortOrder ? getSorter(featureSortOrder) : simpleSortFeatures;
+    for (const [layerID, layerSymbols] of Object.entries(bucketSymbols)) {
+      layerSymbols.sort(sortFeatures);
+      const resultFeatures = result[layerID];
+      if (resultFeatures) {
+        resultFeatures.push(...layerSymbols);
+      } else {
+        result[layerID] = [...layerSymbols];
       }
     }
   }
 
   // Merge state from SourceCache into the results
-  for (const layerName in result) {
-    result[layerName].forEach(featureWrapper => {
-      const feature = featureWrapper.feature;
-      const layer = styleLayers[layerName];
-      const sourceCache = sourceCaches[layer.source];
+  for (const [layerName, layerResult] of Object.entries(result)) {
+    layerResult.forEach(({ feature }) => {
+      const { source } = styleLayers[layerName];
+      const sourceCache = sourceCaches[source];
       const state = sourceCache.getFeatureState(feature.layer['source-layer'], feature.id);
       feature.source = feature.layer.source;
       if (feature.layer['source-layer']) {
@@ -142,20 +105,41 @@ function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, 
   return result;
 }
 
-function querySourceFeatures(sourceCache, params) {
-  const tiles = sourceCache.getRenderableTiles();
-  const result = [];
+// The bucket hasn't been re-sorted based on angle, so use the
+// reverse of the order the features appeared in the data.
+function simpleSortFeatures(a, b) {
+  return b.featureIndex - a.featureIndex;
+}
 
-  const dataTiles = {};
-  for (let i = 0; i < tiles.length; i++) {
-    const tile = tiles[i];
-    const dataID = tile.tileID.canonical.key;
-    if (!dataTiles[dataID]) {
-      dataTiles[dataID] = true;
+function getSorter(featureSortOrder) {
+  // Match topDownFeatureComparator from FeatureIndex, but using
+  // most recent sorting of features from bucket.sortFeatures
+  // queryRenderedSymbols documentation says we'll return features in
+  // "top-to-bottom" rendering order (aka last-to-first).
+  return function sortFeatures(a, b) {
+    const bIndex = b.featureIndex;
+    const aIndex = a.featureIndex;
+    if (bIndex === aIndex) return 0;
+    // Actually there can be multiple symbol instances per feature, so
+    // we sort each feature based on the first matching symbol instance.
+    for (const index of featureSortOrder) {
+      if (aIndex === index) return -1;
+      if (bIndex === index) return 1;
+    }
+    return 0;
+  };
+}
+
+function querySourceFeatures(sourceCache, params) {
+  const dataTiles = new Set();
+  const result = [];
+  for (const tile of sourceCache.getRenderableTiles()) {
+    const { key } = tile.tileID.canonical;
+    if (!dataTiles.has(key)) {
+      dataTiles.add(key);
       tile.querySourceFeatures(result, params);
     }
   }
-
   return result;
 }
 
@@ -176,13 +160,11 @@ function mergeRenderedFeatureLayers(tiles) {
   const result = {};
   const wrappedIDLayerMap = {};
   for (const tile of tiles) {
-    const queryResults = tile.queryResults;
-    const wrappedID = tile.wrappedTileID;
-    const wrappedIDLayers = (wrappedIDLayerMap[wrappedID] = wrappedIDLayerMap[wrappedID] || {});
-    for (const layerID in queryResults) {
-      const tileFeatures = queryResults[layerID];
-      const wrappedIDFeatures = (wrappedIDLayers[layerID] = wrappedIDLayers[layerID] || {});
-      const resultFeatures = (result[layerID] = result[layerID] || []);
+    const { queryResults, wrappedTileID } = tile;
+    const wrappedIDLayers = (wrappedIDLayerMap[wrappedTileID] ??= {});
+    for (const [layerID, tileFeatures] of Object.entries(queryResults)) {
+      const wrappedIDFeatures = (wrappedIDLayers[layerID] ??= {});
+      const resultFeatures = (result[layerID] ??= []);
       for (const tileFeature of tileFeatures) {
         if (!wrappedIDFeatures[tileFeature.featureIndex]) {
           wrappedIDFeatures[tileFeature.featureIndex] = true;
