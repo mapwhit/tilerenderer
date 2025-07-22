@@ -1,7 +1,7 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const createStyleLayer = require('../../../src/style/create_style_layer');
 const FillStyleLayer = require('../../../src/style/style_layer/fill_style_layer');
-const Color = require('../../../src/style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 
 test('StyleLayer', async t => {
   await t.test('instantiates the correct subclass', t => {

@@ -2,7 +2,7 @@ const StyleLayer = require('../style_layer');
 
 const SymbolBucket = require('../../data/bucket/symbol_bucket');
 const resolveTokens = require('../../util/token');
-const { isExpression } = require('../../style-spec/expression');
+const { isExpression } = require('@mapwhit/style-expressions');
 const assert = require('assert');
 const properties = require('./symbol_style_layer_properties');
 

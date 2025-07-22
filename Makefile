@@ -90,17 +90,14 @@ format: | meta/node_modules
 
 test: test-unit prebuild
 
-test-integration: test-expression test-query test-render
-.NOTPARALLEL: test-expression test-query test-render
+test-integration: test-query test-render
+.NOTPARALLEL: test-query test-render
 
 TEST_REPORTER ?= --test-reporter dot
 
 DEPENDENCIES_TEST = test/node_modules
 test-unit: dependencies $(DEPENDENCIES_TEST)
 	node --test $(TEST_REPORTER) "test/unit/**/*.test.js"
-
-test-expression: dependencies dependencies-integration
-	node test/expression.test.js
 
 test-render: dependencies dependencies-integration
 	node test/render.test.js

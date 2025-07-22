@@ -1,6 +1,6 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const renderColorRamp = require('../../../src/util/color_ramp');
-const { createPropertyExpression } = require('../../../src/style-spec/expression');
+const { createPropertyExpression } = require('@mapwhit/style-expressions');
 
 const spec = {
   function: true,

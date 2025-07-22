@@ -28,7 +28,7 @@ const {
   PixelStoreUnpackPremultiplyAlpha
 } = require('../../../src/gl/value');
 const Context = require('../../../src/gl/context');
-const Color = require('../../../src/style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 const { deepEqual } = require('../../../src/util/object');
 
 const context = new Context(require('gl')(10, 10));

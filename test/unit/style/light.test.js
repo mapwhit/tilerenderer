@@ -1,6 +1,6 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const Light = require('../../../src/style/light');
-const Color = require('../../../src/style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 const { sphericalToCartesian } = require('../../../src/util/util');
 
 const spec = {

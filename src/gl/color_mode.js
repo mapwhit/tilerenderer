@@ -1,4 +1,4 @@
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 
 const ZERO = 0x0000;
 const ONE = 0x0001;

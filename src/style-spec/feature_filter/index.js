@@ -1,4 +1,4 @@
-const { createExpression } = require('../expression');
+const { createExpression } = require('@mapwhit/style-expressions');
 
 module.exports = createFilter;
 

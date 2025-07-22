@@ -1,4 +1,4 @@
-const { normalizePropertyExpression } = require('../style-spec/expression');
+const { normalizePropertyExpression } = require('@mapwhit/style-expressions');
 
 const interpolate = require('../util/interpolate');
 const { clamp } = require('../util/util');

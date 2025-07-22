@@ -12,7 +12,6 @@ const classifyRings = require('../util/classify_rings');
 const EXTENT = require('../data/extent');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
 const EvaluationParameters = require('../style/evaluation_parameters');
-const { Formatted } = require('../style-spec/expression/types/formatted');
 const murmur3 = require('murmurhash-js');
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
