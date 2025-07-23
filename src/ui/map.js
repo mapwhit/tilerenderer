@@ -9,7 +9,6 @@ const Style = require('../style/style');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const Painter = require('../render/painter');
 const Transform = require('../geo/transform');
-const bindHandlers = require('./bind_handlers');
 const Camera = require('./camera');
 const LngLat = require('../geo/lng_lat');
 const LngLatBounds = require('../geo/lng_lat_bounds');
@@ -31,17 +30,7 @@ const defaultOptions = {
 
   interactive: true,
 
-  scrollZoom: true,
-  boxZoom: true,
-  dragRotate: true,
-  dragPan: true,
-  keyboard: true,
-  doubleClickZoom: true,
-  touchZoomRotate: true,
-
   bearingSnap: 7,
-
-  clickTolerance: 3,
 
   attributionControl: true,
 
@@ -98,19 +87,11 @@ const defaultOptions = {
  *   bearing will snap to north. For example, with a `bearingSnap` of 7, if the user rotates
  *   the map within 7 degrees of north, the map will automatically snap to exact north.
  * @param {boolean} [options.pitchWithRotate=true] If `false`, the map's pitch (tilt) control with "drag to rotate" interaction will be disabled.
- * @param {number} [options.clickTolerance=3] The max number of pixels a user can shift the mouse pointer during a click for it to be considered a valid click (as opposed to a mouse drag).
  * @param {string} [options.logoPosition='bottom-left'] A string representing the position of the Mapbox wordmark on the map. Valid options are `top-left`,`top-right`, `bottom-left`, `bottom-right`.
  * @param {boolean} [options.failIfMajorPerformanceCaveat=false] If `true`, map creation will fail if the performance of Mapbox
  *   GL JS would be dramatically worse than expected (i.e. a software renderer would be used).
  * @param {boolean} [options.preserveDrawingBuffer=false] If `true`, the map's canvas can be exported to a PNG using `map.getCanvas().toDataURL()`. This is `false` by default as a performance optimization.
  * @param {LngLatBoundsLike} [options.maxBounds] If set, the map will be constrained to the given bounds.
- * @param {boolean|Object} [options.scrollZoom=true] If `true`, the "scroll to zoom" interaction is enabled. An `Object` value is passed as options to {@link ScrollZoomHandler#enable}.
- * @param {boolean} [options.boxZoom=true] If `true`, the "box zoom" interaction is enabled (see {@link BoxZoomHandler}).
- * @param {boolean} [options.dragRotate=true] If `true`, the "drag to rotate" interaction is enabled (see {@link DragRotateHandler}).
- * @param {boolean} [options.dragPan=true] If `true`, the "drag to pan" interaction is enabled (see {@link DragPanHandler}).
- * @param {boolean} [options.keyboard=true] If `true`, keyboard shortcuts are enabled (see {@link KeyboardHandler}).
- * @param {boolean} [options.doubleClickZoom=true] If `true`, the "double click to zoom" interaction is enabled (see {@link DoubleClickZoomHandler}).
- * @param {boolean|Object} [options.touchZoomRotate=true] If `true`, the "pinch to rotate and zoom" interaction is enabled. An `Object` value is passed as options to {@link TouchZoomRotateHandler#enable}.
  * @param {boolean} [options.trackResize=true]  If `true`, the map will automatically resize when the browser window resizes.
  * @param {LngLatLike} [options.center=[0, 0]] The inital geographical centerpoint of the map. If `center` is not specified in the constructor options, Mapbox GL JS will look for it in the map's style object. If it is not specified in the style, either, it will default to `[0, 0]` Note: Mapbox GL uses longitude, latitude coordinate order (as opposed to latitude, longitude) to match GeoJSON.
  * @param {number} [options.zoom=0] The initial zoom level of the map. If `zoom` is not specified in the constructor options, Mapbox GL JS will look for it in the map's style object. If it is not specified in the style, either, it will default to `0`.
@@ -130,6 +111,8 @@ const defaultOptions = {
  * @see [Display a map](https://www.mapbox.com/mapbox-gl-js/examples/)
  */
 class Map extends Camera {
+  #mapGestures;
+
   constructor(options) {
     options = Object.assign({}, defaultOptions, options);
 
@@ -198,8 +181,6 @@ class Map extends Camera {
       window.addEventListener('online', this._onWindowOnline, false);
       window.addEventListener('resize', this._onWindowResize, false);
     }
-
-    bindHandlers(this, options);
 
     this.jumpTo({
       center: options.center,
@@ -461,27 +442,21 @@ class Map extends Camera {
    * Returns true if the map is panning, zooming, rotating, or pitching due to a camera animation or user gesture.
    */
   isMoving() {
-    return (
-      this._moving ||
-      this.dragPan.isActive() ||
-      this.dragRotate.isActive() ||
-      this.touchZoomRotate.isActive() ||
-      this.scrollZoom.isActive()
-    );
+    return !!(this._moving || this._mapGestures?.isMoving());
   }
 
   /**
    * Returns true if the map is zooming due to a camera animation or user gesture.
    */
   isZooming() {
-    return this._zooming || this.touchZoomRotate.isActive() || this.scrollZoom.isZooming();
+    return !!(this._zooming || this._mapGestures?.isZooming());
   }
 
   /**
    * Returns true if the map is rotating due to a camera animation or user gesture.
    */
   isRotating() {
-    return this._rotating || this.touchZoomRotate.isActive() || this.dragRotate.isActive();
+    return !!(this._rotating || this._mapGestures?.isRotating());
   }
 
   /**

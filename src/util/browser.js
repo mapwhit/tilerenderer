@@ -1,25 +1,10 @@
 // TODO move code that assumes that `window` may not be set to relevant tests
 
-const now =
-  typeof window === 'object' && window.performance?.now
-    ? window.performance.now.bind(window.performance)
-    : Date.now.bind(Date);
+const now = () => performance.now();
 
-const raf =
-  typeof window === 'object'
-    ? window.requestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.msRequestAnimationFrame
-    : fn => setTimeout(fn, 0);
+const raf = typeof window === 'object' ? window.requestAnimationFrame : fn => setTimeout(fn, 0);
 
-const cancel =
-  typeof window === 'object'
-    ? window.cancelAnimationFrame ||
-      window.mozCancelAnimationFrame ||
-      window.webkitCancelAnimationFrame ||
-      window.msCancelAnimationFrame
-    : id => clearTimeout(id);
+const cancel = typeof window === 'object' ? window.cancelAnimationFrame : id => clearTimeout(id);
 
 /**
  * @private
