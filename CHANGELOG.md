@@ -1,4 +1,30 @@
 
+0.51.0 / 2025-07-23
+===================
+
+ * simplify timing functions
+ * remove unused `ui/anchor` module
+ * remove unused `ui/events` module
+ * remove unused DOM functions
+ * remove code moved to `map-gestures` module
+ * map gestures field is set when gestures component is initialized with map as a parameter
+ * extract style expressions to a separate module
+ * reduce duplication in ESBUILD_OPTIONS
+ * upgrade tinyqueue to 3.0
+ * upgrade quickselect to 3.0.0
+ * upgrade earcut to 3.0.1
+ * upgrade geojson-vt to 4.0.2
+ * replace @mapbox/vector-tile with @mapwhit/vector-tile
+ * improve GeoJSON wrapper
+ * improve feature filter
+ * improve group_by_layout
+ * move icon cache to workers
+ * optimize font retrieval
+ * move glyph cache to workers
+ * compile minimized shaders to javascript remove glsl loader
+ * remove support for local generation of ideographic glyphs
+ * refactor worker tile to use `getGlyphs` and `getImages` functions
+
 0.50.0 / 2025-03-21
 ===================
 
