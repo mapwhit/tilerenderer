@@ -9,7 +9,6 @@ const Style = require('../style/style');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const Painter = require('../render/painter');
 const Transform = require('../geo/transform');
-const bindHandlers = require('./bind_handlers');
 const Camera = require('./camera');
 const LngLat = require('../geo/lng_lat');
 const LngLatBounds = require('../geo/lng_lat_bounds');
@@ -198,8 +197,6 @@ class Map extends Camera {
       window.addEventListener('online', this._onWindowOnline, false);
       window.addEventListener('resize', this._onWindowResize, false);
     }
-
-    bindHandlers(this, options);
 
     this.jumpTo({
       center: options.center,
@@ -461,27 +458,21 @@ class Map extends Camera {
    * Returns true if the map is panning, zooming, rotating, or pitching due to a camera animation or user gesture.
    */
   isMoving() {
-    return (
-      this._moving ||
-      this.dragPan.isActive() ||
-      this.dragRotate.isActive() ||
-      this.touchZoomRotate.isActive() ||
-      this.scrollZoom.isActive()
-    );
+    return !!(this._moving || this._mapGestures?.isMoving());
   }
 
   /**
    * Returns true if the map is zooming due to a camera animation or user gesture.
    */
   isZooming() {
-    return this._zooming || this.touchZoomRotate.isActive() || this.scrollZoom.isZooming();
+    return !!(this._zooming || this._mapGestures?.isZooming());
   }
 
   /**
    * Returns true if the map is rotating due to a camera animation or user gesture.
    */
   isRotating() {
-    return this._rotating || this.touchZoomRotate.isActive() || this.dragRotate.isActive();
+    return !!(this._rotating || this._mapGestures?.isRotating());
   }
 
   /**
