@@ -1,5 +1,5 @@
 const Texture = require('./texture');
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 const DepthMode = require('../gl/depth_mode');
 const StencilMode = require('../gl/stencil_mode');
 const ColorMode = require('../gl/color_mode');

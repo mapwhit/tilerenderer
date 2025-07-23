@@ -1,4 +1,4 @@
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 
 class Uniform {
   constructor(context, location) {

@@ -2,7 +2,7 @@ const { filterObject } = require('../util/object');
 
 const { Evented } = require('../util/evented');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
-const { supportsPropertyExpression } = require('../style-spec/util/properties');
+const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 
 const TRANSITION_SUFFIX = '-transition';
 

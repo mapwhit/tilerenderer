@@ -1,5 +1,4 @@
 const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
-const { Formatted } = require('../style-spec/expression/types/formatted');
 
 function transformText(text, layer, feature) {
   const transform = layer.layout.get('text-transform').evaluate(feature, {});

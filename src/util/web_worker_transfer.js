@@ -1,13 +1,13 @@
 const Grid = require('grid-index');
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 const {
+  CompoundExpression,
+  definitions: expressions,
   StylePropertyFunction,
   StyleExpression,
   ZoomDependentExpression,
   ZoomConstantExpression
-} = require('../style-spec/expression');
-const CompoundExpression = require('../style-spec/expression/compound_expression');
-const expressions = require('../style-spec/expression/definitions');
+} = require('@mapwhit/style-expressions');
 
 const { register, serialize, deserialize } = require('./transfer_registry');
 module.exports = {

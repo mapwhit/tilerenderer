@@ -8,7 +8,7 @@ const DepthMode = require('../gl/depth_mode');
 const StencilMode = require('../gl/stencil_mode');
 const CullFaceMode = require('../gl/cull_face_mode');
 const { debugUniformValues } = require('./program/debug_program');
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 
 module.exports = drawDebug;
 

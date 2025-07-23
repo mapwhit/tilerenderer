@@ -2,8 +2,7 @@ const assert = require('assert');
 
 const { clone } = require('../util/object');
 const { easeCubicInOut } = require('../util/util');
-const interpolate = require('../style-spec/util/interpolate');
-const { normalizePropertyExpression } = require('../style-spec/expression');
+const { interpolate, normalizePropertyExpression } = require('@mapwhit/style-expressions');
 const { register } = require('../util/transfer_registry');
 const EvaluationParameters = require('./evaluation_parameters');
 

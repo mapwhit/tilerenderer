@@ -15,6 +15,7 @@
     "@mapbox/whoots-js": "^3.0.0",
     "@mapwhit/geojson-rewind": "^1.0.0",
     "@mapwhit/pbf": "^1.0.0",
+    "@mapwhit/style-expressions": "^0.0.2",
     "@mapwhit/vector-tile": "^1.0.0",
     "@mapwhit/vt-pbf": "^1.0.0",
     "@pirxpilot/nanoassert": "~1",

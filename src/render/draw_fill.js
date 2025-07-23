@@ -1,4 +1,4 @@
-const Color = require('../style-spec/util/color');
+const { Color } = require('@mapwhit/style-expressions');
 const DepthMode = require('../gl/depth_mode');
 const CullFaceMode = require('../gl/cull_face_mode');
 const {

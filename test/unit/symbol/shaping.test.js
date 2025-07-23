@@ -2,7 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const fs = require('fs');
 const path = require('path');
 const shaping = require('../../../src/symbol/shaping');
-const { Formatted } = require('../../../src/style-spec/expression/types/formatted');
+const { Formatted } = require('@mapwhit/style-expressions');
 const WritingMode = shaping.WritingMode;
 
 let UPDATE = false;
