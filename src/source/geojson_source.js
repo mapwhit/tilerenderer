@@ -2,7 +2,8 @@ import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import { createExpression } from '@mapwhit/style-expressions';
 import EXTENT from '../data/extent.js';
 import browser from '../util/browser.js';
-import { applySourceDiff, isUpdateableGeoJSON, toUpdateable } from './geojson_source_diff.js';
+import warn from '../util/warn.js';
+import { applySourceDiff, isUpdateableGeoJSON, mergeSourceDiffs, toUpdateable } from './geojson_source_diff.js';
 
 /**
  * A source containing GeoJSON.
@@ -54,6 +55,7 @@ export default class GeoJSONSource extends Evented {
   #newData = false;
   #updateInProgress = false;
   #dataUpdateable;
+  #pendingUpdate;
   #pendingData;
   #tiler;
 
@@ -75,7 +77,7 @@ export default class GeoJSONSource extends Evented {
 
     this.setEventedParent(eventedParent);
 
-    this.data = options.data;
+    this.#pendingUpdate = { data: options.data };
     this._options = Object.assign({}, options);
 
     if (options.maxzoom !== undefined) {
@@ -136,8 +138,7 @@ export default class GeoJSONSource extends Evented {
    * @returns {GeoJSONSource} this
    */
   setData(data) {
-    this.data = data;
-    this.#dataUpdateable = undefined;
+    this.#pendingUpdate = { data };
     this.#updateData();
     return this;
   }
@@ -158,11 +159,10 @@ export default class GeoJSONSource extends Evented {
    * @returns {GeoJSONSource} this
    */
   updateData(diff) {
-    if (!this.#dataUpdateable) {
-      throw new Error(`Cannot update existing geojson data in ${this.id}`);
-    }
-    applySourceDiff(this.#dataUpdateable, diff, this.promoteId);
-    this.data = { type: 'FeatureCollection', features: Array.from(this.#dataUpdateable.values()) };
+    this.#pendingUpdate = {
+      data: this.#pendingUpdate?.data,
+      diff: mergeSourceDiffs(this.#pendingUpdate?.diff, diff)
+    };
     this.#updateData();
     return this;
   }
@@ -207,8 +207,23 @@ export default class GeoJSONSource extends Evented {
    * handles creating tiles, using geojson-vt or supercluster as appropriate.
    */
   async #updateTilerData() {
-    this.data = await loadJSON(this.data, this.id);
-    this.#dataUpdateable ??= updatableGeoJson(this.data, this.promoteId);
+    const { data, diff } = this.#pendingUpdate ?? {};
+    this.#pendingUpdate = undefined;
+    if (!(data || diff)) {
+      warn.once(`No data or diff provided to GeoJSONSource ${this.id}.`);
+      return this.data;
+    }
+    if (data) {
+      this.data = await loadJSON(data, this.id);
+      this.#dataUpdateable = updatableGeoJson(this.data, this.promoteId);
+    }
+    if (diff) {
+      if (!this.#dataUpdateable) {
+        throw new Error(`Cannot update existing geojson data in ${this.id}`);
+      }
+      applySourceDiff(this.#dataUpdateable, diff, this.promoteId);
+      this.data = { type: 'FeatureCollection', features: Array.from(this.#dataUpdateable.values()) };
+    }
     this.data = filterGeoJSON(this.data, this._options);
 
     const options = { ...this.workerOptions, data: this.data };

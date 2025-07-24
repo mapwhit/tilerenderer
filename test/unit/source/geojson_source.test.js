@@ -198,9 +198,10 @@ test('GeoJSONSource.updateData', async t => {
     const source = createSource();
     source.setData(geoJson);
     await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
-    t.assert.throws(() => source.updateData({ source: 'source1', dataDiff: { removeAll: true } }), {
-      message: 'Cannot update existing geojson data in source1'
-    });
+    const errorPromise = waitForEvent(source, 'error', () => true);
+    source.updateData({ removeAll: true });
+    const error = await errorPromise;
+    t.assert.equal(error.error.message, 'Cannot update existing geojson data in source1');
   });
 
   await t.test('updateData with geojson creates an updateable source', async () => {
@@ -221,6 +222,173 @@ test('GeoJSONSource.updateData', async t => {
           id: 'update_point',
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {}
+        }
+      ]
+    });
+  });
+
+  await t.test('queues a second call to updateData', async t => {
+    const tiler = makeTiler();
+    const loadData = t.mock.method(tiler, 'loadData');
+
+    const source = new GeoJSONSource('id', { data: { type: 'FeatureCollection', features: [] } }, null, tiler);
+    // Wait for initial data to be loaded
+    source.load();
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'metadata');
+    // Call updateData multiple times while the worker is still processing the initial data
+    const update1 = {
+      remove: ['1'],
+      add: [{ id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [{ id: '3', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }]
+    };
+    const update2 = {
+      remove: ['4'],
+      add: [{ id: '5', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [{ id: '6', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }]
+    };
+    source.updateData(update1);
+    source.updateData(update2);
+    // Wait for both updateData calls to be performed
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+
+    t.assert.equal(loadData.mock.callCount(), 3);
+    t.assert.deepEqual(loadData.mock.calls[0].arguments[0].data, { type: 'FeatureCollection', features: [] });
+    t.assert.deepEqual(loadData.mock.calls[1].arguments[0].data, {
+      type: 'FeatureCollection',
+      features: [{ id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }]
+    });
+    t.assert.deepEqual(loadData.mock.calls[2].arguments[0].data, {
+      type: 'FeatureCollection',
+      features: [
+        { id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } },
+        { id: '5', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+      ]
+    });
+  });
+
+  await t.test('combines multiple diffs when data is loading', async t => {
+    const tiler = makeTiler();
+    const loadData = t.mock.method(tiler, 'loadData');
+
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
+    // Perform an initial setData
+    const data1 = { type: 'FeatureCollection', features: [] };
+    source.setData(data1);
+    // Call updateData multiple times while the worker is still processing the initial data
+    const update1 = {
+      remove: ['1'],
+      add: [{ id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [{ id: '3', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }]
+    };
+    const update2 = {
+      remove: ['4'],
+      add: [{ id: '5', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [
+        { id: '3', addOrUpdateProperties: [], newGeometry: { type: 'Point', coordinates: [] } },
+        { id: '6', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }
+      ]
+    };
+    source.updateData(update1);
+    source.updateData(update2);
+    // Wait for the setData and updateData calls to be performed
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+
+    t.assert.equal(loadData.mock.callCount(), 2);
+    t.assert.deepEqual(loadData.mock.calls[0].arguments[0].data, data1);
+    t.assert.deepEqual(loadData.mock.calls[1].arguments[0].data, {
+      type: 'FeatureCollection',
+      features: [
+        {
+          geometry: {
+            coordinates: [],
+            type: 'LineString'
+          },
+          id: '2',
+          properties: {},
+          type: 'Feature'
+        },
+        {
+          geometry: {
+            coordinates: [],
+            type: 'LineString'
+          },
+          id: '5',
+          properties: {},
+          type: 'Feature'
+        }
+      ]
+    });
+  });
+
+  await t.test('is overwritten by a subsequent call to setData when data is loading', async t => {
+    const tiler = makeTiler();
+    const loadData = t.mock.method(tiler, 'loadData');
+
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
+    // Perform an initial setData
+    const data1 = { type: 'FeatureCollection', features: [] };
+    source.setData(data1);
+    // Queue an updateData
+    const update1 = {
+      remove: ['1'],
+      add: [{ id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [{ id: '3', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }]
+    };
+    source.updateData(update1);
+    // Call setData while the worker is still processing the initial data
+    const data2 = {
+      type: 'FeatureCollection',
+      features: [{ id: '1', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }]
+    };
+    source.setData(data2);
+    // Wait for both setData calls to be performed
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+
+    t.assert.equal(loadData.mock.callCount(), 2);
+    t.assert.deepEqual(loadData.mock.calls[0].arguments[0].data, data1);
+    t.assert.deepEqual(loadData.mock.calls[0].arguments[0].diff, undefined);
+    t.assert.deepEqual(loadData.mock.calls[1].arguments[0].data, data2);
+    t.assert.deepEqual(loadData.mock.calls[1].arguments[0].diff, undefined);
+  });
+
+  await t.test('is queued after setData when data is loading', async t => {
+    const tiler = makeTiler();
+    const loadData = t.mock.method(tiler, 'loadData');
+
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
+    // Perform an initial setData
+    const data1 = { type: 'FeatureCollection', features: [] };
+    source.setData(data1);
+    // Queue a setData
+    const data2 = {
+      type: 'FeatureCollection',
+      features: [{ id: 4, type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }]
+    };
+    source.setData(data2);
+    // Queue an updateData
+    const update1 = {
+      remove: ['1'],
+      add: [{ id: '2', type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }],
+      update: [{ id: '3', addOrUpdateProperties: [], newGeometry: { type: 'LineString', coordinates: [] } }]
+    };
+    source.updateData(update1);
+    // Wait for the calls to be performed
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'content');
+
+    t.assert.equal(loadData.mock.callCount(), 2);
+    t.assert.deepEqual(loadData.mock.calls[0].arguments[0].data, data1);
+    t.assert.deepEqual(loadData.mock.calls[1].arguments[0].data, {
+      type: 'FeatureCollection',
+      features: [
+        { id: 4, type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } },
+        {
+          geometry: {
+            coordinates: [],
+            type: 'LineString'
+          },
+          id: '2',
+          properties: {},
+          type: 'Feature'
         }
       ]
     });
@@ -287,18 +455,16 @@ test('GeoJSONSource.getData', async t => {
     const source = createSource();
     source.setData(updateableGeoJson);
     t.assert.deepEqual(await source.getData(), updateableGeoJson);
-    try {
-      source.updateData({
-        add: [
-          {
-            type: 'Feature',
-            id: 'update_point',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {}
-          }
-        ]
-      });
-    } catch {}
+    source.updateData({
+      add: [
+        {
+          type: 'Feature',
+          id: 'update_point',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {}
+        }
+      ]
+    });
     t.assert.deepEqual(await source.getData(), {
       type: 'FeatureCollection',
       features: [
@@ -311,5 +477,23 @@ test('GeoJSONSource.getData', async t => {
         }
       ]
     });
+  });
+});
+
+test('GeoJSONSource.load', async t => {
+  await t.test('is noop when all data is already loaded', async t => {
+    const warn = t.mock.method(console, 'warn');
+    const tiler = makeTiler();
+    const loadData = t.mock.method(tiler, 'loadData');
+
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
+    // Wait for initial data to be loaded
+    source.load();
+    await waitForEvent(source, 'data', e => e.sourceDataType === 'metadata');
+    // Run again, with no additional data loaded
+    source.load();
+    t.assert.equal(loadData.mock.callCount(), 1);
+    t.assert.equal(warn.mock.callCount(), 1);
+    t.assert.match(warn.mock.calls[0].arguments[0], /No data or diff provided to GeoJSONSource id\./);
   });
 });

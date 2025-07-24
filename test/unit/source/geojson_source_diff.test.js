@@ -1,5 +1,10 @@
 import test from 'node:test';
-import { applySourceDiff, isUpdateableGeoJSON, toUpdateable } from '../../../src/source/geojson_source_diff.js';
+import {
+  applySourceDiff,
+  isUpdateableGeoJSON,
+  mergeSourceDiffs,
+  toUpdateable
+} from '../../../src/source/geojson_source_diff.js';
 
 test('isUpdateableGeoJSON', async t => {
   await t.test('feature without id is not updateable', t => {
@@ -430,5 +435,123 @@ test('applySourceDiff', async t => {
     });
     t.assert.equal(updateable.size, 1);
     t.assert.equal(Object.keys(updateable.get('point')?.properties).length, 0);
+  });
+});
+
+test('mergeSourceDiffs', async t => {
+  await t.test('merges two diffs with different features ids', () => {
+    const diff1 = {
+      add: [{ type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [0, 0] }, properties: {} }],
+      remove: ['feature2'],
+      update: [{ id: 'feature3', newGeometry: { type: 'Point', coordinates: [1, 1] } }]
+    };
+    const diff2 = {
+      add: [{ type: 'Feature', id: 'feature4', geometry: { type: 'Point', coordinates: [2, 2] }, properties: {} }],
+      remove: ['feature5'],
+      update: [{ id: 'feature6', addOrUpdateProperties: [{ key: 'prop', value: 'value' }] }]
+    };
+    const merged = mergeSourceDiffs(diff1, diff2);
+    t.assert.equal(merged.add.length, 2);
+    t.assert.equal(merged.remove.length, 2);
+    t.assert.equal(merged.update.length, 2);
+  });
+
+  await t.test('merges two diffs with equivalent feature ids', () => {
+    const diff1 = {
+      add: [
+        { type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [0, 0] }, properties: { param: 1 } }
+      ],
+      remove: ['feature2'],
+      update: [
+        {
+          id: 'feature3',
+          newGeometry: { type: 'Point', coordinates: [1, 1] },
+          addOrUpdateProperties: [{ key: 'prop1', value: 'value' }]
+        }
+      ]
+    };
+    const diff2 = {
+      add: [
+        { type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [2, 2] }, properties: { param: 2 } }
+      ],
+      remove: ['feature2', 'feature3'],
+      update: [
+        {
+          id: 'feature3',
+          addOrUpdateProperties: [{ key: 'prop2', value: 'value' }],
+          removeProperties: ['prop3'],
+          removeAllProperties: true
+        }
+      ]
+    };
+    const merged = mergeSourceDiffs(diff1, diff2);
+    t.assert.equal(merged.add.length, 1);
+    t.assert.deepEqual(merged.add[0].geometry, { type: 'Point', coordinates: [2, 2] });
+    t.assert.deepEqual(merged.add[0].properties, { param: 2 });
+    t.assert.equal(merged.remove.length, 2);
+    t.assert.equal(merged.update.length, 1);
+    t.assert.ok(merged.update[0].newGeometry);
+    t.assert.equal(merged.update[0].addOrUpdateProperties.length, 2);
+    t.assert.equal(merged.update[0].removeProperties.length, 1);
+    t.assert.equal(merged.update[0].removeAllProperties, true);
+  });
+
+  await t.test('merges diff with empty', t => {
+    const diff1 = {};
+    const diff2 = {
+      add: [{ type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [0, 0] }, properties: {} }],
+      remove: ['feature2'],
+      update: [
+        {
+          id: 'feature3',
+          newGeometry: { type: 'Point', coordinates: [1, 1] },
+          addOrUpdateProperties: [{ key: 'prop1', value: 'value' }]
+        }
+      ]
+    };
+    const merged = mergeSourceDiffs(diff1, diff2);
+    t.assert.deepEqual(merged, diff2);
+  });
+
+  await t.test('merges diff with undefined', t => {
+    const diff1 = {
+      add: [{ type: 'Feature', id: 'feature2', geometry: { type: 'Point', coordinates: [1, 1] }, properties: {} }]
+    };
+    const diff2 = {
+      removeAll: true
+    };
+    const merged = mergeSourceDiffs(diff1, diff2);
+    t.assert.equal(merged.add.length, 1);
+    t.assert.equal(merged.removeAll, true);
+  });
+
+  await t.test('merges diff with empty', t => {
+    const diff1 = {};
+    const diff2 = {
+      add: [{ type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [0, 0] }, properties: {} }],
+      remove: ['feature2'],
+      update: [
+        {
+          id: 'feature3',
+          newGeometry: { type: 'Point', coordinates: [1, 1] },
+          addOrUpdateProperties: [{ key: 'prop1', value: 'value' }]
+        }
+      ]
+    };
+    const merged = mergeSourceDiffs(diff1, diff2);
+    t.assert.deepEqual(merged, diff2);
+  });
+
+  await t.test('merges diff with undefined', t => {
+    const diff1 = {
+      add: [{ type: 'Feature', id: 'feature1', geometry: { type: 'Point', coordinates: [0, 0] }, properties: {} }]
+    };
+    const merged = mergeSourceDiffs(diff1, undefined);
+    t.assert.deepEqual(merged, diff1);
+  });
+
+  await t.test('merges two undefined diffs', t => {
+    const merged = mergeSourceDiffs(undefined, undefined);
+    t.assert.deepEqual(merged, {});
   });
 });
