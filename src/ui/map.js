@@ -111,8 +111,6 @@ const defaultOptions = {
  * @see [Display a map](https://www.mapbox.com/mapbox-gl-js/examples/)
  */
 class Map extends Camera {
-  #mapGestures;
-
   constructor(options) {
     options = Object.assign({}, defaultOptions, options);
 
