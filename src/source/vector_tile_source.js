@@ -1,4 +1,4 @@
-const { Event, ErrorEvent, Evented } = require('../util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const { pick } = require('../util/object');
 const loadTileJSON = require('./load_tilejson');
 const TileBounds = require('./tile_bounds');

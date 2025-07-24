@@ -1,5 +1,5 @@
 const { sphericalToCartesian } = require('../util/util');
-const { Evented } = require('../util/evented');
+const { Evented } = require('@mapwhit/events');
 const interpolate = require('../util/interpolate');
 
 const lightSpec = {

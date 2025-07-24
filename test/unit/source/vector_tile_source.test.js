@@ -2,7 +2,7 @@ const { test } = require('../../util/mapbox-gl-js-test');
 const _window = require('../../util/window');
 const VectorTileSource = require('../../../src/source/vector_tile_source');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
-const { Evented } = require('../../../src/util/evented');
+const { Evented } = require('@mapwhit/events');
 
 function createSource(options) {
   options.tiles ??= loadTile;

@@ -1,4 +1,4 @@
-const { Event, Evented } = require('../util/evented');
+const { Event, Evented } = require('@mapwhit/events');
 const browser = require('../util/browser');
 
 let pluginRequested = false;

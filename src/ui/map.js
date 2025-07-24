@@ -14,7 +14,7 @@ const LngLat = require('../geo/lng_lat');
 const LngLatBounds = require('../geo/lng_lat_bounds');
 const Point = require('@mapbox/point-geometry');
 const { RGBAImage } = require('../util/image');
-const { Event, ErrorEvent } = require('../util/evented');
+const { Event, ErrorEvent } = require('@mapwhit/events');
 const taskQueue = require('../util/task_queue');
 
 const defaultMinZoom = 0;

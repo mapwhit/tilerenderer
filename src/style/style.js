@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { Event, ErrorEvent, Evented } = require('../util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const createStyleLayer = require('./create_style_layer');
 const loadSprite = require('./load_sprite');
 const ImageManager = require('../render/image_manager');

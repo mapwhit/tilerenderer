@@ -1,7 +1,7 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const _window = require('../../util/window');
 const ImageSource = require('../../../src/source/image_source');
-const { Evented } = require('../../../src/util/evented');
+const { Evented } = require('@mapwhit/events');
 const Transform = require('../../../src/geo/transform');
 const browser = require('../../../src/util/browser');
 

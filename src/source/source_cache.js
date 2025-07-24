@@ -1,6 +1,6 @@
 const { create: createSource } = require('./source');
 const Tile = require('./tile');
-const { Event, ErrorEvent, Evented } = require('../util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const TileCache = require('./tile_cache');
 const Coordinate = require('../geo/coordinate');
 const { keysDifference } = require('../util/object');

@@ -1,4 +1,4 @@
-const { Evented } = require('./evented');
+const { Evented } = require('@mapwhit/events');
 
 function getDefaultWorkerCount() {
   const browser = require('./browser');
