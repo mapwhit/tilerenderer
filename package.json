@@ -2,7 +2,10 @@
   "name": "@mapwhit/tilerenderer",
   "description": "A WebGL interactive maps library",
   "version": "0.51.0",
-  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./worker": "./src/worker.js"
+  },
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
