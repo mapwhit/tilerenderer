@@ -6,7 +6,7 @@ const { OverscaledTileID } = require('../../../src/source/tile_id');
 const Transform = require('../../../src/geo/transform');
 const LngLat = require('../../../src/geo/lng_lat');
 const Point = require('@mapbox/point-geometry');
-const { Event, ErrorEvent, Evented } = require('../../../src/util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const browser = require('../../../src/util/browser');
 
 // Add a mocked source type for use in these tests

@@ -4,7 +4,7 @@ const Style = require('../../../src/style/style');
 const SourceCache = require('../../../src/source/source_cache');
 const StyleLayer = require('../../../src/style/style_layer');
 const Transform = require('../../../src/geo/transform');
-const { Event, Evented } = require('../../../src/util/evented');
+const { Event, Evented } = require('@mapwhit/events');
 const {
   setRTLTextPlugin,
   clearRTLTextPlugin,

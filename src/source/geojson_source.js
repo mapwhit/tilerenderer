@@ -1,4 +1,4 @@
-const { Event, ErrorEvent, Evented } = require('../util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 
 const EXTENT = require('../data/extent');
 const browser = require('../util/browser');

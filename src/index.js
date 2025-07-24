@@ -8,7 +8,7 @@ module.exports = {
   LngLat: require('./geo/lng_lat'),
   LngLatBounds: require('./geo/lng_lat_bounds'),
   Point: require('@mapbox/point-geometry'),
-  Evented: require('./util/evented').Evented,
+  Evented: require('@mapwhit/events').Evented,
   config: require('./util/config'),
 
   get workerCount() {

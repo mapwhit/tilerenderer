@@ -1,6 +1,6 @@
 const { pick } = require('../util/object');
 const loadImage = require('../util/loader/image');
-const { Event, ErrorEvent, Evented } = require('../util/evented');
+const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const loadTileJSON = require('./load_tilejson');
 const TileBounds = require('./tile_bounds');
 const Texture = require('../render/texture');

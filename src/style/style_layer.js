@@ -1,6 +1,6 @@
 const { filterObject } = require('../util/object');
 
-const { Evented } = require('../util/evented');
+const { Evented } = require('@mapwhit/events');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
 const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 

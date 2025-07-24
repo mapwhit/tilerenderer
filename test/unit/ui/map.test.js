@@ -4,7 +4,7 @@ const Map = require('../../../src/ui/map');
 const LngLat = require('../../../src/geo/lng_lat');
 const Tile = require('../../../src/source/tile');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
-const { Event, ErrorEvent } = require('../../../src/util/evented');
+const { Event, ErrorEvent } = require('@mapwhit/events');
 
 const fixed = require('../../util/mapbox-gl-js-test/fixed');
 const fixedNum = fixed.Num;
