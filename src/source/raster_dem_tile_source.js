@@ -1,6 +1,6 @@
 const browser = require('../util/browser');
 const loadImage = require('../util/loader/image');
-const { OverscaledTileID } = require('./tile_id');
+const { calculateKey } = require('./tile_id');
 const RasterTileSource = require('./raster_tile_source');
 // ensure DEMData is registered for worker transfer on main thread:
 require('../data/dem_data');
@@ -69,46 +69,34 @@ class RasterDEMTileSource extends RasterTileSource {
 module.exports = RasterDEMTileSource;
 
 function getNeighboringTiles(tileID) {
-  const canonical = tileID.canonical;
-  const dim = 2 ** canonical.z;
+  const {
+    canonical: { x, y, z },
+    wrap,
+    overscaledZ
+  } = tileID;
+  const dim = 2 ** z;
+  const px = (x - 1 + dim) % dim;
+  const pxw = x === 0 ? wrap - 1 : wrap;
+  const nx = (x + 1 + dim) % dim;
+  const nxw = x + 1 === dim ? wrap + 1 : wrap;
 
-  const px = (canonical.x - 1 + dim) % dim;
-  const pxw = canonical.x === 0 ? tileID.wrap - 1 : tileID.wrap;
-  const nx = (canonical.x + 1 + dim) % dim;
-  const nxw = canonical.x + 1 === dim ? tileID.wrap + 1 : tileID.wrap;
-
-  const neighboringTiles = {};
-  // add adjacent tiles
-  neighboringTiles[new OverscaledTileID(tileID.overscaledZ, pxw, canonical.z, px, canonical.y).key] = {
-    backfilled: false
-  };
-  neighboringTiles[new OverscaledTileID(tileID.overscaledZ, nxw, canonical.z, nx, canonical.y).key] = {
-    backfilled: false
+  const neighboringTiles = {
+    // add adjacent tiles
+    [calculateKey(pxw, overscaledZ, px, y)]: { backfilled: false },
+    [calculateKey(nxw, overscaledZ, nx, y)]: { backfilled: false }
   };
 
   // Add upper neighboringTiles
-  if (canonical.y > 0) {
-    neighboringTiles[new OverscaledTileID(tileID.overscaledZ, pxw, canonical.z, px, canonical.y - 1).key] = {
-      backfilled: false
-    };
-    neighboringTiles[
-      new OverscaledTileID(tileID.overscaledZ, tileID.wrap, canonical.z, canonical.x, canonical.y - 1).key
-    ] = { backfilled: false };
-    neighboringTiles[new OverscaledTileID(tileID.overscaledZ, nxw, canonical.z, nx, canonical.y - 1).key] = {
-      backfilled: false
-    };
+  if (y > 0) {
+    neighboringTiles[calculateKey(pxw, overscaledZ, px, y - 1)] = { backfilled: false };
+    neighboringTiles[calculateKey(wrap, overscaledZ, x, y - 1)] = { backfilled: false };
+    neighboringTiles[calculateKey(nxw, overscaledZ, nx, y - 1)] = { backfilled: false };
   }
   // Add lower neighboringTiles
-  if (canonical.y + 1 < dim) {
-    neighboringTiles[new OverscaledTileID(tileID.overscaledZ, pxw, canonical.z, px, canonical.y + 1).key] = {
-      backfilled: false
-    };
-    neighboringTiles[
-      new OverscaledTileID(tileID.overscaledZ, tileID.wrap, canonical.z, canonical.x, canonical.y + 1).key
-    ] = { backfilled: false };
-    neighboringTiles[new OverscaledTileID(tileID.overscaledZ, nxw, canonical.z, nx, canonical.y + 1).key] = {
-      backfilled: false
-    };
+  if (y + 1 < dim) {
+    neighboringTiles[calculateKey(pxw, overscaledZ, px, y + 1)] = { backfilled: false };
+    neighboringTiles[calculateKey(wrap, overscaledZ, x, y + 1)] = { backfilled: false };
+    neighboringTiles[calculateKey(nxw, overscaledZ, nx, y + 1)] = { backfilled: false };
   }
 
   return neighboringTiles;
