@@ -18,7 +18,7 @@ const {
   GlyphOffsetArray,
   SymbolLineVertexArray
 } = require('../array_types');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const SegmentVector = require('../segment');
 const { ProgramConfigurationSet } = require('../program_configuration');
 const { TriangleIndexArray, LineIndexArray } = require('../index_array_type');

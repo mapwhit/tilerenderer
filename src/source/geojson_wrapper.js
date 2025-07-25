@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const { VectorTileFeature } = require('@mapwhit/vector-tile');
 const EXTENT = require('../data/extent');
 

@@ -1,6 +1,6 @@
 const { default: Queue } = require('tinyqueue');
 
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const { distToSegmentSquared } = require('./intersection_tests');
 
 /**

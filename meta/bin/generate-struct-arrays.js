@@ -247,7 +247,7 @@ fs.writeFileSync(
 const assert = require('assert');
 const { Struct, StructArray } = require('../util/struct_array');
 const { register } = require('../util/transfer_registry');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 ${layouts.map(structArrayLayoutJs).join('\n')}
 ${arraysWithStructAccessors.map(structArrayJs).join('\n')}

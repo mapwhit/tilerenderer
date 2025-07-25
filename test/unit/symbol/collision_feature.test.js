@@ -1,7 +1,7 @@
 const { test } = require('../../util/mapbox-gl-js-test');
 const CollisionFeature = require('../../../src/symbol/collision_feature');
 const Anchor = require('../../../src/symbol/anchor');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const { CollisionBoxArray } = require('../../../src/data/array_types');
 
 test('CollisionFeature', async t => {

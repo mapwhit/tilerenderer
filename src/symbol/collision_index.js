@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 const intersectionTests = require('../util/intersection_tests');
 const Grid = require('./grid_index');

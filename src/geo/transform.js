@@ -1,6 +1,6 @@
 const LngLat = require('./lng_lat');
 
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const Coordinate = require('./coordinate');
 const { wrap, clamp } = require('../util/util');
 const interpolate = require('../util/interpolate');

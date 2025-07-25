@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 /**
  * A CollisionFeature represents the area of the tile covered by a single label.
