@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 const { mat4, vec4 } = require('@mapbox/gl-matrix');
 const symbolSize = require('./symbol_size');

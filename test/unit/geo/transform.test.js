@@ -1,5 +1,5 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const Transform = require('../../../src/geo/transform');
 const LngLat = require('../../../src/geo/lng_lat');
 const { OverscaledTileID, CanonicalTileID } = require('../../../src/source/tile_id');

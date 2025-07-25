@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 const StyleLayer = require('../style_layer');
 const LineBucket = require('../../data/bucket/line_bucket');

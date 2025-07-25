@@ -1,5 +1,5 @@
 const { isCounterClockwise } = require('./util');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 module.exports = {
   polygonIntersectsBufferedPoint,

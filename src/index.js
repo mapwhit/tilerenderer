@@ -7,7 +7,7 @@ module.exports = {
   Style: require('./style/style'),
   LngLat: require('./geo/lng_lat'),
   LngLatBounds: require('./geo/lng_lat_bounds'),
-  Point: require('@mapbox/point-geometry'),
+  Point: require('@mapbox/point-geometry').default,
   Evented: require('@mapwhit/events').Evented,
   config: require('./util/config'),
 

@@ -5,7 +5,7 @@ const { polygonIntersectsBufferedPoint } = require('../../util/intersection_test
 const { getMaximumPaintValue, translateDistance, translate } = require('../query_utils');
 const properties = require('./circle_style_layer_properties');
 const { vec4 } = require('@mapbox/gl-matrix');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 class CircleStyleLayer extends StyleLayer {
   constructor(layer) {

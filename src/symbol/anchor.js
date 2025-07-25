@@ -1,4 +1,4 @@
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 const { register } = require('../util/transfer_registry');
 

@@ -1,5 +1,5 @@
 const { test } = require('../../util/mapbox-gl-js-test');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 const checkMaxAngle = require('../../../src/symbol/check_max_angle');
 const Anchor = require('../../../src/symbol/anchor');
 

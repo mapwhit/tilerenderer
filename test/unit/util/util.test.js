@@ -10,7 +10,7 @@ const {
   isCounterClockwise,
   isClosedPolygon
 } = require('../../../src/util/util');
-const Point = require('@mapbox/point-geometry');
+const { default: Point } = require('@mapbox/point-geometry');
 
 test('util', async t => {
   t.assert.equal(easeCubicInOut(0), 0, 'easeCubicInOut=0');
