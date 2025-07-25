@@ -146,5 +146,6 @@ register('OverscaledTileID', OverscaledTileID, { omit: ['posMatrix'] });
 module.exports = {
   CanonicalTileID,
   UnwrappedTileID,
-  OverscaledTileID
+  OverscaledTileID,
+  calculateKey
 };
