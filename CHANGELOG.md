@@ -1,4 +1,14 @@
 
+0.51.1 / 2025-07-25
+===================
+
+ * upgrade `@mapbox/unitbezier` to 0.0.1
+ * upgrade `@mapbox/point-geometry` to ~1
+ * remove unused `util/evented` module
+ * use event handling from events module
+ * export map-worker entry point
+ * remove unused private member
+
 0.51.0 / 2025-07-23
 ===================
 
