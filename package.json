@@ -14,7 +14,7 @@
   "dependencies": {
     "@mapbox/gl-matrix": "^0.0.1",
     "@mapbox/point-geometry": "~1",
-    "@mapbox/unitbezier": "^0.0.0",
+    "@mapbox/unitbezier": "^0.0.1",
     "@mapbox/whoots-js": "^3.0.0",
     "@mapwhit/events": "^0.0.1",
     "@mapwhit/geojson-rewind": "^1.0.0",
