@@ -878,9 +878,9 @@ test('camera', async t => {
 
     await t.test('can be called from within a moveend event handler', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
-      stub.callsFake(() => 0);
       camera.easeTo({ center: [100, 0], duration: 10 });
 
       camera.once('moveend', () => {
@@ -892,28 +892,29 @@ test('camera', async t => {
           });
 
           setTimeout(() => {
-            stub.callsFake(() => 30);
+            tick = 30;
             camera.simulateFrame();
           }, 0);
         });
 
         // setTimeout to avoid a synchronous callback
         setTimeout(() => {
-          stub.callsFake(() => 20);
+          tick = 20;
           camera.simulateFrame();
         }, 0);
       });
 
       // setTimeout to avoid a synchronous callback
       setTimeout(() => {
-        stub.callsFake(() => 10);
+        tick = 10;
         camera.simulateFrame();
       }, 0);
     });
 
     await t.test('pans eastward across the antimeridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([170, 0]);
       let crossedAntimeridian;
@@ -929,15 +930,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.easeTo({ center: [-170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -945,7 +945,8 @@ test('camera', async t => {
 
     await t.test('pans westward across the antimeridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([-170, 0]);
       let crossedAntimeridian;
@@ -961,15 +962,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.easeTo({ center: [170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1026,7 +1026,8 @@ test('camera', async t => {
     await t.test('Zoom out from the same position to the same position with animation', (t, done) => {
       const pos = { lng: 0, lat: 0 };
       const camera = createCamera({ zoom: 20, center: pos });
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.once('zoomend', () => {
         t.assert.deepEqual(fixedLngLat(camera.getCenter()), fixedLngLat(pos));
@@ -1034,10 +1035,9 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ zoom: 19, center: pos, duration: 2 });
 
-      stub.callsFake(() => 3);
+      tick = 3;
       camera.simulateFrame();
     });
 
@@ -1272,18 +1272,17 @@ test('camera', async t => {
           t.assert.equal(d.data, 'ok');
           done();
         });
-
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.flyTo({ center: [100, 0], duration: 10 }, eventData);
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1298,8 +1297,8 @@ test('camera', async t => {
 
     await t.test('can be called from within a moveend event handler', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.flyTo({ center: [100, 0], duration: 10 });
       camera.once('moveend', () => {
@@ -1313,15 +1312,15 @@ test('camera', async t => {
       });
 
       setTimeout(() => {
-        stub.callsFake(() => 10);
+        tick = 10;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 20);
+          tick = 20;
           camera.simulateFrame();
 
           setTimeout(() => {
-            stub.callsFake(() => 30);
+            tick = 30;
             camera.simulateFrame();
           }, 0);
         }, 0);
@@ -1344,17 +1343,17 @@ test('camera', async t => {
         done();
       });
 
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.flyTo({ center: [100, 0], zoom: 18, duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1362,7 +1361,8 @@ test('camera', async t => {
 
     await t.test('pans eastward across the prime meridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([-10, 0]);
       let crossedPrimeMeridian;
@@ -1378,15 +1378,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [10, 0], duration: 20 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 20);
+          tick = 20;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1394,7 +1393,8 @@ test('camera', async t => {
 
     await t.test('pans westward across the prime meridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([10, 0]);
       let crossedPrimeMeridian;
@@ -1410,15 +1410,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [-10, 0], duration: 20 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 20);
+          tick = 20;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1426,7 +1425,8 @@ test('camera', async t => {
 
     await t.test('pans eastward across the antimeridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([170, 0]);
       let crossedAntimeridian;
@@ -1442,15 +1442,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [-170, 0], duration: 20 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 20);
+          tick = 20;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1458,7 +1457,8 @@ test('camera', async t => {
 
     await t.test('pans westward across the antimeridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([-170, 0]);
       let crossedAntimeridian;
@@ -1474,15 +1474,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1490,7 +1489,8 @@ test('camera', async t => {
 
     await t.test('does not pan eastward across the antimeridian if no world copies', (t, done) => {
       const camera = createCamera({ renderWorldCopies: false });
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([170, 0]);
       let crossedAntimeridian;
@@ -1506,15 +1506,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [-170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1522,7 +1521,8 @@ test('camera', async t => {
 
     await t.test('does not pan westward across the antimeridian if no world copies', (t, done) => {
       const camera = createCamera({ renderWorldCopies: false });
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([-170, 0]);
       let crossedAntimeridian;
@@ -1538,15 +1538,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1554,7 +1553,8 @@ test('camera', async t => {
 
     await t.test('jumps back to world 0 when crossing the antimeridian', (t, done) => {
       const camera = createCamera();
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       camera.setCenter([-170, 0]);
 
@@ -1569,15 +1569,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [170, 0], duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1585,7 +1584,8 @@ test('camera', async t => {
 
     await t.test('peaks at the specified zoom level', (t, done) => {
       const camera = createCamera({ zoom: 20 });
-      const stub = t.stub(browser, 'now');
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
 
       const minZoom = 1;
       let zoomed = false;
@@ -1606,15 +1606,14 @@ test('camera', async t => {
         done();
       });
 
-      stub.callsFake(() => 0);
       camera.flyTo({ center: [1, 0], zoom: 20, minZoom, duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 3);
+        tick = 3;
         camera.simulateFrame();
 
         setTimeout(() => {
-          stub.callsFake(() => 10);
+          tick = 10;
           camera.simulateFrame();
         }, 0);
       }, 0);
@@ -1636,12 +1635,12 @@ test('camera', async t => {
         done();
       });
 
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.flyTo({ center: [12, 34], zoom: 30, duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 10);
+        tick = 10;
         camera.simulateFrame();
       }, 0);
     });
@@ -1662,12 +1661,12 @@ test('camera', async t => {
         done();
       });
 
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.flyTo({ center: [12, 34], zoom: 1, duration: 10 });
 
       setTimeout(() => {
-        stub.callsFake(() => 10);
+        tick = 10;
         camera.simulateFrame();
       }, 0);
     });
@@ -1711,11 +1710,11 @@ test('camera', async t => {
         t.assert.ok(!camera.isEasing());
         done();
       });
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.panTo([100, 0], { duration: 1 });
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
       }, 0);
     });
@@ -1732,11 +1731,11 @@ test('camera', async t => {
         t.assert.ok(!camera.isEasing());
         done();
       });
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.zoomTo(3.2, { duration: 1 });
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
       }, 0);
     });
@@ -1753,11 +1752,11 @@ test('camera', async t => {
         t.assert.ok(!camera.isEasing());
         done();
       });
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.rotateTo(90, { duration: 1 });
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
       }, 0);
     });
@@ -1827,12 +1826,12 @@ test('camera', async t => {
         done(); // Fails with "done() called twice" if we get here a second time.
       });
 
-      const stub = t.stub(browser, 'now');
-      stub.callsFake(() => 0);
+      let tick = 0;
+      const stub = t.mock.method(browser, 'now', () => tick);
       camera.panTo([100, 0], { duration: 1 }, eventData);
 
       setTimeout(() => {
-        stub.callsFake(() => 1);
+        tick = 1;
         camera.simulateFrame();
       }, 0);
     });

@@ -42,7 +42,14 @@ test('FillBucket', t => {
 test('FillBucket segmentation', t => {
   // Stub MAX_VERTEX_ARRAY_LENGTH so we can test features
   // breaking across array groups without tests taking a _long_ time.
-  t.stub(segment, 'MAX_VERTEX_ARRAY_LENGTH').value(256);
+  let _MAX_VERTEX_ARRAY_LENGTH;
+  t.before(() => {
+    _MAX_VERTEX_ARRAY_LENGTH = segment.MAX_GLYPHS;
+    segment.MAX_VERTEX_ARRAY_LENGTH = 256;
+  });
+  t.after(() => {
+    segment.MAX_VERTEX_ARRAY_LENGTH = _MAX_VERTEX_ARRAY_LENGTH;
+  });
 
   const layer = new FillStyleLayer({
     id: 'test',

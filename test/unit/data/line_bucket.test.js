@@ -62,11 +62,18 @@ test('LineBucket', t => {
 });
 
 test('LineBucket segmentation', t => {
-  t.stub(console, 'warn');
-
   // Stub MAX_VERTEX_ARRAY_LENGTH so we can test features
   // breaking across array groups without tests taking a _long_ time.
-  t.stub(segment, 'MAX_VERTEX_ARRAY_LENGTH').value(256);
+  let _MAX_VERTEX_ARRAY_LENGTH;
+  t.before(() => {
+    _MAX_VERTEX_ARRAY_LENGTH = segment.MAX_GLYPHS;
+    segment.MAX_VERTEX_ARRAY_LENGTH = 256;
+  });
+  t.after(() => {
+    segment.MAX_VERTEX_ARRAY_LENGTH = _MAX_VERTEX_ARRAY_LENGTH;
+  });
+
+  const warn = t.mock.method(console, 'warn');
 
   const layer = new LineStyleLayer({ id: 'test', type: 'line' });
   layer.recalculate({ zoom: 0, zoomHistory: {} });
@@ -100,5 +107,5 @@ test('LineBucket segmentation', t => {
     }
   ]);
 
-  t.assert.equal(console.warn.callCount, 1);
+  t.assert.equal(warn.mock.callCount(), 1);
 });

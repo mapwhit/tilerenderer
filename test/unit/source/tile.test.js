@@ -108,12 +108,12 @@ test('Tile', async t => {
     await t.test('loadVectorData unloads existing data before overwriting it', t => {
       const tile = new Tile(new OverscaledTileID(1, 0, 1, 1, 1));
       tile.state = 'loaded';
-      t.stub(tile, 'unloadVectorData');
+      t.mock.method(tile, 'unloadVectorData');
       const painter = {};
 
       tile.loadVectorData(null, painter);
 
-      t.assert.ok(tile.unloadVectorData.calledWith());
+      t.assert.deepEqual(tile.unloadVectorData.mock.calls[0].arguments, []);
     });
 
     await t.test('loadVectorData preserves the most recent rawTileData', t => {

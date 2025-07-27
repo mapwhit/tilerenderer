@@ -10,8 +10,8 @@ test('glyphCache', async t => {
   let parseGlyphs;
 
   t.beforeEach(t => {
-    actor = { send: t.stub() };
-    parseGlyphs = t.stub();
+    actor = { send: t.mock.fn() };
+    parseGlyphs = t.mock.fn();
     glyphs = makeGlyphs({ actor: actor, mapId: 'test-map-id', parseGlyphs });
   });
 
@@ -34,15 +34,15 @@ test('glyphCache', async t => {
       { id: 1, data: 'glyph1' }
     ];
 
-    actor.send.resolves(glyphData);
-    parseGlyphs.returns(parsedGlyphs);
+    actor.send.mock.mockImplementation(() => Promise.resolve(glyphData));
+    parseGlyphs.mock.mockImplementation(() => parsedGlyphs);
 
     const result = await glyphs.getGlyphs({ stacks });
 
-    t.assert.strictEqual(actor.send.callCount, 2);
-    t.assert.strictEqual(actor.send.firstCall.args[0], 'loadGlyphRange');
-    t.assert.deepStrictEqual(actor.send.firstCall.args[1], { stack: 'Arial', range: 0 });
-    t.assert.deepStrictEqual(actor.send.secondCall.args[1], { stack: 'Arial', range: 1 });
+    t.assert.strictEqual(actor.send.mock.callCount(), 2);
+    t.assert.strictEqual(actor.send.mock.calls[0].arguments[0], 'loadGlyphRange');
+    t.assert.deepStrictEqual(actor.send.mock.calls[0].arguments[1], { stack: 'Arial', range: 0 });
+    t.assert.deepStrictEqual(actor.send.mock.calls[1].arguments[1], { stack: 'Arial', range: 1 });
 
     t.assert.deepStrictEqual(result, {
       Arial: {
@@ -61,20 +61,20 @@ test('glyphCache', async t => {
       { id: 1, data: 'glyph1' }
     ];
 
-    actor.send.resolves(glyphData);
-    parseGlyphs.returns(parsedGlyphs);
+    actor.send.mock.mockImplementation(() => Promise.resolve(glyphData));
+    parseGlyphs.mock.mockImplementation(() => parsedGlyphs);
 
     await glyphs.getGlyphs({ stacks });
     await glyphs.getGlyphs({ stacks });
 
-    t.assert.strictEqual(actor.send.callCount, 2); // Only two unique ranges requested
+    t.assert.strictEqual(actor.send.mock.callCount(), 2); // Only two unique ranges requested
   });
 
   await t.test('should handle missing glyph data gracefully', async () => {
     const stacks = { Arial: [0, 1] };
 
-    actor.send.resolves(null); // Simulate missing data
-    parseGlyphs.returns([]);
+    actor.send.mock.mockImplementation(() => Promise.resolve(null)); // Simulate missing data
+    parseGlyphs.mock.mockImplementation(() => []);
 
     const result = await glyphs.getGlyphs({ stacks });
 
@@ -93,10 +93,8 @@ test('glyphCache - real data', async t => {
   }
 
   await t.test('should parse glyph PBF', async () => {
-    const actor = { send: t.stub() };
+    const actor = { send: t.mock.fn(() => load()) };
     const glyphs = makeGlyphs({ actor: actor, mapId: 'test-map-id' });
-
-    actor.send.resolves(load());
 
     const stacks = { Arial: [0, 1, 44, 55] };
     const result = await glyphs.getGlyphs({ stacks });

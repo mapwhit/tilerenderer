@@ -31,20 +31,19 @@ test('VertexBuffer', async t => {
     const context = new Context(require('gl')(10, 10));
     const array = new TestArray();
     const buffer = new VertexBuffer(context, array, attributes);
-    t.stub(context.gl, 'enableVertexAttribArray').callsFake(() => {});
+    const enableVertexAttribArray = t.mock.method(context.gl, 'enableVertexAttribArray', () => {});
     buffer.enableAttributes(context.gl, { attributes: { map: 5, box: 6 } });
-    t.assert.deepEqual(context.gl.enableVertexAttribArray.args, [[5], [6]]);
+    t.assert.deepEqual(enableVertexAttribArray.mock.calls[0].arguments, [5]);
+    t.assert.deepEqual(enableVertexAttribArray.mock.calls[1].arguments, [6]);
   });
 
   await t.test('setVertexAttribPointers', t => {
     const context = new Context(require('gl')(10, 10));
     const array = new TestArray();
     const buffer = new VertexBuffer(context, array, attributes);
-    t.stub(context.gl, 'vertexAttribPointer').callsFake(() => {});
+    const vertexAttribPointer = t.mock.method(context.gl, 'vertexAttribPointer', () => {});
     buffer.setVertexAttribPointers(context.gl, { attributes: { map: 5, box: 6 } }, 50);
-    t.assert.deepEqual(context.gl.vertexAttribPointer.args, [
-      [5, 1, context.gl['SHORT'], false, 6, 300],
-      [6, 2, context.gl['SHORT'], false, 6, 304]
-    ]);
+    t.assert.deepEqual(vertexAttribPointer.mock.calls[0].arguments, [5, 1, context.gl['SHORT'], false, 6, 300]);
+    t.assert.deepEqual(vertexAttribPointer.mock.calls[1].arguments, [6, 2, context.gl['SHORT'], false, 6, 304]);
   });
 });

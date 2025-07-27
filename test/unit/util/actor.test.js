@@ -15,7 +15,7 @@ test('Actor', async t => {
   });
 
   await t.test('forwards responses to correct callback with promises', async t => {
-    t.stub(WebWorker, 'Worker').callsFake(function Worker(self) {
+    t.mock.method(WebWorker, 'Worker', function Worker(self) {
       this.self = self;
       this.actor = new Actor(self, this);
       this.test = function (mapId, params) {
@@ -37,7 +37,7 @@ test('Actor', async t => {
   await t.test('targets worker-initiated messages to correct map instance', async t => {
     let workerActor;
 
-    t.stub(WebWorker, 'Worker').callsFake(function Worker(self) {
+    t.mock.method(WebWorker, 'Worker', function Worker(self) {
       this.self = self;
       this.actor = workerActor = new Actor(self, this);
     });

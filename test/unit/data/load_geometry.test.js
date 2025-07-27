@@ -22,20 +22,11 @@ test('loadGeometry extent error', t => {
   const feature = vt.layers.road.feature(0);
   feature.extent = 1024;
 
-  let numWarnings = 0;
-
-  // Use a custom console.warn to count warnings
-  const warn = console.warn;
-  console.warn = function (warning) {
-    if (warning.match(/Geometry exceeds allowed extent, reduce your vector tile buffer size/)) {
-      numWarnings++;
-    }
-  };
-
+  const warn = t.mock.method(console, 'warn', () => {});
   loadGeometry(feature);
-
-  t.assert.equal(numWarnings, 1);
-
-  // Put it back
-  console.warn = warn;
+  t.assert.equal(warn.mock.callCount(), 1);
+  t.assert.match(
+    warn.mock.calls[0].arguments[0],
+    /Geometry exceeds allowed extent, reduce your vector tile buffer size/
+  );
 });

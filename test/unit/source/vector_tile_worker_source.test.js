@@ -32,7 +32,7 @@ test('VectorTileWorkerSource#loadTile - success', async t => {
     }
   };
 
-  t.stub(WorkerTile.prototype, 'parse').resolves({ parsed: true });
+  t.mock.method(WorkerTile.prototype, 'parse', () => Promise.resolve({ parsed: true }));
 
   const result = await source.loadTile(params);
 

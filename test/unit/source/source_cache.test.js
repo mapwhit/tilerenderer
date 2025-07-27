@@ -95,10 +95,10 @@ test('SourceCache#addTile', async t => {
     const sourceCache = createSourceCache({
       loadTile(tile) {
         sourceCache.on('data', () => {
-          t.assert.equal(updateFeaturesSpy.getCalls().length, 1);
+          t.assert.equal(updateFeaturesSpy.mock.callCount(), 1);
           done();
         });
-        updateFeaturesSpy = t.spy(tile, 'setFeatureState');
+        updateFeaturesSpy = t.mock.method(tile, 'setFeatureState');
         tile.state = 'loaded';
         return Promise.resolve();
       }
@@ -150,12 +150,12 @@ test('SourceCache#addTile', async t => {
     sourceCache.updateCacheSize(tr);
 
     const tile = sourceCache._addTile(tileID);
-    const updateFeaturesSpy = t.spy(tile, 'setFeatureState');
+    const updateFeaturesSpy = t.mock.method(tile, 'setFeatureState');
 
     sourceCache._removeTile(tileID.key);
     sourceCache._addTile(tileID);
 
-    t.assert.equal(updateFeaturesSpy.getCalls().length, 1);
+    t.assert.equal(updateFeaturesSpy.mock.callCount(), 1);
   });
 
   await t.test('does not reuse wrapped tile', t => {
@@ -365,7 +365,7 @@ test('SourceCache / Source lifecycle', async t => {
       }
     });
 
-    const reloadTileSpy = t.spy(sourceCache, '_reloadTile');
+    const reloadTileSpy = t.mock.method(sourceCache, '_reloadTile');
     sourceCache.on('data', e => {
       if (e.dataType === 'source' && e.sourceDataType === 'metadata') {
         sourceCache.update(transform);
@@ -375,7 +375,7 @@ test('SourceCache / Source lifecycle', async t => {
     sourceCache.onAdd();
     // we expect the source cache to have five tiles, but only to have reloaded one
     t.assert.equal(Object.keys(sourceCache._tiles).length, 5);
-    t.assert.ok(reloadTileSpy.calledOnce);
+    t.assert.equal(reloadTileSpy.mock.callCount(), 1);
   });
 });
 
@@ -641,7 +641,7 @@ test('SourceCache#update', async t => {
 
     const start = Date.now();
     let time = start;
-    t.stub(browser, 'now').callsFake(() => time);
+    t.mock.method(browser, 'now', () => time);
 
     const sourceCache = createSourceCache({
       loadTile(tile) {
@@ -755,11 +755,11 @@ test('SourceCache#_updateRetainedTiles', async t => {
       }
     });
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     const idealTile = new OverscaledTileID(1, 0, 1, 1, 1);
     stateCache[idealTile.key] = 'loaded';
     sourceCache._updateRetainedTiles([idealTile], 1);
-    t.assert.ok(getTileSpy.notCalled);
+    t.assert.equal(getTileSpy.mock.callCount(), 0);
     t.assert.deepEqual(sourceCache.getIds(), [idealTile.key]);
   });
 
@@ -815,16 +815,14 @@ test('SourceCache#_updateRetainedTiles', async t => {
       }
     });
 
-    const addTileSpy = t.spy(sourceCache, '_addTile');
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const addTileSpy = t.mock.method(sourceCache, '_addTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
 
     const idealTiles = [new OverscaledTileID(1, 0, 1, 1, 1), new OverscaledTileID(1, 0, 1, 0, 1)];
     stateCache[idealTiles[0].key] = 'loaded';
     const retained = sourceCache._updateRetainedTiles(idealTiles, 1);
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // when child tiles aren't found, check and request parent tile
         new OverscaledTileID(0, 0, 0, 0, 0)
@@ -841,8 +839,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
       // 1/1/1
       97: new OverscaledTileID(1, 0, 1, 1, 1)
     });
-    addTileSpy.restore();
-    getTileSpy.restore();
   });
 
   await t.test("don't use wrong parent tile", t => {
@@ -860,14 +856,12 @@ test('SourceCache#_updateRetainedTiles', async t => {
     sourceCache._tiles[new OverscaledTileID(1, 0, 1, 1, 0).key] = new Tile(new OverscaledTileID(1, 0, 1, 1, 0));
     sourceCache._tiles[new OverscaledTileID(1, 0, 1, 1, 0).key].state = 'loaded';
 
-    const addTileSpy = t.spy(sourceCache, '_addTile');
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const addTileSpy = t.mock.method(sourceCache, '_addTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
 
     sourceCache._updateRetainedTiles([idealTile], 2);
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // parents
         new OverscaledTileID(1, 0, 1, 0, 0), // not found
@@ -876,9 +870,7 @@ test('SourceCache#_updateRetainedTiles', async t => {
     );
 
     t.assert.deepEqual(
-      addTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      addTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // ideal tile
         new OverscaledTileID(2, 0, 2, 0, 0),
@@ -887,9 +879,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
         new OverscaledTileID(0, 0, 0, 0, 0) // not found
       ]
     );
-
-    addTileSpy.restore();
-    getTileSpy.restore();
   });
 
   await t.test('use parent tile when ideal tile is not loaded', t => {
@@ -905,15 +894,13 @@ test('SourceCache#_updateRetainedTiles', async t => {
     sourceCache._tiles['0'] = new Tile(new OverscaledTileID(0, 0, 0, 0, 0));
     sourceCache._tiles['0'].state = 'loaded';
 
-    const addTileSpy = t.spy(sourceCache, '_addTile');
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const addTileSpy = t.mock.method(sourceCache, '_addTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
 
     const retained = sourceCache._updateRetainedTiles([idealTile], 1);
 
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // parents
         new OverscaledTileID(0, 0, 0, 0, 0) // found
@@ -931,14 +918,14 @@ test('SourceCache#_updateRetainedTiles', async t => {
       "retain ideal and parent tile when ideal tiles aren't loaded"
     );
 
-    addTileSpy.resetHistory();
-    getTileSpy.resetHistory();
+    addTileSpy.mock.resetCalls();
+    getTileSpy.mock.resetCalls();
 
     // now make sure we don't retain the parent tile when the ideal tile is loaded
     sourceCache._tiles[idealTile.key].state = 'loaded';
     const retainedLoaded = sourceCache._updateRetainedTiles([idealTile], 1);
 
-    t.assert.ok(getTileSpy.notCalled);
+    t.assert.equal(getTileSpy.mock.callCount(), 0);
     t.assert.deepEqual(
       retainedLoaded,
       {
@@ -947,9 +934,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
       },
       "only retain ideal tiles when they're all loaded"
     );
-
-    addTileSpy.restore();
-    getTileSpy.restore();
   });
 
   await t.test("don't load parent if all immediate children are loaded", t => {
@@ -972,10 +956,10 @@ test('SourceCache#_updateRetainedTiles', async t => {
       sourceCache._tiles[t.key].state = 'loaded';
     });
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     const retained = sourceCache._updateRetainedTiles([idealTile], 2);
     // parent tile isn't requested because all covering children are loaded
-    t.assert.deepEqual(getTileSpy.getCalls(), []);
+    t.assert.equal(getTileSpy.mock.callCount(), 0);
     t.assert.deepEqual(Object.keys(retained), [idealTile.key].concat(loadedTiles.map(t => t.key)));
   });
 
@@ -993,12 +977,10 @@ test('SourceCache#_updateRetainedTiles', async t => {
       sourceCache._tiles[t.key].state = 'loaded';
     });
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     let retained = sourceCache._updateRetainedTiles([idealTile], 1);
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // parent
         new OverscaledTileID(0, 0, 0, 0, 0)
@@ -1019,7 +1001,7 @@ test('SourceCache#_updateRetainedTiles', async t => {
       'retains children and parent when ideal tile is partially covered by a loaded child tile'
     );
 
-    getTileSpy.restore();
+    getTileSpy.mock.restore();
     // remove child tile and check that it only uses parent tile
     delete sourceCache._tiles['2'];
     retained = sourceCache._updateRetainedTiles([idealTile], 1);
@@ -1052,13 +1034,11 @@ test('SourceCache#_updateRetainedTiles', async t => {
       sourceCache._tiles[t.key].state = 'loaded';
     });
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     const retained = sourceCache._updateRetainedTiles([idealTile], 2);
 
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [],
       "doesn't request parent tiles bc they are lower than minzoom"
     );
@@ -1071,8 +1051,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
       },
       "doesn't retain parent tiles below minzoom"
     );
-
-    getTileSpy.restore();
   });
 
   await t.test('use overzoomed tile above maxzoom', t => {
@@ -1085,13 +1063,11 @@ test('SourceCache#_updateRetainedTiles', async t => {
     });
     const idealTile = new OverscaledTileID(2, 0, 2, 0, 0);
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     const retained = sourceCache._updateRetainedTiles([idealTile], 2);
 
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // overzoomed child
         new OverscaledTileID(3, 0, 2, 0, 0),
@@ -1110,8 +1086,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
       },
       "doesn't retain child tiles above maxzoom"
     );
-
-    getTileSpy.restore();
   });
 
   await t.test("dont't ascend multiple times if a tile is not found", t => {
@@ -1123,12 +1097,10 @@ test('SourceCache#_updateRetainedTiles', async t => {
     });
     const idealTiles = [new OverscaledTileID(8, 0, 8, 0, 0), new OverscaledTileID(8, 0, 8, 1, 0)];
 
-    const getTileSpy = t.spy(sourceCache, 'getTile');
+    const getTileSpy = t.mock.method(sourceCache, 'getTile');
     sourceCache._updateRetainedTiles(idealTiles, 8);
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // parent tile ascent
         new OverscaledTileID(7, 0, 7, 0, 0),
@@ -1143,7 +1115,7 @@ test('SourceCache#_updateRetainedTiles', async t => {
       'only ascends up a tile pyramid once'
     );
 
-    getTileSpy.resetHistory();
+    getTileSpy.mock.resetCalls();
 
     const loadedTiles = [new OverscaledTileID(4, 0, 4, 0, 0)];
     loadedTiles.forEach(t => {
@@ -1153,9 +1125,7 @@ test('SourceCache#_updateRetainedTiles', async t => {
 
     sourceCache._updateRetainedTiles(idealTiles, 8);
     t.assert.deepEqual(
-      getTileSpy.getCalls().map(c => {
-        return c.args[0];
-      }),
+      getTileSpy.mock.calls.map(c => c.arguments[0]),
       [
         // parent tile ascent
         new OverscaledTileID(7, 0, 7, 0, 0),
@@ -1165,8 +1135,6 @@ test('SourceCache#_updateRetainedTiles', async t => {
       ],
       'ascent stops if a loaded parent tile is found'
     );
-
-    getTileSpy.restore();
   });
 
   await t.test('adds correct leaded parent tiles for overzoomed tiles', t => {
