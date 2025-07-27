@@ -1,6 +1,6 @@
 const { RGBAImage } = require('../util/image');
 const { register } = require('../util/transfer_registry');
-const potpack = require('potpack');
+const { default: potpack } = require('potpack');
 
 const padding = 1;
 

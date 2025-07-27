@@ -1,4 +1,4 @@
-const potpack = require('potpack');
+const { default: potpack } = require('potpack');
 
 const { RGBAImage } = require('../util/image');
 const { ImagePosition } = require('./image_atlas');
