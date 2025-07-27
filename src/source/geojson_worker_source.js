@@ -1,7 +1,7 @@
 const rewind = require('@mapwhit/geojson-rewind');
 const GeoJSONWrapper = require('./geojson_wrapper');
 const { fromVectorTileJs } = require('@mapwhit/vt-pbf');
-const supercluster = require('supercluster');
+const { default: Supercluster } = require('supercluster');
 const { default: geojsonvt } = require('geojson-vt');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
@@ -81,7 +81,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
     this._createGeoJSONIndex = params.cluster
       ? () => {
           rewind(data, true);
-          return supercluster(params.superclusterOptions).load(data.features);
+          return new Supercluster(params.superclusterOptions).load(data.features);
         }
       : () => {
           rewind(data, true);

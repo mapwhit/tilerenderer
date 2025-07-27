@@ -30,7 +30,7 @@
     "murmurhash-js": "^1.0.0",
     "potpack": "^1.0.1",
     "quickselect": "^3.0.0",
-    "supercluster": "^2.0.1",
+    "supercluster": "^8.0.1",
     "tinyqueue": "^3.0.0"
   },
   "browser": {
