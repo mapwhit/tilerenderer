@@ -796,9 +796,9 @@ test('camera', async t => {
           moved = d.data;
         })
         .on('moveend', d => {
-          t.assert.notOk(camera._zooming);
-          t.assert.notOk(camera._panning);
-          t.assert.notOk(camera._rotating);
+          t.assert.ok(!camera._zooming);
+          t.assert.ok(!camera._panning);
+          t.assert.ok(!camera._rotating);
 
           t.assert.equal(movestarted, 'ok');
           t.assert.equal(moved, 'ok');
@@ -1149,9 +1149,9 @@ test('camera', async t => {
           pitched = d.data;
         })
         .on('moveend', function (d) {
-          t.assert.notOk(this._zooming);
-          t.assert.notOk(this._panning);
-          t.assert.notOk(this._rotating);
+          t.assert.ok(!this._zooming);
+          t.assert.ok(!this._panning);
+          t.assert.ok(!this._rotating);
 
           t.assert.equal(movestarted, 'ok');
           t.assert.equal(moved, 'ok');
@@ -1259,9 +1259,9 @@ test('camera', async t => {
           pitchended = d.data;
         })
         .on('moveend', function (d) {
-          t.assert.notOk(this._zooming);
-          t.assert.notOk(this._panning);
-          t.assert.notOk(this._rotating);
+          t.assert.ok(!this._zooming);
+          t.assert.ok(!this._panning);
+          t.assert.ok(!this._rotating);
 
           t.assert.equal(movestarted, 'ok');
           t.assert.equal(moved, 'ok');
@@ -1507,7 +1507,7 @@ test('camera', async t => {
       });
 
       camera.on('moveend', () => {
-        t.assert.notOk(crossedAntimeridian);
+        t.assert.ok(!crossedAntimeridian);
         done();
       });
 
@@ -1539,7 +1539,7 @@ test('camera', async t => {
       });
 
       camera.on('moveend', () => {
-        t.assert.notOk(crossedAntimeridian);
+        t.assert.ok(!crossedAntimeridian);
         done();
       });
 
@@ -1570,7 +1570,7 @@ test('camera', async t => {
       });
 
       camera.on('moveend', () => {
-        t.assert.notOk(leftWorld0);
+        t.assert.ok(!leftWorld0);
         done();
       });
 

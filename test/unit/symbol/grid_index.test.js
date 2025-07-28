@@ -58,7 +58,7 @@ test('GridIndex', async t => {
     grid.insertCircle(2, -10, 110, 20);
 
     t.assert.ok(grid.hitTestCircle(55, 55, 2));
-    t.assert.notOk(grid.hitTestCircle(10, 10, 10));
+    t.assert.ok(!grid.hitTestCircle(10, 10, 10));
     t.assert.ok(grid.hitTestCircle(0, 100, 10));
     t.assert.ok(grid.hitTestCircle(80, 60, 10));
   });

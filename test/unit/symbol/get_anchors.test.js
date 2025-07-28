@@ -169,6 +169,6 @@ test('getAnchors', async t => {
   await t.test('getCenterAnchor failing maxAngle test', t => {
     const line = [new Point(1, 1), new Point(1, 3), new Point(3, 3)];
     const anchor = getCenterAnchor(line, Math.PI / 4, shapedText, shapedIcon, glyphSize, 1);
-    t.assert.notOk(anchor);
+    t.assert.ok(!anchor);
   });
 });

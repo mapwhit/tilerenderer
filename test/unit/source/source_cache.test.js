@@ -189,7 +189,7 @@ test('SourceCache#removeTile', async t => {
     sourceCache._addTile(tileID);
     sourceCache.on('data', () => {
       sourceCache._removeTile(tileID.key);
-      t.assert.notOk(sourceCache._tiles[tileID.key]);
+      t.assert.ok(!sourceCache._tiles[tileID.key]);
       done();
     });
   });
@@ -243,7 +243,7 @@ test('SourceCache#removeTile', async t => {
 
     const sourceCache = createSourceCache({
       loadTile(tile) {
-        tile.added = t.assert.notOk();
+        tile.added = () => t.assert.fail('should not be called');
         sourceCache._removeTile(tileID.key);
         return Promise.resolve();
       }

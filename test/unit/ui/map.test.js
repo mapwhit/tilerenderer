@@ -195,7 +195,7 @@ test('Map', async t => {
         zoom: 10,
         center: [-77.0186, 38.8888]
       });
-      t.assert.notOk(map.transform.unmodified, 'map transform is modified by options');
+      t.assert.ok(!map.transform.unmodified, 'map transform is modified by options');
       map.setStyle(createStyle());
       map.on('style.load', () => {
         t.assert.deepEqual(fixedLngLat(map.transform.center), fixedLngLat({ lng: -77.0186, lat: 38.8888 }));
@@ -211,7 +211,7 @@ test('Map', async t => {
       t.assert.ok(map.transform.unmodified);
       map.setZoom(10);
       map.setCenter([-77.0186, 38.8888]);
-      t.assert.notOk(map.transform.unmodified, 'map transform is modified via setters');
+      t.assert.ok(!map.transform.unmodified, 'map transform is modified via setters');
       map.setStyle(createStyle());
       map.on('style.load', () => {
         t.assert.deepEqual(fixedLngLat(map.transform.center), fixedLngLat({ lng: -77.0186, lat: 38.8888 }));
@@ -1303,7 +1303,7 @@ test('Map', async t => {
       timer = setTimeout(() => {
         map.off('render');
         map.on('render', t.fail);
-        t.assert.notOk(map._frameId, 'no rerender scheduled');
+        t.assert.ok(!map._frameId, 'no rerender scheduled');
         done();
       }, 100);
     });

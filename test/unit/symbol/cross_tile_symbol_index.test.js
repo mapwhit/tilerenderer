@@ -220,5 +220,5 @@ test('CrossTileSymbolIndex.pruneUnusedLayers', t => {
 
   // remove styleLayer
   index.pruneUnusedLayers([]);
-  t.assert.notOk(index.layerIndexes[styleLayer.id]);
+  t.assert.ok(!index.layerIndexes[styleLayer.id]);
 });

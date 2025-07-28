@@ -2077,9 +2077,9 @@ test('Style', async t => {
       style.setPaintProperty('first', 'text-color', 'black');
       style.setPaintProperty('first', 'text-halo-color', 'white');
 
-      t.assert.notOk(style.fire.mock.callCount() > 0, 'fire is deferred');
-      t.assert.notOk(style._reloadSource.mock.callCount() > 0, '_reloadSource is deferred');
-      t.assert.notOk(style._updateWorkerLayers.mock.callCount() > 0, '_updateWorkerLayers is deferred');
+      t.assert.ok(!style.fire.mock.callCount() > 0, 'fire is deferred');
+      t.assert.ok(!style._reloadSource.mock.callCount() > 0, '_reloadSource is deferred');
+      t.assert.ok(!style._updateWorkerLayers.mock.callCount() > 0, '_updateWorkerLayers is deferred');
 
       style.update({});
 

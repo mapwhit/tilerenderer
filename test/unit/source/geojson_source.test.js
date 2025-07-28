@@ -83,7 +83,7 @@ test('GeoJSONSource#onRemove', async t => {
       { data: {} },
       {
         send: function (type, data, callback) {
-          t.assert.notOk(callback);
+          t.assert.ok(!callback);
           t.assert.equal(type, 'removeSource');
           t.assert.deepEqual(data, { type: 'geojson', source: 'id' });
           done();
