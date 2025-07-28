@@ -49,6 +49,7 @@ class VectorTileWorkerSource {
     }
     const { vectorTile, rawData } = response;
     const workerTile = new WorkerTile(params);
+    workerTile.globalState = params.globalState;
     workerTile.vectorTile = vectorTile;
     const result = await workerTile.parse(vectorTile, this.layerIndex, this.resources);
     if (rawData) {

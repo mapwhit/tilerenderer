@@ -8,15 +8,17 @@ class EvaluationParameters {
     this.zoom = zoom;
 
     if (options) {
-      this.now = options.now;
-      this.fadeDuration = options.fadeDuration;
-      this.zoomHistory = options.zoomHistory;
-      this.transition = options.transition;
+      this.now = options.now || 0;
+      this.fadeDuration = options.fadeDuration || 0;
+      this.zoomHistory = options.zoomHistory || new ZoomHistory();
+      this.transition = options.transition || {};
+      this.globalState = options.globalState || {};
     } else {
       this.now = 0;
       this.fadeDuration = 0;
       this.zoomHistory = new ZoomHistory();
       this.transition = {};
+      this.globalState = {};
     }
   }
 

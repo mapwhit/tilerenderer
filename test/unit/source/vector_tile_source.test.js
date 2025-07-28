@@ -19,7 +19,8 @@ function createSource(options) {
     options.eventedParent
   );
   source.onAdd({
-    transform: { showCollisionBoxes: false }
+    transform: { showCollisionBoxes: false },
+    getGlobalState: () => ({})
   });
 
   source.on('error', e => {

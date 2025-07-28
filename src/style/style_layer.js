@@ -3,6 +3,7 @@ const { filterObject } = require('../util/object');
 const { Evented } = require('@mapwhit/events');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
 const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
+const featureFilter = require('../style-spec/feature_filter');
 
 const TRANSITION_SUFFIX = '-transition';
 
@@ -23,9 +24,10 @@ class StyleLayer extends Evented {
       this.source = layer.source;
       this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
+      this._featureFilter = featureFilter(layer.filter);
     }
 
-    this._featureFilter = () => true;
+    this._featureFilter ??= featureFilter.addGlobalStateRefs(() => true);
 
     if (properties.layout) {
       this._unevaluatedLayout = new Layout(properties.layout);
@@ -43,6 +45,11 @@ class StyleLayer extends Evented {
     this._transitioningPaint = this._transitionablePaint.untransitioned();
   }
 
+  setFilter(filter) {
+    this.filter = filter;
+    this._featureFilter = featureFilter(filter);
+  }
+
   getCrossfadeParameters() {
     return this._crossfadeParameters;
   }
@@ -53,6 +60,31 @@ class StyleLayer extends Evented {
     }
 
     return this._unevaluatedLayout.getValue(name);
+  }
+
+  /**
+   * Get list of global state references that are used within layout or filter properties.
+   * This is used to determine if layer source need to be reloaded when global state property changes.
+   *
+   */
+  getLayoutAffectingGlobalStateRefs() {
+    const globalStateRefs = new Set();
+
+    if (this._unevaluatedLayout) {
+      for (const propertyName in this._unevaluatedLayout._values) {
+        const value = this._unevaluatedLayout._values[propertyName];
+
+        for (const globalStateRef of value.getGlobalStateRefs()) {
+          globalStateRefs.add(globalStateRef);
+        }
+      }
+    }
+
+    for (const globalStateRef of this._featureFilter.getGlobalStateRefs()) {
+      globalStateRefs.add(globalStateRef);
+    }
+
+    return globalStateRefs;
   }
 
   setLayoutProperty(name, value) {

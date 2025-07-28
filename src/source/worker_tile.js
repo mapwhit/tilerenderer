@@ -31,6 +31,7 @@ class WorkerTile {
     this.source = params.source;
     this.overscaling = this.tileID.overscaleFactor();
     this.showCollisionBoxes = params.showCollisionBoxes;
+    this.globalState = params.globalState;
   }
 
   async parse(data, layerIndex, resources) {
@@ -91,7 +92,8 @@ class WorkerTile {
           overscaling: this.overscaling,
           collisionBoxArray: this.collisionBoxArray,
           sourceLayerIndex: sourceLayerIndex,
-          sourceID: this.source
+          sourceID: this.source,
+          globalState: this.globalState
         }));
 
         bucket.populate(features, options);

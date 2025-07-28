@@ -267,6 +267,25 @@ test('Style', async t => {
         style._layers.background.fire(new Event('error', { mapbox: true }));
       });
     });
+
+    await t.test('sets state if defined', (t, done) => {
+      const map = new StubMap();
+      style = new Style(map);
+      style.loadJSON(
+        createStyleJSON({
+          state: {
+            foo: {
+              default: 'bar'
+            }
+          }
+        })
+      );
+
+      style.on('style.load', () => {
+        t.assert.deepEqual(style.getGlobalState(), { foo: 'bar' });
+        done();
+      });
+    });
   });
 
   await t.test('Style#_remove', async t => {
@@ -564,10 +583,9 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throws before loaded', (t, done) => {
+    await t.test('throws before loaded', t => {
       style = new Style(new StubMap());
       t.assert.throws(() => style.setGeoJSONSourceData('source-id', geoJSON), /load/i);
-      done();
     });
 
     await t.test('throws on non-existence', (t, done) => {
@@ -575,6 +593,310 @@ test('Style', async t => {
       style.loadJSON(createStyleJSON());
       style.on('style.load', () => {
         t.assert.throws(() => style.setGeoJSONSourceData('source-id', geoJSON), /There is no source with this ID/);
+        done();
+      });
+    });
+  });
+
+  await t.test('Style#setGlobalState', async t => {
+    let style;
+    t.afterEach(() => {
+      style._remove();
+    });
+
+    await t.test('throws before loaded', t => {
+      style = new Style(new StubMap());
+      t.assert.throws(() => style.setGlobalState({}), /load/i);
+    });
+
+    await t.test('sets global state', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(createStyleJSON());
+      style.on('style.load', () => {
+        style.setGlobalState({ accentColor: { default: 'yellow' } });
+        t.assert.deepEqual(style.getGlobalState(), { accentColor: 'yellow' });
+        done();
+      });
+    });
+
+    await t.test('reloads sources when state property is used in filter property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'circle-source-id': createGeoJSONSource(),
+            'fill-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'circle',
+              source: 'circle-source-id',
+              filter: ['global-state', 'showCircles']
+            },
+            {
+              id: 'fourth-layer-id',
+              type: 'fill',
+              source: 'fill-source-id',
+              filter: ['global-state', 'showFill']
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+        t.spy(style.sourceCaches['fill-source-id'], 'resume');
+        t.spy(style.sourceCaches['fill-source-id'], 'reload');
+
+        style.setGlobalState({ showCircles: { default: true }, showFill: { default: false } });
+
+        t.assert.ok(style.sourceCaches['circle-source-id'].resume.called);
+        t.assert.ok(style.sourceCaches['circle-source-id'].reload.called);
+        t.assert.ok(style.sourceCaches['fill-source-id'].resume.called);
+        t.assert.ok(style.sourceCaches['fill-source-id'].reload.called);
+        done();
+      });
+    });
+
+    await t.test('does not reload sources when state property is set to the same value as current one', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          state: {
+            showCircles: {
+              default: true
+            }
+          },
+          sources: {
+            'circle-source-id': createGeoJSONSource(),
+            'fill-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'circle',
+              source: 'circle-source-id',
+              filter: ['global-state', 'showCircles']
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+
+        style.setGlobalState({ showCircles: { default: true } });
+
+        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
+        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
+        done();
+      });
+    });
+
+    await t.test('does not reload sources when new state property is used in paint property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'circle-source-id': createGeoJSONSource(),
+            'fill-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'circle',
+              source: 'circle-source-id',
+              paint: {
+                'circle-color': ['global-state', 'circleColor']
+              }
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+
+        style.setGlobalState({ circleColor: { default: 'red' } });
+
+        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
+        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
+        done();
+      });
+    });
+  });
+
+  await t.test('Style#setGlobalStateProperty', async t => {
+    let style;
+    t.afterEach(() => {
+      style._remove();
+    });
+
+    await t.test('throws before loaded', t => {
+      style = new Style(new StubMap());
+      t.assert.throws(() => style.setGlobalStateProperty('accentColor', 'yellow'), /load/i);
+    });
+
+    await t.test('sets property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(createStyleJSON());
+
+      style.on('style.load', () => {
+        style.setGlobalStateProperty('accentColor', 'yellow');
+
+        t.assert.deepEqual(style.getGlobalState(), { accentColor: 'yellow' });
+        done();
+      });
+    });
+
+    await t.test('sets property to default value when called with null', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          state: {
+            accentColor: {
+              default: 'blue'
+            }
+          }
+        })
+      );
+
+      style.on('style.load', () => {
+        style.setGlobalStateProperty('accentColor', 'yellow');
+        t.assert.deepEqual(style.getGlobalState(), { accentColor: 'yellow' });
+        style.setGlobalStateProperty('accentColor', null);
+        t.assert.deepEqual(style.getGlobalState(), { accentColor: 'blue' });
+        done();
+      });
+    });
+
+    await t.test('reloads sources when state property is used in filter property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'circle-1-source-id': createGeoJSONSource(),
+            'circle-2-source-id': createGeoJSONSource(),
+            'fill-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'circle',
+              source: 'circle-1-source-id',
+              filter: ['global-state', 'showCircles']
+            },
+            {
+              id: 'second-layer-id',
+              type: 'fill',
+              source: 'fill-source-id'
+            },
+            {
+              id: 'third-layer-id',
+              type: 'circle',
+              source: 'circle-2-source-id',
+              filter: ['global-state', 'showCircles']
+            },
+            {
+              id: 'fourth-layer-id',
+              type: 'fill',
+              source: 'fill-source-id',
+              filter: ['global-state', 'showFill']
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle-1-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-1-source-id'], 'reload');
+        t.spy(style.sourceCaches['circle-2-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-2-source-id'], 'reload');
+        t.spy(style.sourceCaches['fill-source-id'], 'resume');
+        t.spy(style.sourceCaches['fill-source-id'], 'reload');
+
+        style.setGlobalStateProperty('showCircles', true);
+
+        // The circle sources should be reloaded
+        t.assert.ok(style.sourceCaches['circle-1-source-id'].resume.called);
+        t.assert.ok(style.sourceCaches['circle-1-source-id'].reload.called);
+        t.assert.ok(style.sourceCaches['circle-2-source-id'].resume.called);
+        t.assert.ok(style.sourceCaches['circle-2-source-id'].reload.called);
+
+        // The fill source should not be reloaded
+        t.assert.notOk(style.sourceCaches['fill-source-id'].resume.called);
+        t.assert.notOk(style.sourceCaches['fill-source-id'].reload.called);
+        done();
+      });
+    });
+
+    await t.test('does not reload sources when state property is set to the same value as current one', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          state: {
+            showCircle: {
+              default: true
+            }
+          },
+          sources: {
+            circle: createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'circle',
+              source: 'circle',
+              filter: ['global-state', 'showCircle']
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle'], 'resume');
+        t.spy(style.sourceCaches['circle'], 'reload');
+
+        style.setGlobalStateProperty('showCircle', true);
+
+        t.assert.notOk(style.sourceCaches['circle'].resume.called);
+        t.assert.notOk(style.sourceCaches['circle'].reload.called);
+        done();
+      });
+    });
+
+    await t.test('does not reload sources when state property is only used in paint properties', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'circle-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'layer-id',
+              type: 'circle',
+              source: 'circle-source-id',
+              paint: {
+                'circle-color': ['global-state', 'circleColor']
+              }
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.spy(style.sourceCaches['circle-source-id'], 'resume');
+        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+
+        style.setGlobalStateProperty('circleColor', 'red');
+
+        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
+        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
         done();
       });
     });

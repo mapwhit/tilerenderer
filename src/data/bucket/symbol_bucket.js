@@ -176,6 +176,7 @@ class SymbolBucket {
   constructor(options) {
     this.collisionBoxArray = options.collisionBoxArray;
     this.zoom = options.zoom;
+    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.layerIds = this.layers.map(layer => layer.id);
@@ -258,7 +259,7 @@ class SymbolBucket {
 
     const icons = options.iconDependencies;
     const stacks = options.glyphDependencies;
-    const globalProperties = new EvaluationParameters(this.zoom);
+    const globalProperties = new EvaluationParameters(this.zoom, { globalState: this.globalState });
 
     for (const { feature, index, sourceLayerIndex } of features) {
       if (!layer._featureFilter(globalProperties, feature)) {

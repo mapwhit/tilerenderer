@@ -202,6 +202,29 @@ class Map extends Camera {
   }
 
   /**
+   * Sets a global state property that can be retrieved with the [`global-state` expression](https://maplibre.org/maplibre-style-spec/expressions/#global-state).
+   * If the value is null, it resets the property to its default value defined in the [`state` style property](https://maplibre.org/maplibre-style-spec/root/#state).
+   *
+   * Note that changing `global-state` values defined in layout properties is not supported, and will be ignored.
+   *
+   * @param propertyName - The name of the state property to set.
+   * @param value - The value of the state property to set.
+   */
+  setGlobalStateProperty(propertyName, value) {
+    this.style.setGlobalStateProperty(propertyName, value);
+    return this._update(true);
+  }
+
+  /**
+   * Returns the global map state
+   *
+   * @returns The map state object.
+   */
+  getGlobalState() {
+    return this.style.getGlobalState();
+  }
+
+  /**
    * Adds a {@link IControl} to the map, calling `control.onAdd(this)`.
    *
    * @param {IControl} control The {@link IControl} to add.
@@ -1248,7 +1271,8 @@ class Map extends Camera {
         now,
         fadeDuration: this._fadeDuration,
         zoomHistory: this.style.zoomHistory,
-        transition: this.style.getTransition()
+        transition: this.style.getTransition(),
+        globalState: this.style.getGlobalState()
       });
 
       const factor = parameters.crossFadingFactor();

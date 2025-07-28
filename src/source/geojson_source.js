@@ -184,7 +184,8 @@ class GeoJSONSource extends Evented {
       tileSize: this.tileSize,
       source: this.id,
       pixelRatio: browser.devicePixelRatio,
-      showCollisionBoxes: this.map.showCollisionBoxes
+      showCollisionBoxes: this.map.showCollisionBoxes,
+      globalState: this.map.getGlobalState()
     };
 
     const justReloaded = tile.workerID != null;
