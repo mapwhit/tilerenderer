@@ -48,6 +48,26 @@
       "doc": "Default pitch, in degrees. Zero is perpendicular to the surface, for a look straight down at the map, while a greater value like 60 looks ahead towards the horizon. The style pitch will be used only if the map has not been positioned by other means (e.g. map options or user interaction).",
       "example": 50
     },
+    "state": {
+      "type": "state",
+      "default": {},
+      "doc": "An object used to define default values when using the [`global-state`](https://maplibre.org/maplibre-style-spec/expressions/#global-state) expression.",
+      "example": {
+        "chargerType": {
+          "default": ["CCS", "CHAdeMO", "Type2"]
+        },
+        "minPreferredChargingSpeed": {
+          "default": 50
+        }
+      },
+      "sdk-support": {
+        "basic functionality": {
+          "js": "https://github.com/maplibre/maplibre-gl-js/issues/4964",
+          "android": "https://github.com/maplibre/maplibre-native/issues/3302",
+          "ios": "https://github.com/maplibre/maplibre-native/issues/3302"
+        }
+      }
+    },
     "light": {
       "type": "light",
       "doc": "The global light source.",
@@ -1293,8 +1313,8 @@
         },
         {
           "symbol-placement": [
-              "line",
-              "line-center"
+            "line",
+            "line-center"
           ]
         }
       ],
@@ -1816,10 +1836,10 @@
       "requires": [
         "text-field",
         {
-            "symbol-placement": [
-                "line",
-                "line-center"
-            ]
+          "symbol-placement": [
+            "line",
+            "line-center"
+          ]
         }
       ],
       "sdk-support": {
@@ -1907,10 +1927,10 @@
           "text-rotation-alignment": "map"
         },
         {
-            "symbol-placement": [
-                "line",
-                "line-center"
-            ]
+          "symbol-placement": [
+            "line",
+            "line-center"
+          ]
         }
       ],
       "sdk-support": {
@@ -2551,6 +2571,24 @@
         "sdk-support": {
           "basic functionality": {
             "js": "0.48.0"
+          }
+        }
+      },
+      "global-state": {
+        "doc": "Retrieves a property value from global state that can be set with platform-specific APIs. Defaults can be provided using the [`state`](https://maplibre.org/maplibre-style-spec/root/#state) root property. Returns `null` if no value nor default value is set for the retrieved property.",
+        "group": "Lookup",
+        "example": {
+          "syntax": {
+            "method": ["string"],
+            "result": "value"
+          },
+          "value": ["global-state", "someProperty"]
+        },
+        "sdk-support": {
+          "basic functionality": {
+            "js": "https://github.com/maplibre/maplibre-gl-js/issues/4964",
+            "android": "https://github.com/maplibre/maplibre-native/issues/3302",
+            "ios": "https://github.com/maplibre/maplibre-native/issues/3302"
           }
         }
       },
@@ -3722,7 +3760,9 @@
       },
       "expression": {
         "interpolated": false,
-        "parameters": ["zoom"]
+        "parameters": [
+          "zoom"
+        ]
       },
       "property-type": "data-constant"
     }
@@ -5232,10 +5272,10 @@
       "type": "enum",
       "values": {
         "map": {
-            "doc": "The hillshade illumination is relative to the north direction."
+          "doc": "The hillshade illumination is relative to the north direction."
         },
         "viewport": {
-            "doc": "The hillshade illumination is relative to the top of the viewport."
+          "doc": "The hillshade illumination is relative to the top of the viewport."
         }
       },
       "default": "viewport",
