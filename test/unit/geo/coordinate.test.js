@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const Coordinate = require('../../../src/geo/coordinate');
 
 test('Coordinate', async t => {

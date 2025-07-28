@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const DEMData = require('../../../src/data/dem_data');
 const { RGBAImage } = require('../../../src/util/image');

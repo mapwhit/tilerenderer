@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const { default: Point } = require('@mapbox/point-geometry');
 const { getAnchors, getCenterAnchor } = require('../../../src/symbol/get_anchors');
 

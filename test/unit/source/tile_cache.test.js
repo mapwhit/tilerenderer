@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const TileCache = require('../../../src/source/tile_cache');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 

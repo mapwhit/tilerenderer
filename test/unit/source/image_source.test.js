@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const ImageSource = require('../../../src/source/image_source');
 const { Evented } = require('@mapwhit/events');

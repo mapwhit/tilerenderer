@@ -1,5 +1,5 @@
+const test = require('node:test');
 const createStyleLayer = require('../../../../src/style/create_style_layer');
-const { test } = require('../../../util/mapbox-gl-js-test');
 
 test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {

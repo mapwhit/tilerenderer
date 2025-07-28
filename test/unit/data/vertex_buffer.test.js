@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const VertexBuffer = require('../../../src/gl/vertex_buffer');
 const { StructArrayLayout3i6 } = require('../../../src/data/array_types');
 const Context = require('../../../src/gl/context');

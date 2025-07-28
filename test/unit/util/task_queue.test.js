@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const taskQueue = require('../../../src/util/task_queue');
 
 test('TaskQueue', async t => {

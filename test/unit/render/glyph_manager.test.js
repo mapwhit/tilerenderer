@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const GlyphManager = require('../../../src/render/glyph_manager');
 
 test('GlyphManager', async t => {

@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const { assertEqualWithPrecision } = require('../../util/assert');
 const Camera = require('../../../src/ui/camera');
 const Transform = require('../../../src/geo/transform');

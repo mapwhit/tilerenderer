@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const Style = require('../../../src/style/style');
 const SourceCache = require('../../../src/source/source_cache');

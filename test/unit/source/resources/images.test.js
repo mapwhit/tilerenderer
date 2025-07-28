@@ -1,4 +1,4 @@
-const { test } = require('../../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const makeImages = require('../../../../src/source/resources/images');
 
 test('glyphCache', async t => {

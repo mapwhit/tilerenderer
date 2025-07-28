@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const Map = require('../../../src/ui/map');
 const LngLat = require('../../../src/geo/lng_lat');

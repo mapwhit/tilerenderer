@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const renderColorRamp = require('../../../src/util/color_ramp');
 const { createPropertyExpression } = require('@mapwhit/style-expressions');
 

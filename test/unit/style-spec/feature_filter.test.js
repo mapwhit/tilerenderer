@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const createFilter = require('../../../src/style-spec/feature_filter');
 const convertFilter = require('../../../src/style-spec/feature_filter/convert');
 

@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const group = require('../../../src/style-spec/group_by_layout');
 
 test('group layers whose ref properties are identical', t => {

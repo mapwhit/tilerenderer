@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const GridIndex = require('../../../src/symbol/grid_index');
 
 test('GridIndex', async t => {
