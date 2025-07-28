@@ -1,4 +1,5 @@
 const { test } = require('../../util/mapbox-gl-js-test');
+const { assertEqualWithPrecision } = require('../../util/assert');
 const Camera = require('../../../src/ui/camera');
 const Transform = require('../../../src/geo/transform');
 const taskQueue = require('../../../src/util/task_queue');
@@ -8,6 +9,10 @@ const fixedLngLat = fixed.LngLat;
 const fixedNum = fixed.Num;
 
 test('camera', async t => {
+  t.beforeEach(t => {
+    t.assert.equalWithPrecision = assertEqualWithPrecision;
+  });
+
   function attachSimulateFrame(camera) {
     const queue = taskQueue(camera);
     camera._requestRenderFrame = cb => queue.add(cb);
