@@ -1,4 +1,10 @@
 
+0.52.0 / 2025-07-30
+===================
+
+ * add support for global state expressions
+ * upgrade dependencies
+
 0.51.1 / 2025-07-25
 ===================
 

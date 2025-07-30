@@ -1,7 +1,7 @@
 {
   "name": "@mapwhit/tilerenderer",
   "description": "A WebGL interactive maps library",
-  "version": "0.51.1",
+  "version": "0.52.0",
   "exports": {
     ".": "./src/index.js",
     "./worker": "./src/worker.js"
