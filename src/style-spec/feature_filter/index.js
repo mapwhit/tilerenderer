@@ -1,8 +1,9 @@
-const { createExpression } = require('@mapwhit/style-expressions');
+const { createExpression, findGlobalStateRefs } = require('@mapwhit/style-expressions');
 
 module.exports = createFilter;
 
 createFilter.isExpressionFilter = isExpressionFilter;
+createFilter.addGlobalStateRefs = addGlobalStateRefs;
 
 function isExpressionFilter(filter) {
   if (filter === true || filter === false) {
@@ -66,7 +67,7 @@ const filterSpec = {
  */
 function createFilter(filter) {
   if (filter === null || filter === undefined) {
-    return () => true;
+    return addGlobalStateRefs(() => true);
   }
 
   if (!isExpressionFilter(filter)) {
@@ -77,7 +78,15 @@ function createFilter(filter) {
   if (compiled.result === 'error') {
     throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
   }
-  return (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature);
+  return addGlobalStateRefs(
+    (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
+    () => findGlobalStateRefs(compiled.value.expression)
+  );
+}
+
+function addGlobalStateRefs(filter, getGlobalStateRefs = () => new Set()) {
+  filter.getGlobalStateRefs = getGlobalStateRefs;
+  return filter;
 }
 
 // Comparison function to sort numbers and strings
@@ -86,7 +95,7 @@ function compare(a, b) {
 }
 
 function convertFilter(filter) {
-  if (!filter) return true;
+  if (!filter || filter.length === 0) return true;
   const [op, ...args] = filter;
   if (filter.length <= 1) return op !== 'any';
   switch (op) {

@@ -94,7 +94,8 @@ class VectorTileSource extends Evented {
         type: this.type,
         source: this.id,
         pixelRatio: browser.devicePixelRatio,
-        showCollisionBoxes: this.map.showCollisionBoxes
+        showCollisionBoxes: this.map.showCollisionBoxes,
+        globalState: this.map.getGlobalState()
       };
       tile.workerID ??= this.dispatcher.nextWorkerId();
       const data = await this.dispatcher.send('loadTile', params, tile.workerID);

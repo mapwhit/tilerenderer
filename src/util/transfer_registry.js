@@ -27,6 +27,7 @@ function register(name, klass, { omit, shallow } = {}) {
 }
 
 register('Object', Object);
+register('Set', Set);
 
 /**
  * Serialize the given object for transfer to or from a web worker.

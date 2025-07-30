@@ -41,6 +41,7 @@ class Style extends Evented {
     this.sourceCaches = {};
     this.zoomHistory = new ZoomHistory();
     this._loaded = false;
+    this._globalState = {};
 
     this._resetUpdates();
 
@@ -76,6 +77,80 @@ class Style extends Evented {
         }
       }
     });
+  }
+
+  setGlobalStateProperty(name, value) {
+    this._checkLoaded();
+
+    const newValue = value === null ? (this.stylesheet.state?.[name]?.default ?? null) : value;
+
+    if (deepEqual(newValue, this._globalState[name])) {
+      return this;
+    }
+
+    this._globalState[name] = newValue;
+
+    const sourceIdsToReload = this._findGlobalStateAffectedSources([name]);
+
+    for (const id in this.sourceCaches) {
+      if (sourceIdsToReload.has(id)) {
+        this._reloadSource(id);
+        this._changed = true;
+      }
+    }
+  }
+
+  getGlobalState() {
+    return this._globalState;
+  }
+
+  setGlobalState(newStylesheetState) {
+    this._checkLoaded();
+
+    const changedGlobalStateRefs = [];
+
+    for (const propertyName in newStylesheetState) {
+      const didChange = !deepEqual(this._globalState[propertyName], newStylesheetState[propertyName].default);
+
+      if (didChange) {
+        changedGlobalStateRefs.push(propertyName);
+        this._globalState[propertyName] = newStylesheetState[propertyName].default;
+      }
+    }
+
+    const sourceIdsToReload = this._findGlobalStateAffectedSources(changedGlobalStateRefs);
+
+    for (const id in this.sourceCaches) {
+      if (sourceIdsToReload.has(id)) {
+        this._reloadSource(id);
+        this._changed = true;
+      }
+    }
+  }
+
+  /**
+   * Find all sources that are affected by the global state changes.
+   * For example, if a layer filter uses global-state expression, this function will return the source id of that layer.
+   */
+  _findGlobalStateAffectedSources(globalStateRefs) {
+    if (globalStateRefs.length === 0) {
+      return new Set();
+    }
+
+    const sourceIdsToReload = new Set();
+
+    for (const layerId in this._layers) {
+      const layer = this._layers[layerId];
+      const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
+
+      for (const ref of globalStateRefs) {
+        if (layoutAffectingGlobalStateRefs.has(ref)) {
+          sourceIdsToReload.add(layer.source);
+        }
+      }
+    }
+
+    return sourceIdsToReload;
   }
 
   loadJSON(json) {
@@ -127,6 +202,8 @@ class Style extends Evented {
     this.dispatcher.broadcast('setLayers', this._serializeLayers(this._order));
 
     this.light = new Light(this.stylesheet.light);
+
+    this.setGlobalState(this.stylesheet.state ?? null);
 
     this.fire(new Event('data', { dataType: 'style' }));
     this.fire(new Event('style.load'));
@@ -547,12 +624,12 @@ class Style extends Evented {
     }
 
     if (filter === null || filter === undefined) {
-      layer.filter = undefined;
+      layer.setFilter(undefined);
       this._updateLayer(layer);
       return;
     }
 
-    layer.filter = clone(filter);
+    layer.setFilter(clone(filter));
     this._updateLayer(layer);
   }
 

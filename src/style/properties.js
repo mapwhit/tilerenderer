@@ -75,6 +75,10 @@ class PropertyValue {
     return this.expression.kind === 'source' || this.expression.kind === 'composite';
   }
 
+  getGlobalStateRefs() {
+    return this.expression.globalStateRefs ?? new Set();
+  }
+
   possiblyEvaluate(parameters) {
     return this.property.possiblyEvaluate(this, parameters);
   }

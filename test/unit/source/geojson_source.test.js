@@ -208,7 +208,8 @@ test('GeoJSONSource#update', async t => {
 
     const source = new GeoJSONSource('id', { data: {} }, mockDispatcher);
     source.map = {
-      transform: {}
+      transform: {},
+      getGlobalState: () => ({})
     };
 
     source.on('data', e => {

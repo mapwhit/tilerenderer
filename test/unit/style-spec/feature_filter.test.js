@@ -73,6 +73,13 @@ test('filter', async t => {
   await legacyFilterTests(t, createFilter);
 });
 
+test('getGlobalStateRefs', async t => {
+  await t.test('returns global-state keys', () => {
+    const filter = createFilter(['==', ['global-state', 'x'], ['zoom']]);
+    t.assert.deepEqual(filter.getGlobalStateRefs(), new Set(['x']));
+  });
+});
+
 test('convert legacy filters to expressions', async t => {
   await legacyFilterTests(t, f => {
     const converted = convertFilter(f);

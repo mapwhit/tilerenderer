@@ -23,6 +23,7 @@ function addCircleVertex(layoutVertexArray, x, y, extrudeX, extrudeY) {
 class CircleBucket {
   constructor(options) {
     this.zoom = options.zoom;
+    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.layerIds = this.layers.map(layer => layer.id);
@@ -37,7 +38,9 @@ class CircleBucket {
 
   populate(features, options) {
     for (const { feature, index, sourceLayerIndex } of features) {
-      if (this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
+      if (
+        this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
+      ) {
         const geometry = loadGeometry(feature);
         this.addFeature(feature, geometry, index);
         options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);

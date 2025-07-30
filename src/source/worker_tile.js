@@ -31,6 +31,7 @@ class WorkerTile {
     this.source = params.source;
     this.overscaling = this.tileID.overscaleFactor();
     this.showCollisionBoxes = params.showCollisionBoxes;
+    this.globalState = params.globalState;
   }
 
   async parse(data, layerIndex, resources) {
@@ -81,7 +82,7 @@ class WorkerTile {
         if (layer.maxzoom && this.zoom >= layer.maxzoom) continue;
         if (layer.visibility === 'none') continue;
 
-        recalculateLayers(family, this.zoom);
+        recalculateLayers(family, this.zoom, { globalState: this.globalState });
 
         const bucket = (buckets[layer.id] = layer.createBucket({
           index: featureIndex.bucketLayerIDs.length,
@@ -91,7 +92,8 @@ class WorkerTile {
           overscaling: this.overscaling,
           collisionBoxArray: this.collisionBoxArray,
           sourceLayerIndex: sourceLayerIndex,
-          sourceID: this.source
+          sourceID: this.source,
+          globalState: this.globalState
         }));
 
         bucket.populate(features, options);
@@ -114,7 +116,7 @@ class WorkerTile {
     for (const key in buckets) {
       const bucket = buckets[key];
       if (bucket instanceof SymbolBucket) {
-        recalculateLayers(bucket.layers, this.zoom);
+        recalculateLayers(bucket.layers, this.zoom, { globalState: this.globalState });
         performSymbolLayout(
           bucket,
           glyphMap,
@@ -127,7 +129,7 @@ class WorkerTile {
         bucket.hasPattern &&
         (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
       ) {
-        recalculateLayers(bucket.layers, this.zoom);
+        recalculateLayers(bucket.layers, this.zoom, { globalState: this.globalState });
         bucket.addFeatures(options, imageAtlas.patternPositions);
       }
     }
@@ -143,9 +145,9 @@ class WorkerTile {
   }
 }
 
-function recalculateLayers(layers, zoom) {
+function recalculateLayers(layers, zoom, options) {
   // Layers are shared and may have been used by a WorkerTile with a different zoom.
-  const parameters = new EvaluationParameters(zoom);
+  const parameters = new EvaluationParameters(zoom, options);
   for (const layer of layers) {
     layer.recalculate(parameters);
   }
