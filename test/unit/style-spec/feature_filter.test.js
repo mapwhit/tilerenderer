@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const createFilter = require('../../../src/style-spec/feature_filter');
 const convertFilter = require('../../../src/style-spec/feature_filter/convert');
 
@@ -14,7 +14,7 @@ test('filter', async t => {
   });
 
   await t.test('expression, compare two properties', t => {
-    t.stub(console, 'warn');
+    t.mock.method(console, 'warn');
     const f = createFilter(['==', ['string', ['get', 'x']], ['string', ['get', 'y']]]);
     t.assert.equal(f({ zoom: 0 }, { properties: { x: 1, y: 1 } }), false);
     t.assert.equal(f({ zoom: 0 }, { properties: { x: '1', y: '1' } }), true);

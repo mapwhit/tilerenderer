@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const Tile = require('../../../src/source/tile');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 const GeoJSONSource = require('../../../src/source/geojson_source');
@@ -83,7 +83,7 @@ test('GeoJSONSource#onRemove', async t => {
       { data: {} },
       {
         send: function (type, data, callback) {
-          t.assert.notOk(callback);
+          t.assert.ok(!callback);
           t.assert.equal(type, 'removeSource');
           t.assert.deepEqual(data, { type: 'geojson', source: 'id' });
           done();

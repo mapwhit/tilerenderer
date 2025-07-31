@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const DEMData = require('../../../src/data/dem_data');
 const { RGBAImage } = require('../../../src/util/image');
@@ -46,12 +46,12 @@ test('DEMData', async t => {
   });
 
   await t.test('loadFromImage with invalid encoding', t => {
-    t.stub(console, 'warn');
+    const warn = t.mock.method(console, 'warn');
 
     const dem = new DEMData(0, { width: 4, height: 4, data: new Uint8ClampedArray(4 * 4 * 4) }, 'derp');
     t.assert.equal(dem.uid, 0);
-    t.assert.ok(console.warn.calledOnce);
-    t.assert.ok(console.warn.getCall(0).calledWithMatch(/"derp" is not a valid encoding type/));
+    t.assert.equal(warn.mock.callCount(), 1);
+    t.assert.match(warn.mock.calls[0].arguments[0], /"derp" is not a valid encoding type/);
   });
 });
 

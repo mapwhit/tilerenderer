@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const makeWorkerPool = require('../../../src/util/worker_pool');
 
@@ -15,7 +15,7 @@ test('WorkerPool', async t => {
   await t.test('#acquire', t => {
     const pool = makeWorkerPool(4);
 
-    t.assert.notOk(pool.workers);
+    t.assert.ok(!pool.workers);
     const workers1 = pool.acquire('map-1');
     const workers2 = pool.acquire('map-2');
     t.assert.equal(workers1.length, 4);

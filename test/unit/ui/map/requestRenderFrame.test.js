@@ -1,4 +1,4 @@
-const { test } = require('../../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../../util/window');
 const Map = require('../../../../src/ui/map');
 const DOM = require('../../../../src/util/dom');
@@ -26,18 +26,18 @@ test('Map#_requestRenderFrame', async t => {
 
   await t.test('Map#_requestRenderFrame schedules a new render frame if necessary', t => {
     const map = createMap();
-    t.stub(map, '_rerender');
+    t.mock.method(map, '_rerender', () => {});
     map._requestRenderFrame(() => {});
-    t.assert.equal(map._rerender.callCount, 1);
+    t.assert.equal(map._rerender.mock.callCount(), 1);
     map.remove();
   });
 
   await t.test('Map#_requestRenderFrame queues a task for the next render frame', (t, done) => {
     const map = createMap();
-    const cb = t.spy();
+    const cb = t.mock.fn();
     map._requestRenderFrame(cb);
     map.once('render', () => {
-      t.assert.equal(cb.callCount, 1);
+      t.assert.equal(cb.mock.callCount(), 1);
       map.remove();
       done();
     });
@@ -45,11 +45,11 @@ test('Map#_requestRenderFrame', async t => {
 
   await t.test('Map#_cancelRenderFrame cancels a queued task', (t, done) => {
     const map = createMap();
-    const cb = t.spy();
+    const cb = t.mock.fn();
     const id = map._requestRenderFrame(cb);
     map._cancelRenderFrame(id);
     map.once('render', () => {
-      t.assert.equal(cb.callCount, 0);
+      t.assert.equal(cb.mock.callCount(), 0);
       map.remove();
       done();
     });

@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const { mapObject } = require('../../../src/util/object');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 

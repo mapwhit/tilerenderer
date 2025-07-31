@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const { CanonicalTileID, OverscaledTileID } = require('../../../src/source/tile_id');
 
 test('CanonicalTileID', async t => {
@@ -26,7 +26,7 @@ test('CanonicalTileID', async t => {
 
   await t.test('.equals', t => {
     t.assert.ok(new CanonicalTileID(3, 2, 1).equals(new CanonicalTileID(3, 2, 1)));
-    t.assert.notOk(new CanonicalTileID(9, 2, 3).equals(new CanonicalTileID(3, 2, 1)));
+    t.assert.ok(!new CanonicalTileID(9, 2, 3).equals(new CanonicalTileID(3, 2, 1)));
   });
 });
 

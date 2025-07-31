@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const CrossTileSymbolIndex = require('../../../src/symbol/cross_tile_symbol_index');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
@@ -220,5 +220,5 @@ test('CrossTileSymbolIndex.pruneUnusedLayers', t => {
 
   // remove styleLayer
   index.pruneUnusedLayers([]);
-  t.assert.notOk(index.layerIndexes[styleLayer.id]);
+  t.assert.ok(!index.layerIndexes[styleLayer.id]);
 });

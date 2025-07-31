@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const ImageSource = require('../../../src/source/image_source');
 const { Evented } = require('@mapwhit/events');
@@ -36,15 +36,17 @@ test('ImageSource', async t => {
     globalWindow = globalThis.window;
     globalThis.window = _window;
 
-    t.stub(window.URL, 'createObjectURL').returns('blob:');
+    t.mock.method(window.URL, 'createObjectURL', () => 'blob:');
     // stub Image so we can invoke 'onload'
     // https://github.com/jsdom/jsdom/commit/58a7028d0d5b6aacc5b435daee9fd8f9eacbb14c
     const img = {};
-    t.stub(window, 'Image').returns(img);
+    t.mock.method(window, 'Image', function () {
+      return img;
+    });
     respond = () => {
       img.onload();
     };
-    t.stub(browser, 'getImageData').callsFake(() => new ArrayBuffer(1));
+    t.mock.method(browser, 'getImageData', () => new ArrayBuffer(1));
   });
   t.after(() => {
     globalThis.window = globalWindow;

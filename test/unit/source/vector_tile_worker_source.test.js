@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 const WorkerTile = require('../../../src/source/worker_tile');
@@ -32,7 +32,7 @@ test('VectorTileWorkerSource#loadTile - success', async t => {
     }
   };
 
-  t.stub(WorkerTile.prototype, 'parse').resolves({ parsed: true });
+  t.mock.method(WorkerTile.prototype, 'parse', () => Promise.resolve({ parsed: true }));
 
   const result = await source.loadTile(params);
 

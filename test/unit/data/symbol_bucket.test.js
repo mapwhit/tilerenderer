@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const fs = require('fs');
 const path = require('path');
 const Protobuf = require('@mapwhit/pbf');
@@ -84,8 +84,15 @@ test('SymbolBucket', t => {
 });
 
 test('SymbolBucket integer overflow', t => {
-  t.stub(console, 'warn');
-  t.stub(SymbolBucket, 'MAX_GLYPHS').value(5);
+  let _MAX_GLYPHS;
+  t.before(() => {
+    _MAX_GLYPHS = SymbolBucket.MAX_GLYPHS;
+    SymbolBucket.MAX_GLYPHS = 5;
+  });
+  t.after(() => {
+    SymbolBucket.MAX_GLYPHS = _MAX_GLYPHS;
+  });
+  const warn = t.mock.method(console, 'warn');
 
   const bucket = bucketSetup();
   const options = { iconDependencies: {}, glyphDependencies: {} };
@@ -96,6 +103,6 @@ test('SymbolBucket integer overflow', t => {
     Test: { 97: fakeGlyph, 98: fakeGlyph, 99: fakeGlyph, 100: fakeGlyph, 101: fakeGlyph, 102: fakeGlyph }
   });
 
-  t.assert.ok(console.warn.calledOnce);
-  t.assert.ok(console.warn.getCall(0).calledWithMatch(/Too many glyphs being rendered in a tile./));
+  t.assert.equal(warn.mock.callCount(), 1);
+  t.assert.match(warn.mock.calls[0].arguments[0], /Too many glyphs being rendered in a tile./);
 });

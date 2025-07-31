@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const WorkerTile = require('../../../src/source/worker_tile');
 const Wrapper = require('../../../src/source/geojson_wrapper');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
@@ -142,9 +142,9 @@ test('WorkerTile#parse warns once when encountering a v1 vector tile layer', asy
     }
   };
 
-  t.stub(console, 'warn');
+  t.mock.method(console, 'warn');
 
   const tile = createWorkerTile();
   await tile.parse(data, layerIndex, {});
-  t.assert.ok(console.warn.calledWithMatch(/does not use vector tile spec v2/));
+  t.assert.match(console.warn.mock.calls[0].arguments[0], /does not use vector tile spec v2/);
 });

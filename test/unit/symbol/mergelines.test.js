@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const mergeLines = require('../../../src/symbol/mergelines');
 const { default: Point } = require('@mapbox/point-geometry');
 

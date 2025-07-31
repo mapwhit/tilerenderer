@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const Map = require('../../../src/ui/map');
 const LngLat = require('../../../src/geo/lng_lat');
@@ -195,7 +195,7 @@ test('Map', async t => {
         zoom: 10,
         center: [-77.0186, 38.8888]
       });
-      t.assert.notOk(map.transform.unmodified, 'map transform is modified by options');
+      t.assert.ok(!map.transform.unmodified, 'map transform is modified by options');
       map.setStyle(createStyle());
       map.on('style.load', () => {
         t.assert.deepEqual(fixedLngLat(map.transform.center), fixedLngLat({ lng: -77.0186, lat: 38.8888 }));
@@ -211,7 +211,7 @@ test('Map', async t => {
       t.assert.ok(map.transform.unmodified);
       map.setZoom(10);
       map.setCenter([-77.0186, 38.8888]);
-      t.assert.notOk(map.transform.unmodified, 'map transform is modified via setters');
+      t.assert.ok(!map.transform.unmodified, 'map transform is modified via setters');
       map.setStyle(createStyle());
       map.on('style.load', () => {
         t.assert.deepEqual(fixedLngLat(map.transform.center), fixedLngLat({ lng: -77.0186, lat: 38.8888 }));
@@ -226,9 +226,9 @@ test('Map', async t => {
       const map = createMap();
       const style = map.style;
       t.assert.ok(style);
-      t.spy(style, '_remove');
+      t.mock.method(style, '_remove');
       map.setStyle(null);
-      t.assert.equal(style._remove.callCount, 1);
+      t.assert.equal(style._remove.mock.callCount(), 1);
       done();
     });
   });
@@ -472,29 +472,29 @@ test('Map', async t => {
     await t.test('do not resize if trackResize is false', t => {
       const map = createMap({ trackResize: false });
 
-      t.spy(map, 'stop');
-      t.spy(map, '_update');
-      t.spy(map, 'resize');
+      t.mock.method(map, 'stop');
+      t.mock.method(map, '_update');
+      t.mock.method(map, 'resize');
 
       map._onWindowResize();
 
-      t.assert.notOk(map.stop.called);
-      t.assert.notOk(map._update.called);
-      t.assert.notOk(map.resize.called);
+      t.assert.equal(map.stop.mock.callCount(), 0);
+      t.assert.equal(map._update.mock.callCount(), 0);
+      t.assert.equal(map.resize.mock.callCount(), 0);
     });
 
     await t.test('do resize if trackResize is true (default)', t => {
       const map = createMap();
 
-      t.spy(map, 'stop');
-      t.spy(map, '_update');
-      t.spy(map, 'resize');
+      t.mock.method(map, 'stop');
+      t.mock.method(map, '_update');
+      t.mock.method(map, 'resize');
 
       map._onWindowResize();
 
-      t.assert.ok(map.stop.called);
-      t.assert.ok(map._update.called);
-      t.assert.ok(map.resize.called);
+      t.assert.ok(map.stop.mock.callCount() > 0);
+      t.assert.ok(map._update.mock.callCount() > 0);
+      t.assert.ok(map.resize.mock.callCount() > 0);
     });
   });
 
@@ -809,11 +809,11 @@ test('Map', async t => {
     await t.test('if no arguments provided', (t, done) => {
       createMap({}, (err, map) => {
         t.assert.ifError(err);
-        t.spy(map.style, 'queryRenderedFeatures');
+        t.mock.method(map.style, 'queryRenderedFeatures');
 
         const output = map.queryRenderedFeatures();
 
-        const args = map.style.queryRenderedFeatures.getCall(0).args;
+        const args = map.style.queryRenderedFeatures.mock.calls[0].arguments;
         t.assert.ok(args[0]);
         t.assert.deepEqual(args[1], {});
         t.assert.deepEqual(output, []);
@@ -825,11 +825,11 @@ test('Map', async t => {
     await t.test('if only "geometry" provided', (t, done) => {
       createMap({}, (err, map) => {
         t.assert.ifError(err);
-        t.spy(map.style, 'queryRenderedFeatures');
+        t.mock.method(map.style, 'queryRenderedFeatures');
 
         const output = map.queryRenderedFeatures(map.project(new LngLat(0, 0)));
 
-        const args = map.style.queryRenderedFeatures.getCall(0).args;
+        const args = map.style.queryRenderedFeatures.mock.calls[0].arguments;
         t.assert.deepEqual(
           args[0].worldCoordinate.map(c => fixedCoord(c)),
           [{ column: 0.5, row: 0.5, zoom: 0 }]
@@ -845,11 +845,11 @@ test('Map', async t => {
     await t.test('if only "params" provided', (t, done) => {
       createMap({}, (err, map) => {
         t.assert.ifError(err);
-        t.spy(map.style, 'queryRenderedFeatures');
+        t.mock.method(map.style, 'queryRenderedFeatures');
 
         const output = map.queryRenderedFeatures({ filter: ['all'] });
 
-        const args = map.style.queryRenderedFeatures.getCall(0).args;
+        const args = map.style.queryRenderedFeatures.mock.calls[0].arguments;
         t.assert.ok(args[0]);
         t.assert.deepEqual(args[1], { filter: ['all'] });
         t.assert.deepEqual(output, []);
@@ -861,11 +861,11 @@ test('Map', async t => {
     await t.test('if both "geometry" and "params" provided', (t, done) => {
       createMap({}, (err, map) => {
         t.assert.ifError(err);
-        t.spy(map.style, 'queryRenderedFeatures');
+        t.mock.method(map.style, 'queryRenderedFeatures');
 
         const output = map.queryRenderedFeatures({ filter: ['all'] });
 
-        const args = map.style.queryRenderedFeatures.getCall(0).args;
+        const args = map.style.queryRenderedFeatures.mock.calls[0].arguments;
         t.assert.ok(args[0]);
         t.assert.deepEqual(args[1], { filter: ['all'] });
         t.assert.deepEqual(output, []);
@@ -874,14 +874,16 @@ test('Map', async t => {
       });
     });
 
-    await t.test('if "geometry" with unwrapped coords provided', (t, done) => {
+    await t.test('queryRenderedFeatures returns empty array when geometry is outside map bounds', (t, done) => {
       createMap({}, (err, map) => {
         t.assert.ifError(err);
-        t.spy(map.style, 'queryRenderedFeatures');
+        t.mock.method(map.style, 'queryRenderedFeatures');
 
         map.queryRenderedFeatures(map.project(new LngLat(360, 0)));
 
-        const coords = map.style.queryRenderedFeatures.getCall(0).args[0].worldCoordinate.map(c => fixedCoord(c));
+        const coords = map.style.queryRenderedFeatures.mock.calls[0].arguments[0].worldCoordinate.map(c =>
+          fixedCoord(c)
+        );
         t.assert.equal(coords[0].column, 1.5);
         t.assert.equal(coords[0].row, 0.5);
         t.assert.equal(coords[0].zoom, 0);
@@ -1261,11 +1263,11 @@ test('Map', async t => {
   await t.test('error event', async t => {
     await t.test('logs errors to console when it has NO listeners', t => {
       const map = createMap();
-      const stub = t.stub(console, 'error');
+      const stub = t.mock.method(console, 'error', () => {});
       const error = new Error('test');
       map.fire(new ErrorEvent(error));
-      t.assert.ok(stub.calledOnce);
-      t.assert.equal(stub.getCall(0).args[0], error);
+      t.assert.equal(stub.mock.callCount(), 1);
+      t.assert.equal(stub.mock.calls[0].arguments[0], error);
     });
 
     await t.test('calls listeners', (t, done) => {
@@ -1301,7 +1303,7 @@ test('Map', async t => {
       timer = setTimeout(() => {
         map.off('render');
         map.on('render', t.fail);
-        t.assert.notOk(map._frameId, 'no rerender scheduled');
+        t.assert.ok(!map._frameId, 'no rerender scheduled');
         done();
       }, 100);
     });

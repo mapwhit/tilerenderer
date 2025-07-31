@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const VectorTileSource = require('../../../src/source/vector_tile_source');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
@@ -117,10 +117,7 @@ test('VectorTileSource', async t => {
     });
     source.on('data', e => {
       if (e.sourceDataType === 'metadata') {
-        t.assert.notOk(
-          source.hasTile(new OverscaledTileID(8, 0, 8, 96, 132)),
-          'returns false for tiles outside bounds'
-        );
+        t.assert.ok(!source.hasTile(new OverscaledTileID(8, 0, 8, 96, 132)), 'returns false for tiles outside bounds');
         t.assert.ok(source.hasTile(new OverscaledTileID(8, 0, 8, 95, 132)), 'returns true for tiles inside bounds');
         done();
       }

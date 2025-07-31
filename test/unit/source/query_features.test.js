@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test.js');
+const test = require('node:test');
 const { queryRenderedFeatures, querySourceFeatures } = require('../../../src/source/query_features.js');
 const SourceCache = require('../../../src/source/source_cache.js');
 const Transform = require('../../../src/geo/transform.js');

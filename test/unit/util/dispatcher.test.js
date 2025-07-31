@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const makeDispatcher = require('../../../src/util/dispatcher');
 const makeWorkerPool = require('../../../src/util/worker_pool');

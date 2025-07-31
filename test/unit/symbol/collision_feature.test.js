@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const CollisionFeature = require('../../../src/symbol/collision_feature');
 const Anchor = require('../../../src/symbol/anchor');
 const { default: Point } = require('@mapbox/point-geometry');

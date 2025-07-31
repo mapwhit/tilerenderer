@@ -1,4 +1,4 @@
-const test = require('../../util/mapbox-gl-js-test').test;
+const test = require('node:test').test;
 const uniqueId = require('../../../src/util/unique_id');
 
 test('unique_id', t => {

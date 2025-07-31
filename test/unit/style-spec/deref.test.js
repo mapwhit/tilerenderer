@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const deref = require('../../../src/style-spec/deref');
 
 test('derefs a ref layer which follows its parent', t => {

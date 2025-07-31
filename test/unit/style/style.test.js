@@ -1,4 +1,4 @@
-const { test } = require('../../util/mapbox-gl-js-test');
+const test = require('node:test');
 const _window = require('../../util/window');
 const Style = require('../../../src/style/style');
 const SourceCache = require('../../../src/source/source_cache');
@@ -78,14 +78,17 @@ test('Style', async t => {
     await t.test('registers plugin listener', t => {
       clearRTLTextPlugin();
 
-      t.spy(Style, 'registerForPluginAvailability');
+      t.mock.method(Style, 'registerForPluginAvailability');
 
       style = new Style(new StubMap());
-      t.spy(style.dispatcher, 'broadcast');
-      t.assert.ok(Style.registerForPluginAvailability.calledOnce);
+      t.mock.method(style.dispatcher, 'broadcast');
+      t.assert.equal(Style.registerForPluginAvailability.mock.callCount(), 1);
 
       setRTLTextPlugin('some-bogus-url');
-      t.assert.ok(style.dispatcher.broadcast.calledWith('loadRTLTextPlugin', 'https://example.org/some-bogus-url'));
+      t.assert.deepEqual(style.dispatcher.broadcast.mock.calls[0].arguments, [
+        'loadRTLTextPlugin',
+        'https://example.org/some-bogus-url'
+      ]);
     });
 
     await t.test('loads plugin immediately if already registered', (t, done) => {
@@ -112,14 +115,14 @@ test('Style', async t => {
 
     await t.test('fires "dataloading" (synchronously)', t => {
       style = new Style(new StubMap());
-      const spy = t.spy();
+      const spy = t.mock.fn();
 
       style.on('dataloading', spy);
       style.loadJSON(createStyleJSON());
 
-      t.assert.ok(spy.calledOnce);
-      t.assert.equal(spy.getCall(0).args[0].target, style);
-      t.assert.equal(spy.getCall(0).args[0].dataType, 'style');
+      t.assert.equal(spy.mock.callCount(), 1);
+      t.assert.equal(spy.mock.calls[0].arguments[0].target, style);
+      t.assert.equal(spy.mock.calls[0].arguments[0].dataType, 'style');
     });
 
     await t.test('fires "data" (asynchronously)', (t, done) => {
@@ -299,9 +302,9 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         const sourceCache = style.sourceCaches['source-id'];
-        t.spy(sourceCache, 'clearTiles');
+        t.mock.method(sourceCache, 'clearTiles');
         style._remove();
-        t.assert.ok(sourceCache.clearTiles.calledOnce);
+        t.assert.equal(sourceCache.clearTiles.mock.callCount(), 1);
         done();
       });
     });
@@ -309,13 +312,13 @@ test('Style', async t => {
     await t.test('deregisters plugin listener', (t, done) => {
       const style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
-      t.spy(style.dispatcher, 'broadcast');
+      t.mock.method(style.dispatcher, 'broadcast');
 
       style.on('style.load', () => {
         style._remove();
 
         rtlTextPluginEvented.fire(new Event('pluginAvailable'));
-        t.assert.notOk(style.dispatcher.broadcast.calledWith('loadRTLTextPlugin'));
+        t.assert.notEqual(style.dispatcher.broadcast.mock.calls[0].arguments[0], 'loadRTLTextPlugin');
         done();
       });
     });
@@ -484,9 +487,9 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         const sourceCache = style.sourceCaches['source-id'];
-        t.spy(sourceCache, 'clearTiles');
+        t.mock.method(sourceCache, 'clearTiles');
         style.removeSource('source-id');
-        t.assert.ok(sourceCache.clearTiles.calledOnce);
+        t.assert.equal(sourceCache.clearTiles.mock.callCount(), 1);
         done();
       });
     });
@@ -645,17 +648,17 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-source-id'], 'reload');
-        t.spy(style.sourceCaches['fill-source-id'], 'resume');
-        t.spy(style.sourceCaches['fill-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['fill-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['fill-source-id'], 'reload');
 
         style.setGlobalState({ showCircles: { default: true }, showFill: { default: false } });
 
-        t.assert.ok(style.sourceCaches['circle-source-id'].resume.called);
-        t.assert.ok(style.sourceCaches['circle-source-id'].reload.called);
-        t.assert.ok(style.sourceCaches['fill-source-id'].resume.called);
-        t.assert.ok(style.sourceCaches['fill-source-id'].reload.called);
+        t.assert.ok(style.sourceCaches['circle-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['circle-source-id'].reload.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['fill-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['fill-source-id'].reload.mock.callCount() > 0);
         done();
       });
     });
@@ -685,13 +688,13 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ showCircles: { default: true } });
 
-        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
-        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
+        t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
         done();
       });
     });
@@ -718,13 +721,13 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ circleColor: { default: 'red' } });
 
-        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
-        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
+        t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
         done();
       });
     });
@@ -812,24 +815,24 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle-1-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-1-source-id'], 'reload');
-        t.spy(style.sourceCaches['circle-2-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-2-source-id'], 'reload');
-        t.spy(style.sourceCaches['fill-source-id'], 'resume');
-        t.spy(style.sourceCaches['fill-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-1-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-1-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-2-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-2-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['fill-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['fill-source-id'], 'reload');
 
         style.setGlobalStateProperty('showCircles', true);
 
         // The circle sources should be reloaded
-        t.assert.ok(style.sourceCaches['circle-1-source-id'].resume.called);
-        t.assert.ok(style.sourceCaches['circle-1-source-id'].reload.called);
-        t.assert.ok(style.sourceCaches['circle-2-source-id'].resume.called);
-        t.assert.ok(style.sourceCaches['circle-2-source-id'].reload.called);
+        t.assert.ok(style.sourceCaches['circle-1-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['circle-1-source-id'].reload.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['circle-2-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['circle-2-source-id'].reload.mock.callCount() > 0);
 
         // The fill source should not be reloaded
-        t.assert.notOk(style.sourceCaches['fill-source-id'].resume.called);
-        t.assert.notOk(style.sourceCaches['fill-source-id'].reload.called);
+        t.assert.equal(style.sourceCaches['fill-source-id'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['fill-source-id'].reload.mock.callCount(), 0);
         done();
       });
     });
@@ -858,13 +861,13 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle'], 'resume');
-        t.spy(style.sourceCaches['circle'], 'reload');
+        t.mock.method(style.sourceCaches['circle'], 'resume');
+        t.mock.method(style.sourceCaches['circle'], 'reload');
 
         style.setGlobalStateProperty('showCircle', true);
 
-        t.assert.notOk(style.sourceCaches['circle'].resume.called);
-        t.assert.notOk(style.sourceCaches['circle'].reload.called);
+        t.assert.equal(style.sourceCaches['circle'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['circle'].reload.mock.callCount(), 0);
         done();
       });
     });
@@ -890,13 +893,13 @@ test('Style', async t => {
       );
 
       style.on('style.load', () => {
-        t.spy(style.sourceCaches['circle-source-id'], 'resume');
-        t.spy(style.sourceCaches['circle-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
 
-        t.assert.notOk(style.sourceCaches['circle-source-id'].resume.called);
-        t.assert.notOk(style.sourceCaches['circle-source-id'].reload.called);
+        t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
         done();
       });
     });
@@ -1040,9 +1043,9 @@ test('Style', async t => {
               sourceCache.reload = reload;
               done();
             };
-            t.spy(sourceCache, 'clearTiles');
+            t.mock.method(sourceCache, 'clearTiles');
             assertsOnDone.push(() => {
-              t.assert.notOk(sourceCache.clearTiles.called);
+              t.assert.equal(sourceCache.clearTiles.mock.callCount(), 0);
             });
             style.removeLayer('my-layer');
             style.addLayer(layer);
@@ -1085,9 +1088,9 @@ test('Style', async t => {
         style.on('data', e => {
           if (e.dataType === 'source' && e.sourceDataType === 'content') {
             const sourceCache = style.sourceCaches['mapbox'];
-            t.spy(sourceCache, 'reload');
+            t.mock.method(sourceCache, 'reload');
             assertsOnDone.push(() => {
-              t.assert.notOk(sourceCache.reload.called);
+              t.assert.equal(sourceCache.reload.mock.callCount(), 0);
             });
             const { clearTiles } = sourceCache;
             sourceCache.clearTiles = () => {
@@ -1479,7 +1482,7 @@ test('Style', async t => {
         let begun = false;
         let styleUpdateCalled = false;
 
-        t.stub(sourceCache, 'reload').callsFake(() => {
+        t.mock.method(sourceCache, 'reload', () => {
           t.assert.ok(styleUpdateCalled, 'loadTile called before layer data broadcast');
           resolve();
         });
@@ -1983,7 +1986,7 @@ test('Style', async t => {
 
       await t.test('checks type of `layers` option', (t, done) => {
         let errors = 0;
-        t.stub(style, 'fire').callsFake(event => {
+        t.mock.method(style, 'fire', event => {
           if (event.error?.message.includes('parameters.layers must be an Array.')) errors++;
         });
         style.queryRenderedFeatures([{ column: 1, row: 1, zoom: 1 }], { layers: 'string' }, transform);
@@ -2033,7 +2036,7 @@ test('Style', async t => {
 
       await t.test('ignores layer included in params if it does not exist on the style', (t, done) => {
         let errors = 0;
-        t.stub(style, 'fire').callsFake(event => {
+        t.mock.method(style, 'fire', event => {
           if (event.error?.message.includes("does not exist in the map's style and cannot be queried for features."))
             errors++;
         });
@@ -2063,9 +2066,9 @@ test('Style', async t => {
       style.update({});
 
       // spies to track defered methods
-      t.spy(style, 'fire');
-      t.spy(style, '_reloadSource');
-      t.spy(style, '_updateWorkerLayers');
+      t.mock.method(style, 'fire');
+      t.mock.method(style, '_reloadSource');
+      t.mock.method(style, '_updateWorkerLayers');
 
       style.addLayer({ id: 'first', type: 'symbol', source: 'streets' });
       style.addLayer({ id: 'second', type: 'symbol', source: 'streets' });
@@ -2074,21 +2077,21 @@ test('Style', async t => {
       style.setPaintProperty('first', 'text-color', 'black');
       style.setPaintProperty('first', 'text-halo-color', 'white');
 
-      t.assert.notOk(style.fire.called, 'fire is deferred');
-      t.assert.notOk(style._reloadSource.called, '_reloadSource is deferred');
-      t.assert.notOk(style._updateWorkerLayers.called, '_updateWorkerLayers is deferred');
+      t.assert.ok(!style.fire.mock.callCount() > 0, 'fire is deferred');
+      t.assert.ok(!style._reloadSource.mock.callCount() > 0, '_reloadSource is deferred');
+      t.assert.ok(!style._updateWorkerLayers.mock.callCount() > 0, '_updateWorkerLayers is deferred');
 
       style.update({});
 
-      t.assert.equal(style.fire.args[0][0].type, 'data', 'a data event was fired');
+      t.assert.equal(style.fire.mock.calls[0].arguments[0].type, 'data', 'a data event was fired');
 
       // called per source
-      t.assert.ok(style._reloadSource.calledTwice, '_reloadSource is called per source');
-      t.assert.ok(style._reloadSource.calledWith('streets'), '_reloadSource is called for streets');
-      t.assert.ok(style._reloadSource.calledWith('terrain'), '_reloadSource is called for terrain');
+      t.assert.equal(style._reloadSource.mock.callCount(), 2, '_reloadSource is called per source');
+      t.assert.equal(style._reloadSource.mock.calls[0].arguments[0], 'streets', '_reloadSource is called for streets');
+      t.assert.equal(style._reloadSource.mock.calls[1].arguments[0], 'terrain', '_reloadSource is called for terrain');
 
       // called once
-      t.assert.ok(style._updateWorkerLayers.calledOnce, '_updateWorkerLayers is called once');
+      t.assert.equal(style._updateWorkerLayers.mock.callCount(), 1, '_updateWorkerLayers is called once');
 
       style._remove();
       done();

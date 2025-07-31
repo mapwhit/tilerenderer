@@ -4,8 +4,7 @@
     "canvas": "~3",
     "gl": "~8",
     "jsdom": "~26",
-    "pngjs": "^7.0.0",
-    "sinon": "~19"
+    "pngjs": "^7.0.0"
   },
   "license": "BSD-3-Clause"
 }
