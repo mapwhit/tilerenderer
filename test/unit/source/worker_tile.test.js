@@ -69,7 +69,6 @@ test('WorkerTile#parse layer with layout property', async t => {
   const tile = createWorkerTile();
   const result = await tile.parse(createLineWrapper(), layerIndex, {});
   t.assert.ok(result.buckets[0]);
-  t.assert.ok(result.buckets[0]);
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
@@ -89,7 +88,6 @@ test('WorkerTile#parse layer with layout property using global-state', async t =
     globalState: { test: 'bevel' }
   });
   const result = await tile.parse(createLineWrapper(), layerIndex, {});
-  t.assert.ok(result.buckets[0]);
   t.assert.ok(result.buckets[0]);
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
