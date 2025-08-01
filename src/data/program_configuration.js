@@ -551,7 +551,7 @@ class ProgramConfiguration {
       const binder = this.binders[property];
       binder.populatePaintArray(newLength, feature, imagePositions);
     }
-    if (feature.id) {
+    if (feature.id !== undefined) {
       const featureId = String(feature.id);
       this._idMap[featureId] = this._idMap[featureId] || [];
       this._idMap[featureId].push({
