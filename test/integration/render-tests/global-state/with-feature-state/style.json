@@ -1,0 +1,75 @@
+{
+  "version": 8,
+  "metadata": {
+    "test": {
+      "description": "Expected feature 1 to be cyan since globalState.color is cyan (see global-state/basic/expected.png) , but it seems the presence of a 'feature-state' expression makes any 'global-state' expression always evaluate to null",
+      "width": 64,
+      "height": 64,
+      "operations": [
+        [
+          "setGlobalStateProperty",
+          "color",
+          "cyan"
+        ],
+        [
+          "setFeatureState",
+          {
+            "source": "geojson",
+            "id": 0
+          },
+          {
+            "color": "magenta"
+          }
+        ],
+        [
+          "wait"
+        ]
+      ]
+    }
+  },
+  "zoom": 2,
+  "sources": {
+    "geojson": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "id": 0,
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-1, 0] },
+            "properties": {}
+          },
+          {
+            "id": 1,
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [1, 0] },
+            "properties": {}
+          }
+        ]
+      }
+    }
+  },
+  "layers": [
+    {
+      "id": "circle",
+      "type": "circle",
+      "source": "geojson",
+      "paint": {
+        "circle-radius": 5,
+        "circle-color": [
+          "coalesce",
+          [
+            "feature-state",
+            "color"
+          ],
+          [
+            "global-state",
+            "color"
+          ],
+          "black"
+        ]
+      }
+    }
+  ]
+}
