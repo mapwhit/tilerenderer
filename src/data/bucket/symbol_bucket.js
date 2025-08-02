@@ -458,7 +458,15 @@ class SymbolBucket {
       false
     );
 
-    arrays.programConfigurations.populatePaintArrays(arrays.layoutVertexArray.length, feature, feature.index, {});
+    arrays.programConfigurations.populatePaintArrays(
+      arrays.layoutVertexArray.length,
+      feature,
+      feature.index,
+      {},
+      {
+        globalState: this.globalState
+      }
+    );
   }
 
   _addCollisionDebugVertex(layoutVertexArray, collisionVertexArray, point, anchorX, anchorY, extrude) {

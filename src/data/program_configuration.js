@@ -128,13 +128,13 @@ class SourceExpressionBinder {
 
   setConstantPatternPositions() {}
 
-  populatePaintArray(newLength, feature, imagePositions) {
+  populatePaintArray(newLength, feature, imagePositions, options) {
     const paintArray = this.paintVertexArray;
 
     const start = paintArray.length;
     paintArray.reserve(newLength);
 
-    const value = this.expression.evaluate(new EvaluationParameters(0), feature, {});
+    const value = this.expression.evaluate(new EvaluationParameters(0, options), feature, {});
 
     if (this.type === 'color') {
       const color = packColor(value);
@@ -224,14 +224,14 @@ class CompositeExpressionBinder {
 
   setConstantPatternPositions() {}
 
-  populatePaintArray(newLength, feature) {
+  populatePaintArray(newLength, feature, imagePositions, options) {
     const paintArray = this.paintVertexArray;
 
     const start = paintArray.length;
     paintArray.reserve(newLength);
 
-    const min = this.expression.evaluate(new EvaluationParameters(this.zoom), feature, {});
-    const max = this.expression.evaluate(new EvaluationParameters(this.zoom + 1), feature, {});
+    const min = this.expression.evaluate(new EvaluationParameters(this.zoom, options), feature, {});
+    const max = this.expression.evaluate(new EvaluationParameters(this.zoom + 1, options), feature, {});
 
     if (this.type === 'color') {
       const minColor = packColor(min);
@@ -546,10 +546,10 @@ class ProgramConfiguration {
     return self;
   }
 
-  populatePaintArrays(newLength, feature, index, imagePositions) {
+  populatePaintArrays(newLength, feature, index, imagePositions, options) {
     for (const property in this.binders) {
       const binder = this.binders[property];
-      binder.populatePaintArray(newLength, feature, imagePositions);
+      binder.populatePaintArray(newLength, feature, imagePositions, options);
     }
     if (feature.id !== undefined) {
       const featureId = String(feature.id);
@@ -687,9 +687,9 @@ class ProgramConfigurationSet {
     this.needsUpload = false;
   }
 
-  populatePaintArrays(length, feature, index, imagePositions) {
+  populatePaintArrays(length, feature, index, imagePositions, options) {
     for (const key in this.programConfigurations) {
-      this.programConfigurations[key].populatePaintArrays(length, feature, index, imagePositions);
+      this.programConfigurations[key].populatePaintArrays(length, feature, index, imagePositions, options);
     }
     this.needsUpload = true;
   }
