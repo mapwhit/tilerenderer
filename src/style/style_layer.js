@@ -87,6 +87,29 @@ class StyleLayer extends Evented {
     return globalStateRefs;
   }
 
+  /**
+   * Get list of global state references that are used within paint properties.
+   * This is used to determine if layer needs to be repainted when global state property changes.
+   *
+   */
+  getPaintAffectingGlobalStateRefs() {
+    const globalStateRefs = new Map();
+
+    if (this._transitionablePaint) {
+      for (const propertyName in this._transitionablePaint._values) {
+        const value = this._transitionablePaint._values[propertyName].value;
+
+        for (const globalStateRef of value.getGlobalStateRefs()) {
+          const properties = globalStateRefs.get(globalStateRef) ?? [];
+          properties.push({ name: propertyName, value: value.value });
+          globalStateRefs.set(globalStateRef, properties);
+        }
+      }
+    }
+
+    return globalStateRefs;
+  }
+
   setLayoutProperty(name, value) {
     if (name === 'visibility') {
       this.visibility = value === 'none' ? value : 'visible';
