@@ -103,7 +103,7 @@ test-render: dependencies dependencies-integration
 	node test/render.test.js
 
 test-render-slow: dependencies dependencies-integration
-	find test/integration/render-tests -name style.json -printf '%P\n' | \
+	find test/integration/render/tests -name style.json -printf '%P\n' | \
 		sed -e 's|/style.json||' | \
 		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js --test-reporter=dot
 
@@ -123,7 +123,7 @@ clean:
 	rm -fr build
 
 clean-test:
-	find test/integration/*-tests -mindepth 2 -type d -not -exec test -e "{}/style.json" \; -print
+	find test/integration/*/tests -mindepth 2 -type d -not -exec test -e "{}/style.json" \; -print
 	# | xargs -t rm -r
 
 .PHONY: clean clean-test distclean
