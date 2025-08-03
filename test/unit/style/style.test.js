@@ -663,6 +663,38 @@ test('Style', async t => {
       });
     });
 
+    await t.test('reloads sources when state property is used in layout property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'line-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'line',
+              source: 'line-source-id',
+              layout: {
+                'line-join': ['global-state', 'lineJoin']
+              }
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.mock.method(style.sourceCaches['line-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['line-source-id'], 'reload');
+
+        style.setGlobalState({ lineJoin: { default: 'bevel' } });
+
+        t.assert.ok(style.sourceCaches['line-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['line-source-id'].reload.mock.callCount() > 0);
+        done();
+      });
+    });
+
     await t.test('does not reload sources when state property is set to the same value as current one', (t, done) => {
       style = new Style(new StubMap());
       style.loadJSON(
@@ -731,6 +763,82 @@ test('Style', async t => {
         done();
       });
     });
+
+    await t.test(
+      'does not reload sources when new state property is used in paint property \
+      while state property used in filter is unchanged',
+      (t, done) => {
+        style = new Style(new StubMap());
+        style.loadJSON(
+          createStyleJSON({
+            sources: {
+              'circle-source-id': createGeoJSONSource()
+            },
+            layers: [
+              {
+                id: 'first-layer-id',
+                type: 'circle',
+                source: 'circle-source-id',
+                filter: ['global-state', 'showFill'],
+                paint: {
+                  'circle-color': ['global-state', 'circleColor']
+                }
+              }
+            ]
+          })
+        );
+
+        style.on('style.load', () => {
+          t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+          t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
+
+          style.setGlobalState({ circleColor: { default: 'red' } });
+
+          t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
+          t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
+          done();
+        });
+      }
+    );
+
+    await t.test(
+      'does not reload sources when new state property is used in paint property \
+      while state property used in layout is unchanged',
+      (t, done) => {
+        style = new Style(new StubMap());
+        style.loadJSON(
+          createStyleJSON({
+            sources: {
+              'line-source-id': createGeoJSONSource()
+            },
+            layers: [
+              {
+                id: 'first-layer-id',
+                type: 'line',
+                source: 'line-source-id',
+                layout: {
+                  'line-join': ['global-state', 'lineJoin']
+                },
+                paint: {
+                  'line-color': ['global-state', 'lineColor']
+                }
+              }
+            ]
+          })
+        );
+
+        style.on('style.load', () => {
+          t.mock.method(style.sourceCaches['line-source-id'], 'resume');
+          t.mock.method(style.sourceCaches['line-source-id'], 'reload');
+
+          style.setGlobalState({ lineColor: { default: 'red' } });
+
+          t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
+          t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);
+          done();
+        });
+      }
+    );
   });
 
   await t.test('Style#setGlobalStateProperty', async t => {
@@ -837,6 +945,71 @@ test('Style', async t => {
       });
     });
 
+    await t.test('reloads sources when state property is used in layout property', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'line-1-source-id': createGeoJSONSource(),
+            'line-2-source-id': createGeoJSONSource(),
+            'line-3-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'first-layer-id',
+              type: 'line',
+              source: 'line-1-source-id',
+              layout: {
+                'line-join': ['global-state', 'lineJoin']
+              }
+            },
+            {
+              id: 'second-layer-id',
+              type: 'line',
+              source: 'line-3-source-id'
+            },
+            {
+              id: 'third-layer-id',
+              type: 'line',
+              source: 'line-2-source-id',
+              layout: {
+                'line-join': ['global-state', 'lineJoin']
+              }
+            },
+            {
+              id: 'fourth-layer-id',
+              type: 'line',
+              source: 'line-3-source-id',
+              layout: {
+                'line-cap': ['global-state', 'lineCap']
+              }
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.mock.method(style.sourceCaches['line-1-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['line-1-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['line-2-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['line-2-source-id'], 'reload');
+        t.mock.method(style.sourceCaches['line-3-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['line-3-source-id'], 'reload');
+
+        style.setGlobalStateProperty('lineJoin', 'bevel');
+
+        // sources line-1 and line-2 should be reloaded
+        t.assert.ok(style.sourceCaches['line-1-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['line-1-source-id'].reload.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['line-2-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['line-2-source-id'].reload.mock.callCount() > 0);
+        // source line-3 should not be reloaded
+        t.assert.equal(style.sourceCaches['line-3-source-id'].resume.mock.callCount(), 0);
+        t.assert.equal(style.sourceCaches['line-3-source-id'].reload.mock.callCount(), 0);
+        done();
+      });
+    });
+
     await t.test('does not reload sources when state property is set to the same value as current one', (t, done) => {
       style = new Style(new StubMap());
       style.loadJSON(
@@ -903,6 +1076,82 @@ test('Style', async t => {
         done();
       });
     });
+
+    await t.test(
+      'does not reload sources when state property is used in paint property \
+      while a different state property used in filter is unchanged',
+      (t, done) => {
+        style = new Style(new StubMap());
+        style.loadJSON(
+          createStyleJSON({
+            sources: {
+              'circle-source-id': createGeoJSONSource()
+            },
+            layers: [
+              {
+                id: 'first-layer-id',
+                type: 'circle',
+                source: 'circle-source-id',
+                filter: ['global-state', 'showFill'],
+                paint: {
+                  'circle-color': ['global-state', 'circleColor']
+                }
+              }
+            ]
+          })
+        );
+
+        style.on('style.load', () => {
+          t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+          t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
+
+          style.setGlobalStateProperty('circleColor', 'red');
+
+          t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
+          t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
+          done();
+        });
+      }
+    );
+
+    await t.test(
+      'does not reload sources when state property is used in paint property \
+      while a different state property used in layout is unchanged',
+      (t, done) => {
+        style = new Style(new StubMap());
+        style.loadJSON(
+          createStyleJSON({
+            sources: {
+              'line-source-id': createGeoJSONSource()
+            },
+            layers: [
+              {
+                id: 'first-layer-id',
+                type: 'line',
+                source: 'line-source-id',
+                layout: {
+                  'line-join': ['global-state', 'lineJoin']
+                },
+                paint: {
+                  'line-color': ['global-state', 'lineColor']
+                }
+              }
+            ]
+          })
+        );
+
+        style.on('style.load', () => {
+          t.mock.method(style.sourceCaches['line-source-id'], 'resume');
+          t.mock.method(style.sourceCaches['line-source-id'], 'reload');
+
+          style.setGlobalStateProperty('lineColor', 'red');
+
+          t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
+          t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);
+          done();
+        });
+      }
+    );
   });
 
   await t.test('Style#addLayer', async t => {

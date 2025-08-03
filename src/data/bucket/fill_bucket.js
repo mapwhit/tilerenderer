@@ -161,7 +161,9 @@ class FillBucket {
       triangleSegment.primitiveLength += indices.length / 3;
     }
 
-    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions);
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions, {
+      globalState: this.globalState
+    });
   }
 }
 
