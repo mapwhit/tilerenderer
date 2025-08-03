@@ -70,7 +70,7 @@ function compare(actualPath, expectedPaths, diffPath, callback) {
  * @param {string} implementation - identify the implementation under test; used to
  * deal with implementation-specific test exclusions and fudge-factors
  * @param {Object<string>} [ignores] - map of test names to disable. A key is the relative
- * path to a test directory, e.g. `"render-tests/background-color/default"`. A value is a string
+ * path to a test directory, e.g. `"render/tests/background-color/default"`. A value is a string
  * that by convention links to an issue that explains why the test is currently disabled. By default,
  * disabled tests will be run, but not fail the test run if the result does not match the expected
  * result. If the value begins with "skip", the test will not be run at all -- use this for tests
@@ -122,7 +122,7 @@ exports.run = function (implementation, ignores, render) {
     options.testReporter = checkValueParameter('verbose', '--test-reporter');
   }
 
-  const directory = path.join(__dirname, '../render-tests');
+  const directory = path.join(__dirname, '../render/tests');
   harness(directory, implementation, options, (style, params, done) => {
     render(style, params, (err, data) => {
       if (err) return done(err);

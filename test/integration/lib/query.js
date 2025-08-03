@@ -34,7 +34,7 @@ function deepEqual(a, b) {
  * @returns {undefined} terminates the process when testing is complete
  */
 exports.run = function (implementation, options, query) {
-  const directory = path.join(__dirname, '../query-tests');
+  const directory = path.join(__dirname, '../query/tests');
   harness(directory, implementation, options, (style, params, done) => {
     query(style, params, (err, data, results) => {
       if (err) return done(err);
