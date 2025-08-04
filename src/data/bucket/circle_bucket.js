@@ -112,13 +112,10 @@ class CircleBucket {
       }
     }
 
-    this.programConfigurations.populatePaintArrays(
-      this.layoutVertexArray.length,
-      feature,
-      index,
-      {},
-      { globalState: this.globalState }
-    );
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions: {},
+      globalState: this.globalState
+    });
   }
 }
 

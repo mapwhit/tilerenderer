@@ -229,7 +229,8 @@ class FillExtrusionBucket {
       segment.vertexLength += numVertices;
     }
 
-    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions, {
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions,
       globalState: this.globalState
     });
   }

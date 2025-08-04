@@ -128,7 +128,7 @@ class SourceExpressionBinder {
 
   setConstantPatternPositions() {}
 
-  populatePaintArray(newLength, feature, imagePositions, options) {
+  populatePaintArray(newLength, feature, options) {
     const paintArray = this.paintVertexArray;
 
     const start = paintArray.length;
@@ -224,7 +224,7 @@ class CompositeExpressionBinder {
 
   setConstantPatternPositions() {}
 
-  populatePaintArray(newLength, feature, imagePositions, options) {
+  populatePaintArray(newLength, feature, options) {
     const paintArray = this.paintVertexArray;
 
     const start = paintArray.length;
@@ -331,7 +331,7 @@ class CrossFadedCompositeBinder {
 
   setConstantPatternPositions() {}
 
-  populatePaintArray(length, feature, imagePositions) {
+  populatePaintArray(length, feature, { imagePositions }) {
     // We populate two paint arrays because, for cross-faded properties, we don't know which direction
     // we're cross-fading to at layout time. In order to keep vertex attributes to a minimum and not pass
     // unnecessary vertex data to the shaders, we determine which to upload at draw time.
@@ -546,10 +546,10 @@ class ProgramConfiguration {
     return self;
   }
 
-  populatePaintArrays(newLength, feature, index, imagePositions, options) {
+  populatePaintArrays(newLength, feature, index, options) {
     for (const property in this.binders) {
       const binder = this.binders[property];
-      binder.populatePaintArray(newLength, feature, imagePositions, options);
+      binder.populatePaintArray(newLength, feature, options);
     }
     if (feature.id !== undefined) {
       const featureId = String(feature.id);
@@ -687,9 +687,9 @@ class ProgramConfigurationSet {
     this.needsUpload = false;
   }
 
-  populatePaintArrays(length, feature, index, imagePositions, options) {
+  populatePaintArrays(length, feature, index, options) {
     for (const key in this.programConfigurations) {
-      this.programConfigurations[key].populatePaintArrays(length, feature, index, imagePositions, options);
+      this.programConfigurations[key].populatePaintArrays(length, feature, index, options);
     }
     this.needsUpload = true;
   }
