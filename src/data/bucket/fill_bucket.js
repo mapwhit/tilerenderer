@@ -68,7 +68,10 @@ class FillBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, imagePositions);
+    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   addFeatures(options, imagePositions) {

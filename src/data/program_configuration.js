@@ -150,9 +150,9 @@ class SourceExpressionBinder {
     }
   }
 
-  updatePaintArray(start, end, feature, featureState, imagePositions) {
+  updatePaintArray(start, end, feature, featureState, options) {
     const paintArray = this.paintVertexArray;
-    const value = this.expression.evaluate({ zoom: 0 }, feature, featureState);
+    const value = this.expression.evaluate(new EvaluationParameters(0, options), feature, featureState);
 
     if (this.type === 'color') {
       const color = packColor(value);
@@ -247,11 +247,11 @@ class CompositeExpressionBinder {
     }
   }
 
-  updatePaintArray(start, end, feature, featureState) {
+  updatePaintArray(start, end, feature, featureState, options) {
     const paintArray = this.paintVertexArray;
 
-    const min = this.expression.evaluate({ zoom: this.zoom }, feature, featureState);
-    const max = this.expression.evaluate({ zoom: this.zoom + 1 }, feature, featureState);
+    const min = this.expression.evaluate(new EvaluationParameters(this.zoom, options), feature, featureState);
+    const max = this.expression.evaluate(new EvaluationParameters(this.zoom + 1, options), feature, featureState);
 
     if (this.type === 'color') {
       const minColor = packColor(min);
@@ -379,7 +379,7 @@ class CrossFadedCompositeBinder {
     }
   }
 
-  updatePaintArray(start, end, feature, featureState, imagePositions) {
+  updatePaintArray(start, end, feature, featureState, { imagePositions }) {
     // We populate two paint arrays because, for cross-faded properties, we don't know which direction
     // we're cross-fading to at layout time. In order to keep vertex attributes to a minimum and not pass
     // unnecessary vertex data to the shaders, we determine which to upload at draw time.
@@ -571,7 +571,7 @@ class ProgramConfiguration {
     }
   }
 
-  updatePaintArrays(featureStates, vtLayer, layer, imagePositions) {
+  updatePaintArrays(featureStates, vtLayer, layer, options) {
     let dirty = false;
     for (const id in featureStates) {
       const posArray = this._idMap[id];
@@ -588,7 +588,7 @@ class ProgramConfiguration {
             //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
             const value = layer.paint.get(property);
             binder.expression = value.value;
-            binder.updatePaintArray(pos.start, pos.end, feature, featureState, imagePositions);
+            binder.updatePaintArray(pos.start, pos.end, feature, featureState, options);
             dirty = true;
           }
         }
@@ -694,10 +694,10 @@ class ProgramConfigurationSet {
     this.needsUpload = true;
   }
 
-  updatePaintArrays(featureStates, vtLayer, layers, imagePositions) {
+  updatePaintArrays(featureStates, vtLayer, layers, options) {
     for (const layer of layers) {
       this.needsUpload =
-        this.programConfigurations[layer.id].updatePaintArrays(featureStates, vtLayer, layer, imagePositions) ||
+        this.programConfigurations[layer.id].updatePaintArrays(featureStates, vtLayer, layer, options) ||
         this.needsUpload;
     }
   }

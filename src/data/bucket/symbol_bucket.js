@@ -328,8 +328,14 @@ class SymbolBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, imagePositions);
-    this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, imagePositions);
+    this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
+      imagePositions,
+      globalState: this.globalState
+    });
+    this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   isEmpty() {
