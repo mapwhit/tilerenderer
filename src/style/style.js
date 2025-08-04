@@ -150,7 +150,7 @@ class Style extends Evented {
         }
         if (paintAffectingGlobalStateRefs.has(ref)) {
           for (const { name, value } of paintAffectingGlobalStateRefs.get(ref)) {
-            this._setPaintProperty(layer, name, value);
+            this._updatePaintProperty(layer, name, value);
           }
         }
       }
@@ -688,10 +688,10 @@ class Style extends Evented {
 
     if (deepEqual(layer.getPaintProperty(name), value)) return;
 
-    this._setPaintProperty(layer, name, value);
+    this._updatePaintProperty(layer, name, value);
   }
 
-  _setPaintProperty(layer, name, value) {
+  _updatePaintProperty(layer, name, value) {
     const requiresRelayout = layer.setPaintProperty(name, value);
     if (requiresRelayout) {
       this._updateLayer(layer);
