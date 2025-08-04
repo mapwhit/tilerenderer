@@ -123,7 +123,10 @@ class LineBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, imagePositions);
+    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   addFeatures(options, imagePositions) {
@@ -498,7 +501,8 @@ class LineBucket {
       startOfLine = false;
     }
 
-    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions, {
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions,
       globalState: this.globalState
     });
   }

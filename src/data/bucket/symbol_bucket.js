@@ -328,8 +328,14 @@ class SymbolBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, imagePositions);
-    this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, imagePositions);
+    this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
+      imagePositions,
+      globalState: this.globalState
+    });
+    this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   isEmpty() {
@@ -458,15 +464,10 @@ class SymbolBucket {
       false
     );
 
-    arrays.programConfigurations.populatePaintArrays(
-      arrays.layoutVertexArray.length,
-      feature,
-      feature.index,
-      {},
-      {
-        globalState: this.globalState
-      }
-    );
+    arrays.programConfigurations.populatePaintArrays(arrays.layoutVertexArray.length, feature, feature.index, {
+      imagePositions: {},
+      globalState: this.globalState
+    });
   }
 
   _addCollisionDebugVertex(layoutVertexArray, collisionVertexArray, point, anchorX, anchorY, extrude) {

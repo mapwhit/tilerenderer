@@ -68,7 +68,10 @@ class FillBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, imagePositions);
+    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   addFeatures(options, imagePositions) {
@@ -161,7 +164,8 @@ class FillBucket {
       triangleSegment.primitiveLength += indices.length / 3;
     }
 
-    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions, {
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions,
       globalState: this.globalState
     });
   }

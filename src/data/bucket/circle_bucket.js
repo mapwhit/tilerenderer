@@ -50,7 +50,10 @@ class CircleBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, imagePositions);
+    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   isEmpty() {
@@ -112,13 +115,10 @@ class CircleBucket {
       }
     }
 
-    this.programConfigurations.populatePaintArrays(
-      this.layoutVertexArray.length,
-      feature,
-      index,
-      {},
-      { globalState: this.globalState }
-    );
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions: {},
+      globalState: this.globalState
+    });
   }
 }
 

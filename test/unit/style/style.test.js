@@ -663,6 +663,43 @@ test('Style', async t => {
       });
     });
 
+    await t.test(
+      'reloads sources when new state property is used in a paint property that affects layout',
+      (t, done) => {
+        style = new Style(new StubMap());
+        style.loadJSON(
+          createStyleJSON({
+            sources: {
+              'circle-source-id': createGeoJSONSource(),
+              'fill-source-id': createGeoJSONSource()
+            },
+            layers: [
+              {
+                id: 'first-layer-id',
+                type: 'circle',
+                source: 'circle-source-id',
+                paint: {
+                  'circle-color': ['coalesce', ['get', 'color'], ['global-state', 'circleColor']]
+                }
+              }
+            ]
+          })
+        );
+
+        style.on('style.load', () => {
+          t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+          t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
+
+          style.setGlobalState({ circleColor: { default: 'red' } });
+          style.update({});
+
+          t.assert.ok(style.sourceCaches['circle-source-id'].resume.mock.callCount() > 0);
+          t.assert.ok(style.sourceCaches['circle-source-id'].reload.mock.callCount() > 0);
+          done();
+        });
+      }
+    );
+
     await t.test('reloads sources when state property is used in layout property', (t, done) => {
       style = new Style(new StubMap());
       style.loadJSON(
@@ -724,6 +761,7 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ showCircles: { default: true } });
+        style.update({});
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -757,6 +795,7 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ circleColor: { default: 'red' } });
+        style.update({});
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -793,6 +832,7 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
           style.setGlobalState({ circleColor: { default: 'red' } });
+          style.update({});
 
           t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -832,6 +872,7 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['line-source-id'], 'reload');
 
           style.setGlobalState({ lineColor: { default: 'red' } });
+          style.update({});
 
           t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);
@@ -945,6 +986,39 @@ test('Style', async t => {
       });
     });
 
+    await t.test('reloads sources when state property is used in a paint property that affects layout', (t, done) => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'circle-source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'layer-id',
+              type: 'circle',
+              source: 'circle-source-id',
+              paint: {
+                'circle-color': ['coalesce', ['get', 'color'], ['global-state', 'circleColor']]
+              }
+            }
+          ]
+        })
+      );
+
+      style.on('style.load', () => {
+        t.mock.method(style.sourceCaches['circle-source-id'], 'resume');
+        t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
+
+        style.setGlobalStateProperty('circleColor', 'red');
+        style.update({});
+
+        t.assert.ok(style.sourceCaches['circle-source-id'].resume.mock.callCount() > 0);
+        t.assert.ok(style.sourceCaches['circle-source-id'].reload.mock.callCount() > 0);
+        done();
+      });
+    });
+
     await t.test('reloads sources when state property is used in layout property', (t, done) => {
       style = new Style(new StubMap());
       style.loadJSON(
@@ -1038,6 +1112,7 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle'], 'reload');
 
         style.setGlobalStateProperty('showCircle', true);
+        style.update({});
 
         t.assert.equal(style.sourceCaches['circle'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle'].reload.mock.callCount(), 0);
@@ -1070,6 +1145,7 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
+        style.update({});
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -1106,6 +1182,7 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
           style.setGlobalStateProperty('circleColor', 'red');
+          style.update({});
 
           t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -1145,6 +1222,7 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['line-source-id'], 'reload');
 
           style.setGlobalStateProperty('lineColor', 'red');
+          style.update({});
 
           t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);

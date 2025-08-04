@@ -93,7 +93,10 @@ class FillExtrusionBucket {
 
   update(states, vtLayer, imagePositions) {
     if (!this.stateDependentLayers.length) return;
-    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, imagePositions);
+    this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
+      imagePositions,
+      globalState: this.globalState
+    });
   }
 
   isEmpty() {
@@ -229,7 +232,8 @@ class FillExtrusionBucket {
       segment.vertexLength += numVertices;
     }
 
-    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, imagePositions, {
+    this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
+      imagePositions,
       globalState: this.globalState
     });
   }
