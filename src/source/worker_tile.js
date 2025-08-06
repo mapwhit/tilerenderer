@@ -50,13 +50,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
     for (const layers of sourceLayerFamilies.values()) {
       const layer = layers[0];
 
-      if (layer.minzoom && zoom < Math.floor(layer.minzoom)) {
-        continue;
-      }
-      if (layer.maxzoom && zoom >= layer.maxzoom) {
-        continue;
-      }
-      if (layer.visibility === 'none') {
+      if (layer.isHidden(zoom, { globalState })) {
         continue;
       }
 

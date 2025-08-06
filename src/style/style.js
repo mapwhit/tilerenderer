@@ -138,6 +138,8 @@ class Style extends Evented {
     for (const layer of this._layers.values()) {
       const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
       const paintAffectingGlobalStateRefs = layer.getPaintAffectingGlobalStateRefs();
+      const visibilityAffectingGlobalStateRefs = layer.getVisibilityAffectingGlobalStateRefs();
+      let visibilityToEval;
 
       for (const ref of globalStateRefs) {
         if (layoutAffectingGlobalStateRefs.has(ref)) {
@@ -148,6 +150,13 @@ class Style extends Evented {
             this._updatePaintProperty(layer, name, value);
           }
         }
+        if (visibilityAffectingGlobalStateRefs?.has(ref)) {
+          visibilityToEval = true;
+        }
+      }
+      if (visibilityToEval) {
+        layer.recalculateVisibility({ globalState: this._globalState });
+        this._visibilityChanged = true;
       }
     }
 
@@ -199,11 +208,15 @@ class Style extends Evented {
     const layers = this.stylesheet.layers;
 
     this._layers.clear();
+
+    this.setGlobalState(this.stylesheet.state ?? null);
+
     for (let layer of layers) {
       if (layer.ref) {
         continue; // just ignore layers that reference other layers
       }
       layer = createStyleLayer(layer);
+      layer.recalculateVisibility({ globalState: this._globalState });
       layer.setEventedParent(this, { layer: { id: layer.id } });
       this._layers.set(layer.id, layer);
     }
@@ -212,8 +225,6 @@ class Style extends Evented {
 
     this.light = this.stylesheet.light;
     this._light = new Light(this.light);
-
-    this.setGlobalState(this.stylesheet.state ?? null);
 
     this.fire(new Event('data', { dataType: 'style' }));
     this.fire(new Event('style.load'));
@@ -306,7 +317,7 @@ class Style extends Evented {
     }
 
     if (this._changed) {
-      if (this._updatedLayers.size || this._removedLayers.size) {
+      if (this._updatedLayers.size || this._removedLayers.size || this._visibilityChanged) {
         this._updateWorkerLayers();
       }
       for (const id in this._updatedSources) {
@@ -336,7 +347,7 @@ class Style extends Evented {
 
     for (const layer of this._layers.values()) {
       layer.recalculate(parameters);
-      if (!layer.isHidden(parameters.zoom) && layer.source) {
+      if (!layer.isHidden(parameters.zoom, parameters) && layer.source) {
         this._sources[layer.source].used = true;
       }
     }
@@ -351,6 +362,7 @@ class Style extends Evented {
 
   _resetUpdates() {
     this._changed = false;
+    this._visibilityChanged = false;
 
     this._updatedLayers.clear();
     this._removedLayers.clear();
@@ -684,7 +696,7 @@ class Style extends Evented {
       return;
     }
 
-    layer.setLayoutProperty(name, value);
+    layer.setLayoutProperty(name, value, { globalState: this._globalState });
     const layerObject = this.layers.find(({ id }) => id === layerId);
     layerObject.layout ??= {};
     layerObject.layout[name] = value;

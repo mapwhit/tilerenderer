@@ -1,6 +1,7 @@
 import { Evented } from '@mapwhit/events';
 import { supportsPropertyExpression } from '@mapwhit/style-expressions';
 import featureFilter from '../style-spec/feature_filter/index.js';
+import visibilityExpression from '../style-spec/visibility.js';
 import createKey from '../util/key.js';
 import { Layout, PossiblyEvaluatedPropertyValue, Transitionable } from './properties.js';
 
@@ -80,7 +81,7 @@ class StyleLayer extends Evented {
 
   getLayoutProperty(name) {
     if (name === 'visibility') {
-      return this.visibility;
+      return this._visibility ?? this.visibility;
     }
 
     return this._unevaluatedLayout.getValue(name);
@@ -106,6 +107,12 @@ class StyleLayer extends Evented {
 
     for (const globalStateRef of this._featureFilter.getGlobalStateRefs()) {
       globalStateRefs.add(globalStateRef);
+    }
+
+    if (this._visibilityExpression) {
+      for (const globalStateRef of this._visibilityExpression.getGlobalStateRefs()) {
+        globalStateRefs.add(globalStateRef);
+      }
     }
 
     return globalStateRefs;
@@ -134,11 +141,23 @@ class StyleLayer extends Evented {
     return globalStateRefs;
   }
 
-  setLayoutProperty(name, value) {
+  /**
+   * Get list of global state references that are used within visibility expression.
+   * This is used to determine if layer visibility needs to be updated when global state property changes.
+   */
+  getVisibilityAffectingGlobalStateRefs() {
+    return this._visibilityExpression?.getGlobalStateRefs();
+  }
+
+  setLayoutProperty(name, value, parameters) {
     this.#key = undefined;
     this.layout[name] = value;
     if (name === 'visibility') {
-      this.visibility = value === 'none' ? value : 'visible';
+      this.visibility = value;
+      this._visibilityExpression = visibilityExpression(value);
+      if (parameters) {
+        this.recalculateVisibility(parameters);
+      }
       return;
     }
 
@@ -184,14 +203,17 @@ class StyleLayer extends Evented {
     // No-op; can be overridden by derived classes.
   }
 
-  isHidden(zoom) {
+  isHidden(zoom = this.minzoom, parameters) {
     if (this.minzoom && zoom < this.minzoom) {
       return true;
     }
     if (this.maxzoom && zoom >= this.maxzoom) {
       return true;
     }
-    return this.visibility === 'none';
+    if (parameters) {
+      this.recalculateVisibility(parameters);
+    }
+    return this.visibility === 'none' || this._visibility === 'none';
   }
 
   updateTransitions(parameters) {
@@ -200,6 +222,10 @@ class StyleLayer extends Evented {
 
   hasTransition() {
     return this._transitioningPaint.hasTransition();
+  }
+
+  recalculateVisibility(parameters) {
+    this._visibility = this._visibilityExpression?.(parameters);
   }
 
   recalculate(parameters) {
