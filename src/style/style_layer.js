@@ -1,6 +1,7 @@
 import { Evented } from '@mapwhit/events';
 import { supportsPropertyExpression } from '@mapwhit/style-expressions';
 import featureFilter from '../style-spec/feature_filter/index.js';
+import visibilityExpression from '../style-spec/visibility.js';
 import createKey from '../util/key.js';
 import { Layout, PossiblyEvaluatedPropertyValue, Transitionable } from './properties.js';
 
@@ -27,6 +28,8 @@ class StyleLayer extends Evented {
     this.visibility = 'visible';
     this.paint = {};
     this.layout = {};
+
+    this._visibilityExpression = visibilityExpression(this.visibility, globalState);
 
     if (layer.type !== 'background') {
       this.source = layer.source;
@@ -94,6 +97,10 @@ class StyleLayer extends Evented {
   getLayoutAffectingGlobalStateRefs() {
     const globalStateRefs = new Set();
 
+    for (const globalStateRef of this._visibilityExpression.getGlobalStateRefs()) {
+      globalStateRefs.add(globalStateRef);
+    }
+
     if (this._unevaluatedLayout) {
       for (const propertyName in this._unevaluatedLayout._values) {
         const value = this._unevaluatedLayout._values[propertyName];
@@ -134,11 +141,21 @@ class StyleLayer extends Evented {
     return globalStateRefs;
   }
 
+  /**
+   * Get list of global state references that are used within visibility expression.
+   * This is used to determine if layer visibility needs to be updated when global state property changes.
+   */
+  getVisibilityAffectingGlobalStateRefs() {
+    return this._visibilityExpression.getGlobalStateRefs();
+  }
+
   setLayoutProperty(name, value) {
     this.#key = undefined;
     this.layout[name] = value;
     if (name === 'visibility') {
-      this.visibility = value === 'none' ? value : 'visible';
+      this.visibility = value;
+      this._visibilityExpression.setValue(value);
+      this.recalculateVisibility();
       return;
     }
 
@@ -191,7 +208,7 @@ class StyleLayer extends Evented {
     if (this.maxzoom && zoom >= this.maxzoom) {
       return true;
     }
-    return this.visibility === 'none';
+    return this.visibility === 'none' || this._visibility === 'none';
   }
 
   updateTransitions(parameters) {
@@ -200,6 +217,10 @@ class StyleLayer extends Evented {
 
   hasTransition() {
     return this._transitioningPaint.hasTransition();
+  }
+
+  recalculateVisibility() {
+    this._visibility = this._visibilityExpression.evaluate();
   }
 
   recalculate(parameters) {
