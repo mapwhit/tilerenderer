@@ -130,6 +130,8 @@ class Style extends Evented {
       const layer = this._layers[layerId];
       const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
       const paintAffectingGlobalStateRefs = layer.getPaintAffectingGlobalStateRefs();
+      const visibilityAffectingGlobalStateRefs = layer.getVisibilityAffectingGlobalStateRefs();
+      let visibilityToEval;
 
       for (const ref of globalStateRefs) {
         if (layoutAffectingGlobalStateRefs.has(ref)) {
@@ -140,6 +142,12 @@ class Style extends Evented {
             this._updatePaintProperty(layer, name, value);
           }
         }
+        if (visibilityAffectingGlobalStateRefs?.has(ref)) {
+          visibilityToEval = true;
+        }
+      }
+      if (visibilityToEval) {
+        layer.recalculateVisibility({ globalState: this._globalState });
       }
     }
 
@@ -197,11 +205,11 @@ class Style extends Evented {
       this._layers[layer.id] = layer;
     }
 
+    this.setGlobalState(this.stylesheet.state ?? null);
+
     this.dispatcher.broadcast('setLayers', this._serializeLayers(this._order));
 
     this.light = new Light(this.stylesheet.light);
-
-    this.setGlobalState(this.stylesheet.state ?? null);
 
     this.fire(new Event('data', { dataType: 'style' }));
     this.fire(new Event('style.load'));
@@ -653,7 +661,7 @@ class Style extends Evented {
 
     if (deepEqual(layer.getLayoutProperty(name), value)) return;
 
-    layer.setLayoutProperty(name, value);
+    layer.setLayoutProperty(name, value, { globalState: this._globalState });
     this._updateLayer(layer);
   }
 

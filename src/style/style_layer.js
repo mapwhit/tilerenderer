@@ -4,6 +4,7 @@ const { Evented } = require('@mapwhit/events');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
 const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 const featureFilter = require('../style-spec/feature_filter');
+const visibilityExpression = require('../style-spec/visibility');
 
 const TRANSITION_SUFFIX = '-transition';
 
@@ -56,7 +57,7 @@ class StyleLayer extends Evented {
 
   getLayoutProperty(name) {
     if (name === 'visibility') {
-      return this.visibility;
+      return this._visibilityValue ?? this.visibility;
     }
 
     return this._unevaluatedLayout.getValue(name);
@@ -82,6 +83,12 @@ class StyleLayer extends Evented {
 
     for (const globalStateRef of this._featureFilter.getGlobalStateRefs()) {
       globalStateRefs.add(globalStateRef);
+    }
+
+    if (this._visibilityExpression) {
+      for (const globalStateRef of this._visibilityExpression.getGlobalStateRefs()) {
+        globalStateRefs.add(globalStateRef);
+      }
     }
 
     return globalStateRefs;
@@ -110,9 +117,18 @@ class StyleLayer extends Evented {
     return globalStateRefs;
   }
 
+  /**
+   * Get list of global state references that are used within visibility expression.
+   * This is used to determine if layer visibility needs to be updated when global state property changes.
+   */
+  getVisibilityAffectingGlobalStateRefs() {
+    return this._visibilityExpression?.getGlobalStateRefs();
+  }
+
   setLayoutProperty(name, value) {
     if (name === 'visibility') {
-      this.visibility = value === 'none' ? value : 'visible';
+      this.visibility = value;
+      this._visibilityExpression = visibilityExpression(value);
       return;
     }
 
@@ -148,10 +164,13 @@ class StyleLayer extends Evented {
     // No-op; can be overridden by derived classes.
   }
 
-  isHidden(zoom) {
-    if (this.minzoom && zoom < this.minzoom) return true;
+  isHidden(zoom = this.minzoom, globalState) {
+    if (this.minzoom && zoom < Math.floor(this.minzoom)) return true;
     if (this.maxzoom && zoom >= this.maxzoom) return true;
-    return this.visibility === 'none';
+    if (globalState) {
+      this.recalculateVisibility(globalState);
+    }
+    return this.visibility === 'none' || this._visibilityValue === 'none';
   }
 
   updateTransitions(parameters) {
@@ -160,6 +179,10 @@ class StyleLayer extends Evented {
 
   hasTransition() {
     return this._transitioningPaint.hasTransition();
+  }
+
+  recalculateVisibility(globalState) {
+    this._visibilityValue = this._visibilityExpression?.({ globalState });
   }
 
   recalculate(parameters) {
@@ -187,9 +210,9 @@ class StyleLayer extends Evented {
       paint: this._transitionablePaint?.serialize()
     };
 
-    if (this.visibility === 'none') {
+    if (this.visibility !== 'visible') {
       output.layout = output.layout || {};
-      output.layout.visibility = 'none';
+      output.layout.visibility = this.visibility;
     }
 
     return filterObject(output, (value, key) => {

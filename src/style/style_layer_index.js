@@ -40,7 +40,7 @@ class StyleLayerIndex {
       const layers = layerConfigs.map(layerConfig => this.#layers[layerConfig.id]);
 
       const layer = layers[0];
-      if (layer.visibility === 'none') {
+      if (layer.isHidden()) {
         continue;
       }
 

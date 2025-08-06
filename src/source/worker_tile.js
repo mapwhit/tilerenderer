@@ -52,6 +52,9 @@ class WorkerTile {
       patternDependencies: {},
       glyphDependencies: {}
     };
+    const recalcOptions = {
+      globalState: this.globalState
+    };
 
     const layerFamilies = layerIndex.familiesBySource[this.source];
     for (const sourceLayerId in layerFamilies) {
@@ -78,9 +81,7 @@ class WorkerTile {
         const layer = family[0];
 
         assert(layer.source === this.source);
-        if (layer.minzoom && this.zoom < Math.floor(layer.minzoom)) continue;
-        if (layer.maxzoom && this.zoom >= layer.maxzoom) continue;
-        if (layer.visibility === 'none') continue;
+        if (layer.isHidden(this.zoom, this.globalState)) continue;
 
         recalculateLayers(family, this.zoom, this.globalState);
 
