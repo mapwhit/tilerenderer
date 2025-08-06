@@ -635,7 +635,13 @@
           "macos": "0.1.0"
         }
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_fill": {
@@ -659,7 +665,13 @@
           "macos": "0.1.0"
         }
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_circle": {
@@ -683,7 +695,13 @@
           "macos": "0.1.0"
         }
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_heatmap": {
@@ -707,7 +725,13 @@
           "macos": "0.7.0"
         }
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_fill-extrusion": {
@@ -731,7 +755,13 @@
           "macos": "0.5.0"
         }
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_line": {
@@ -878,7 +908,13 @@
         },
         "data-driven styling": {}
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_symbol": {
@@ -2121,7 +2157,13 @@
         },
         "data-driven styling": {}
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_raster": {
@@ -2146,7 +2188,13 @@
         },
         "data-driven styling": {}
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "layout_hillshade": {
@@ -2171,7 +2219,13 @@
         },
         "data-driven styling": {}
       },
-      "property-type": "constant"
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "global-state"
+        ]
+      },
+      "property-type": "data-constant"
     }
   },
   "filter": {
