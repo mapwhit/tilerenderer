@@ -14,7 +14,7 @@ function createMap() {
   });
 }
 
-test('Map#_requestRenderFrame', async t => {
+test('Map._requestRenderFrame', async t => {
   let globalWindow;
   t.before(() => {
     globalWindow = globalThis.window;
@@ -24,7 +24,7 @@ test('Map#_requestRenderFrame', async t => {
     globalThis.window = globalWindow;
   });
 
-  await t.test('Map#_requestRenderFrame schedules a new render frame if necessary', t => {
+  await t.test('Map._requestRenderFrame schedules a new render frame if necessary', t => {
     const map = createMap();
     t.mock.method(map, '_rerender', () => {});
     map._requestRenderFrame(() => {});
@@ -32,7 +32,7 @@ test('Map#_requestRenderFrame', async t => {
     map.remove();
   });
 
-  await t.test('Map#_requestRenderFrame queues a task for the next render frame', (t, done) => {
+  await t.test('Map._requestRenderFrame queues a task for the next render frame', (t, done) => {
     const map = createMap();
     const cb = t.mock.fn();
     map._requestRenderFrame(cb);
@@ -43,7 +43,7 @@ test('Map#_requestRenderFrame', async t => {
     });
   });
 
-  await t.test('Map#_cancelRenderFrame cancels a queued task', (t, done) => {
+  await t.test('Map._cancelRenderFrame cancels a queued task', (t, done) => {
     const map = createMap();
     const cb = t.mock.fn();
     const id = map._requestRenderFrame(cb);

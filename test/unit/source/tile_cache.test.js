@@ -72,7 +72,7 @@ test('TileCache - overflow', t => {
   t.assert.ok(!cache.has(idA));
 });
 
-test('TileCache#reset', t => {
+test('TileCache.reset', t => {
   let called;
   const cache = new TileCache(10, removed => {
     t.assert.equal(removed, tileA);
@@ -84,7 +84,7 @@ test('TileCache#reset', t => {
   t.assert.ok(called);
 });
 
-test('TileCache#setMaxSize', t => {
+test('TileCache.setMaxSize', t => {
   let numRemoved = 0;
   const cache = new TileCache(10, () => {
     numRemoved++;

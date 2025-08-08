@@ -11,7 +11,7 @@ test('StyleLayer', async t => {
   });
 });
 
-test('StyleLayer#setPaintProperty', async t => {
+test('StyleLayer.setPaintProperty', async t => {
   await t.test('sets new property value', t => {
     const layer = createStyleLayer({
       id: 'background',
@@ -150,7 +150,7 @@ test('StyleLayer#setPaintProperty', async t => {
   });
 });
 
-test('StyleLayer#setLayoutProperty', async t => {
+test('StyleLayer.setLayoutProperty', async t => {
   await t.test('sets new property value', t => {
     const layer = createStyleLayer({
       id: 'symbol',
@@ -193,7 +193,7 @@ test('StyleLayer#setLayoutProperty', async t => {
   });
 });
 
-test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
+test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {
     const layer = createStyleLayer({
       id: 'background',
@@ -280,7 +280,7 @@ test('StyleLayer.getPaintAffectingGlobalStateRefs', async t => {
   });
 });
 
-test('StyleLayer#serialize', async t => {
+test('StyleLayer.serialize', async t => {
   function createSymbolLayer(layer) {
     return Object.assign(
       {
@@ -332,7 +332,7 @@ test('StyleLayer#serialize', async t => {
   });
 });
 
-test('StyleLayer#serialize', async t => {
+test('StyleLayer.serialize', async t => {
   function createSymbolLayer(layer) {
     return Object.assign(
       {

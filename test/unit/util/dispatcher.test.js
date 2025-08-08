@@ -60,7 +60,7 @@ test('Dispatcher', async t => {
     );
   });
 
-  await t.test('#remove destroys actors', t => {
+  await t.test('remove destroys actors', t => {
     const actorsRemoved = [];
     function Actor() {
       return {

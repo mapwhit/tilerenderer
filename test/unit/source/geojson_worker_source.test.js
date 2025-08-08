@@ -3,7 +3,7 @@ const GeoJSONWorkerSource = require('../../../src/source/geojson_worker_source')
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
-test('GeoJSONWorkerSource#constructor', t => {
+test('GeoJSONWorkerSource.constructor', t => {
   const resources = {};
   const layerIndex = new StyleLayerIndex();
   const source = new GeoJSONWorkerSource(resources, layerIndex);
@@ -12,7 +12,7 @@ test('GeoJSONWorkerSource#constructor', t => {
   t.assert.equal(source.layerIndex, layerIndex);
 });
 
-test('GeoJSONWorkerSource#loadTile', async t => {
+test('GeoJSONWorkerSource.loadTile', async t => {
   const actor = {};
   const layerIndex = new StyleLayerIndex();
   layerIndex.update([

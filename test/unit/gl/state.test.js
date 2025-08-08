@@ -34,14 +34,14 @@ const { deepEqual } = require('../../../src/util/object');
 const context = new Context(require('gl')(10, 10));
 
 async function ValueTest(Constructor, options, t) {
-  await t.test('#constructor', t => {
+  await t.test('constructor', t => {
     const v = new Constructor(context);
     t.assert.ok(v);
     const currentV = v.get();
     t.assert.notEqual(typeof currentV, 'undefined', 'instantiates with a default value');
   });
 
-  await t.test('#set', t => {
+  await t.test('set', t => {
     const v = new Constructor(context);
     v.set(options.setValue);
     const equality = options.equality || ((a, b) => deepEqual(a, b));

@@ -55,7 +55,7 @@ test('DEMData', async t => {
   });
 });
 
-test('DEMData#backfillBorder', async t => {
+test('DEMData.backfillBorder', async t => {
   let globalWindow;
   t.before(() => {
     globalWindow = globalThis.window;

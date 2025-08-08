@@ -56,7 +56,7 @@ test('Light with stops function', t => {
   t.assert.deepEqual(light.properties.get('intensity'), 0.5);
 });
 
-test('Light#getLight', t => {
+test('Light.getLight', t => {
   const defaults = {};
   for (const key in spec) {
     defaults[key] = spec[key].default;
@@ -65,7 +65,7 @@ test('Light#getLight', t => {
   t.assert.deepEqual(new Light(defaults).getLight(), defaults);
 });
 
-test('Light#setLight', t => {
+test('Light.setLight', t => {
   const light = new Light({});
   light.setLight({ color: 'red', 'color-transition': { duration: 3000 } });
   light.updateTransitions({ transition: true }, {});

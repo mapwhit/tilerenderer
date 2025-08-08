@@ -2,7 +2,7 @@ const test = require('node:test');
 const LngLat = require('../../../src/geo/lng_lat');
 
 test('LngLat', async t => {
-  await t.test('#constructor', t => {
+  await t.test('constructor', t => {
     t.assert.ok(new LngLat(0, 0) instanceof LngLat, 'creates an object');
     t.assert.throws(
       () => {
@@ -27,7 +27,7 @@ test('LngLat', async t => {
     );
   });
 
-  await t.test('#convert', t => {
+  await t.test('convert', t => {
     t.assert.ok(LngLat.convert([0, 10]) instanceof LngLat, 'convert creates a LngLat instance');
     t.assert.ok(LngLat.convert([0, 10, 0]) instanceof LngLat, 'convert creates a LngLat instance (Elevation)');
     t.assert.throws(
@@ -56,22 +56,22 @@ test('LngLat', async t => {
     );
   });
 
-  await t.test('#wrap', t => {
+  await t.test('wrap', t => {
     t.assert.deepEqual(new LngLat(0, 0).wrap(), { lng: 0, lat: 0 });
     t.assert.deepEqual(new LngLat(10, 20).wrap(), { lng: 10, lat: 20 });
     t.assert.deepEqual(new LngLat(360, 0).wrap(), { lng: 0, lat: 0 });
     t.assert.deepEqual(new LngLat(190, 0).wrap(), { lng: -170, lat: 0 });
   });
 
-  await t.test('#toArray', t => {
+  await t.test('toArray', t => {
     t.assert.deepEqual(new LngLat(10, 20).toArray(), [10, 20]);
   });
 
-  await t.test('#toString', t => {
+  await t.test('toString', t => {
     t.assert.equal(new LngLat(10, 20).toString(), 'LngLat(10, 20)');
   });
 
-  await t.test('#toBounds', t => {
+  await t.test('toBounds', t => {
     t.assert.deepEqual(new LngLat(0, 0).toBounds(10).toArray(), [
       [-0.00008983152770714982, -0.00008983152770714982],
       [0.00008983152770714982, 0.00008983152770714982]
