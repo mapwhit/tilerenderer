@@ -1,4 +1,17 @@
 
+0.52.1 / 2025-08-08
+===================
+
+ * fold reloading sources into a function that finds them
+ * pass global state parameter directly and pack into an object when necessary
+ * trigger map update only when `global-state` property actually changed
+ * fix passing global state object when re-evaluating paint properties with `global-state` and `feature-state` expressions
+ * fix triggering recalculation of paint properties with `global-state` expressions on setting global properties
+ * fix passing global state object when evaluating paint properties with `global-state` expressions
+ * feature id can be number 0
+ * remove `mapbox-gl-js-test.js`
+ * replace `sinon` with `node:test` mocks
+
 0.52.0 / 2025-07-30
 ===================
 
