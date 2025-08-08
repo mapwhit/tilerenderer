@@ -2,7 +2,6 @@
 
 const assert = require('assert');
 const { Struct, StructArray } = require('../util/struct_array');
-const { default: Point } = require('@mapbox/point-geometry');
 
 /**
  * Implementation of the StructArray layout:
@@ -887,7 +886,7 @@ class CollisionBoxStruct extends Struct {
     this._structArray.int16[this._pos2 + 11] = x;
   }
   get anchorPoint() {
-    return new Point(this.anchorPointX, this.anchorPointY);
+    return { x: this.anchorPointX, y: this.anchorPointY };
   }
 }
 
