@@ -664,7 +664,7 @@ test('Style', async t => {
     });
 
     await t.test(
-      'reloads sources when new state property is used in a paint property that affects layout',
+      'reloads sources when a new state property is used in a paint property that affects layout',
       (t, done) => {
         style = new Style(new StubMap());
         style.loadJSON(
