@@ -32,7 +32,7 @@ test('camera', async t => {
     return camera;
   }
 
-  await t.test('#jumpTo', async t => {
+  await t.test('jumpTo', async t => {
     // Choose initial zoom to avoid center being constrained by mercator latitude limits.
     const camera = createCamera({ zoom: 1 });
 
@@ -199,7 +199,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#setCenter', async t => {
+  await t.test('setCenter', async t => {
     // Choose initial zoom to avoid center being constrained by mercator latitude limits.
     const camera = createCamera({ zoom: 1 });
 
@@ -249,7 +249,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#setZoom', async t => {
+  await t.test('setZoom', async t => {
     const camera = createCamera();
 
     await t.test('sets zoom', t => {
@@ -303,7 +303,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#setBearing', async t => {
+  await t.test('setBearing', async t => {
     const camera = createCamera();
 
     await t.test('sets bearing', t => {
@@ -357,7 +357,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#panBy', async t => {
+  await t.test('panBy', async t => {
     await t.test('pans by specified amount', t => {
       const camera = createCamera();
       camera.panBy([100, 0], { duration: 0 });
@@ -409,7 +409,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#panTo', async t => {
+  await t.test('panTo', async t => {
     await t.test('pans to specified location', t => {
       const camera = createCamera();
       camera.panTo([100, 0], { duration: 0 });
@@ -479,7 +479,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#zoomTo', async t => {
+  await t.test('zoomTo', async t => {
     await t.test('zooms to specified level', t => {
       const camera = createCamera();
       camera.zoomTo(3.2, { duration: 0 });
@@ -555,7 +555,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#rotateTo', async t => {
+  await t.test('rotateTo', async t => {
     await t.test('rotates to specified bearing', t => {
       const camera = createCamera();
       camera.rotateTo(90, { duration: 0 });
@@ -651,7 +651,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#easeTo', async t => {
+  await t.test('easeTo', async t => {
     await t.test('pans to specified location', t => {
       const camera = createCamera();
       camera.easeTo({ center: [100, 0], duration: 0 });
@@ -981,7 +981,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#flyTo', async t => {
+  await t.test('flyTo', async t => {
     await t.test('pans to specified location', t => {
       const camera = createCamera();
       camera.flyTo({ center: [100, 0], animate: false });
@@ -1697,7 +1697,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#isEasing', async t => {
+  await t.test('isEasing', async t => {
     await t.test('returns false when not easing', t => {
       const camera = createCamera();
       t.assert.ok(!camera.isEasing());
@@ -1767,7 +1767,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#stop', async t => {
+  await t.test('stop', async t => {
     await t.test('resets camera._zooming', t => {
       const camera = createCamera();
       camera.zoomTo(3.2);
@@ -1842,7 +1842,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#cameraForBounds', async t => {
+  await t.test('cameraForBounds', async t => {
     await t.test('no padding passed', t => {
       const camera = createCamera();
       const bb = [
@@ -1894,7 +1894,7 @@ test('camera', async t => {
     });
   });
 
-  await t.test('#fitBounds', async t => {
+  await t.test('fitBounds', async t => {
     await t.test('no padding passed', t => {
       const camera = createCamera();
       const bb = [

@@ -2,7 +2,7 @@ const test = require('node:test');
 const { CanonicalTileID, OverscaledTileID } = require('../../../src/source/tile_id');
 
 test('CanonicalTileID', async t => {
-  await t.test('#constructor', t => {
+  await t.test('constructor', t => {
     t.assert.throws(() => {
       new CanonicalTileID(-1, 0, 0);
     });
@@ -31,7 +31,7 @@ test('CanonicalTileID', async t => {
 });
 
 test('OverscaledTileID', async t => {
-  await t.test('#constructor', t => {
+  await t.test('constructor', t => {
     t.assert.ok(new OverscaledTileID(0, 0, 0, 0, 0) instanceof OverscaledTileID);
     t.assert.throws(() => {
       new OverscaledTileID(7, 0, 8, 0, 0);

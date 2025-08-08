@@ -1,7 +1,7 @@
 const test = require('node:test');
 const createStyleLayer = require('../../../../src/style/create_style_layer');
 
-test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
+test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {
     const layer = createStyleLayer({
       id: 'background',

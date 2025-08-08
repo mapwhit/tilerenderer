@@ -40,7 +40,7 @@ function createLineWrapper() {
   ]);
 }
 
-test('WorkerTile#parse', async t => {
+test('WorkerTile.parse', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -54,7 +54,7 @@ test('WorkerTile#parse', async t => {
   t.assert.ok(result.buckets[0]);
 });
 
-test('WorkerTile#parse layer with layout property', async t => {
+test('WorkerTile.parse layer with layout property', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -72,7 +72,7 @@ test('WorkerTile#parse layer with layout property', async t => {
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
-test('WorkerTile#parse layer with layout property using global-state', async t => {
+test('WorkerTile.parse layer with layout property using global-state', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -92,7 +92,7 @@ test('WorkerTile#parse layer with layout property using global-state', async t =
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
-test('WorkerTile#parse skips hidden layers', async t => {
+test('WorkerTile.parse skips hidden layers', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test-hidden',
@@ -107,7 +107,7 @@ test('WorkerTile#parse skips hidden layers', async t => {
   t.assert.equal(result.buckets.length, 0);
 });
 
-test('WorkerTile#parse skips layers without a corresponding source layer', async t => {
+test('WorkerTile.parse skips layers without a corresponding source layer', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',
@@ -122,7 +122,7 @@ test('WorkerTile#parse skips layers without a corresponding source layer', async
   t.assert.equal(result.buckets.length, 0);
 });
 
-test('WorkerTile#parse warns once when encountering a v1 vector tile layer', async t => {
+test('WorkerTile.parse warns once when encountering a v1 vector tile layer', async t => {
   const layerIndex = new StyleLayerIndex([
     {
       id: 'test',

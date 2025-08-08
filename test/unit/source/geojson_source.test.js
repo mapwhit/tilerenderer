@@ -48,7 +48,7 @@ const hawkHill = {
   ]
 };
 
-test('GeoJSONSource#setData', async t => {
+test('GeoJSONSource.setData', async t => {
   function createSource(opts) {
     opts = opts || {};
     opts = Object.assign(opts, { data: {} });
@@ -76,7 +76,7 @@ test('GeoJSONSource#setData', async t => {
   });
 });
 
-test('GeoJSONSource#onRemove', async t => {
+test('GeoJSONSource.onRemove', async t => {
   await t.test('broadcasts "removeSource" event', (t, done) => {
     const source = new GeoJSONSource(
       'id',
@@ -97,7 +97,7 @@ test('GeoJSONSource#onRemove', async t => {
   });
 });
 
-test('GeoJSONSource#update', async t => {
+test('GeoJSONSource.update', async t => {
   const transform = new Transform();
   transform.resize(200, 200);
   const lngLat = LngLat.convert([-122.486052, 37.830348]);
@@ -223,7 +223,7 @@ test('GeoJSONSource#update', async t => {
   });
 });
 
-test('GeoJSONSource#serialize', async t => {
+test('GeoJSONSource.serialize', async t => {
   await t.test('serialize source with inline data', t => {
     const source = new GeoJSONSource('id', { data: hawkHill }, mockDispatcher);
     source.load();

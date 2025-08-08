@@ -74,13 +74,13 @@ test('TaskQueue', async t => {
     t.assert.equal(cb.mock.callCount(), 1);
   });
 
-  await t.test('TaskQueue#run() throws on attempted re-entrance', t => {
+  await t.test('TaskQueue.run() throws on attempted re-entrance', t => {
     const q = taskQueue();
     q.add(() => q.run());
     t.assert.throws(() => q.run());
   });
 
-  await t.test('TaskQueue#clear() prevents queued task from being executed', t => {
+  await t.test('TaskQueue.clear() prevents queued task from being executed', t => {
     const q = taskQueue();
     const before = t.mock.fn();
     const after = t.mock.fn();
@@ -92,7 +92,7 @@ test('TaskQueue', async t => {
     t.assert.equal(after.mock.callCount(), 1);
   });
 
-  await t.test('TaskQueue#clear() interrupts currently-running queue', t => {
+  await t.test('TaskQueue.clear() interrupts currently-running queue', t => {
     const q = taskQueue();
     const before = t.mock.fn();
     const after = t.mock.fn();

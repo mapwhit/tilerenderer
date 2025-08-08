@@ -90,14 +90,7 @@ class Style extends Evented {
 
     this._globalState[name] = newValue;
 
-    const sourceIdsToReload = this._findGlobalStateAffectedSources([name]);
-
-    for (const id in this.sourceCaches) {
-      if (sourceIdsToReload.has(id)) {
-        this._reloadSource(id);
-        this._changed = true;
-      }
-    }
+    this._applyGlobalStateChanges([name]);
   }
 
   getGlobalState() {
@@ -118,23 +111,17 @@ class Style extends Evented {
       }
     }
 
-    const sourceIdsToReload = this._findGlobalStateAffectedSources(changedGlobalStateRefs);
-
-    for (const id in this.sourceCaches) {
-      if (sourceIdsToReload.has(id)) {
-        this._reloadSource(id);
-        this._changed = true;
-      }
-    }
+    this._applyGlobalStateChanges(changedGlobalStateRefs);
   }
 
   /**
-   * Find all sources that are affected by the global state changes.
-   * For example, if a layer filter uses global-state expression, this function will return the source id of that layer.
+   *  * Find all sources that are affected by the global state changes and reload them.
+   * Find all paint properties that are affected by the global state changes and update them.
+   * For example, if a layer filter uses global-state expression, this function will find the source id of that layer.
    */
-  _findGlobalStateAffectedSources(globalStateRefs) {
+  _applyGlobalStateChanges(globalStateRefs) {
     if (globalStateRefs.length === 0) {
-      return new Set();
+      return;
     }
 
     const sourceIdsToReload = new Set();
@@ -156,7 +143,12 @@ class Style extends Evented {
       }
     }
 
-    return sourceIdsToReload;
+    for (const id in this.sourceCaches) {
+      if (sourceIdsToReload.has(id)) {
+        this._reloadSource(id);
+        this._changed = true;
+      }
+    }
   }
 
   loadJSON(json) {

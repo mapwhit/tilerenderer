@@ -68,7 +68,7 @@ test('Actor', async t => {
     t.assert.equal(calls, 1);
   });
 
-  await t.test('#remove unbinds event listener', (t, done) => {
+  await t.test('remove unbinds event listener', (t, done) => {
     const actor = new Actor(
       {
         addEventListener: function (type, callback, useCapture) {

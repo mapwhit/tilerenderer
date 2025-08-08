@@ -3,7 +3,7 @@ const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_s
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 const WorkerTile = require('../../../src/source/worker_tile');
 
-test('VectorTileWorkerSource#constructor', t => {
+test('VectorTileWorkerSource.constructor', t => {
   const resources = {};
   const layerIndex = new StyleLayerIndex();
   const source = new VectorTileWorkerSource(resources, layerIndex);
@@ -12,7 +12,7 @@ test('VectorTileWorkerSource#constructor', t => {
   t.assert.equal(source.layerIndex, layerIndex);
 });
 
-test('VectorTileWorkerSource#loadTile - success', async t => {
+test('VectorTileWorkerSource.loadTile - success', async t => {
   const actor = {};
   const layerIndex = new StyleLayerIndex();
   const source = new VectorTileWorkerSource(actor, layerIndex);
@@ -39,7 +39,7 @@ test('VectorTileWorkerSource#loadTile - success', async t => {
   t.assert.ok(result.parsed);
 });
 
-test('VectorTileWorkerSource#loadTile - no response', async t => {
+test('VectorTileWorkerSource.loadTile - no response', async t => {
   const actor = {};
   const layerIndex = new StyleLayerIndex();
   const source = new VectorTileWorkerSource(actor, layerIndex);
@@ -60,7 +60,7 @@ test('VectorTileWorkerSource#loadTile - no response', async t => {
   await t.assert.rejects(source.loadTile(params), { message: 'no tile data' });
 });
 
-test('VectorTileWorkerSource#loadTile - no data', async t => {
+test('VectorTileWorkerSource.loadTile - no data', async t => {
   const actor = {};
   const layerIndex = new StyleLayerIndex();
   const source = new VectorTileWorkerSource(actor, layerIndex);

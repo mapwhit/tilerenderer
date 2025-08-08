@@ -11,7 +11,7 @@ test('StyleLayer', async t => {
   });
 });
 
-test('StyleLayer#setPaintProperty', async t => {
+test('StyleLayer.setPaintProperty', async t => {
   await t.test('sets new property value', t => {
     const layer = createStyleLayer({
       id: 'background',
@@ -150,7 +150,7 @@ test('StyleLayer#setPaintProperty', async t => {
   });
 });
 
-test('StyleLayer#setLayoutProperty', async t => {
+test('StyleLayer.setLayoutProperty', async t => {
   await t.test('sets new property value', t => {
     const layer = createStyleLayer({
       id: 'symbol',
@@ -193,7 +193,7 @@ test('StyleLayer#setLayoutProperty', async t => {
   });
 });
 
-test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
+test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {
     const layer = createStyleLayer({
       id: 'background',
@@ -211,7 +211,6 @@ test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
       id: 'symbol',
       type: 'symbol',
       source: 'source',
-      //@ts-ignore
       filter: ['==', ['global-state', 'showSymbol'], true]
     });
 
@@ -225,9 +224,7 @@ test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
       source: 'source',
       layout: {
         'text-field': '{text}',
-        //@ts-ignore
         'text-size': ['global-state', 'textSize'],
-        //@ts-ignore
         'text-transform': ['global-state', 'textTransform']
       }
     });
@@ -236,7 +233,54 @@ test('StyleLayer#getLayoutAffectingGlobalStateRefs', async t => {
   });
 });
 
-test('StyleLayer#serialize', async t => {
+test('StyleLayer.getPaintAffectingGlobalStateRefs', async t => {
+  await t.test('returns empty map when no global state references', () => {
+    const layer = createStyleLayer({
+      id: 'background',
+      type: 'background',
+      paint: {
+        'background-color': '#000000'
+      }
+    });
+
+    t.assert.deepEqual(layer.getPaintAffectingGlobalStateRefs(), new Map());
+  });
+
+  await t.test('returns global-state references from paint properties', () => {
+    const layer = createStyleLayer({
+      id: 'symbol',
+      type: 'symbol',
+      source: 'source',
+      paint: {
+        'text-color': ['global-state', 'color'],
+        'text-halo-color': ['global-state', 'color'],
+        'text-halo-width': 1,
+        'text-opacity': ['global-state', 'opacity']
+      }
+    });
+    const expectMap = new Map();
+    expectMap.set('color', [
+      {
+        name: 'text-color',
+        value: ['global-state', 'color']
+      },
+      {
+        name: 'text-halo-color',
+        value: ['global-state', 'color']
+      }
+    ]);
+    expectMap.set('opacity', [
+      {
+        name: 'text-opacity',
+        value: ['global-state', 'opacity']
+      }
+    ]);
+
+    t.assert.deepEqual(layer.getPaintAffectingGlobalStateRefs(), expectMap);
+  });
+});
+
+test('StyleLayer.serialize', async t => {
   function createSymbolLayer(layer) {
     return Object.assign(
       {
@@ -288,7 +332,7 @@ test('StyleLayer#serialize', async t => {
   });
 });
 
-test('StyleLayer#serialize', async t => {
+test('StyleLayer.serialize', async t => {
   function createSymbolLayer(layer) {
     return Object.assign(
       {

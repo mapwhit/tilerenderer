@@ -129,7 +129,7 @@ test('Tile', async t => {
     });
   });
 
-  await t.test('Tile#setMask', async t => {
+  await t.test('Tile.setMask', async t => {
     await t.test('simple mask', t => {
       const tile = new Tile(0, 0, 0);
       const context = new Context(require('gl')(10, 10));
@@ -163,7 +163,7 @@ test('Tile', async t => {
     });
   });
 
-  await t.test('Tile#isLessThan', async t => {
+  await t.test('Tile.isLessThan', async t => {
     await t.test('correctly sorts tiles', t => {
       const tiles = [
         new OverscaledTileID(9, 0, 9, 146, 195),

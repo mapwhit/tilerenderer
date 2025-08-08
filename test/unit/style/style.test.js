@@ -107,7 +107,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#loadJSON', async t => {
+  await t.test('Style.loadJSON', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -291,7 +291,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#_remove', async t => {
+  await t.test('Style._remove', async t => {
     await t.test('clears tiles', (t, done) => {
       const style = new Style(new StubMap());
       style.loadJSON(
@@ -324,7 +324,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#update', (t, done) => {
+  await t.test('Style.update', (t, done) => {
     const style = new Style(new StubMap());
     style.loadJSON({
       version: 8,
@@ -370,7 +370,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#addSource', async t => {
+  await t.test('Style.addSource', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -454,7 +454,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#removeSource', async t => {
+  await t.test('Style.removeSource', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -579,7 +579,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setGeoJSONSourceData', async t => {
+  await t.test('Style.setGeoJSONSourceData', async t => {
     const geoJSON = { type: 'FeatureCollection', features: [] };
     let style;
     t.afterEach(() => {
@@ -601,7 +601,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setGlobalState', async t => {
+  await t.test('Style.setGlobalState', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -664,7 +664,7 @@ test('Style', async t => {
     });
 
     await t.test(
-      'reloads sources when new state property is used in a paint property that affects layout',
+      'reloads sources when a new state property is used in a paint property that affects layout',
       (t, done) => {
         style = new Style(new StubMap());
         style.loadJSON(
@@ -882,7 +882,7 @@ test('Style', async t => {
     );
   });
 
-  await t.test('Style#setGlobalStateProperty', async t => {
+  await t.test('Style.setGlobalStateProperty', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -1232,7 +1232,7 @@ test('Style', async t => {
     );
   });
 
-  await t.test('Style#addLayer', async t => {
+  await t.test('Style.addLayer', async t => {
     let style;
     const assertsOnDone = [];
 
@@ -1569,7 +1569,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#removeLayer', async t => {
+  await t.test('Style.removeLayer', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -1686,7 +1686,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#moveLayer', async t => {
+  await t.test('Style.moveLayer', async t => {
     let style;
 
     t.beforeEach(() => {
@@ -1765,7 +1765,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setPaintProperty', async t => {
+  await t.test('Style.setPaintProperty', async t => {
     let style;
 
     t.beforeEach(() => {
@@ -1873,7 +1873,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#getPaintProperty', async t => {
+  await t.test('Style.getPaintProperty', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -1912,7 +1912,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setLayoutProperty', async t => {
+  await t.test('Style.setLayoutProperty', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -1963,7 +1963,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#getLayoutProperty', async t => {
+  await t.test('Style.getLayoutProperty', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -2011,7 +2011,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setFilter', async t => {
+  await t.test('Style.setFilter', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -2112,7 +2112,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#setLayerZoomRange', async t => {
+  await t.test('Style.setLayerZoomRange', async t => {
     let style;
     t.afterEach(() => {
       style._remove();
@@ -2175,7 +2175,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#queryRenderedFeatures', (t, done) => {
+  await t.test('Style.queryRenderedFeatures', (t, done) => {
     const style = new Style(new StubMap());
     const transform = new Transform();
     transform.resize(512, 512);
@@ -2425,7 +2425,7 @@ test('Style', async t => {
     });
   });
 
-  await t.test('Style#hasTransitions', async t => {
+  await t.test('Style.hasTransitions', async t => {
     let style;
     t.afterEach(() => {
       style._remove();

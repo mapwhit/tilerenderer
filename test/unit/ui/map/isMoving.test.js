@@ -7,7 +7,7 @@ function createMap() {
   return new Map({ container: DOM.create('div', '', window.document.body) });
 }
 
-test('Map#isMoving', async t => {
+test('Map.isMoving', async t => {
   let globalWindow;
   t.before(() => {
     globalWindow = globalThis.window;
@@ -17,13 +17,13 @@ test('Map#isMoving', async t => {
     globalThis.window = globalWindow;
   });
 
-  await t.test('Map#isMoving returns false by default', t => {
+  await t.test('Map.isMoving returns false by default', t => {
     const map = createMap();
     t.assert.equal(map.isMoving(), false);
     map.remove();
   });
 
-  await t.test('Map#isMoving returns true during a camera zoom animation', (t, done) => {
+  await t.test('Map.isMoving returns true during a camera zoom animation', (t, done) => {
     const map = createMap();
 
     map.on('zoomstart', () => {
