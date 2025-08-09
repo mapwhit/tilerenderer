@@ -7,7 +7,6 @@ const VectorTileWorkerSource = require('./vector_tile_worker_source');
 const GeoJSONWorkerSource = require('./geojson_worker_source');
 const assert = require('assert');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
-const DEMData = require('../data/dem_data');
 const { resources } = require('./resources');
 
 class Worker {
@@ -56,11 +55,6 @@ class Worker {
   loadTile(mapId, params) {
     assert(params.type);
     return this.getWorkerSource(mapId, params.type, params.source).loadTile(params);
-  }
-
-  loadDEMTile(mapId, params) {
-    const { uid, rawImageData, encoding } = params;
-    return new DEMData(uid, rawImageData, encoding);
   }
 
   removeSource(mapId, params) {
