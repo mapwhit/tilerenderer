@@ -7,7 +7,6 @@ const SymbolBucket = require('../data/bucket/symbol_bucket');
 const { RasterBoundsArray, CollisionBoxArray } = require('../data/array_types');
 const rasterBoundsAttributes = require('../data/raster_bounds_attributes');
 const EXTENT = require('../data/extent');
-const { default: Point } = require('@mapbox/point-geometry');
 const Texture = require('../render/texture');
 const SegmentVector = require('../data/segment');
 const { TriangleIndexArray } = require('../data/index_array_type');
@@ -245,16 +244,17 @@ class Tile {
     for (let i = 0; i < maskArray.length; i++) {
       const maskCoord = mask[maskArray[i]];
       const vertexExtent = EXTENT >> maskCoord.z;
-      const tlVertex = new Point(maskCoord.x * vertexExtent, maskCoord.y * vertexExtent);
-      const brVertex = new Point(tlVertex.x + vertexExtent, tlVertex.y + vertexExtent);
+      const tlVertexX = maskCoord.x * vertexExtent;
+      const tlVertexY = maskCoord.y * vertexExtent;
+      const brVertexX = tlVertexX + vertexExtent;
+      const brVertexY = tlVertexY + vertexExtent;
 
-      // not sure why flow is complaining here because it doesn't complain at L401
       const segment = this.segments.prepareSegment(4, maskedBoundsArray, indexArray);
 
-      maskedBoundsArray.emplaceBack(tlVertex.x, tlVertex.y, tlVertex.x, tlVertex.y);
-      maskedBoundsArray.emplaceBack(brVertex.x, tlVertex.y, brVertex.x, tlVertex.y);
-      maskedBoundsArray.emplaceBack(tlVertex.x, brVertex.y, tlVertex.x, brVertex.y);
-      maskedBoundsArray.emplaceBack(brVertex.x, brVertex.y, brVertex.x, brVertex.y);
+      maskedBoundsArray.emplaceBack(tlVertexX, tlVertexY, tlVertexX, tlVertexY);
+      maskedBoundsArray.emplaceBack(brVertexX, tlVertexY, brVertexX, tlVertexY);
+      maskedBoundsArray.emplaceBack(tlVertexX, brVertexY, tlVertexX, brVertexY);
+      maskedBoundsArray.emplaceBack(brVertexX, brVertexY, brVertexX, brVertexY);
 
       const offset = segment.vertexLength;
       // 0, 1, 2
