@@ -2,19 +2,6 @@ const { VectorTile } = require('@mapwhit/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const WorkerTile = require('./worker_tile');
 
-function loadVectorTile(params) {
-  if (!params.response) {
-    throw new Error('no tile data');
-  }
-  const { data } = params.response;
-  if (!data) {
-    return;
-  }
-  return {
-    vectorTile: new VectorTile(new Protobuf(data))
-  };
-}
-
 /**
  * The {@link WorkerSource} implementation that supports {@link VectorTileSource}.
  * This class is designed to be easily reused to support custom source types
@@ -31,10 +18,22 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(resources, layerIndex, loadVectorData = loadVectorTile) {
+  constructor(resources, layerIndex) {
     this.resources = resources;
     this.layerIndex = layerIndex;
-    this.loadVectorData = loadVectorData;
+  }
+
+  loadVectorData(params) {
+    if (!params.response) {
+      throw new Error('no tile data');
+    }
+    const { data } = params.response;
+    if (!data) {
+      return;
+    }
+    return {
+      vectorTile: new VectorTile(new Protobuf(data))
+    };
   }
 
   /**
