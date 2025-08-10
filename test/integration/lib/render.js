@@ -78,8 +78,8 @@ function compare(actualPath, expectedPaths, diffPath, callback) {
  * @param {renderFn} render - a function that performs the rendering
  * @returns {undefined} terminates the process when testing is complete
  */
-exports.run = function (implementation, ignores, render) {
-  const options = { ignores, tests: [], shuffle: false, recycleMap: false, seed: makeHash() };
+exports.run = function (implementation, options, render) {
+  options.seed ??= makeHash();
 
   // https://stackoverflow.com/a/1349426/229714
   function makeHash() {
