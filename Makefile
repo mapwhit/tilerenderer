@@ -93,22 +93,28 @@ test: test-unit prebuild
 test-integration: test-query test-render
 .NOTPARALLEL: test-query test-render
 
-TEST_REPORTER ?= --test-reporter dot
+TEST_REPORTER ?= dot
 
 DEPENDENCIES_TEST = test/node_modules
 test-unit: dependencies $(DEPENDENCIES_TEST)
-	node --test $(TEST_REPORTER) "test/unit/**/*.test.js"
+	node --test --test-reporter=$(TEST_REPORTER) "test/unit/**/*.test.js"
+
+TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
+
+ifdef TEST_BAIL
+  TEST_INTG_OPTS += --test-bail
+endif
 
 test-render: dependencies dependencies-integration
-	node test/render.test.js
+	node test/render.test.js $(TEST_INTG_OPTS)
 
 test-render-slow: dependencies dependencies-integration
 	find test/integration/render/tests -name style.json -printf '%P\n' | \
 		sed -e 's|/style.json||' | \
-		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js --test-reporter=dot
+		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js $(TEST_INTG_OPTS)
 
 test-query: dependencies dependencies-integration
-	node test/query.test.js
+	node test/query.test.js $(TEST_INTG_OPTS)
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)

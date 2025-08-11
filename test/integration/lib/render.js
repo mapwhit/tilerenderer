@@ -78,49 +78,8 @@ function compare(actualPath, expectedPaths, diffPath, callback) {
  * @param {renderFn} render - a function that performs the rendering
  * @returns {undefined} terminates the process when testing is complete
  */
-exports.run = function (implementation, ignores, render) {
-  const options = { ignores, tests: [], shuffle: false, recycleMap: false, seed: makeHash() };
-
-  // https://stackoverflow.com/a/1349426/229714
-  function makeHash() {
-    const array = [];
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    for (let i = 0; i < 10; ++i) array.push(possible.charAt(Math.floor(Math.random() * possible.length)));
-
-    // join array elements without commas.
-    return array.join('');
-  }
-
-  function checkParameter(param) {
-    const index = options.tests.indexOf(param);
-    if (index === -1) return false;
-    options.tests.splice(index, 1);
-    return true;
-  }
-
-  function checkValueParameter(defaultValue, param) {
-    const index = options.tests.findIndex(elem => {
-      return String(elem).startsWith(param);
-    });
-    if (index === -1) return defaultValue;
-
-    const split = String(options.tests.splice(index, 1)).split('=');
-    if (split.length !== 2) return defaultValue;
-
-    return split[1];
-  }
-
-  if (process.argv.length > 2) {
-    options.tests =
-      process.argv.slice(2).filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      }) || [];
-    options.shuffle = checkParameter('--shuffle');
-    options.recycleMap = checkParameter('--recycle-map');
-    options.seed = checkValueParameter(options.seed, '--seed');
-    options.testReporter = checkValueParameter('verbose', '--test-reporter');
-  }
+exports.run = function (implementation, options, render) {
+  options.seed ??= makeHash();
 
   const directory = path.join(__dirname, '../render/tests');
   harness(directory, implementation, options, (style, params, done) => {
@@ -188,6 +147,17 @@ exports.run = function (implementation, ignores, render) {
     });
   });
 };
+
+// https://stackoverflow.com/a/1349426/229714
+function makeHash() {
+  const array = [];
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < 10; ++i) array.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+
+  // join array elements without commas.
+  return array.join('');
+}
 
 /**
  * @callback renderFn

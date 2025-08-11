@@ -11,4 +11,6 @@ jobs:
       - run: nohup Xvfb &
           echo "DISPLAY=:0" >> $GITHUB_ENV
       - run: yarn install
-      - run: make check
+      - env:
+          TEST_REPORTER: tap
+        run: make check

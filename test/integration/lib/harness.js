@@ -14,7 +14,7 @@ module.exports = harness;
 async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
   const runTest = promisify(run);
-  const tests = await runSequence(sequence, runTest, { testReporter: options.testReporter });
+  const tests = await runSequence(sequence, runTest, options);
 
   if (process.env.UPDATE) {
     console.log(`Updated ${tests.length} tests.`);
@@ -74,7 +74,7 @@ async function harness(cwd, implementation, options, run) {
   }
 }
 
-async function runSequence(sequence, runTest, { testReporter }) {
+async function runSequence(sequence, runTest, { testReporter, bail }) {
   const tests = [];
 
   for (const style of sequence) {
@@ -89,6 +89,9 @@ async function runSequence(sequence, runTest, { testReporter }) {
       reporter.end();
     }
     tests.push(test);
+    if (bail && (!test.ok || test.error)) {
+      break;
+    }
   }
   return tests;
 }
