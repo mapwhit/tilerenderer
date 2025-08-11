@@ -1,6 +1,6 @@
 const { VectorTile } = require('@mapwhit/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
-const WorkerTile = require('./worker_tile');
+const makeWorkerTile = require('./worker_tile');
 
 /**
  * The {@link WorkerSource} implementation that supports {@link VectorTileSource}.
@@ -47,10 +47,7 @@ class VectorTileWorkerSource {
       return;
     }
     const { vectorTile, rawData } = response;
-    const workerTile = new WorkerTile(params);
-    workerTile.globalState = params.globalState;
-    workerTile.vectorTile = vectorTile;
-    const result = await workerTile.parse(vectorTile, this.layerIndex, this.resources);
+    const result = await makeWorkerTile(params, vectorTile, this.layerIndex, this.resources);
     if (rawData) {
       result.rawTileData = rawData;
     }
