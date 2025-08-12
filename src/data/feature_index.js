@@ -7,7 +7,6 @@ const vt = require('@mapwhit/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
 const GeoJSONFeature = require('../util/vectortile_to_geojson');
 const { arraysIntersect } = require('../util/object');
-const { register } = require('../util/transfer_registry');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const { polygonIntersectsBox } = require('../util/intersection_tests');
 
@@ -191,8 +190,6 @@ class FeatureIndex {
     return result;
   }
 }
-
-register('FeatureIndex', FeatureIndex, { omit: ['rawTileData', 'sourceLayerCoder'] });
 
 module.exports = FeatureIndex;
 

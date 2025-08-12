@@ -30,7 +30,6 @@ const mvt = require('@mapwhit/vector-tile');
 const vectorTileFeatureTypes = mvt.VectorTileFeature.types;
 const { verticalizedCharacterMap } = require('../../util/verticalize_punctuation');
 const { getSizeData } = require('../../symbol/symbol_size');
-const { register } = require('../../util/transfer_registry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
 const { Formatted } = require('@mapwhit/style-expressions');
 
@@ -108,8 +107,6 @@ class SymbolBuffers {
   }
 }
 
-register('SymbolBuffers', SymbolBuffers);
-
 class CollisionBuffers {
   constructor(LayoutArray, layoutAttributes, IndexArray) {
     this.layoutVertexArray = new LayoutArray();
@@ -137,8 +134,6 @@ class CollisionBuffers {
     this.collisionVertexBuffer.destroy();
   }
 }
-
-register('CollisionBuffers', CollisionBuffers);
 
 /**
  * Unlike other buckets, which simply implement #addFeature with type-specific
@@ -733,10 +728,6 @@ class SymbolBucket {
     if (this.icon.indexBuffer) this.icon.indexBuffer.updateData(this.icon.indexArray);
   }
 }
-
-register('SymbolBucket', SymbolBucket, {
-  omit: ['layers', 'collisionBoxArray', 'features', 'compareText']
-});
 
 // this constant is based on the size of StructArray indexes used in a symbol
 // bucket--namely, glyphOffsetArrayStart

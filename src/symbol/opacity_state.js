@@ -1,5 +1,3 @@
-const { register } = require('../util/transfer_registry');
-
 class OpacityState {
   constructor() {
     this.opacity = 0;
@@ -15,7 +13,5 @@ class OpacityState {
     return clone;
   }
 }
-
-register('OpacityState', OpacityState);
 
 module.exports = OpacityState;
