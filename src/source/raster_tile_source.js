@@ -9,7 +9,6 @@ class RasterTileSource extends Evented {
   constructor(id, options, dispatcher, eventedParent) {
     super();
     this.id = id;
-    this.dispatcher = dispatcher;
     this.setEventedParent(eventedParent);
 
     this.type = 'raster';

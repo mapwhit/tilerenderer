@@ -25,11 +25,12 @@ const { bindAll } = require('../util/object');
  * if they are floor-ed to the nearest integer.
  */
 
-const vector = require('../source/vector_tile_source');
-const raster = require('../source/raster_tile_source');
-const rasterDem = require('../source/raster_dem_tile_source');
-const geojson = require('../source/geojson_source');
-const image = require('../source/image_source');
+const WorkerState = require('./worker_state');
+const vector = require('./vector_tile_source');
+const raster = require('./raster_tile_source');
+const rasterDem = require('./raster_dem_tile_source');
+const geojson = require('./geojson_source');
+const image = require('./image_source');
 
 const sourceTypes = {
   vector,
@@ -38,6 +39,8 @@ const sourceTypes = {
   geojson,
   image
 };
+
+const workerState = new WorkerState();
 
 /*
  * Creates a tiled data source instance given an options object.
@@ -50,11 +53,7 @@ const sourceTypes = {
  * @returns {Source}
  */
 function create(id, specification, dispatcher, eventedParent) {
-  const source = new sourceTypes[specification.type](id, specification, dispatcher, eventedParent);
-
-  if (source.id !== id) {
-    throw new Error(`Expected Source id to be ${id} instead of ${source.id}`);
-  }
+  const source = new sourceTypes[specification.type](id, specification, dispatcher, eventedParent, workerState);
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;
