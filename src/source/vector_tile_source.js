@@ -3,15 +3,14 @@ const { pick } = require('../util/object');
 const loadTileJSON = require('./load_tilejson');
 const TileBounds = require('./tile_bounds');
 const browser = require('../util/browser');
-
-// register feature index for worker transfer
-require('../data/feature_index');
+const VectorTileWorkerSource = require('./vector_tile_worker_source');
 
 class VectorTileSource extends Evented {
-  constructor(id, options, dispatcher, eventedParent) {
+  #worker;
+
+  constructor(id, options, eventedParent, { resources, layerIndex }) {
     super();
     this.id = id;
-    this.dispatcher = dispatcher;
 
     this.type = 'vector';
     this.minzoom = 0;
@@ -29,6 +28,7 @@ class VectorTileSource extends Evented {
     }
 
     this.setEventedParent(eventedParent);
+    this.#worker = new VectorTileWorkerSource(resources, layerIndex);
   }
 
   async load() {
@@ -97,8 +97,8 @@ class VectorTileSource extends Evented {
         showCollisionBoxes: this.map.showCollisionBoxes,
         globalState: this.map.getGlobalState()
       };
-      tile.workerID ??= this.dispatcher.nextWorkerId();
-      const data = await this.dispatcher.send('loadTile', params, tile.workerID);
+      tile.workerID ??= true;
+      const data = await this.#worker.loadTile(params);
       data.rawTileData = rawData;
       tile.loadVectorData(data, this.map.painter);
     } catch (err) {

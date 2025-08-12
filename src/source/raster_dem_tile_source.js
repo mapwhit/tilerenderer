@@ -5,8 +5,8 @@ const RasterTileSource = require('./raster_tile_source');
 const DEMData = require('../data/dem_data');
 
 class RasterDEMTileSource extends RasterTileSource {
-  constructor(id, options, dispatcher, eventedParent) {
-    super(id, options, dispatcher, eventedParent);
+  constructor(id, options, eventedParent) {
+    super(id, options, eventedParent);
     this.type = 'raster-dem';
     this.maxzoom = 22;
     this._options = Object.assign({}, options);

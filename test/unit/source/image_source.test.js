@@ -18,7 +18,7 @@ function createSource(options) {
     options
   );
 
-  const source = new ImageSource('id', options, { send: function () {} }, options.eventedParent);
+  const source = new ImageSource('id', options, options.eventedParent);
   return source;
 }
 
