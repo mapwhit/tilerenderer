@@ -31,7 +31,10 @@ class Style extends Evented {
     this.map = map;
     this.imageManager = new ImageManager();
     this.glyphManager = new GlyphManager();
-    this.workerState = new WorkerState();
+    this.workerState = new WorkerState({
+      getImages: this.getImages.bind(this),
+      loadGlyphRange: this.loadGlyphRange.bind(this)
+    });
 
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
@@ -887,7 +890,6 @@ class Style extends Evented {
     for (const id in this.sourceCaches) {
       this.sourceCaches[id].clearTiles();
     }
-    this.dispatcher.remove();
   }
 
   _clearSource(id) {
@@ -1002,12 +1004,13 @@ class Style extends Evented {
   }
 
   // Callbacks from web workers
-
-  getImages(_mapId, { icons }) {
+  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
+  async getImages({ icons }) {
     return this.imageManager.getImages(icons);
   }
 
-  loadGlyphRange(_mapId, { stack, range }) {
+  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
+  async loadGlyphRange({ stack, range }) {
     return this.glyphManager.loadGlyphRange(stack, range);
   }
 }
