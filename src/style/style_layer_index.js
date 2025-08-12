@@ -7,6 +7,7 @@ const groupByLayout = require('../style-spec/group_by_layout');
 class StyleLayerIndex {
   #layerConfigs = {};
   #layers = {};
+  #fbs = {};
 
   constructor(layerConfigs) {
     if (layerConfigs) {
@@ -32,24 +33,35 @@ class StyleLayerIndex {
       delete this.#layers[id];
     }
 
-    this.familiesBySource = {};
-
-    const groups = groupByLayout(values(this.#layerConfigs));
-
-    for (const layerConfigs of groups) {
-      const layers = layerConfigs.map(layerConfig => this.#layers[layerConfig.id]);
-
-      const layer = layers[0];
-      if (layer.visibility === 'none') {
-        continue;
-      }
-
-      const { source = '', sourceLayer = '_geojsonTileLayer' } = layer;
-      const sourceGroup = (this.familiesBySource[source] ??= {});
-      const sourceLayerFamilies = (sourceGroup[sourceLayer] ??= []);
-      sourceLayerFamilies.push(layers);
-    }
+    this.#fbs = null;
   }
+
+  get familiesBySource() {
+    if (!this.#fbs) {
+      this.#fbs = calculateFamiliesBySource(this.#layers, this.#layerConfigs);
+    }
+    return this.#fbs;
+  }
+}
+
+function calculateFamiliesBySource(layers, layerConfigs) {
+  const familiesBySource = {};
+  const groups = groupByLayout(values(layerConfigs));
+
+  for (const layerConfigs of groups) {
+    const groupLayers = layerConfigs.map(layerConfig => layers[layerConfig.id]);
+
+    const layer = groupLayers[0];
+    if (layer.visibility === 'none') {
+      continue;
+    }
+
+    const { source = '', sourceLayer = '_geojsonTileLayer' } = layer;
+    const sourceGroup = (familiesBySource[source] ??= {});
+    const sourceLayerFamilies = (sourceGroup[sourceLayer] ??= []);
+    sourceLayerFamilies.push(groupLayers);
+  }
+  return familiesBySource;
 }
 
 module.exports = StyleLayerIndex;
