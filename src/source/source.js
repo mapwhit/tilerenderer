@@ -10,7 +10,6 @@ const { bindAll } = require('../util/object');
  * @param {Object} options Source options, specific to the source type (except for `options.type`, which is always
  * required).
  * @param {string} options.type The source type, matching the value of `name` used in {@link Style#addSourceType}.
- * @param {Dispatcher} dispatcher A {@link Dispatcher} instance, which can be used to send messages to the workers.
  *
  * @fires data with `{dataType: 'source', sourceDataType: 'metadata'}` to indicate that any necessary metadata
  * has been loaded so that it's okay to call `loadTile`; and with `{dataType: 'source', sourceDataType: 'content'}`
@@ -46,11 +45,10 @@ const sourceTypes = {
  * @param {Object} source A source definition object compliant with
  * [`mapbox-gl-style-spec`](https://www.mapbox.com/mapbox-gl-style-spec/#sources) or, for a third-party source type,
  * with that type's requirements.
- * @param {Dispatcher} dispatcher
  * @returns {Source}
  */
 function create(id, specification, eventedParent, { resources, layerIndex }) {
-  const source = new sourceTypes[specification.type](id, specification, null, eventedParent, { resources, layerIndex });
+  const source = new sourceTypes[specification.type](id, specification, eventedParent, { resources, layerIndex });
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;

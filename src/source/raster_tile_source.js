@@ -6,7 +6,7 @@ const TileBounds = require('./tile_bounds');
 const Texture = require('../render/texture');
 
 class RasterTileSource extends Evented {
-  constructor(id, options, dispatcher, eventedParent) {
+  constructor(id, options, eventedParent) {
     super();
     this.id = id;
     this.setEventedParent(eventedParent);

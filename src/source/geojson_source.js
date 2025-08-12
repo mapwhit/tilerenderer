@@ -55,7 +55,7 @@ class GeoJSONSource extends Evented {
   #updateInProgress = false;
   #worker;
 
-  constructor(id, options, dispatcher, eventedParent, { resources, layerIndex }) {
+  constructor(id, options, eventedParent, { resources, layerIndex }) {
     super();
 
     this.id = id;

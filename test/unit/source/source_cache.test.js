@@ -57,7 +57,7 @@ function createSourceCache(options, used) {
       },
       options
     ),
-    /* dispatcher */ {}
+    {}
   );
   sc.used = typeof used === 'boolean' ? used : true;
   return sc;
