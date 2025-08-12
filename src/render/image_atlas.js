@@ -1,5 +1,4 @@
 const { RGBAImage } = require('../util/image');
-const { register } = require('../util/transfer_registry');
 const { default: potpack } = require('potpack');
 
 const padding = 1;
@@ -89,6 +88,3 @@ class ImageAtlas {
 
 ImageAtlas.ImagePosition = ImagePosition;
 module.exports = ImageAtlas;
-
-register('ImagePosition', ImagePosition);
-register('ImageAtlas', ImageAtlas);

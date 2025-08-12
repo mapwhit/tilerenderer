@@ -1,5 +1,4 @@
 const { AlphaImage } = require('../util/image');
-const { register } = require('../util/transfer_registry');
 const { default: potpack } = require('potpack');
 
 const padding = 1;
@@ -46,7 +45,5 @@ class GlyphAtlas {
     this.positions = positions;
   }
 }
-
-register('GlyphAtlas', GlyphAtlas);
 
 module.exports = GlyphAtlas;
