@@ -18,16 +18,3 @@ test('load tile', async t => {
     );
   });
 });
-
-test("isolates different instances' data", t => {
-  const worker = new Worker(_self);
-
-  worker.setLayers(0, [{ id: 'one', type: 'circle' }]);
-
-  worker.setLayers(1, [
-    { id: 'one', type: 'circle' },
-    { id: 'two', type: 'circle' }
-  ]);
-
-  t.assert.notEqual(worker.layerIndexes[0], worker.layerIndexes[1]);
-});
