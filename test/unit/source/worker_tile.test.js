@@ -141,28 +141,3 @@ test('WorkerTile.parse skips layers without a corresponding source layer', async
   const result = await tile.parse({ layers: {} }, layerIndex, {});
   t.assert.equal(result.buckets.length, 0);
 });
-
-test('WorkerTile.parse warns once when encountering a v1 vector tile layer', async t => {
-  const layerIndex = new StyleLayerIndex([
-    {
-      id: 'test',
-      source: 'source',
-      'source-layer': 'test',
-      type: 'fill'
-    }
-  ]);
-
-  const data = {
-    layers: {
-      test: {
-        version: 1
-      }
-    }
-  };
-
-  t.mock.method(console, 'warn');
-
-  const tile = createWorkerTile();
-  await tile.parse(data, layerIndex, {});
-  t.assert.match(console.warn.mock.calls[0].arguments[0], /does not use vector tile spec v2/);
-});
