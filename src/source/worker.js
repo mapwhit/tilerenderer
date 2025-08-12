@@ -1,23 +1,20 @@
 require('../util/polyfill');
 
-const Actor = require('../util/actor');
+const assert = require('assert');
 
-const StyleLayerIndex = require('../style/style_layer_index');
+const Actor = require('../util/actor');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
 const GeoJSONWorkerSource = require('./geojson_worker_source');
-const assert = require('assert');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
-const { resources } = require('./resources');
+const WorkerState = require('./worker_state');
 
-class Worker {
-  #resources = {};
-
+class Worker extends WorkerState {
   constructor(self) {
+    super();
     this.self = self;
     this.actor = new Actor(self, this);
 
     this.actors = {};
-    this.layerIndexes = {};
 
     this.workerSourceTypes = {
       vector: VectorTileWorkerSource,
@@ -44,14 +41,6 @@ class Worker {
     };
   }
 
-  setLayers(mapId, layers) {
-    this.getLayerIndex(mapId).replace(layers);
-  }
-
-  updateLayers(mapId, params) {
-    this.getLayerIndex(mapId).update(params.layers, params.removedIds);
-  }
-
   loadTile(mapId, params) {
     assert(params.type);
     return this.getWorkerSource(mapId, params.type, params.source).loadTile(params);
@@ -76,14 +65,6 @@ class Worker {
         throw new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`);
       }
     }
-  }
-
-  getLayerIndex(mapId) {
-    return (this.layerIndexes[mapId] ??= new StyleLayerIndex());
-  }
-
-  getResources(mapId) {
-    return (this.#resources[mapId] ??= resources(this.actor, mapId));
   }
 
   getWorkerSource(mapId, type, source) {
