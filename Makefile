@@ -85,7 +85,7 @@ lint: | meta/node_modules
 .PHONY: lint
 
 format: | meta/node_modules
-	$(NODE_BIN)/biome format --write
+	$(NODE_BIN)/biome check --write
 .PHONY: format
 
 test: test-unit prebuild
