@@ -25,7 +25,6 @@ const { bindAll } = require('../util/object');
  * if they are floor-ed to the nearest integer.
  */
 
-const WorkerState = require('./worker_state');
 const vector = require('./vector_tile_source');
 const raster = require('./raster_tile_source');
 const rasterDem = require('./raster_dem_tile_source');
@@ -40,8 +39,6 @@ const sourceTypes = {
   image
 };
 
-const workerState = new WorkerState();
-
 /*
  * Creates a tiled data source instance given an options object.
  *
@@ -52,8 +49,8 @@ const workerState = new WorkerState();
  * @param {Dispatcher} dispatcher
  * @returns {Source}
  */
-function create(id, specification, dispatcher, eventedParent) {
-  const source = new sourceTypes[specification.type](id, specification, dispatcher, eventedParent, workerState);
+function create(id, specification, workerState, eventedParent) {
+  const source = new sourceTypes[specification.type](id, specification, null, eventedParent, workerState);
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;
