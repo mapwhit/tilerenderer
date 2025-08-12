@@ -49,8 +49,8 @@ const sourceTypes = {
  * @param {Dispatcher} dispatcher
  * @returns {Source}
  */
-function create(id, specification, workerState, eventedParent) {
-  const source = new sourceTypes[specification.type](id, specification, null, eventedParent, workerState);
+function create(id, specification, eventedParent, { resources, layerIndex }) {
+  const source = new sourceTypes[specification.type](id, specification, null, eventedParent, { resources, layerIndex });
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;

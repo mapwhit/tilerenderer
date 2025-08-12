@@ -23,7 +23,7 @@ const SourceFeatureState = require('./source_state');
  * @private
  */
 class SourceCache extends Evented {
-  constructor(id, options, workerState) {
+  constructor(id, options, workerOpts) {
     super();
     this.id = id;
 
@@ -47,7 +47,7 @@ class SourceCache extends Evented {
       this._sourceErrored = true;
     });
 
-    this._source = createSource(id, options, workerState, this);
+    this._source = createSource(id, options, this, workerOpts);
 
     this._tiles = {};
     this._cache = new TileCache(0, this._unloadTile.bind(this));

@@ -55,7 +55,7 @@ class GeoJSONSource extends Evented {
   #updateInProgress = false;
   #worker;
 
-  constructor(id, options, dispatcher, eventedParent, workerState) {
+  constructor(id, options, dispatcher, eventedParent, { resources, layerIndex }) {
     super();
 
     this.id = id;
@@ -108,7 +108,7 @@ class GeoJSONSource extends Evented {
       },
       options.workerOptions
     );
-    this.#worker = new GeoJSONWorkerSource(workerState.getResources(id), workerState.getLayerIndex(id));
+    this.#worker = new GeoJSONWorkerSource(resources, layerIndex);
   }
 
   load() {

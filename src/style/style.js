@@ -200,7 +200,7 @@ class Style extends Evented {
       this._layers[layer.id] = layer;
     }
 
-    this.workerState.setLayers(this._serializeLayers(this._order));
+    this.workerState.setLayers(this.id, this._serializeLayers(this._order));
 
     this.light = new Light(this.stylesheet.light);
 
@@ -331,7 +331,7 @@ class Style extends Evented {
   }
 
   _updateWorkerLayers(updatedIds, removedIds) {
-    this.workerState.updateLayers({
+    this.workerState.updateLayers(this.id, {
       layers: this._serializeLayers(updatedIds),
       removedIds: removedIds
     });
@@ -386,7 +386,9 @@ class Style extends Evented {
       );
     }
 
-    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, this.workerState));
+    const resources = this.workerState.getResources(this.id);
+    const layerIndex = this.workerState.getLayerIndex(this.id);
+    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, { resources, layerIndex }));
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
       isSourceLoaded: this.loaded(),

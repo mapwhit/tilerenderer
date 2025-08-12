@@ -8,7 +8,7 @@ const VectorTileWorkerSource = require('./vector_tile_worker_source');
 class VectorTileSource extends Evented {
   #worker;
 
-  constructor(id, options, dispatcher, eventedParent, workerState) {
+  constructor(id, options, dispatcher, eventedParent, { resources, layerIndex }) {
     super();
     this.id = id;
 
@@ -28,7 +28,7 @@ class VectorTileSource extends Evented {
     }
 
     this.setEventedParent(eventedParent);
-    this.#worker = new VectorTileWorkerSource(workerState.getResources(id), workerState.getLayerIndex(id));
+    this.#worker = new VectorTileWorkerSource(resources, layerIndex);
   }
 
   async load() {

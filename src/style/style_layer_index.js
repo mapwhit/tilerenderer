@@ -21,7 +21,7 @@ class StyleLayerIndex {
     this.update(layerConfigs);
   }
 
-  update(layerConfigs, removedIds = []) {
+  update(layerConfigs = [], removedIds = []) {
     for (const layerConfig of layerConfigs) {
       this.#layerConfigs[layerConfig.id] = layerConfig;
 
