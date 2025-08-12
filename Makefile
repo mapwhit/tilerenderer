@@ -72,7 +72,7 @@ build/$(PROJECT).js: $(SRC) | dependencies
 	esbuild --bundle src/index.js --global-name=mapboxgl $(ESBUILD_OPTIONS)
 
 build/$(PROJECT)-worker.js: $(SRC) | dependencies
-	esbuild --bundle src/source/worker.js $(ESBUILD_OPTIONS)
+	esbuild --bundle src/worker.js $(ESBUILD_OPTIONS)
 
 lint: | meta/node_modules
 	$(NODE_BIN)/biome ci
