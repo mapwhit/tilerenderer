@@ -92,6 +92,26 @@ test('WorkerTile.parse layer with layout property using global-state', async t =
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
+test('WorkerTile.parse layer with paint property using global-state', async t => {
+  const layerIndex = new StyleLayerIndex([
+    {
+      id: 'test',
+      source: 'source',
+      type: 'fill-extrusion',
+      paint: {
+        'fill-extrusion-height': ['global-state', 'test']
+      }
+    }
+  ]);
+
+  const tile = createWorkerTile({
+    globalState: { test: 1 }
+  });
+  const result = await tile.parse(createLineWrapper(), layerIndex, {});
+  t.assert.ok(result.buckets[0]);
+  t.assert.equal(result.buckets[0].layers[0].paint._values['fill-extrusion-height'].value.value, 1);
+});
+
 test('WorkerTile.parse skips hidden layers', async t => {
   const layerIndex = new StyleLayerIndex([
     {
