@@ -7,7 +7,6 @@ const { TriangleIndexArray } = require('../index_array_type');
 const EXTENT = require('../extent');
 const mvt = require('@mapwhit/vector-tile');
 const vectorTileFeatureTypes = mvt.VectorTileFeature.types;
-const { register } = require('../../util/transfer_registry');
 const { hasPattern, addPatternDependencies } = require('./pattern_bucket_features');
 const loadGeometry = require('../load_geometry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
@@ -629,7 +628,5 @@ function calculateFullDistance(vertices, first, len) {
   }
   return total;
 }
-
-register('LineBucket', LineBucket, { omit: ['layers', 'features'] });
 
 module.exports = LineBucket;

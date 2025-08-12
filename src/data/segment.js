@@ -1,7 +1,5 @@
 const warn = require('../util/warn');
 
-const { register } = require('../util/transfer_registry');
-
 class SegmentVector {
   constructor(segments = []) {
     this.segments = segments;
@@ -57,7 +55,5 @@ class SegmentVector {
  * @readonly
  */
 SegmentVector.MAX_VERTEX_ARRAY_LENGTH = 2 ** 16 - 1;
-
-register('SegmentVector', SegmentVector);
 
 module.exports = SegmentVector;
