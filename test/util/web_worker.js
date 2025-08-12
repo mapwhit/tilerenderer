@@ -1,5 +1,3 @@
-const Worker = require('../../src/source/worker');
-
 // The main thread interface. Provided by Worker in a browser environment,
 // and MessageBus below in a node environment.
 
@@ -55,8 +53,5 @@ function WebWorker() {
 
   return parentBus;
 }
-
-// expose to allow stubbing in unit tests
-WebWorker.Worker = Worker;
 
 module.exports = WebWorker;
