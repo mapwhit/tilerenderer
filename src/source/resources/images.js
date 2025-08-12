@@ -1,6 +1,6 @@
 module.exports = images;
 
-function images({ actor, mapId }) {
+function images({ getImages: getImagesFromStyle }) {
   const cache = new Map(); // id -> image
   const inProgress = new Map(); // id -> promise
 
@@ -51,7 +51,7 @@ function images({ actor, mapId }) {
   }
 
   async function fetchMissing(icons) {
-    const promise = actor.send('getImages', { icons }, mapId);
+    const promise = getImagesFromStyle({ icons });
     for (const id of icons) {
       inProgress.set(id, promise);
     }

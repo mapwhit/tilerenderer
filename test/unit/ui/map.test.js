@@ -926,19 +926,16 @@ test('Map', async t => {
       });
 
       map.on('style.load', () => {
-        map.style.dispatcher.broadcast = function (key, value) {
-          t.assert.equal(key, 'updateLayers');
-          t.assert.deepEqual(
-            value.layers.map(layer => {
-              return layer.id;
-            }),
-            ['symbol']
-          );
-        };
+        const updateLayers = t.mock.method(map.style.workerState, 'updateLayers');
 
         map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
         map.style.update({});
         t.assert.deepEqual(map.getLayoutProperty('symbol', 'text-transform'), 'lowercase');
+        t.assert.equal(updateLayers.mock.callCount(), 1);
+        const { layers } = updateLayers.mock.calls[0].arguments[1];
+        t.assert.equal(layers.length, 1);
+        t.assert.deepEqual(layers[0].id, 'symbol');
+
         done();
       });
     });

@@ -9,11 +9,10 @@ const Light = require('./light');
 const LineAtlas = require('../render/line_atlas');
 const { clone, deepEqual, filterObject, mapObject } = require('../util/object');
 const browser = require('../util/browser');
-const dispatcher = require('../util/dispatcher');
 const { getType: getSourceType, setType: setSourceType } = require('../source/source');
 const { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } = require('../source/query_features');
 const SourceCache = require('../source/source_cache');
-const getWorkerPool = require('../util/global_worker_pool');
+const WorkerState = require('../source/worker_state');
 const deref = require('../style-spec/deref');
 const { registerForPluginAvailability, evented: rtlTextPluginEvented } = require('../source/rtl_text_plugin');
 const PauseablePlacement = require('./pauseable_placement');
@@ -30,9 +29,13 @@ class Style extends Evented {
     super();
 
     this.map = map;
-    this.dispatcher = dispatcher(getWorkerPool(), this);
     this.imageManager = new ImageManager();
     this.glyphManager = new GlyphManager();
+    this.workerState = new WorkerState({
+      getImages: this.getImages.bind(this),
+      loadGlyphRange: this.loadGlyphRange.bind(this)
+    });
+
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
 
@@ -47,11 +50,11 @@ class Style extends Evented {
 
     const self = this;
     this._rtlTextPluginCallback = Style.registerForPluginAvailability(args => {
-      self.dispatcher
-        .broadcast('loadRTLTextPlugin', args.pluginURL)
+      self.workerState
+        .loadRTLTextPlugin(this.id, args.pluginURL)
         .then(_ => args.completionCallback(), args.completionCallback);
-      for (const id in self.sourceCaches) {
-        self.sourceCaches[id].reload(); // Should be a no-op if the plugin loads before any tiles load
+      for (const sourceCache of Object.values(self.sourceCaches)) {
+        sourceCache.reload(); // Should be a no-op if the plugin loads before any tiles load
       }
     });
 
@@ -197,7 +200,7 @@ class Style extends Evented {
       this._layers[layer.id] = layer;
     }
 
-    this.dispatcher.broadcast('setLayers', this._serializeLayers(this._order));
+    this.workerState.setLayers(this.id, this._serializeLayers(this._order));
 
     this.light = new Light(this.stylesheet.light);
 
@@ -328,7 +331,7 @@ class Style extends Evented {
   }
 
   _updateWorkerLayers(updatedIds, removedIds) {
-    this.dispatcher.broadcast('updateLayers', {
+    this.workerState.updateLayers(this.id, {
       layers: this._serializeLayers(updatedIds),
       removedIds: removedIds
     });
@@ -383,7 +386,9 @@ class Style extends Evented {
       );
     }
 
-    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, this.dispatcher));
+    const resources = this.workerState.getResources(this.id);
+    const layerIndex = this.workerState.getLayerIndex(this.id);
+    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, { resources, layerIndex }));
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
       isSourceLoaded: this.loaded(),
@@ -887,7 +892,6 @@ class Style extends Evented {
     for (const id in this.sourceCaches) {
       this.sourceCaches[id].clearTiles();
     }
-    this.dispatcher.remove();
   }
 
   _clearSource(id) {
@@ -1002,12 +1006,13 @@ class Style extends Evented {
   }
 
   // Callbacks from web workers
-
-  getImages(_mapId, { icons }) {
+  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
+  async getImages({ icons }) {
     return this.imageManager.getImages(icons);
   }
 
-  loadGlyphRange(_mapId, { stack, range }) {
+  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
+  async loadGlyphRange({ stack, range }) {
     return this.glyphManager.loadGlyphRange(stack, range);
   }
 }
