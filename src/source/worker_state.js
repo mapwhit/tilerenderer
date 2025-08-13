@@ -1,3 +1,4 @@
+const dynload = require('dynload');
 const StyleLayerIndex = require('../style/style_layer_index');
 const { resources } = require('./resources');
 const { plugin: globalRTLTextPlugin } = require('./rtl_text_plugin');
@@ -14,9 +15,6 @@ class WorkerState {
   async loadRTLTextPlugin(mapId, pluginURL) {
     if (!globalRTLTextPlugin.isLoaded()) {
       await loadScript(pluginURL);
-      if (!globalRTLTextPlugin.isLoaded()) {
-        throw new Error(`RTL Text Plugin failed to import scripts from ${pluginURL}`);
-      }
     }
   }
 
@@ -48,7 +46,12 @@ function registerRTLTextPlugin(rtlTextPlugin) {
 
 globalThis.registerRTLTextPlugin ??= registerRTLTextPlugin;
 
-// FIXME: implement script loading
-async function loadScript() {}
+async function loadScript(url) {
+  const { promise, resolve, reject } = Promise.withResolvers();
+  const s = dynload(url);
+  s.onload = () => resolve();
+  s.onerror = () => reject(new Error(`RTL Text Plugin failed to import scripts from ${url}`));
+  return promise;
+}
 
 module.exports = WorkerState;
