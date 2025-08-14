@@ -30,7 +30,7 @@ class Tile {
     this.uid = uniqueId();
     this.uses = 0;
     this.tileSize = size;
-    this.buckets = {};
+    this.buckets = new Map();
     this.queryPadding = 0;
     this.hasSymbolBuckets = false;
 
@@ -85,11 +85,10 @@ class Tile {
       }
     }
     this.collisionBoxArray = data.collisionBoxArray;
-    this.buckets = deserializeBucket(data.buckets, painter.style);
+    this.buckets = new Map(Object.entries(deserializeBucket(data.buckets, painter.style)));
 
     this.hasSymbolBuckets = false;
-    const buckets = Object.values(this.buckets);
-    for (const bucket of buckets) {
+    for (const bucket of this.buckets.values()) {
       if (bucket instanceof SymbolBucket) {
         this.hasSymbolBuckets = true;
         if (justReloaded) {
@@ -101,8 +100,7 @@ class Tile {
     }
 
     this.queryPadding = 0;
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
+    for (const [id, bucket] of this.buckets) {
       this.queryPadding = Math.max(this.queryPadding, painter.style.getLayer(id).queryRadius(bucket));
     }
 
@@ -120,10 +118,10 @@ class Tile {
    * @private
    */
   unloadVectorData() {
-    for (const bucket of Object.values(this.buckets)) {
+    for (const bucket of this.buckets.values()) {
       bucket.destroy();
     }
-    this.buckets = {};
+    this.buckets.clear();
 
     this.imageAtlasTexture?.destroy();
     if (this.imageAtlas) {
@@ -141,12 +139,11 @@ class Tile {
   }
 
   getBucket(layer) {
-    return this.buckets[layer.id];
+    return this.buckets.get(layer.id);
   }
 
   upload(context) {
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
+    for (const bucket of this.buckets.values()) {
       if (bucket.uploadPending()) {
         bucket.upload(context);
       }
@@ -298,8 +295,7 @@ class Tile {
 
     const vtLayers = this.latestFeatureIndex.loadVTLayers();
 
-    for (const id in this.buckets) {
-      const bucket = this.buckets[id];
+    for (const [id, bucket] of this.buckets) {
       // Buckets are grouped by common source-layer
       const sourceLayerId = bucket.layers[0]['sourceLayer'] || '_geojsonTileLayer';
       const sourceLayer = vtLayers[sourceLayerId];
