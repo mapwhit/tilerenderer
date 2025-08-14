@@ -1,6 +1,6 @@
 const { deepEqual } = require('../util/object');
 const uniqueId = require('../util/unique_id');
-const { deserialize: deserializeBucket } = require('../data/bucket');
+const { updateBuckets } = require('../data/bucket');
 const GeoJSONFeature = require('../util/vectortile_to_geojson');
 const featureFilter = require('../style-spec/feature_filter');
 const SymbolBucket = require('../data/bucket/symbol_bucket');
@@ -85,7 +85,16 @@ class Tile {
       }
     }
     this.collisionBoxArray = data.collisionBoxArray;
-    this.buckets = new Map(Object.entries(deserializeBucket(data.buckets, painter.style)));
+
+    // TODO: update buckets only when style has changed
+    updateBuckets(data.buckets, painter.style);
+
+    this.buckets.clear();
+    for (const bucket of data.buckets.values()) {
+      for (const layer of bucket.layers) {
+        this.buckets.set(layer.id, bucket);
+      }
+    }
 
     this.hasSymbolBuckets = false;
     for (const bucket of this.buckets.values()) {

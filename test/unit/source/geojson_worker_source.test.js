@@ -40,5 +40,5 @@ test('GeoJSONWorkerSource.loadTile', async t => {
   const result = await source.loadTile({ tileID, source: 'source1' });
 
   t.assert.ok(result);
-  t.assert.equal(result.buckets.length, 1);
+  t.assert.equal(result.buckets.size, 1);
 });
