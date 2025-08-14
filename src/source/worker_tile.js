@@ -98,8 +98,13 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
     }
   }
 
+  buckets.forEach((bucket, id, map) => {
+    if (bucket.isEmpty()) {
+      map.delete(id);
+    }
+  });
   return {
-    buckets: [...buckets.values()].filter(b => !b.isEmpty()),
+    buckets,
     featureIndex,
     collisionBoxArray,
     glyphAtlasImage: glyphAtlas.image,
