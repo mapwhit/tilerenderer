@@ -18,16 +18,13 @@ export function translate(queryGeometry, translate, translateAnchor, bearing, pi
     return queryGeometry;
   }
 
-  const pt = Point.convert(translate)._mult(pixelsToTileUnits);
+  const pt = new Point(translate[0], translate[1])._mult(pixelsToTileUnits);
 
   if (translateAnchor === 'viewport') {
     pt._rotate(-bearing);
   }
 
-  const translated = [];
-  for (let i = 0; i < queryGeometry.length; i++) {
-    const point = queryGeometry[i];
-    translated.push(point.sub(pt));
-  }
-  return translated;
+  pt;
+
+  return queryGeometry.map(point => point.sub(pt));
 }
