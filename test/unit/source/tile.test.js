@@ -219,7 +219,7 @@ function createVectorData(options) {
     {
       collisionBoxArray,
       featureIndex: new FeatureIndex(new OverscaledTileID(1, 0, 1, 1, 1)),
-      buckets: []
+      buckets: new Map()
     },
     options
   );
