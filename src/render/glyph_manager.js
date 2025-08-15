@@ -8,8 +8,7 @@ class GlyphManager {
   async loadGlyphRange(stack, range) {
     this.#cache[stack] ??= {};
     const promise = (this.#cache[stack][range] ??= this.loader(stack, range));
-    const response = await promise;
-    return response.slice();
+    return await promise;
   }
 }
 
