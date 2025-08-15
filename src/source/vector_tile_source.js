@@ -8,7 +8,7 @@ const VectorTileWorkerSource = require('./vector_tile_worker_source');
 class VectorTileSource extends Evented {
   #worker;
 
-  constructor(id, options, eventedParent, { resources, layerIndex }) {
+  constructor(id, options, eventedParent, { resources, layerIndex, showTileBoundaries }) {
     super();
     this.id = id;
 
@@ -19,6 +19,7 @@ class VectorTileSource extends Evented {
     this.tileSize = 512;
     this.reparseOverscaled = true;
     this.isTileClipped = true;
+    this._showTileBoundaries = showTileBoundaries;
 
     Object.assign(this, pick(options, ['url', 'scheme', 'tileSize']));
     this._options = Object.assign({ type: 'vector' }, options);
@@ -99,7 +100,9 @@ class VectorTileSource extends Evented {
       };
       tile.workerID ??= true;
       const data = await this.#worker.loadTile(params);
-      data.rawTileData = rawData;
+      if (this._showTileBoundaries) {
+        data.rawTileData = rawData;
+      }
       tile.loadVectorData(data, this.map.painter);
     } catch (err) {
       if (tile.aborted) {

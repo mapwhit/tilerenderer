@@ -367,7 +367,8 @@ class Style extends Evented {
 
     const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, {
       resources: this.#resources,
-      layerIndex: this.#layerIndex
+      layerIndex: this.#layerIndex,
+      showTileBoundaries: this.map.showTileBoundaries
     }));
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
