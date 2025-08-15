@@ -44,7 +44,7 @@ class PauseablePlacement {
 
     while (this._currentPlacementIndex >= 0) {
       const layerId = order[this._currentPlacementIndex];
-      const layer = layers[layerId];
+      const layer = layers.get(layerId);
       const placementZoom = this.placement.collisionIndex.transform.zoom;
       if (
         layer.type === 'symbol' &&
