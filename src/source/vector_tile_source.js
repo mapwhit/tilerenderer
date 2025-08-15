@@ -86,7 +86,7 @@ class VectorTileSource extends Evented {
         throw err;
       }
       const params = {
-        response: { data: rawData.slice() },
+        response: { data: rawData },
         uid: tile.uid,
         tileID: tile.tileID,
         zoom: tile.tileID.overscaledZ,
