@@ -22,9 +22,9 @@ class LayerPlacement {
 }
 
 class PauseablePlacement {
-  constructor(transform, order, forceFullPlacement, showCollisionBoxes, fadeDuration, crossSourceCollisions) {
+  constructor(transform, maxIndex, forceFullPlacement, showCollisionBoxes, fadeDuration, crossSourceCollisions) {
     this.placement = new Placement(transform, fadeDuration, crossSourceCollisions);
-    this._currentPlacementIndex = order.length - 1;
+    this._currentPlacementIndex = maxIndex;
     this._forceFullPlacement = forceFullPlacement;
     this._showCollisionBoxes = showCollisionBoxes;
     this._done = false;
@@ -34,7 +34,7 @@ class PauseablePlacement {
     return this._done;
   }
 
-  continuePlacement(order, layers, layerTiles) {
+  continuePlacement(layers, layerTiles) {
     const startTime = browser.now();
 
     const shouldPausePlacement = () => {
@@ -43,8 +43,7 @@ class PauseablePlacement {
     };
 
     while (this._currentPlacementIndex >= 0) {
-      const layerId = order[this._currentPlacementIndex];
-      const layer = layers.get(layerId);
+      const layer = layers[this._currentPlacementIndex];
       const placementZoom = this.placement.collisionIndex.transform.zoom;
       if (
         layer.type === 'symbol' &&

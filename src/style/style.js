@@ -41,7 +41,6 @@ class Style extends Evented {
 
     // insertion operations are done in the order of the layers in the style
     this._layers = new Map();
-    this._order = [];
     this.sourceCaches = {};
     this.zoomHistory = new ZoomHistory();
     this._loaded = false;
@@ -190,8 +189,6 @@ class Style extends Evented {
 
     const layers = deref(this.stylesheet.layers);
 
-    this._order = layers.map(layer => layer.id);
-
     this._layers.clear();
     for (let layer of layers) {
       layer = createStyleLayer(layer);
@@ -199,7 +196,7 @@ class Style extends Evented {
       this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._serializeLayers(this._order));
+    this.workerState.setLayers(this.id, this._serializeLayers(this._layers.keys()));
 
     this.light = new Light(this.stylesheet.light);
 
@@ -316,9 +313,7 @@ class Style extends Evented {
       this.sourceCaches[sourceId].used = false;
     }
 
-    for (const layerId of this._order) {
-      const layer = this._layers.get(layerId);
-
+    for (const layer of this._layers.values()) {
       layer.recalculate(parameters);
       if (!layer.isHidden(parameters.zoom) && layer.source) {
         this.sourceCaches[layer.source].used = true;
@@ -509,14 +504,6 @@ class Style extends Evented {
 
     layer.setEventedParent(this, { layer: { id: id } });
 
-    const index = before ? this._order.indexOf(before) : this._order.length;
-    if (before && index === -1) {
-      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
-      return;
-    }
-
-    this._order.splice(index, 0, id);
-
     this._insertLayer(id, layer, before);
 
     if (this._removedLayers[id] && layer.source) {
@@ -559,16 +546,6 @@ class Style extends Evented {
       return;
     }
 
-    const index = this._order.indexOf(id);
-    this._order.splice(index, 1);
-
-    const newIndex = before ? this._order.indexOf(before) : this._order.length;
-    if (before && newIndex === -1) {
-      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
-      return;
-    }
-    this._order.splice(newIndex, 0, id);
-
     this._insertLayer(id, layer, before, true);
   }
 
@@ -592,9 +569,6 @@ class Style extends Evented {
     }
 
     layer.setEventedParent(null);
-
-    const index = this._order.indexOf(id);
-    this._order.splice(index, 1);
 
     this._layerOrderChanged = true;
     this._changed = true;
@@ -790,7 +764,7 @@ class Style extends Evented {
         glyphs: this.stylesheet.glyphs,
         transition: this.stylesheet.transition,
         sources: mapObject(this.sourceCaches, source => source.serialize()),
-        layers: this._order.map(id => this._layers.get(id).serialize())
+        layers: Array.from(this._layers.values()).map(layer => layer.serialize())
       },
       value => value !== undefined
     );
@@ -808,12 +782,13 @@ class Style extends Evented {
   _flattenAndSortRenderedFeatures(sourceResults) {
     const features = [];
     const features3D = [];
-    for (let l = this._order.length - 1; l >= 0; l--) {
-      const layerId = this._order[l];
+    const layers = Array.from(this._layers.values());
+    for (let l = layers.length - 1; l >= 0; l--) {
+      const layer = layers[l];
       for (const sourceResult of sourceResults) {
-        const layerFeatures = sourceResult[layerId];
+        const layerFeatures = sourceResult[layer.id];
         if (layerFeatures) {
-          if (this._layers.get(layerId).type === 'fill-extrusion') {
+          if (layer.type === 'fill-extrusion') {
             for (const featureWrapper of layerFeatures) {
               features3D.push(featureWrapper);
             }
@@ -948,26 +923,25 @@ class Style extends Evented {
 
     const layerTiles = {};
 
-    for (const layerID of this._order) {
-      const styleLayer = this._layers.get(layerID);
-      if (styleLayer.type !== 'symbol') continue;
+    for (const layer of this._layers.values()) {
+      if (layer.type !== 'symbol') continue;
 
-      if (!layerTiles[styleLayer.source]) {
-        const sourceCache = this.sourceCaches[styleLayer.source];
-        layerTiles[styleLayer.source] = sourceCache
+      if (!layerTiles[layer.source]) {
+        const sourceCache = this.sourceCaches[layer.source];
+        layerTiles[layer.source] = sourceCache
           .getRenderableIds(true)
           .map(id => sourceCache.getTileByID(id))
           .sort((a, b) => b.tileID.overscaledZ - a.tileID.overscaledZ || (a.tileID.isLessThan(b.tileID) ? -1 : 1));
       }
 
       const layerBucketsChanged = this.crossTileSymbolIndex.addLayer(
-        styleLayer,
-        layerTiles[styleLayer.source],
+        layer,
+        layerTiles[layer.source],
         transform.center.lng
       );
       symbolBucketsChanged = symbolBucketsChanged || layerBucketsChanged;
     }
-    this.crossTileSymbolIndex.pruneUnusedLayers(this._order);
+    this.crossTileSymbolIndex.pruneUnusedLayers(this._layers.keys());
 
     // Anything that changes our "in progress" layer and tile indices requires us
     // to start over. When we start over, we do a full placement instead of incremental
@@ -982,7 +956,7 @@ class Style extends Evented {
     ) {
       this.pauseablePlacement = new PauseablePlacement(
         transform,
-        this._order,
+        this._layers.size - 1,
         forceFullPlacement,
         showCollisionBoxes,
         fadeDuration,
@@ -998,7 +972,7 @@ class Style extends Evented {
       // render frame
       this.placement.setStale();
     } else {
-      this.pauseablePlacement.continuePlacement(this._order, this._layers, layerTiles);
+      this.pauseablePlacement.continuePlacement(Array.from(this._layers.values()), layerTiles);
 
       if (this.pauseablePlacement.isDone()) {
         this.placement = this.pauseablePlacement.commit(this.placement, browser.now());
@@ -1014,10 +988,9 @@ class Style extends Evented {
     }
 
     if (placementCommitted || symbolBucketsChanged) {
-      for (const layerID of this._order) {
-        const styleLayer = this._layers.get(layerID);
-        if (styleLayer.type !== 'symbol') continue;
-        this.placement.updateLayerOpacities(styleLayer, layerTiles[styleLayer.source]);
+      for (const layer of this._layers.values()) {
+        if (layer.type !== 'symbol') continue;
+        this.placement.updateLayerOpacities(layer, layerTiles[layer.source]);
       }
     }
 

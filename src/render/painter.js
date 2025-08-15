@@ -83,8 +83,8 @@ class Painter {
     this.context.viewport.set([0, 0, this.width, this.height]);
 
     if (this.style) {
-      for (const layerId of this.style._order) {
-        this.style._layers.get(layerId).resize();
+      for (const layer of this.style._layers.values()) {
+        layer.resize();
       }
     }
 
@@ -284,8 +284,7 @@ class Painter {
 
     this.symbolFadeChange = style.placement.symbolFadeChange(browser.now());
 
-    const layerIds = this.style._order;
-    const sourceCaches = this.style.sourceCaches;
+    const sourceCaches = style.sourceCaches;
 
     for (const id in sourceCaches) {
       const sourceCache = sourceCaches[id];
@@ -314,10 +313,11 @@ class Painter {
       updateTileMasks(visibleTiles, this.context);
     }
 
+    const layers = Array.from(style._layers.values());
+
     this.opaquePassCutoff = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < layerIds.length; i++) {
-      const layerId = layerIds[i];
-      if (this.style._layers.get(layerId).is3D()) {
+    for (let i = 0; i < layers.length; i++) {
+      if (layers[i].is3D()) {
         this.opaquePassCutoff = i;
         break;
       }
@@ -330,8 +330,7 @@ class Painter {
     this.renderPass = 'offscreen';
     this.depthRboNeedsClear = true;
 
-    for (const layerId of layerIds) {
-      const layer = this.style._layers.get(layerId);
+    for (const layer of layers) {
       if (!layer.hasOffscreenPass() || layer.isHidden(this.transform.zoom)) continue;
 
       const coords = coordsDescending[layer.source];
@@ -349,14 +348,14 @@ class Painter {
     this.clearStencil();
 
     this._showOverdrawInspector = options.showOverdrawInspector;
-    this.depthRangeFor3D = [0, 1 - (style._order.length + 2) * this.numSublayers * this.depthEpsilon];
+    this.depthRangeFor3D = [0, 1 - (style._layers.size + 2) * this.numSublayers * this.depthEpsilon];
 
     // Opaque pass ===============================================
     // Draw opaque layers top-to-bottom first.
     this.renderPass = 'opaque';
 
-    for (this.currentLayer = layerIds.length - 1; this.currentLayer >= 0; this.currentLayer--) {
-      const layer = this.style._layers.get(layerIds[this.currentLayer]);
+    for (this.currentLayer = layers.length - 1; this.currentLayer >= 0; this.currentLayer--) {
+      const layer = layers[this.currentLayer];
       const sourceCache = sourceCaches[layer.source];
       const coords = coordsAscending[layer.source];
 
@@ -368,8 +367,8 @@ class Painter {
     // Draw all other layers bottom-to-top.
     this.renderPass = 'translucent';
 
-    for (this.currentLayer = 0; this.currentLayer < layerIds.length; this.currentLayer++) {
-      const layer = this.style._layers.get(layerIds[this.currentLayer]);
+    for (this.currentLayer = 0; this.currentLayer < layers.length; this.currentLayer++) {
+      const layer = layers[this.currentLayer];
       const sourceCache = sourceCaches[layer.source];
 
       // For symbol layers in the translucent pass, we add extra tiles to the renderable set
