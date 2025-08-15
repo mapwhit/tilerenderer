@@ -6,7 +6,7 @@ const groupByLayout = require('../style-spec/group_by_layout');
 
 class StyleLayerIndex {
   #layerConfigs = {};
-  #layers = {};
+  #layers = new Map();
   #fbs = {};
 
   constructor(layerConfigs) {
@@ -17,7 +17,7 @@ class StyleLayerIndex {
 
   replace(layerConfigs) {
     this.#layerConfigs = {};
-    this.#layers = {};
+    this.#layers.clear();
     this.update(layerConfigs);
   }
 
@@ -25,12 +25,13 @@ class StyleLayerIndex {
     for (const layerConfig of layerConfigs) {
       this.#layerConfigs[layerConfig.id] = layerConfig;
 
-      const layer = (this.#layers[layerConfig.id] = createStyleLayer(layerConfig));
+      const layer = createStyleLayer(layerConfig);
+      this.#layers.set(layerConfig.id, layer);
       layer._featureFilter = featureFilter(layer.filter);
     }
     for (const id of removedIds) {
       delete this.#layerConfigs[id];
-      delete this.#layers[id];
+      this.#layers.delete(id);
     }
 
     this.#fbs = null;
@@ -49,7 +50,7 @@ function calculateFamiliesBySource(layers, layerConfigs) {
   const groups = groupByLayout(values(layerConfigs));
 
   for (const layerConfigs of groups) {
-    const groupLayers = layerConfigs.map(layerConfig => layers[layerConfig.id]);
+    const groupLayers = layerConfigs.map(layerConfig => layers.get(layerConfig.id));
 
     const layer = groupLayers[0];
     if (layer.visibility === 'none') {
