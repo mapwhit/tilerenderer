@@ -39,7 +39,8 @@ class Style extends Evented {
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
 
-    this._layers = {};
+    // insertion operations are done in the order of the layers in the style
+    this._layers = new Map();
     this._order = [];
     this.sourceCaches = {};
     this.zoomHistory = new ZoomHistory();
@@ -73,8 +74,7 @@ class Style extends Evented {
         return;
       }
 
-      for (const layerId in this._layers) {
-        const layer = this._layers[layerId];
+      for (const layer of this._layers.values()) {
         if (layer.source === source.id) {
           this._validateLayer(layer);
         }
@@ -129,8 +129,7 @@ class Style extends Evented {
 
     const sourceIdsToReload = new Set();
 
-    for (const layerId in this._layers) {
-      const layer = this._layers[layerId];
+    for (const layer of this._layers.values()) {
       const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
       const paintAffectingGlobalStateRefs = layer.getPaintAffectingGlobalStateRefs();
 
@@ -193,11 +192,11 @@ class Style extends Evented {
 
     this._order = layers.map(layer => layer.id);
 
-    this._layers = {};
+    this._layers.clear();
     for (let layer of layers) {
       layer = createStyleLayer(layer);
       layer.setEventedParent(this, { layer: { id: layer.id } });
-      this._layers[layer.id] = layer;
+      this._layers.set(layer.id, layer);
     }
 
     this.workerState.setLayers(this.id, this._serializeLayers(this._order));
@@ -248,7 +247,7 @@ class Style extends Evented {
   }
 
   _serializeLayers(ids) {
-    return ids.map(id => this._layers[id].serialize());
+    return ids.map(id => this._layers.get(id).serialize());
   }
 
   hasTransitions() {
@@ -262,8 +261,8 @@ class Style extends Evented {
       }
     }
 
-    for (const id in this._layers) {
-      if (this._layers[id].hasTransition()) {
+    for (const layer of this._layers.values()) {
+      if (layer.hasTransition()) {
         return true;
       }
     }
@@ -303,7 +302,7 @@ class Style extends Evented {
       }
 
       for (const id in this._updatedPaintProps) {
-        this._layers[id].updateTransitions(parameters);
+        this._layers.get(id).updateTransitions(parameters);
       }
 
       this.light.updateTransitions(parameters);
@@ -318,7 +317,7 @@ class Style extends Evented {
     }
 
     for (const layerId of this._order) {
-      const layer = this._layers[layerId];
+      const layer = this._layers.get(layerId);
 
       layer.recalculate(parameters);
       if (!layer.isHidden(parameters.zoom) && layer.source) {
@@ -411,8 +410,8 @@ class Style extends Evented {
     if (this.sourceCaches[id] === undefined) {
       throw new Error('There is no source with this ID');
     }
-    for (const layerId in this._layers) {
-      if (this._layers[layerId].source === id) {
+    for (const [layerId, layer] of this._layers) {
+      if (layer.source === id) {
         return this.fire(
           new ErrorEvent(new Error(`Source "${id}" cannot be removed while layer "${layerId}" is using it.`))
         );
@@ -455,6 +454,35 @@ class Style extends Evented {
     return this.sourceCaches[id]?.getSource();
   }
 
+  _insertLayer(id, layer, before, move) {
+    if (!before) {
+      if (move) {
+        this._layers.delete(id);
+      }
+      this._layers.set(id, layer);
+      this._layerOrderChanged = true;
+      return;
+    }
+    let beforeFound;
+    const _layers = new Map();
+    for (const [key, value] of this._layers.entries()) {
+      if (key === before) {
+        _layers.set(id, layer);
+        beforeFound = true;
+      }
+      if (move && key === id) {
+        continue;
+      }
+      _layers.set(key, value);
+    }
+    if (!beforeFound) {
+      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
+      return;
+    }
+    this._layers = _layers;
+    this._layerOrderChanged = true;
+  }
+
   /**
    * Add a layer to the map style. The layer will be inserted before the layer with
    * ID `before`, or appended if `before` is omitted.
@@ -488,9 +516,8 @@ class Style extends Evented {
     }
 
     this._order.splice(index, 0, id);
-    this._layerOrderChanged = true;
 
-    this._layers[id] = layer;
+    this._insertLayer(id, layer, before);
 
     if (this._removedLayers[id] && layer.source) {
       // If, in the current batch, we have already removed this layer
@@ -522,7 +549,7 @@ class Style extends Evented {
     this._checkLoaded();
     this._changed = true;
 
-    const layer = this._layers[id];
+    const layer = this._layers.get(id);
     if (!layer) {
       this.fire(new ErrorEvent(new Error(`The layer '${id}' does not exist in the map's style and cannot be moved.`)));
       return;
@@ -542,7 +569,7 @@ class Style extends Evented {
     }
     this._order.splice(newIndex, 0, id);
 
-    this._layerOrderChanged = true;
+    this._insertLayer(id, layer, before, true);
   }
 
   /**
@@ -556,7 +583,7 @@ class Style extends Evented {
   removeLayer(id) {
     this._checkLoaded();
 
-    const layer = this._layers[id];
+    const layer = this._layers.get(id);
     if (!layer) {
       this.fire(
         new ErrorEvent(new Error(`The layer '${id}' does not exist in the map's style and cannot be removed.`))
@@ -572,7 +599,7 @@ class Style extends Evented {
     this._layerOrderChanged = true;
     this._changed = true;
     this._removedLayers[id] = layer;
-    delete this._layers[id];
+    this._layers.delete(id);
     delete this._updatedLayers[id];
     delete this._updatedPaintProps[id];
   }
@@ -584,7 +611,7 @@ class Style extends Evented {
    * @returns {?Object} a layer, if one with the given `id` exists
    */
   getLayer(id) {
-    return this._layers[id];
+    return this._layers.get(id);
   }
 
   setLayerZoomRange(layerId, minzoom, maxzoom) {
@@ -763,7 +790,7 @@ class Style extends Evented {
         glyphs: this.stylesheet.glyphs,
         transition: this.stylesheet.transition,
         sources: mapObject(this.sourceCaches, source => source.serialize()),
-        layers: this._order.map(id => this._layers[id].serialize())
+        layers: this._order.map(id => this._layers.get(id).serialize())
       },
       value => value !== undefined
     );
@@ -786,7 +813,7 @@ class Style extends Evented {
       for (const sourceResult of sourceResults) {
         const layerFeatures = sourceResult[layerId];
         if (layerFeatures) {
-          if (this._layers[layerId].type === 'fill-extrusion') {
+          if (this._layers.get(layerId).type === 'fill-extrusion') {
             for (const featureWrapper of layerFeatures) {
               features3D.push(featureWrapper);
             }
@@ -818,7 +845,7 @@ class Style extends Evented {
         return [];
       }
       for (const layerId of params.layers) {
-        const layer = this._layers[layerId];
+        const layer = this._layers.get(layerId);
         if (layer) {
           includedSources[layer.source] = true;
         }
@@ -922,7 +949,7 @@ class Style extends Evented {
     const layerTiles = {};
 
     for (const layerID of this._order) {
-      const styleLayer = this._layers[layerID];
+      const styleLayer = this._layers.get(layerID);
       if (styleLayer.type !== 'symbol') continue;
 
       if (!layerTiles[styleLayer.source]) {
@@ -988,7 +1015,7 @@ class Style extends Evented {
 
     if (placementCommitted || symbolBucketsChanged) {
       for (const layerID of this._order) {
-        const styleLayer = this._layers[layerID];
+        const styleLayer = this._layers.get(layerID);
         if (styleLayer.type !== 'symbol') continue;
         this.placement.updateLayerOpacities(styleLayer, layerTiles[styleLayer.source]);
       }

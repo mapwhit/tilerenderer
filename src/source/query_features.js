@@ -20,14 +20,13 @@ function getPixelPosMatrix(transform, tileID) {
 function queryIncludes3DLayer(layers, styleLayers, sourceID) {
   if (layers) {
     for (const layerID of layers) {
-      const layer = styleLayers[layerID];
+      const layer = styleLayers.get(layerID);
       if (layer && layer.source === sourceID && layer.type === 'fill-extrusion') {
         return true;
       }
     }
-  } else {
-    for (const key in styleLayers) {
-      const layer = styleLayers[key];
+  } else if (styleLayers) {
+    for (const layer of styleLayers.values()) {
       if (layer.source === sourceID && layer.type === 'fill-extrusion') {
         return true;
       }
@@ -129,7 +128,7 @@ function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, 
   for (const layerName in result) {
     result[layerName].forEach(featureWrapper => {
       const feature = featureWrapper.feature;
-      const layer = styleLayers[layerName];
+      const layer = styleLayers.get(layerName);
       const sourceCache = sourceCaches[layer.source];
       const state = sourceCache.getFeatureState(feature.layer['source-layer'], feature.id);
       feature.source = feature.layer.source;

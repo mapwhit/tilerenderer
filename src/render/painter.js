@@ -84,7 +84,7 @@ class Painter {
 
     if (this.style) {
       for (const layerId of this.style._order) {
-        this.style._layers[layerId].resize();
+        this.style._layers.get(layerId).resize();
       }
     }
 
@@ -317,7 +317,7 @@ class Painter {
     this.opaquePassCutoff = Number.POSITIVE_INFINITY;
     for (let i = 0; i < layerIds.length; i++) {
       const layerId = layerIds[i];
-      if (this.style._layers[layerId].is3D()) {
+      if (this.style._layers.get(layerId).is3D()) {
         this.opaquePassCutoff = i;
         break;
       }
@@ -331,7 +331,7 @@ class Painter {
     this.depthRboNeedsClear = true;
 
     for (const layerId of layerIds) {
-      const layer = this.style._layers[layerId];
+      const layer = this.style._layers.get(layerId);
       if (!layer.hasOffscreenPass() || layer.isHidden(this.transform.zoom)) continue;
 
       const coords = coordsDescending[layer.source];
@@ -356,7 +356,7 @@ class Painter {
     this.renderPass = 'opaque';
 
     for (this.currentLayer = layerIds.length - 1; this.currentLayer >= 0; this.currentLayer--) {
-      const layer = this.style._layers[layerIds[this.currentLayer]];
+      const layer = this.style._layers.get(layerIds[this.currentLayer]);
       const sourceCache = sourceCaches[layer.source];
       const coords = coordsAscending[layer.source];
 
@@ -369,7 +369,7 @@ class Painter {
     this.renderPass = 'translucent';
 
     for (this.currentLayer = 0; this.currentLayer < layerIds.length; this.currentLayer++) {
-      const layer = this.style._layers[layerIds[this.currentLayer]];
+      const layer = this.style._layers.get(layerIds[this.currentLayer]);
       const sourceCache = sourceCaches[layer.source];
 
       // For symbol layers in the translucent pass, we add extra tiles to the renderable set
