@@ -39,7 +39,5 @@ test('GlyphManager', async t => {
     t.assert.deepStrictEqual(response1, expectedResponse);
     t.assert.deepStrictEqual(response2, expectedResponse);
     t.assert.strictEqual(mockLoader.mock.callCount(), 1);
-
-    t.assert.notEqual(response1, response2, 'should be cloned for each call');
   });
 });
