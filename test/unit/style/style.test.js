@@ -1497,7 +1497,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.addLayer(layer);
-        t.assert.deepEqual(style._order, ['a', 'b', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['a', 'b', 'c']);
         done();
       });
     });
@@ -1522,7 +1522,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.addLayer(layer, 'a');
-        t.assert.deepEqual(style._order, ['c', 'a', 'b']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['c', 'a', 'b']);
         done();
       });
     });
@@ -1670,7 +1670,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.removeLayer('a');
-        t.assert.deepEqual(style._order, ['b']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['b']);
         done();
       });
     });
@@ -1755,7 +1755,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.moveLayer('a', 'c');
-        t.assert.deepEqual(style._order, ['b', 'a', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['b', 'a', 'c']);
         done();
       });
     });
@@ -1773,7 +1773,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.moveLayer('b', 'b');
-        t.assert.deepEqual(style._order, ['a', 'b', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['a', 'b', 'c']);
         done();
       });
     });
