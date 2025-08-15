@@ -46,6 +46,8 @@ class Style extends Evented {
     this._loaded = false;
     this._globalState = {};
 
+    this._updatedLayers = new Map();
+    this._removedLayers = new Map();
     this._resetUpdates();
 
     const self = this;
@@ -196,7 +198,7 @@ class Style extends Evented {
       this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._serializeLayers(this._layers.keys()));
+    this.workerState.setLayers(this.id, this._serializeLayers(this._layers));
 
     this.light = new Light(this.stylesheet.light);
 
@@ -243,8 +245,8 @@ class Style extends Evented {
     return true;
   }
 
-  _serializeLayers(ids) {
-    return ids.map(id => this._layers.get(id).serialize());
+  _serializeLayers(layers) {
+    return Array.from(layers.values()).map(layer => layer.serialize());
   }
 
   hasTransitions() {
@@ -282,11 +284,8 @@ class Style extends Evented {
     }
 
     if (this._changed) {
-      const updatedIds = Object.keys(this._updatedLayers);
-      const removedIds = Object.keys(this._removedLayers);
-
-      if (updatedIds.length || removedIds.length) {
-        this._updateWorkerLayers(updatedIds, removedIds);
+      if (this._updatedLayers.size || this._removedLayers.size) {
+        this._updateWorkerLayers(this._updatedLayers, this._removedLayers);
       }
       for (const id in this._updatedSources) {
         const action = this._updatedSources[id];
@@ -324,18 +323,18 @@ class Style extends Evented {
     this.z = parameters.zoom;
   }
 
-  _updateWorkerLayers(updatedIds, removedIds) {
+  _updateWorkerLayers(updated, removed) {
     this.workerState.updateLayers(this.id, {
-      layers: this._serializeLayers(updatedIds),
-      removedIds: removedIds
+      layers: this._serializeLayers(updated),
+      removedIds: Array.from(removed.keys())
     });
   }
 
   _resetUpdates() {
     this._changed = false;
 
-    this._updatedLayers = {};
-    this._removedLayers = {};
+    this._updatedLayers.clear();
+    this._removedLayers.clear();
 
     this._updatedSources = {};
     this._updatedPaintProps = {};
@@ -506,7 +505,7 @@ class Style extends Evented {
 
     this._insertLayer(id, layer, before);
 
-    if (this._removedLayers[id] && layer.source) {
+    if (this._removedLayers.has(id) && layer.source) {
       // If, in the current batch, we have already removed this layer
       // and we are now re-adding it with a different `type`, then we
       // need to clear (rather than just reload) the underyling source's
@@ -514,8 +513,8 @@ class Style extends Evented {
       // buffers that are set up for the _previous_ version of this
       // layer, causing, e.g.:
       // https://github.com/mapbox/mapbox-gl-js/issues/3633
-      const removed = this._removedLayers[id];
-      delete this._removedLayers[id];
+      const removed = this._removedLayers.get(id);
+      this._removedLayers.delete(id);
       if (removed.type !== layer.type) {
         this._updatedSources[layer.source] = 'clear';
       } else {
@@ -572,9 +571,9 @@ class Style extends Evented {
 
     this._layerOrderChanged = true;
     this._changed = true;
-    this._removedLayers[id] = layer;
+    this._removedLayers.set(id, layer);
     this._layers.delete(id);
-    delete this._updatedLayers[id];
+    this._updatedLayers.delete(id);
     delete this._updatedPaintProps[id];
   }
 
@@ -771,7 +770,7 @@ class Style extends Evented {
   }
 
   _updateLayer(layer) {
-    this._updatedLayers[layer.id] = true;
+    this._updatedLayers.set(layer.id, layer);
     if (layer.source && !this._updatedSources[layer.source]) {
       this._updatedSources[layer.source] = 'reload';
       this.sourceCaches[layer.source].pause();
