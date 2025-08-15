@@ -198,7 +198,7 @@ class Style extends Evented {
       this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._serializeLayers(this._layers));
+    this.workerState.setLayers(this.id, this._layers);
 
     this.light = new Light(this.stylesheet.light);
 
@@ -243,10 +243,6 @@ class Style extends Evented {
     if (!this.imageManager.isLoaded()) return false;
 
     return true;
-  }
-
-  _serializeLayers(layers) {
-    return Array.from(layers.values()).map(layer => layer.serialize());
   }
 
   hasTransitions() {
@@ -325,7 +321,7 @@ class Style extends Evented {
 
   _updateWorkerLayers(updated, removed) {
     this.workerState.updateLayers(this.id, {
-      layers: this._serializeLayers(updated),
+      layers: updated,
       removedIds: Array.from(removed.keys())
     });
   }

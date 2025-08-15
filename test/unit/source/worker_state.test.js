@@ -4,8 +4,8 @@ const WorkerState = require('../../../src/source/worker_state');
 test("isolates different instances' data", t => {
   const worker = new WorkerState();
 
-  worker.setLayers(0, [{ id: 'one', type: 'circle' }]);
-  worker.setLayers(1, [{ id: 'one', type: 'circle' }]);
+  worker.setLayers(0, new Map([['one', { id: 'one', type: 'circle' }]]));
+  worker.setLayers(1, new Map([['one', { id: 'one', type: 'circle' }]]));
 
   t.assert.notEqual(worker.getLayerIndex(0), worker.getLayerIndex(1));
 });
