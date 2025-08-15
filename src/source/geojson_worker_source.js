@@ -1,6 +1,5 @@
 const rewind = require('@mapwhit/geojson-rewind');
 const GeoJSONWrapper = require('./geojson_wrapper');
-const { fromVectorTileJs } = require('@mapwhit/vt-pbf');
 const { default: Supercluster } = require('supercluster');
 const { default: geojsonvt } = require('geojson-vt');
 const VectorTileWorkerSource = require('./vector_tile_worker_source');
@@ -60,18 +59,8 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
 
     const vectorTile = new GeoJSONWrapper(geoJSONTile.features);
 
-    // Encode the geojson-vt tile into binary vector tile form.  This
-    // is a convenience that allows `FeatureIndex` to operate the same way
-    // across `VectorTileSource` and `GeoJSONSource` data.
-    let pbf = fromVectorTileJs(vectorTile);
-    if (pbf.byteOffset !== 0 || pbf.byteLength !== pbf.buffer.byteLength) {
-      // Compatibility with node Buffer (https://github.com/mapbox/pbf/issues/35)
-      pbf = new Uint8Array(pbf);
-    }
-
     return {
-      vectorTile,
-      rawData: pbf.buffer
+      vectorTile
     };
   }
 }

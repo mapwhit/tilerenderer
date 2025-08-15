@@ -73,15 +73,17 @@ class Tile {
 
     if (data.featureIndex) {
       this.latestFeatureIndex = data.featureIndex;
+      if (data.vectorTile) {
+        // Only vector tiles have `vectorTile`, and they won't update it for `reloadTile`
+        this.latestVectorTile = data.vectorTile;
+        this.latestFeatureIndex.vectorTile = data.vectorTile;
+      } else if (this.latestVectorTile) {
+        // If `vectorTile` hasn't updated, hold onto a pointer to the last one we received
+        this.latestFeatureIndex.vectorTile = this.latestVectorTile;
+      }
       if (data.rawTileData) {
-        // Only vector tiles have rawTileData, and they won't update it for
-        // 'reloadTile'
+        // rawTileData is present only in vector tiles and only in debug mode
         this.latestRawTileData = data.rawTileData;
-        this.latestFeatureIndex.rawTileData = data.rawTileData;
-      } else if (this.latestRawTileData) {
-        // If rawTileData hasn't updated, hold onto a pointer to the last
-        // one we received
-        this.latestFeatureIndex.rawTileData = this.latestRawTileData;
       }
     }
     this.collisionBoxArray = data.collisionBoxArray;
@@ -184,7 +186,7 @@ class Tile {
     maxPitchScaleFactor,
     pixelPosMatrix
   ) {
-    if (!this.latestFeatureIndex?.rawTileData) return {};
+    if (!this.latestFeatureIndex?.vectorTile) return {};
 
     return this.latestFeatureIndex.query(
       {
@@ -203,7 +205,7 @@ class Tile {
   }
 
   querySourceFeatures(result, params) {
-    if (!this.latestFeatureIndex?.rawTileData) return;
+    if (!this.latestFeatureIndex?.vectorTile) return;
 
     const vtLayers = this.latestFeatureIndex.loadVTLayers();
 
@@ -298,7 +300,7 @@ class Tile {
   }
 
   setFeatureState(states, painter) {
-    if (!this.latestFeatureIndex?.rawTileData || Object.keys(states).length === 0) {
+    if (!this.latestFeatureIndex?.vectorTile || Object.keys(states).length === 0) {
       return;
     }
 

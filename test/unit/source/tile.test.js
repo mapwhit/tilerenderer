@@ -5,7 +5,8 @@ const GeoJSONWrapper = require('../../../src/source/geojson_wrapper');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 const fs = require('fs');
 const path = require('path');
-const { fromVectorTileJs: vtpbf } = require('@mapwhit/vt-pbf');
+const vt = require('@mapwhit/vector-tile');
+const Protobuf = require('@mapwhit/pbf');
 const FeatureIndex = require('../../../src/data/feature_index');
 const { CollisionBoxArray } = require('../../../src/data/array_types');
 const Context = require('../../../src/gl/context');
@@ -37,10 +38,11 @@ test('Tile', async t => {
       tile.querySourceFeatures(result, {});
       t.assert.equal(result.length, 0);
 
-      const geojsonWrapper = new GeoJSONWrapper(features);
-      geojsonWrapper.name = '_geojsonTileLayer';
+      const vectorTile = new GeoJSONWrapper(features);
       tile.loadVectorData(
-        createVectorData({ rawTileData: vtpbf({ layers: { _geojsonTileLayer: geojsonWrapper } }) }),
+        createVectorData({
+          vectorTile
+        }),
         createPainter()
       );
 
@@ -68,9 +70,7 @@ test('Tile', async t => {
       tile.querySourceFeatures(result, {});
       t.assert.equal(result.length, 0);
 
-      const geojsonWrapper = new GeoJSONWrapper([]);
-      geojsonWrapper.name = '_geojsonTileLayer';
-      tile.rawTileData = vtpbf({ layers: { _geojsonTileLayer: geojsonWrapper } });
+      tile.vectorTile = new GeoJSONWrapper([]);
       result = [];
       t.assert.doesNotThrow(() => {
         tile.querySourceFeatures(result);
@@ -86,7 +86,7 @@ test('Tile', async t => {
       tile.querySourceFeatures(result, {});
       t.assert.equal(result.length, 0);
 
-      tile.loadVectorData(createVectorData({ rawTileData: createRawTileData() }), createPainter());
+      tile.loadVectorData(createVectorData({ vectorTile: createVectorTile() }), createPainter());
 
       result = [];
       tile.querySourceFeatures(result, { sourceLayer: 'does-not-exist' });
@@ -115,11 +115,11 @@ test('Tile', async t => {
       t.assert.deepEqual(tile.unloadVectorData.mock.calls[0].arguments, []);
     });
 
-    await t.test('loadVectorData preserves the most recent rawTileData', t => {
+    await t.test('loadVectorData preserves the most recent data', t => {
       const tile = new Tile(new OverscaledTileID(1, 0, 1, 1, 1));
       tile.state = 'loaded';
 
-      tile.loadVectorData(createVectorData({ rawTileData: createRawTileData() }), createPainter());
+      tile.loadVectorData(createVectorData({ vectorTile: createVectorTile() }), createPainter());
       tile.loadVectorData(createVectorData(), createPainter());
 
       const features = [];
@@ -209,8 +209,10 @@ test('Tile', async t => {
   });
 });
 
-function createRawTileData() {
-  return fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf'));
+function createVectorTile() {
+  return new vt.VectorTile(
+    new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  );
 }
 
 function createVectorData(options) {

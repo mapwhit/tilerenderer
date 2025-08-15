@@ -21,7 +21,6 @@
     "@mapwhit/pbf": "^1.0.0",
     "@mapwhit/style-expressions": "^1.1.0",
     "@mapwhit/vector-tile": "^2.0.1",
-    "@mapwhit/vt-pbf": "^2.0.0",
     "@pirxpilot/nanoassert": "~1",
     "csscolorparser": "^1.0.3",
     "dynload": "^1.0.2",
