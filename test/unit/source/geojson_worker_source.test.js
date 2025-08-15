@@ -1,6 +1,7 @@
 const test = require('node:test');
 const GeoJSONWorkerSource = require('../../../src/source/geojson_worker_source');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
+const { create: createLayers } = require('../../util/layers');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
 test('GeoJSONWorkerSource.constructor', t => {
@@ -14,15 +15,16 @@ test('GeoJSONWorkerSource.constructor', t => {
 
 test('GeoJSONWorkerSource.loadTile', async t => {
   const actor = {};
-  const layerIndex = new StyleLayerIndex();
-  layerIndex.update([
-    {
-      id: 'layer1',
-      type: 'fill',
-      source: 'source1',
-      sourceLayer: 'layer1'
-    }
-  ]);
+  const layerIndex = new StyleLayerIndex(
+    createLayers([
+      {
+        id: 'layer1',
+        type: 'fill',
+        source: 'source1',
+        sourceLayer: 'layer1'
+      }
+    ])
+  );
   const source = new GeoJSONWorkerSource(actor, layerIndex);
 
   const geojson = {

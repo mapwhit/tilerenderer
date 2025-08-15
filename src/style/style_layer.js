@@ -22,7 +22,7 @@ class StyleLayer extends Evented {
 
     if (layer.type !== 'background') {
       this.source = layer.source;
-      this.sourceLayer = layer['source-layer'];
+      this['source-layer'] = this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
       this._featureFilter = featureFilter(layer.filter);
     }
@@ -141,7 +141,17 @@ class StyleLayer extends Evented {
     this._transitionablePaint.setValue(name, value);
     const isDataDriven = this._transitionablePaint._values[name].value.isDataDriven();
     this._handleSpecialPaintPropertyUpdate(name);
+    if (isDataDriven !== wasDataDriven || (wasDataDriven && isDataDriven)) {
+      // reset transitioning in progress
+      this._untransitioned(name);
+    }
     return isDataDriven || wasDataDriven || newCrossFadedValue;
+  }
+
+  _untransitioned(name) {
+    if (this._transitioningPaint) {
+      this._transitioningPaint._values[name] = this._transitionablePaint._values[name].untransitioned();
+    }
   }
 
   _handleSpecialPaintPropertyUpdate() {
@@ -232,6 +242,21 @@ class StyleLayer extends Evented {
       }
     }
     return false;
+  }
+
+  get layoutObj() {
+    if (!this._unevaluatedLayout) {
+      return undefined;
+    }
+    const { _values } = this._unevaluatedLayout;
+    const result = {};
+    for (const property of Object.keys(_values)) {
+      const value = _values[property].value;
+      if (value !== undefined) {
+        result[property] = value;
+      }
+    }
+    return result;
   }
 }
 

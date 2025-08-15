@@ -336,7 +336,7 @@ test('Style', async t => {
 
     t.mock.method(style.workerState, 'updateLayers', (id, value) => {
       t.assert.deepEqual(
-        value.layers.map(layer => {
+        Array.from(value.layers.values()).map(layer => {
           return layer.id;
         }),
         ['first', 'third']
@@ -2022,8 +2022,9 @@ test('Style', async t => {
       style = createStyle();
 
       t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        t.assert.deepEqual(value.layers[0].id, 'symbol');
-        t.assert.deepEqual(value.layers[0].filter, ['==', 'id', 1]);
+        const layer = value.layers.values().next().value;
+        t.assert.deepEqual(layer.id, 'symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
         done();
         return Promise.resolve();
       });
@@ -2055,7 +2056,7 @@ test('Style', async t => {
     await t.test('sets again mutated filter', (t, done) => {
       style = createStyle();
       const { mock } = t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        const layer = value.layers[0];
+        const layer = value.layers.values().next().value;
         t.assert.equal(layer.id, 'symbol');
         if (mock.callCount() === 0) {
           t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
