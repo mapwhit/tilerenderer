@@ -254,7 +254,7 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
-        style._layers.background.fire(new Event('error', { mapbox: true }));
+        style._layers.get('background').fire(new Event('error', { mapbox: true }));
       });
     });
 
@@ -1247,7 +1247,7 @@ test('Style', async t => {
           id: 'background',
           type: 'background'
         });
-        style._layers.background.fire(new Event('error', { mapbox: true }));
+        style._layers.get('background').fire(new Event('error', { mapbox: true }));
       });
     });
 
@@ -1597,7 +1597,7 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
-        const layer = style._layers.background;
+        const layer = style._layers.get('background');
         style.removeLayer('background');
 
         // Bind a listener to prevent fallback Evented error reporting.
@@ -2169,14 +2169,14 @@ test('Style', async t => {
         land: [
           {
             type: 'Feature',
-            layer: style._layers.land.serialize(),
+            layer: style._layers.get('land').serialize(),
             geometry: {
               type: 'Polygon'
             }
           },
           {
             type: 'Feature',
-            layer: style._layers.land.serialize(),
+            layer: style._layers.get('land').serialize(),
             geometry: {
               type: 'Point'
             }
@@ -2185,7 +2185,7 @@ test('Style', async t => {
         landref: [
           {
             type: 'Feature',
-            layer: style._layers.landref.serialize(),
+            layer: style._layers.get('landref').serialize(),
             geometry: {
               type: 'Line'
             }
