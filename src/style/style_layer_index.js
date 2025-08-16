@@ -15,14 +15,7 @@ class StyleLayerIndex {
     this.#fbs = null;
   }
 
-  update(layers = new Map(), removedIds = []) {
-    for (const [id, layer] of layers) {
-      this.#layers.set(id, layer);
-    }
-    for (const id of removedIds) {
-      this.#layers.delete(id);
-    }
-
+  update() {
     this.#fbs = null;
   }
 

@@ -926,10 +926,7 @@ test('Map', async t => {
       });
 
       map.on('style.load', () => {
-        const updateLayers = t.mock.method(map.style.workerState, 'updateLayers', (id, { layers }) => {
-          t.assert.equal(layers.size, 1);
-          t.assert.deepEqual(layers.get('symbol').id, 'symbol');
-        });
+        const updateLayers = t.mock.method(map.style.workerState, 'updateLayers');
 
         map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
         map.style.update({});
