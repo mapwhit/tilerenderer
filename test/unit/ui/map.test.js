@@ -926,7 +926,7 @@ test('Map', async t => {
       });
 
       map.on('style.load', () => {
-        const updateLayers = t.mock.method(map.style.workerState, 'updateLayers');
+        const updateLayers = t.mock.method(map.style, '_updateWorkerLayers');
 
         map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
         map.style.update({});

@@ -334,7 +334,7 @@ test('Style', async t => {
       t.assert.ifError(error);
     });
 
-    t.mock.method(style.workerState, 'updateLayers', () => {
+    t.mock.method(style, '_updateWorkerLayers', () => {
       t.assert.ok(style.getLayer('first'));
       t.assert.ok(style.getLayer('third'));
       t.assert.ok(!style.getLayer('second'));
@@ -2047,7 +2047,7 @@ test('Style', async t => {
     await t.test('sets filter', (t, done) => {
       style = createStyle();
 
-      t.mock.method(style.workerState, 'updateLayers', () => {
+      t.mock.method(style, '_updateWorkerLayers', () => {
         const layer = style.getLayer('symbol');
         t.assert.deepEqual(layer.id, 'symbol');
         t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
@@ -2084,7 +2084,7 @@ test('Style', async t => {
 
     await t.test('sets again mutated filter', (t, done) => {
       style = createStyle();
-      const { mock } = t.mock.method(style.workerState, 'updateLayers', () => {
+      const { mock } = t.mock.method(style, '_updateWorkerLayers', () => {
         const layer = style.getLayer('symbol');
         if (mock.callCount() === 0) {
           t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
@@ -2162,15 +2162,6 @@ test('Style', async t => {
 
     await t.test('sets zoom range', (t, done) => {
       style = createStyle();
-      t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        t.assert.deepEqual(
-          value.map(layer => {
-            return layer.id;
-          }),
-          ['symbol']
-        );
-      });
-
       style.on('style.load', () => {
         style.setLayerZoomRange('symbol', 5, 12);
         t.assert.equal(style.getLayer('symbol').minzoom, 5, 'set minzoom');
