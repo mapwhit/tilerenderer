@@ -5,11 +5,7 @@ const SourceCache = require('../../../src/source/source_cache');
 const StyleLayer = require('../../../src/style/style_layer');
 const Transform = require('../../../src/geo/transform');
 const { Event, Evented } = require('@mapwhit/events');
-const {
-  setRTLTextPlugin,
-  clearRTLTextPlugin,
-  evented: rtlTextPluginEvented
-} = require('../../../src/source/rtl_text_plugin');
+const plugin = require('../../../src/source/rtl_text_plugin');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 
 function createStyleJSON(properties) {
@@ -67,27 +63,24 @@ test('Style', async t => {
     });
 
     await t.test('registers plugin listener', t => {
-      clearRTLTextPlugin();
+      plugin.clearRTLTextPlugin();
 
-      t.mock.method(Style, 'registerForPluginAvailability');
+      t.mock.method(plugin, 'registerForPluginAvailability');
 
       style = new Style(new StubMap());
-      t.assert.equal(Style.registerForPluginAvailability.mock.callCount(), 1);
+      t.assert.equal(plugin.registerForPluginAvailability.mock.callCount(), 1);
 
-      t.mock.method(style.workerState, 'loadRTLTextPlugin', () => Promise.reject());
-      setRTLTextPlugin('some-bogus-url');
-      t.assert.deepEqual(
-        style.workerState.loadRTLTextPlugin.mock.calls[0].arguments[1],
-        'https://example.org/some-bogus-url'
-      );
+      t.mock.method(plugin, 'loadScript', () => Promise.reject());
+      plugin.setRTLTextPlugin('some-bogus-url');
+      t.assert.deepEqual(plugin.loadScript.mock.calls[0].arguments[0], 'https://example.org/some-bogus-url');
     });
 
-    // FIXME: fix the test
-    await t.test('loads plugin immediately if already registered', { skip: true }, (t, done) => {
-      clearRTLTextPlugin();
-      setRTLTextPlugin('/plugin.js', error => {
+    await t.test('loads plugin immediately if already registered', (t, done) => {
+      plugin.clearRTLTextPlugin();
+      t.mock.method(plugin, 'loadScript', () => Promise.reject(true));
+      plugin.setRTLTextPlugin('some-bogus-url', error => {
         // Getting this error message shows the bogus URL was succesfully passed to the worker state
-        t.assert.equal(error.message, 'RTL Text Plugin failed to import scripts from https://example.org/plugin.js');
+        t.assert.equal(error.message, 'RTL Text Plugin failed to load scripts from https://example.org/some-bogus-url');
         done();
       });
       style = new Style(createStyleJSON());
@@ -298,14 +291,15 @@ test('Style', async t => {
 
     await t.test('deregisters plugin listener', (t, done) => {
       const style = new Style(new StubMap());
+      t.mock.method(style, '_reloadSources', () => {});
       style.loadJSON(createStyleJSON());
-      const { mock } = t.mock.method(style.workerState, 'loadRTLTextPlugin', () => {});
+      t.mock.method(plugin, 'loadScript', () => {});
 
       style.on('style.load', () => {
         style._remove();
-
-        rtlTextPluginEvented.fire(new Event('pluginAvailable'));
-        t.assert.equal(mock.callCount(), 0);
+        plugin.setRTLTextPlugin('some-bogus-url');
+        t.assert.equal(plugin.loadScript.mock.callCount(), 0);
+        t.assert.equal(style._reloadSources.mock.callCount(), 0);
         done();
       });
     });
