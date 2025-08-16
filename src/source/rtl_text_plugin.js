@@ -1,26 +1,34 @@
-const { Event, Evented } = require('@mapwhit/events');
+const dynload = require('dynload');
 const browser = require('../util/browser');
 
 let pluginRequested = false;
-let pluginURL = null;
-let foregroundLoadComplete = false;
-
-const evented = new Evented();
+let pluginURL;
+let loading = false;
 
 let _completionCallback;
+const _loadedCallbacks = [];
+
+const rtlPlugin = {
+  clearRTLTextPlugin, // exported for testing
+  loadScript, // exported for testing
+  registerForPluginAvailability,
+  setRTLTextPlugin
+};
 
 function registerForPluginAvailability(callback) {
-  if (pluginURL) {
-    callback({ pluginURL: pluginURL, completionCallback: _completionCallback });
-  } else {
-    evented.once('pluginAvailable', callback);
+  if (plugin.isLoaded()) {
+    callback();
+    return;
   }
-  return callback;
+  _loadedCallbacks.push(callback);
+  loadRTLTextPlugin();
+  return () => _loadedCallbacks.splice(_loadedCallbacks.indexOf(callback), 1);
 }
 
 function clearRTLTextPlugin() {
+  _loadedCallbacks.length = 0;
   pluginRequested = false;
-  pluginURL = null;
+  pluginURL = undefined;
 }
 
 function setRTLTextPlugin(url, callback) {
@@ -31,35 +39,54 @@ function setRTLTextPlugin(url, callback) {
   pluginURL = browser.resolveURL(url);
   _completionCallback = error => {
     if (error) {
+      const msg = `RTL Text Plugin failed to load scripts from ${pluginURL}`;
       // Clear loaded state to allow retries
       clearRTLTextPlugin();
       if (callback) {
-        callback(error);
+        callback(new Error(msg));
       }
-    } else {
-      // Called once for each worker
-      foregroundLoadComplete = true;
     }
+    loading = false;
+    _completionCallback = undefined;
   };
-  evented.fire(new Event('pluginAvailable', { pluginURL: pluginURL, completionCallback: _completionCallback }));
+  loadRTLTextPlugin();
 }
 
-const plugin = {
+function loadRTLTextPlugin() {
+  if (pluginURL && !plugin.isLoaded() && _loadedCallbacks.length > 0 && !loading) {
+    // needs to be called as exported method for mock testing
+    loading = rtlPlugin.loadScript(pluginURL).catch(_completionCallback);
+  }
+}
+
+function registerRTLTextPlugin(loadedPlugin) {
+  if (plugin.isLoaded()) {
+    throw new Error('RTL text plugin already registered.');
+  }
+  plugin['applyArabicShaping'] = loadedPlugin.applyArabicShaping;
+  plugin['processBidirectionalText'] = loadedPlugin.processBidirectionalText;
+  plugin['processStyledBidirectionalText'] = loadedPlugin.processStyledBidirectionalText;
+
+  _completionCallback();
+  _loadedCallbacks.forEach(callback => callback());
+  _loadedCallbacks.length = 0;
+}
+
+globalThis.registerRTLTextPlugin ??= registerRTLTextPlugin;
+
+async function loadScript(url) {
+  const { promise, resolve, reject } = Promise.withResolvers();
+  const s = dynload(url);
+  s.onload = () => resolve();
+  s.onerror = () => reject(true);
+  return promise;
+}
+
+const plugin = (rtlPlugin.plugin = {
   applyArabicShaping: null,
   processBidirectionalText: null,
   processStyledBidirectionalText: null,
-  isLoaded: function () {
-    return (
-      foregroundLoadComplete || // Foreground: loaded if the completion callback returned successfully
-      plugin.applyArabicShaping != null
-    ); // Background: loaded if the plugin functions have been compiled
-  }
-};
+  isLoaded: () => plugin.applyArabicShaping != null
+});
 
-module.exports = {
-  registerForPluginAvailability,
-  clearRTLTextPlugin,
-  setRTLTextPlugin,
-  plugin,
-  evented
-};
+module.exports = rtlPlugin;
