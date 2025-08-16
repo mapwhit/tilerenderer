@@ -18,12 +18,18 @@ const { registerForPluginAvailability, evented: rtlTextPluginEvented } = require
 const PauseablePlacement = require('./pauseable_placement');
 const ZoomHistory = require('./zoom_history');
 const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
+const StyleLayerIndex = require('../style/style_layer_index');
+const { resources } = require('../source/resources');
 
 /**
  * @private
  */
 class Style extends Evented {
-  // exposed to allow stubbing by unit tests
+  #resources = resources({
+    getImages: this.getImages.bind(this),
+    loadGlyphRange: this.loadGlyphRange.bind(this)
+  });
+  #layerIndex = new StyleLayerIndex();
 
   constructor(map, options = {}) {
     super();
@@ -31,10 +37,7 @@ class Style extends Evented {
     this.map = map;
     this.imageManager = new ImageManager();
     this.glyphManager = new GlyphManager();
-    this.workerState = new WorkerState({
-      getImages: this.getImages.bind(this),
-      loadGlyphRange: this.loadGlyphRange.bind(this)
-    });
+    this.workerState = new WorkerState();
 
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
@@ -198,7 +201,7 @@ class Style extends Evented {
       this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._layers);
+    this.#layerIndex.replace(this._layers);
 
     this.light = new Light(this.stylesheet.light);
 
@@ -320,7 +323,7 @@ class Style extends Evented {
   }
 
   _updateWorkerLayers() {
-    this.workerState.updateLayers(this.id);
+    this.#layerIndex.update();
   }
 
   _resetUpdates() {
@@ -372,9 +375,10 @@ class Style extends Evented {
       );
     }
 
-    const resources = this.workerState.getResources(this.id);
-    const layerIndex = this.workerState.getLayerIndex(this.id);
-    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, { resources, layerIndex }));
+    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, {
+      resources: this.#resources,
+      layerIndex: this.#layerIndex
+    }));
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
       isSourceLoaded: this.loaded(),
