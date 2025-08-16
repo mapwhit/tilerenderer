@@ -44,10 +44,9 @@ class ImageSource extends Evented {
   /**
    * @private
    */
-  constructor(id, options, dispatcher, eventedParent) {
+  constructor(id, options, eventedParent) {
     super();
     this.id = id;
-    this.dispatcher = dispatcher;
     this.coordinates = options.coordinates;
 
     this.type = 'image';
@@ -185,7 +184,7 @@ class ImageSource extends Evented {
     // single tile.
     if (this.tileID?.equals(tile.tileID.canonical)) {
       this.tiles[String(tile.tileID.wrap)] = tile;
-      tile.buckets = {};
+      tile.buckets = new Map();
     } else {
       tile.state = 'errored';
     }

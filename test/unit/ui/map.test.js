@@ -926,19 +926,12 @@ test('Map', async t => {
       });
 
       map.on('style.load', () => {
-        map.style.dispatcher.broadcast = function (key, value) {
-          t.assert.equal(key, 'updateLayers');
-          t.assert.deepEqual(
-            value.layers.map(layer => {
-              return layer.id;
-            }),
-            ['symbol']
-          );
-        };
+        const updateLayers = t.mock.method(map.style, '_updateWorkerLayers');
 
         map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
         map.style.update({});
         t.assert.deepEqual(map.getLayoutProperty('symbol', 'text-transform'), 'lowercase');
+        t.assert.equal(updateLayers.mock.callCount(), 1);
         done();
       });
     });
