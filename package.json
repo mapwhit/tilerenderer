@@ -39,7 +39,7 @@
   },
   "scripts": {
     "test": "make check",
-    "prepublish": "make prebuild"
+    "prepare": "make prebuild"
   },
   "files": [
     "src",
