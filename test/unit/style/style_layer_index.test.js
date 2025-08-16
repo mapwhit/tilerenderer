@@ -26,49 +26,45 @@ test('StyleLayerIndex.replace', t => {
 });
 
 test('StyleLayerIndex.update', t => {
-  const index = new StyleLayerIndex(
-    createLayers([
-      { id: '1', type: 'fill', source: 'foo', 'source-layer': 'layer', paint: { 'fill-color': 'red' } },
-      { id: '2', type: 'circle', source: 'foo', 'source-layer': 'layer', paint: { 'circle-color': 'green' } },
-      { id: '3', type: 'circle', source: 'foo', 'source-layer': 'layer', paint: { 'circle-color': 'blue' } }
-    ])
+  const layers = createLayers([
+    { id: '1', type: 'fill', source: 'foo', 'source-layer': 'layer', paint: { 'fill-color': 'red' } },
+    { id: '2', type: 'circle', source: 'foo', 'source-layer': 'layer', paint: { 'circle-color': 'green' } },
+    { id: '3', type: 'circle', source: 'foo', 'source-layer': 'layer', paint: { 'circle-color': 'blue' } }
+  ]);
+  const index = new StyleLayerIndex(layers);
+
+  layers.set(
+    '1',
+    createStyleLayer({
+      id: '1',
+      type: 'fill',
+      source: 'bar',
+      'source-layer': 'layer',
+      paint: { 'fill-color': 'cyan' }
+    })
+  );
+  layers.set(
+    '2',
+    createStyleLayer({
+      id: '2',
+      type: 'circle',
+      source: 'bar',
+      'source-layer': 'layer',
+      paint: { 'circle-color': 'magenta' }
+    })
+  );
+  layers.set(
+    '3',
+    createStyleLayer({
+      id: '3',
+      type: 'circle',
+      source: 'bar',
+      'source-layer': 'layer',
+      paint: { 'circle-color': 'yellow' }
+    })
   );
 
-  index.update(
-    new Map([
-      [
-        '1',
-        createStyleLayer({
-          id: '1',
-          type: 'fill',
-          source: 'bar',
-          'source-layer': 'layer',
-          paint: { 'fill-color': 'cyan' }
-        })
-      ],
-      [
-        '2',
-        createStyleLayer({
-          id: '2',
-          type: 'circle',
-          source: 'bar',
-          'source-layer': 'layer',
-          paint: { 'circle-color': 'magenta' }
-        })
-      ],
-      [
-        '3',
-        createStyleLayer({
-          id: '3',
-          type: 'circle',
-          source: 'bar',
-          'source-layer': 'layer',
-          paint: { 'circle-color': 'yellow' }
-        })
-      ]
-    ]),
-    []
-  );
+  index.update();
 
   const families = index.familiesBySource['bar']['layer'];
   t.assert.equal(families.length, 2);

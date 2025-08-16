@@ -281,7 +281,7 @@ class Style extends Evented {
 
     if (this._changed) {
       if (this._updatedLayers.size || this._removedLayers.size) {
-        this._updateWorkerLayers(this._updatedLayers, this._removedLayers);
+        this._updateWorkerLayers();
       }
       for (const id in this._updatedSources) {
         const action = this._updatedSources[id];
@@ -319,11 +319,8 @@ class Style extends Evented {
     this.z = parameters.zoom;
   }
 
-  _updateWorkerLayers(updated, removed) {
-    this.workerState.updateLayers(this.id, {
-      layers: updated,
-      removedIds: Array.from(removed.keys())
-    });
+  _updateWorkerLayers() {
+    this.workerState.updateLayers(this.id);
   }
 
   _resetUpdates() {

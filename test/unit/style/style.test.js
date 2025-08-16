@@ -334,14 +334,10 @@ test('Style', async t => {
       t.assert.ifError(error);
     });
 
-    t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-      t.assert.deepEqual(
-        Array.from(value.layers.values()).map(layer => {
-          return layer.id;
-        }),
-        ['first', 'third']
-      );
-      t.assert.deepEqual(value.removedIds, ['second']);
+    t.mock.method(style.workerState, 'updateLayers', () => {
+      t.assert.ok(style.getLayer('first'));
+      t.assert.ok(style.getLayer('third'));
+      t.assert.ok(!style.getLayer('second'));
       style._remove();
       done();
     });
@@ -2051,8 +2047,8 @@ test('Style', async t => {
     await t.test('sets filter', (t, done) => {
       style = createStyle();
 
-      t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        const layer = value.layers.values().next().value;
+      t.mock.method(style.workerState, 'updateLayers', () => {
+        const layer = style.getLayer('symbol');
         t.assert.deepEqual(layer.id, 'symbol');
         t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
         done();
@@ -2060,6 +2056,9 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
+        const layer = style.getLayer('symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 0]);
+
         style.setFilter('symbol', ['==', 'id', 1]);
         t.assert.deepEqual(style.getFilter('symbol'), ['==', 'id', 1]);
         style.update({});
@@ -2085,9 +2084,8 @@ test('Style', async t => {
 
     await t.test('sets again mutated filter', (t, done) => {
       style = createStyle();
-      const { mock } = t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        const layer = value.layers.values().next().value;
-        t.assert.equal(layer.id, 'symbol');
+      const { mock } = t.mock.method(style.workerState, 'updateLayers', () => {
+        const layer = style.getLayer('symbol');
         if (mock.callCount() === 0) {
           t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
         } else if (mock.callCount() === 1) {
@@ -2097,6 +2095,9 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
+        const layer = style.getLayer('symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 0]);
+
         const filter = ['==', 'id', 1];
         style.setFilter('symbol', filter);
         style.update({}); // flush pending operations
