@@ -12,18 +12,23 @@ const browser = require('../util/browser');
 const { getType: getSourceType, setType: setSourceType } = require('../source/source');
 const { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } = require('../source/query_features');
 const SourceCache = require('../source/source_cache');
-const WorkerState = require('../source/worker_state');
 const deref = require('../style-spec/deref');
-const { registerForPluginAvailability, evented: rtlTextPluginEvented } = require('../source/rtl_text_plugin');
+const plugin = require('../source/rtl_text_plugin');
 const PauseablePlacement = require('./pauseable_placement');
 const ZoomHistory = require('./zoom_history');
 const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
+const StyleLayerIndex = require('../style/style_layer_index');
+const { resources } = require('../source/resources');
 
 /**
  * @private
  */
 class Style extends Evented {
-  // exposed to allow stubbing by unit tests
+  #resources = resources({
+    getImages: this.getImages.bind(this),
+    loadGlyphRange: this.loadGlyphRange.bind(this)
+  });
+  #layerIndex = new StyleLayerIndex();
 
   constructor(map, options = {}) {
     super();
@@ -31,10 +36,6 @@ class Style extends Evented {
     this.map = map;
     this.imageManager = new ImageManager();
     this.glyphManager = new GlyphManager();
-    this.workerState = new WorkerState({
-      getImages: this.getImages.bind(this),
-      loadGlyphRange: this.loadGlyphRange.bind(this)
-    });
 
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
@@ -50,15 +51,7 @@ class Style extends Evented {
     this._removedLayers = new Map();
     this._resetUpdates();
 
-    const self = this;
-    this._rtlTextPluginCallback = Style.registerForPluginAvailability(args => {
-      self.workerState
-        .loadRTLTextPlugin(this.id, args.pluginURL)
-        .then(_ => args.completionCallback(), args.completionCallback);
-      for (const sourceCache of Object.values(self.sourceCaches)) {
-        sourceCache.reload(); // Should be a no-op if the plugin loads before any tiles load
-      }
-    });
+    this._rtlTextPluginCallbackUnregister = plugin.registerForPluginAvailability(this._reloadSources.bind(this));
 
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
@@ -198,7 +191,7 @@ class Style extends Evented {
       this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._layers);
+    this.#layerIndex.replace(this._layers);
 
     this.light = new Light(this.stylesheet.light);
 
@@ -320,7 +313,7 @@ class Style extends Evented {
   }
 
   _updateWorkerLayers() {
-    this.workerState.updateLayers(this.id);
+    this.#layerIndex.update();
   }
 
   _resetUpdates() {
@@ -372,9 +365,10 @@ class Style extends Evented {
       );
     }
 
-    const resources = this.workerState.getResources(this.id);
-    const layerIndex = this.workerState.getLayerIndex(this.id);
-    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, { resources, layerIndex }));
+    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, {
+      resources: this.#resources,
+      layerIndex: this.#layerIndex
+    }));
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
       isSourceLoaded: this.loaded(),
@@ -882,7 +876,7 @@ class Style extends Evented {
   }
 
   _remove() {
-    rtlTextPluginEvented.off('pluginAvailable', this._rtlTextPluginCallback);
+    this._rtlTextPluginCallbackUnregister?.();
     for (const id in this.sourceCaches) {
       this.sourceCaches[id].clearTiles();
     }
@@ -900,6 +894,12 @@ class Style extends Evented {
   _updateSources(transform) {
     for (const id in this.sourceCaches) {
       this.sourceCaches[id].update(transform);
+    }
+  }
+
+  _reloadSources() {
+    for (const sourceCache of Object.values(this.sourceCaches)) {
+      sourceCache.reload(); // Should be a no-op if called before any tiles load
     }
   }
 
@@ -1011,6 +1011,5 @@ class Style extends Evented {
 
 Style.getSourceType = getSourceType;
 Style.setSourceType = setSourceType;
-Style.registerForPluginAvailability = registerForPluginAvailability;
 
 module.exports = Style;
