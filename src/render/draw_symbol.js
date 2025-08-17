@@ -30,9 +30,9 @@ function drawSymbols(painter, sourceCache, layer, coords) {
       false,
       layer._paint.get('icon-translate'),
       layer._paint.get('icon-translate-anchor'),
-      layer.layout.get('icon-rotation-alignment'),
-      layer.layout.get('icon-pitch-alignment'),
-      layer.layout.get('icon-keep-upright'),
+      layer._layout.get('icon-rotation-alignment'),
+      layer._layout.get('icon-pitch-alignment'),
+      layer._layout.get('icon-keep-upright'),
       stencilMode,
       colorMode
     );
@@ -47,9 +47,9 @@ function drawSymbols(painter, sourceCache, layer, coords) {
       true,
       layer._paint.get('text-translate'),
       layer._paint.get('text-translate-anchor'),
-      layer.layout.get('text-rotation-alignment'),
-      layer.layout.get('text-pitch-alignment'),
-      layer.layout.get('text-keep-upright'),
+      layer._layout.get('text-rotation-alignment'),
+      layer._layout.get('text-pitch-alignment'),
+      layer._layout.get('text-keep-upright'),
       stencilMode,
       colorMode
     );
@@ -80,7 +80,7 @@ function drawLayerSymbols(
 
   const rotateWithMap = rotationAlignment === 'map';
   const pitchWithMap = pitchAlignment === 'map';
-  const alongLine = rotateWithMap && layer.layout.get('symbol-placement') !== 'point';
+  const alongLine = rotateWithMap && layer._layout.get('symbol-placement') !== 'point';
   // Line label rotation happens in `updateLineLabels`
   // Pitched point labels are automatically rotated by the labelPlaneMatrix projection
   // Unpitched point labels need to have their rotation applied after projection
@@ -119,7 +119,7 @@ function drawLayerSymbols(
       tile.glyphAtlasTexture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE);
       texSize = tile.glyphAtlasTexture.size;
     } else {
-      const iconScaled = layer.layout.get('icon-size').constantOr(0) !== 1 || bucket.iconsNeedLinear;
+      const iconScaled = layer._layout.get('icon-size').constantOr(0) !== 1 || bucket.iconsNeedLinear;
       const iconTransformed = pitchWithMap || tr.pitch !== 0;
 
       tile.imageAtlasTexture.bind(

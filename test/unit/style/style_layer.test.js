@@ -194,7 +194,7 @@ test('StyleLayer.setLayoutProperty', async t => {
     layer.setLayoutProperty('text-transform', null);
     layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-    t.assert.deepEqual(layer.layout.get('text-transform').value, { kind: 'constant', value: 'none' });
+    t.assert.deepEqual(layer._layout.get('text-transform').value, { kind: 'constant', value: 'none' });
     t.assert.equal(layer.getLayoutProperty('text-transform'), undefined);
   });
 });

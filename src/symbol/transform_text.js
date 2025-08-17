@@ -1,7 +1,7 @@
 const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
 
 function transformText(text, layer, feature) {
-  const transform = layer.layout.get('text-transform').evaluate(feature, {});
+  const transform = layer._layout.get('text-transform').evaluate(feature, {});
   if (transform === 'uppercase') {
     text = text.toLocaleUpperCase();
   } else if (transform === 'lowercase') {

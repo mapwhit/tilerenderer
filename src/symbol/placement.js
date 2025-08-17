@@ -100,7 +100,7 @@ class Placement {
 
     const collisionBoxArray = tile.collisionBoxArray;
 
-    const layout = symbolBucket.layers[0].layout;
+    const layout = symbolBucket.layers[0]._layout;
 
     const scale = 2 ** (this.transform.zoom - tile.tileID.overscaledZ);
     const textPixelRatio = tile.tileSize / EXTENT;
@@ -159,7 +159,7 @@ class Placement {
     seenCrossTileIDs,
     collisionBoxArray
   ) {
-    const layout = bucket.layers[0].layout;
+    const layout = bucket.layers[0]._layout;
 
     const partiallyEvaluatedTextSize = symbolSize.evaluateSizeForZoom(
       bucket.textSizeData,
@@ -411,7 +411,7 @@ class Placement {
     if (bucket.hasCollisionBoxData()) bucket.collisionBox.collisionVertexArray.clear();
     if (bucket.hasCollisionCircleData()) bucket.collisionCircle.collisionVertexArray.clear();
 
-    const layout = bucket.layers[0].layout;
+    const layout = bucket.layers[0]._layout;
     const duplicateOpacityState = new JointOpacityState(null, 0, false, false, true);
     const textAllowOverlap = layout.get('text-allow-overlap');
     const iconAllowOverlap = layout.get('icon-allow-overlap');
