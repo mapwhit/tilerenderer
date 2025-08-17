@@ -23,10 +23,9 @@ const SourceFeatureState = require('./source_state');
  * @private
  */
 class SourceCache extends Evented {
-  constructor(id, options, dispatcher) {
+  constructor(id, options, workerOpts) {
     super();
     this.id = id;
-    this.dispatcher = dispatcher;
 
     this.on('data', e => {
       // this._sourceLoaded signifies that the TileJSON is loaded if applicable.
@@ -48,7 +47,7 @@ class SourceCache extends Evented {
       this._sourceErrored = true;
     });
 
-    this._source = createSource(id, options, dispatcher, this);
+    this._source = createSource(id, options, this, workerOpts);
 
     this._tiles = {};
     this._cache = new TileCache(0, this._unloadTile.bind(this));

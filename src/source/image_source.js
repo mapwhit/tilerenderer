@@ -44,10 +44,9 @@ class ImageSource extends Evented {
   /**
    * @private
    */
-  constructor(id, options, dispatcher, eventedParent) {
+  constructor(id, options, eventedParent) {
     super();
     this.id = id;
-    this.dispatcher = dispatcher;
     this.coordinates = options.coordinates;
 
     this.type = 'image';

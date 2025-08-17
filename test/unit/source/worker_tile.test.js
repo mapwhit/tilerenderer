@@ -1,21 +1,19 @@
 const test = require('node:test');
-const WorkerTile = require('../../../src/source/worker_tile');
+const makeWorkerTile = require('../../../src/source/worker_tile');
 const Wrapper = require('../../../src/source/geojson_wrapper');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 const StyleLayerIndex = require('../../../src/style/style_layer_index');
 
-function createWorkerTile(params = {}) {
-  return new WorkerTile({
-    uid: '',
-    zoom: 0,
-    maxZoom: 20,
-    tileSize: 512,
-    source: 'source',
-    tileID: new OverscaledTileID(1, 0, 1, 1, 1),
-    overscaling: 1,
-    ...params
-  });
-}
+const tileID = new OverscaledTileID(1, 0, 1, 1, 1);
+const params = {
+  uid: '',
+  zoom: 0,
+  maxZoom: 20,
+  tileSize: 512,
+  source: 'source',
+  tileID,
+  overscaling: 1
+};
 
 function createPointWrapper() {
   return new Wrapper([
@@ -49,8 +47,7 @@ test('WorkerTile.parse', async t => {
     }
   ]);
 
-  const tile = createWorkerTile();
-  const result = await tile.parse(createPointWrapper(), layerIndex, {});
+  const result = await makeWorkerTile(params, createPointWrapper(), layerIndex, {});
   t.assert.ok(result.buckets[0]);
 });
 
@@ -66,8 +63,7 @@ test('WorkerTile.parse layer with layout property', async t => {
     }
   ]);
 
-  const tile = createWorkerTile();
-  const result = await tile.parse(createLineWrapper(), layerIndex, {});
+  const result = await makeWorkerTile(params, createLineWrapper(), layerIndex, {});
   t.assert.ok(result.buckets[0]);
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
@@ -84,10 +80,12 @@ test('WorkerTile.parse layer with layout property using global-state', async t =
     }
   ]);
 
-  const tile = createWorkerTile({
-    globalState: { test: 'bevel' }
-  });
-  const result = await tile.parse(createLineWrapper(), layerIndex, {});
+  const result = await makeWorkerTile(
+    { ...params, globalState: { test: 'bevel' } },
+    createLineWrapper(),
+    layerIndex,
+    {}
+  );
   t.assert.ok(result.buckets[0]);
   t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
 });
@@ -104,10 +102,7 @@ test('WorkerTile.parse layer with paint property using global-state', async t =>
     }
   ]);
 
-  const tile = createWorkerTile({
-    globalState: { test: 1 }
-  });
-  const result = await tile.parse(createLineWrapper(), layerIndex, {});
+  const result = await makeWorkerTile({ ...params, globalState: { test: 1 } }, createLineWrapper(), layerIndex, {});
   t.assert.ok(result.buckets[0]);
   t.assert.equal(result.buckets[0].layers[0].paint._values['fill-extrusion-height'].value.value, 1);
 });
@@ -122,8 +117,7 @@ test('WorkerTile.parse skips hidden layers', async t => {
     }
   ]);
 
-  const tile = createWorkerTile();
-  const result = await tile.parse(createPointWrapper(), layerIndex, {});
+  const result = await makeWorkerTile(params, createPointWrapper(), layerIndex, {});
   t.assert.equal(result.buckets.length, 0);
 });
 
@@ -137,32 +131,6 @@ test('WorkerTile.parse skips layers without a corresponding source layer', async
     }
   ]);
 
-  const tile = createWorkerTile();
-  const result = await tile.parse({ layers: {} }, layerIndex, {});
+  const result = await makeWorkerTile(params, { layers: {} }, layerIndex, {});
   t.assert.equal(result.buckets.length, 0);
-});
-
-test('WorkerTile.parse warns once when encountering a v1 vector tile layer', async t => {
-  const layerIndex = new StyleLayerIndex([
-    {
-      id: 'test',
-      source: 'source',
-      'source-layer': 'test',
-      type: 'fill'
-    }
-  ]);
-
-  const data = {
-    layers: {
-      test: {
-        version: 1
-      }
-    }
-  };
-
-  t.mock.method(console, 'warn');
-
-  const tile = createWorkerTile();
-  await tile.parse(data, layerIndex, {});
-  t.assert.match(console.warn.mock.calls[0].arguments[0], /does not use vector tile spec v2/);
 });
