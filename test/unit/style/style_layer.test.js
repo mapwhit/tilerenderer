@@ -51,9 +51,9 @@ test('StyleLayer.setPaintProperty', async t => {
     layer.updateTransitions({});
     layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-    t.assert.deepEqual(layer.paint.get('background-color'), new Color(0, 0, 0, 1));
+    t.assert.deepEqual(layer._paint.get('background-color'), new Color(0, 0, 0, 1));
     t.assert.equal(layer.getPaintProperty('background-color'), undefined);
-    t.assert.equal(layer.paint.get('background-opacity'), 1);
+    t.assert.equal(layer._paint.get('background-opacity'), 1);
     t.assert.equal(layer.getPaintProperty('background-opacity'), 1);
   });
 
@@ -101,12 +101,18 @@ test('StyleLayer.setPaintProperty', async t => {
     layer.setPaintProperty('fill-outline-color', '#f00');
     layer.updateTransitions({});
     layer.recalculate({ zoom: 0, zoomHistory: {} });
-    t.assert.deepEqual(layer.paint.get('fill-outline-color').value, { kind: 'constant', value: new Color(1, 0, 0, 1) });
+    t.assert.deepEqual(layer._paint.get('fill-outline-color').value, {
+      kind: 'constant',
+      value: new Color(1, 0, 0, 1)
+    });
 
     layer.setPaintProperty('fill-outline-color', undefined);
     layer.updateTransitions({});
     layer.recalculate({ zoom: 0, zoomHistory: {} });
-    t.assert.deepEqual(layer.paint.get('fill-outline-color').value, { kind: 'constant', value: new Color(0, 0, 1, 1) });
+    t.assert.deepEqual(layer._paint.get('fill-outline-color').value, {
+      kind: 'constant',
+      value: new Color(0, 0, 1, 1)
+    });
   });
 
   await t.test('can transition fill-outline-color from undefined to a value #3657', t => {
@@ -135,7 +141,7 @@ test('StyleLayer.setPaintProperty', async t => {
     layer.updateTransitions({});
     layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-    layer.paint.get('fill-outline-color');
+    layer._paint.get('fill-outline-color');
   });
 
   await t.test('sets null property value', t => {

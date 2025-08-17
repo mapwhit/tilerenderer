@@ -6,8 +6,8 @@ const { backgroundUniformValues, backgroundPatternUniformValues } = require('./p
 module.exports = drawBackground;
 
 function drawBackground(painter, sourceCache, layer) {
-  const color = layer.paint.get('background-color');
-  const opacity = layer.paint.get('background-opacity');
+  const color = layer._paint.get('background-color');
+  const opacity = layer._paint.get('background-opacity');
 
   if (opacity === 0) return;
 
@@ -15,7 +15,7 @@ function drawBackground(painter, sourceCache, layer) {
   const gl = context.gl;
   const transform = painter.transform;
   const tileSize = transform.tileSize;
-  const image = layer.paint.get('background-pattern');
+  const image = layer._paint.get('background-pattern');
   if (painter.isPatternMissing(image)) return;
 
   const pass =

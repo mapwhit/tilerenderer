@@ -11,7 +11,7 @@ module.exports = drawRaster;
 
 function drawRaster(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;
-  if (layer.paint.get('raster-opacity') === 0) return;
+  if (layer._paint.get('raster-opacity') === 0) return;
 
   const context = painter.context;
   const gl = context.gl;
@@ -27,14 +27,14 @@ function drawRaster(painter, sourceCache, layer, coords) {
     // Use gl.LESS to prevent double drawing in areas where tiles overlap.
     const depthMode = painter.depthModeForSublayer(
       coord.overscaledZ - minTileZ,
-      layer.paint.get('raster-opacity') === 1 ? DepthMode.ReadWrite : DepthMode.ReadOnly,
+      layer._paint.get('raster-opacity') === 1 ? DepthMode.ReadWrite : DepthMode.ReadOnly,
       gl.LESS
     );
 
     const tile = sourceCache.getTile(coord);
     const posMatrix = painter.transform.calculatePosMatrix(coord.toUnwrapped(), align);
 
-    tile.registerFadeDuration(layer.paint.get('raster-fade-duration'));
+    tile.registerFadeDuration(layer._paint.get('raster-fade-duration'));
 
     const parentTile = sourceCache.findLoadedParent(coord, 0);
     const fade = getFadeValues(tile, parentTile, sourceCache, layer, painter.transform);
@@ -42,7 +42,7 @@ function drawRaster(painter, sourceCache, layer, coords) {
     let parentScaleBy;
     let parentTL;
 
-    const textureFilter = layer.paint.get('raster-resampling') === 'nearest' ? gl.NEAREST : gl.LINEAR;
+    const textureFilter = layer._paint.get('raster-resampling') === 'nearest' ? gl.NEAREST : gl.LINEAR;
 
     context.activeTexture.set(gl.TEXTURE0);
     tile.texture.bind(textureFilter, gl.CLAMP_TO_EDGE, gl.LINEAR_MIPMAP_NEAREST);
@@ -86,7 +86,7 @@ function drawRaster(painter, sourceCache, layer, coords) {
         tile.maskedBoundsBuffer,
         tile.maskedIndexBuffer,
         tile.segments,
-        layer.paint,
+        layer._paint,
         painter.transform.zoom
       );
     } else {
@@ -108,7 +108,7 @@ function drawRaster(painter, sourceCache, layer, coords) {
 }
 
 function getFadeValues(tile, parentTile, sourceCache, layer, transform) {
-  const fadeDuration = layer.paint.get('raster-fade-duration');
+  const fadeDuration = layer._paint.get('raster-fade-duration');
 
   if (fadeDuration > 0) {
     const now = browser.now();

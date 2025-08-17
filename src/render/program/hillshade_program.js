@@ -24,13 +24,13 @@ const hillshadePrepareUniforms = (context, locations) => ({
 });
 
 const hillshadeUniformValues = (painter, tile, layer) => {
-  const shadow = layer.paint.get('hillshade-shadow-color');
-  const highlight = layer.paint.get('hillshade-highlight-color');
-  const accent = layer.paint.get('hillshade-accent-color');
+  const shadow = layer._paint.get('hillshade-shadow-color');
+  const highlight = layer._paint.get('hillshade-highlight-color');
+  const accent = layer._paint.get('hillshade-accent-color');
 
-  let azimuthal = layer.paint.get('hillshade-illumination-direction') * (Math.PI / 180);
+  let azimuthal = layer._paint.get('hillshade-illumination-direction') * (Math.PI / 180);
   // modify azimuthal angle by map rotation if light is anchored at the viewport
-  if (layer.paint.get('hillshade-illumination-anchor') === 'viewport') {
+  if (layer._paint.get('hillshade-illumination-anchor') === 'viewport') {
     azimuthal -= painter.transform.angle;
   }
   const align = !painter.options.moving;
@@ -38,7 +38,7 @@ const hillshadeUniformValues = (painter, tile, layer) => {
     u_matrix: painter.transform.calculatePosMatrix(tile.tileID.toUnwrapped(), align),
     u_image: 0,
     u_latrange: getTileLatRange(painter, tile.tileID),
-    u_light: [layer.paint.get('hillshade-exaggeration'), azimuthal],
+    u_light: [layer._paint.get('hillshade-exaggeration'), azimuthal],
     u_shadow: shadow,
     u_highlight: highlight,
     u_accent: accent

@@ -11,17 +11,17 @@ const {
 module.exports = function drawLine(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;
 
-  const opacity = layer.paint.get('line-opacity');
-  const width = layer.paint.get('line-width');
+  const opacity = layer._paint.get('line-opacity');
+  const width = layer._paint.get('line-width');
   if (opacity.constantOr(1) === 0 || width.constantOr(1) === 0) return;
 
   const depthMode = painter.depthModeForSublayer(0, DepthMode.ReadOnly);
   const colorMode = painter.colorModeForRenderPass();
 
-  const dasharray = layer.paint.get('line-dasharray');
-  const patternProperty = layer.paint.get('line-pattern');
+  const dasharray = layer._paint.get('line-dasharray');
+  const patternProperty = layer._paint.get('line-pattern');
   const image = patternProperty.constantOr(1);
-  const gradient = layer.paint.get('line-gradient');
+  const gradient = layer._paint.get('line-gradient');
   const crossfade = layer.getCrossfadeParameters();
 
   const programId = dasharray ? 'lineSDF' : image ? 'linePattern' : gradient ? 'lineGradient' : 'line';
@@ -88,7 +88,7 @@ module.exports = function drawLine(painter, sourceCache, layer, coords) {
       bucket.layoutVertexBuffer,
       bucket.indexBuffer,
       bucket.segments,
-      layer.paint,
+      layer._paint,
       painter.transform.zoom,
       programConfiguration
     );

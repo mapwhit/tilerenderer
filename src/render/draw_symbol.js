@@ -21,15 +21,15 @@ function drawSymbols(painter, sourceCache, layer, coords) {
   const stencilMode = StencilMode.disabled;
   const colorMode = painter.colorModeForRenderPass();
 
-  if (layer.paint.get('icon-opacity').constantOr(1) !== 0) {
+  if (layer._paint.get('icon-opacity').constantOr(1) !== 0) {
     drawLayerSymbols(
       painter,
       sourceCache,
       layer,
       coords,
       false,
-      layer.paint.get('icon-translate'),
-      layer.paint.get('icon-translate-anchor'),
+      layer._paint.get('icon-translate'),
+      layer._paint.get('icon-translate-anchor'),
       layer.layout.get('icon-rotation-alignment'),
       layer.layout.get('icon-pitch-alignment'),
       layer.layout.get('icon-keep-upright'),
@@ -38,15 +38,15 @@ function drawSymbols(painter, sourceCache, layer, coords) {
     );
   }
 
-  if (layer.paint.get('text-opacity').constantOr(1) !== 0) {
+  if (layer._paint.get('text-opacity').constantOr(1) !== 0) {
     drawLayerSymbols(
       painter,
       sourceCache,
       layer,
       coords,
       true,
-      layer.paint.get('text-translate'),
-      layer.paint.get('text-translate-anchor'),
+      layer._paint.get('text-translate'),
+      layer._paint.get('text-translate-anchor'),
       layer.layout.get('text-rotation-alignment'),
       layer.layout.get('text-pitch-alignment'),
       layer.layout.get('text-keep-upright'),
@@ -167,7 +167,7 @@ function drawLayerSymbols(
 
     let uniformValues;
     if (isSDF) {
-      const hasHalo = layer.paint.get(isText ? 'text-halo-width' : 'icon-halo-width').constantOr(1) !== 0;
+      const hasHalo = layer._paint.get(isText ? 'text-halo-width' : 'icon-halo-width').constantOr(1) !== 0;
 
       uniformValues = symbolSDFUniformValues(
         sizeData.functionType,
@@ -222,7 +222,7 @@ function drawSymbolElements(buffers, layer, painter, program, depthMode, stencil
     buffers.layoutVertexBuffer,
     buffers.indexBuffer,
     buffers.segments,
-    layer.paint,
+    layer._paint,
     painter.transform.zoom,
     buffers.programConfigurations.get(layer.id),
     buffers.dynamicLayoutVertexBuffer,
