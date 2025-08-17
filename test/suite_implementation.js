@@ -2,16 +2,17 @@ const { PNG } = require('pngjs');
 const Map = require('../src/ui/map');
 const config = require('../src/util/config');
 const browser = require('../src/util/browser');
-const { plugin: rtlTextPlugin } = require('../src/source/rtl_text_plugin');
-const rtlText = require('@mapbox/mapbox-gl-rtl-text');
+const { setRTLTextPlugin, registerForPluginAvailability } = require('../src/source/rtl_text_plugin');
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 
-rtlTextPlugin['applyArabicShaping'] = rtlText.applyArabicShaping;
-rtlTextPlugin['processBidirectionalText'] = rtlText.processBidirectionalText;
-rtlTextPlugin['processStyledBidirectionalText'] = rtlText.processStyledBidirectionalText;
+const rtlText = path.join(__dirname, './node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
+setRTLTextPlugin(`file://${rtlText}`);
 
-module.exports = function (style, options, _callback) {
+module.exports = async function (style, options, _callback) {
+  await util.promisify(registerForPluginAvailability)();
+
   let wasCallbackCalled = false;
 
   const timeout = setTimeout(() => {
