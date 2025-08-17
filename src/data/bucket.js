@@ -11,43 +11,36 @@
  * properties and the zoom level to populate the attributes needed for
  * data-driven styling.
  *
- * Buckets are designed to be built on a worker thread and then serialized and
- * transferred back to the main thread for rendering.  On the worker side, a
- * bucket's vertex, index, and attribute data is stored in `bucket.arrays:
- * ArrayGroup`.  When a bucket's data is serialized and sent back to the main
- * thread, is gets deserialized (using `new Bucket(serializedBucketData)`, with
- * the array data now stored in `bucket.buffers: BufferGroup`.  BufferGroups
- * hold the same data as ArrayGroups, but are tuned for consumption by WebGL.
+ * Buckets are designed to be built when tile is loaded and then converted (uploaded)
+ * to tune bucket's vertex, index, and attribute data for consumption by WebGL.
  *
  * @private
  */
 
-function deserialize(input, style) {
-  const output = {};
-
+// style may have changed between creating a bucket when tile was loaded and rendering it
+function updateBuckets(buckets, style) {
   // Guard against the case where the map's style has been set to null while
   // this bucket has been parsing.
-  if (!style) return output;
+  if (!style) {
+    buckets.clear();
+    return;
+  }
 
-  for (const bucket of input) {
+  for (const [, bucket] of buckets) {
     const layers = bucket.layerIds.map(id => style.getLayer(id)).filter(Boolean);
 
     if (layers.length === 0) {
+      delete bucket.layers;
+      delete bucket.stateDependentLayers;
       continue;
     }
 
-    // look up StyleLayer objects from layer ids (since we don't
-    // want to waste time serializing/copying them from the worker)
+    // swap out the layers in the bucket with the current style layers
     bucket.layers = layers;
     bucket.stateDependentLayers = layers.filter(l => l.isStateDependent());
-    for (const layer of layers) {
-      output[layer.id] = bucket;
-    }
   }
-
-  return output;
 }
 
 module.exports = {
-  deserialize
+  updateBuckets
 };

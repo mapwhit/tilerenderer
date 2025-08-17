@@ -48,7 +48,7 @@ test('WorkerTile.parse', async t => {
   ]);
 
   const result = await makeWorkerTile(params, createPointWrapper(), layerIndex, {});
-  t.assert.ok(result.buckets[0]);
+  t.assert.ok(result.buckets.values().next().value);
 });
 
 test('WorkerTile.parse layer with layout property', async t => {
@@ -64,8 +64,8 @@ test('WorkerTile.parse layer with layout property', async t => {
   ]);
 
   const result = await makeWorkerTile(params, createLineWrapper(), layerIndex, {});
-  t.assert.ok(result.buckets[0]);
-  t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
+  t.assert.ok(result.buckets.values().next().value);
+  t.assert.equal(result.buckets.values().next().value.layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
 test('WorkerTile.parse layer with layout property using global-state', async t => {
@@ -86,8 +86,8 @@ test('WorkerTile.parse layer with layout property using global-state', async t =
     layerIndex,
     {}
   );
-  t.assert.ok(result.buckets[0]);
-  t.assert.equal(result.buckets[0].layers[0].layout._values['line-join'].value.value, 'bevel');
+  t.assert.ok(result.buckets.values().next().value);
+  t.assert.equal(result.buckets.values().next().value.layers[0].layout._values['line-join'].value.value, 'bevel');
 });
 
 test('WorkerTile.parse layer with paint property using global-state', async t => {
@@ -103,8 +103,9 @@ test('WorkerTile.parse layer with paint property using global-state', async t =>
   ]);
 
   const result = await makeWorkerTile({ ...params, globalState: { test: 1 } }, createLineWrapper(), layerIndex, {});
-  t.assert.ok(result.buckets[0]);
-  t.assert.equal(result.buckets[0].layers[0].paint._values['fill-extrusion-height'].value.value, 1);
+  const bucket = result.buckets.values().next().value;
+  t.assert.ok(bucket);
+  t.assert.equal(bucket.layers[0].paint._values['fill-extrusion-height'].value.value, 1);
 });
 
 test('WorkerTile.parse skips hidden layers', async t => {
@@ -118,7 +119,7 @@ test('WorkerTile.parse skips hidden layers', async t => {
   ]);
 
   const result = await makeWorkerTile(params, createPointWrapper(), layerIndex, {});
-  t.assert.equal(result.buckets.length, 0);
+  t.assert.equal(result.buckets.size, 0);
 });
 
 test('WorkerTile.parse skips layers without a corresponding source layer', async t => {
@@ -132,5 +133,5 @@ test('WorkerTile.parse skips layers without a corresponding source layer', async
   ]);
 
   const result = await makeWorkerTile(params, { layers: {} }, layerIndex, {});
-  t.assert.equal(result.buckets.length, 0);
+  t.assert.equal(result.buckets.size, 0);
 });

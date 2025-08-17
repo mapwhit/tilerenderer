@@ -184,7 +184,7 @@ class ImageSource extends Evented {
     // single tile.
     if (this.tileID?.equals(tile.tileID.canonical)) {
       this.tiles[String(tile.tileID.wrap)] = tile;
-      tile.buckets = {};
+      tile.buckets = new Map();
     } else {
       tile.state = 'errored';
     }
