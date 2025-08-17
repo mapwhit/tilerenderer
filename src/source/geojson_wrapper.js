@@ -20,6 +20,14 @@ class FeatureWrapper {
     if ('id' in feature && !isNaN(feature.id)) {
       this.id = Number.parseInt(feature.id, 10);
     }
+
+    // fix geometry - it has to be at least array of 2 points
+    if (typeof this._feature.geometry[0] === 'number') {
+      this._feature.geometry = [this._feature.geometry];
+      if (this._feature.geometry.length === 1) {
+        this._feature.geometry.push(this._feature.geometry[0]);
+      }
+    }
   }
 
   get type() {
@@ -27,7 +35,7 @@ class FeatureWrapper {
   }
 
   get properties() {
-    return this._feature.tags;
+    return this._feature.tags ?? {};
   }
 
   get extent() {

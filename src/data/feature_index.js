@@ -3,8 +3,6 @@ const EXTENT = require('./extent');
 const featureFilter = require('../style-spec/feature_filter');
 const Grid = require('grid-index');
 const dictionaryCoder = require('../util/dictionary_coder');
-const vt = require('@mapwhit/vector-tile');
-const Protobuf = require('@mapwhit/pbf');
 const GeoJSONFeature = require('../util/vectortile_to_geojson');
 const { arraysIntersect } = require('../util/object');
 const EvaluationParameters = require('../style/evaluation_parameters');
@@ -36,7 +34,7 @@ class FeatureIndex {
 
   loadVTLayers() {
     if (!this.vtLayers) {
-      this.vtLayers = new vt.VectorTile(new Protobuf(this.rawTileData)).layers;
+      this.vtLayers = this.vectorTile?.layers;
       this.sourceLayerCoder = dictionaryCoder(this.vtLayers ? Object.keys(this.vtLayers) : ['_geojsonTileLayer']);
     }
     return this.vtLayers;
@@ -162,6 +160,7 @@ class FeatureIndex {
       }
 
       const geojsonFeature = new GeoJSONFeature(feature, z, x, y);
+      // TODO: remove serialize
       geojsonFeature.layer = styleLayer.serialize();
       const layerResult = (result[layerID] ??= []);
       layerResult.push({ featureIndex, feature: geojsonFeature, intersectionZ });
