@@ -60,14 +60,14 @@ test('SymbolBucket', t => {
   performSymbolLayout(bucketA, stacks, {});
   const tileA = new Tile(tileID, 512);
   tileA.latestFeatureIndex = new FeatureIndex(tileID);
-  tileA.buckets = { test: bucketA };
+  tileA.buckets = new Map([['test', bucketA]]);
   tileA.collisionBoxArray = collisionBoxArray;
 
   // add same feature from bucket B
   bucketB.populate([{ feature }], options);
   performSymbolLayout(bucketB, stacks, {});
   const tileB = new Tile(tileID, 512);
-  tileB.buckets = { test: bucketB };
+  tileB.buckets = new Map([['test', bucketB]]);
   tileB.collisionBoxArray = collisionBoxArray;
 
   crossTileSymbolIndex.addLayer(bucketA.layers[0], [tileA, tileB]);
