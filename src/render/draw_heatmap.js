@@ -9,7 +9,7 @@ const { heatmapUniformValues, heatmapTextureUniformValues } = require('./program
 module.exports = drawHeatmap;
 
 function drawHeatmap(painter, sourceCache, layer, coords) {
-  if (layer.paint.get('heatmap-opacity') === 0) {
+  if (layer._paint.get('heatmap-opacity') === 0) {
     return;
   }
 
@@ -51,12 +51,12 @@ function drawHeatmap(painter, sourceCache, layer, coords) {
         stencilMode,
         colorMode,
         CullFaceMode.disabled,
-        heatmapUniformValues(coord.posMatrix, tile, zoom, layer.paint.get('heatmap-intensity')),
+        heatmapUniformValues(coord.posMatrix, tile, zoom, layer._paint.get('heatmap-intensity')),
         layer.id,
         bucket.layoutVertexBuffer,
         bucket.indexBuffer,
         bucket.segments,
-        layer.paint,
+        layer._paint,
         painter.transform.zoom,
         programConfiguration
       );
@@ -153,7 +153,7 @@ function renderTextureToMap(painter, layer) {
       painter.viewportBuffer,
       painter.quadTriangleIndexBuffer,
       painter.viewportSegments,
-      layer.paint,
+      layer._paint,
       painter.transform.zoom
     );
 }

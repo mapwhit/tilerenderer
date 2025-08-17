@@ -49,7 +49,7 @@ class LineStyleLayer extends StyleLayer {
   recalculate(parameters) {
     super.recalculate(parameters);
 
-    this.paint._values['line-floorwidth'] = lineFloorwidthProperty.possiblyEvaluate(
+    this._paint._values['line-floorwidth'] = lineFloorwidthProperty.possiblyEvaluate(
       this._transitioningPaint._values['line-width'].value,
       parameters
     );
@@ -66,24 +66,24 @@ class LineStyleLayer extends StyleLayer {
       getMaximumPaintValue('line-gap-width', this, lineBucket)
     );
     const offset = getMaximumPaintValue('line-offset', this, lineBucket);
-    return width / 2 + Math.abs(offset) + translateDistance(this.paint.get('line-translate'));
+    return width / 2 + Math.abs(offset) + translateDistance(this._paint.get('line-translate'));
   }
 
   queryIntersectsFeature(queryGeometry, feature, featureState, geometry, zoom, transform, pixelsToTileUnits) {
     const translatedPolygon = translate(
       queryGeometry,
-      this.paint.get('line-translate'),
-      this.paint.get('line-translate-anchor'),
+      this._paint.get('line-translate'),
+      this._paint.get('line-translate-anchor'),
       transform.angle,
       pixelsToTileUnits
     );
     const halfWidth =
       (pixelsToTileUnits / 2) *
       getLineWidth(
-        this.paint.get('line-width').evaluate(feature, featureState),
-        this.paint.get('line-gap-width').evaluate(feature, featureState)
+        this._paint.get('line-width').evaluate(feature, featureState),
+        this._paint.get('line-gap-width').evaluate(feature, featureState)
       );
-    const lineOffset = this.paint.get('line-offset').evaluate(feature, featureState);
+    const lineOffset = this._paint.get('line-offset').evaluate(feature, featureState);
     if (lineOffset) {
       geometry = offsetLine(geometry, lineOffset * pixelsToTileUnits);
     }

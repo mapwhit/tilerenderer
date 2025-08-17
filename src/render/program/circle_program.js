@@ -14,7 +14,7 @@ const circleUniformValues = (painter, coord, tile, layer) => {
 
   let pitchWithMap;
   let extrudeScale;
-  if (layer.paint.get('circle-pitch-alignment') === 'map') {
+  if (layer._paint.get('circle-pitch-alignment') === 'map') {
     const pixelRatio = pixelsToTileUnits(tile, 1, transform.zoom);
     pitchWithMap = true;
     extrudeScale = [pixelRatio, pixelRatio];
@@ -25,12 +25,12 @@ const circleUniformValues = (painter, coord, tile, layer) => {
 
   return {
     u_camera_to_center_distance: transform.cameraToCenterDistance,
-    u_scale_with_map: +(layer.paint.get('circle-pitch-scale') === 'map'),
+    u_scale_with_map: +(layer._paint.get('circle-pitch-scale') === 'map'),
     u_matrix: painter.translatePosMatrix(
       coord.posMatrix,
       tile,
-      layer.paint.get('circle-translate'),
-      layer.paint.get('circle-translate-anchor')
+      layer._paint.get('circle-translate'),
+      layer._paint.get('circle-translate-anchor')
     ),
     u_pitch_with_map: +pitchWithMap,
     u_extrude_scale: extrudeScale

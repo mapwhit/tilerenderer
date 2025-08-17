@@ -8,9 +8,9 @@ module.exports = drawCircles;
 function drawCircles(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;
 
-  const opacity = layer.paint.get('circle-opacity');
-  const strokeWidth = layer.paint.get('circle-stroke-width');
-  const strokeOpacity = layer.paint.get('circle-stroke-opacity');
+  const opacity = layer._paint.get('circle-opacity');
+  const strokeWidth = layer._paint.get('circle-stroke-width');
+  const strokeOpacity = layer._paint.get('circle-stroke-opacity');
 
   if (opacity.constantOr(1) === 0 && (strokeWidth.constantOr(1) === 0 || strokeOpacity.constantOr(1) === 0)) {
     return;
@@ -47,7 +47,7 @@ function drawCircles(painter, sourceCache, layer, coords) {
       bucket.layoutVertexBuffer,
       bucket.indexBuffer,
       bucket.segments,
-      layer.paint,
+      layer._paint,
       painter.transform.zoom,
       programConfiguration
     );

@@ -13,9 +13,9 @@ class FillStyleLayer extends StyleLayer {
   recalculate(parameters) {
     super.recalculate(parameters);
 
-    const outlineColor = this.paint._values['fill-outline-color'];
+    const outlineColor = this._paint._values['fill-outline-color'];
     if (outlineColor.value.kind === 'constant' && outlineColor.value.value === undefined) {
-      this.paint._values['fill-outline-color'] = this.paint._values['fill-color'];
+      this._paint._values['fill-outline-color'] = this._paint._values['fill-color'];
     }
   }
 
@@ -24,14 +24,14 @@ class FillStyleLayer extends StyleLayer {
   }
 
   queryRadius() {
-    return translateDistance(this.paint.get('fill-translate'));
+    return translateDistance(this._paint.get('fill-translate'));
   }
 
   queryIntersectsFeature(queryGeometry, feature, featureState, geometry, zoom, transform, pixelsToTileUnits) {
     const translatedPolygon = translate(
       queryGeometry,
-      this.paint.get('fill-translate'),
-      this.paint.get('fill-translate-anchor'),
+      this._paint.get('fill-translate'),
+      this._paint.get('fill-translate-anchor'),
       transform.angle,
       pixelsToTileUnits
     );

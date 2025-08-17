@@ -22,14 +22,14 @@ const rasterUniformValues = (matrix, parentTL, parentScaleBy, fade, layer) => ({
   u_scale_parent: parentScaleBy,
   u_buffer_scale: 1,
   u_fade_t: fade.mix,
-  u_opacity: fade.opacity * layer.paint.get('raster-opacity'),
+  u_opacity: fade.opacity * layer._paint.get('raster-opacity'),
   u_image0: 0,
   u_image1: 1,
-  u_brightness_low: layer.paint.get('raster-brightness-min'),
-  u_brightness_high: layer.paint.get('raster-brightness-max'),
-  u_saturation_factor: saturationFactor(layer.paint.get('raster-saturation')),
-  u_contrast_factor: contrastFactor(layer.paint.get('raster-contrast')),
-  u_spin_weights: spinWeights(layer.paint.get('raster-hue-rotate'))
+  u_brightness_low: layer._paint.get('raster-brightness-min'),
+  u_brightness_high: layer._paint.get('raster-brightness-max'),
+  u_saturation_factor: saturationFactor(layer._paint.get('raster-saturation')),
+  u_contrast_factor: contrastFactor(layer._paint.get('raster-contrast')),
+  u_spin_weights: spinWeights(layer._paint.get('raster-hue-rotate'))
 });
 
 function spinWeights(angle) {

@@ -114,7 +114,7 @@ test('WorkerTile.parse layer with paint property using global-state', async t =>
   const result = await makeWorkerTile({ ...params, globalState: { test: 1 } }, createLineWrapper(), layerIndex, {});
   const bucket = result.buckets.values().next().value;
   t.assert.ok(bucket);
-  t.assert.equal(bucket.layers[0].paint._values['fill-extrusion-height'].value.value, 1);
+  t.assert.equal(bucket.layers[0]._paint._values['fill-extrusion-height'].value.value, 1);
 });
 
 test('WorkerTile.parse skips hidden layers', async t => {

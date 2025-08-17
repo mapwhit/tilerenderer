@@ -7,6 +7,12 @@ const featureFilter = require('../style-spec/feature_filter');
 
 const TRANSITION_SUFFIX = '-transition';
 
+/**
+ * Representing a style layer in the map.
+ * Properties:
+ * `this.paint` - paint properties of the layer as defined in the map style
+ * `this._paint` - internal representation of paint properties necessary to calculate expressions
+ */
 class StyleLayer extends Evented {
   constructor(layer, properties) {
     super();
@@ -127,6 +133,7 @@ class StyleLayer extends Evented {
   }
 
   setPaintProperty(name, value) {
+    this.paint[name] = value;
     if (name.endsWith(TRANSITION_SUFFIX)) {
       this._transitionablePaint.setTransition(name.slice(0, -TRANSITION_SUFFIX.length), value || undefined);
       return false;
@@ -180,7 +187,7 @@ class StyleLayer extends Evented {
       this.layout = this._unevaluatedLayout.possiblyEvaluate(parameters);
     }
 
-    this.paint = this._transitioningPaint.possiblyEvaluate(parameters);
+    this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
   }
 
   serialize() {
@@ -228,8 +235,8 @@ class StyleLayer extends Evented {
   }
 
   isStateDependent() {
-    for (const property in this.paint._values) {
-      const value = this.paint.get(property);
+    for (const property in this._paint._values) {
+      const value = this._paint.get(property);
       if (
         !(value instanceof PossiblyEvaluatedPropertyValue) ||
         !supportsPropertyExpression(value.property.specification)

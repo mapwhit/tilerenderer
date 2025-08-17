@@ -7,7 +7,7 @@ const { fillExtrusionUniformValues, fillExtrusionPatternUniformValues } = requir
 module.exports = draw;
 
 function draw(painter, source, layer, coords) {
-  const opacity = layer.paint.get('fill-extrusion-opacity');
+  const opacity = layer._paint.get('fill-extrusion-opacity');
   if (opacity === 0) {
     return;
   }
@@ -15,7 +15,7 @@ function draw(painter, source, layer, coords) {
   if (painter.renderPass === 'translucent') {
     const depthMode = new DepthMode(painter.context.gl.LEQUAL, DepthMode.ReadWrite, painter.depthRangeFor3D);
 
-    if (opacity === 1 && !layer.paint.get('fill-extrusion-pattern').constantOr(1)) {
+    if (opacity === 1 && !layer._paint.get('fill-extrusion-pattern').constantOr(1)) {
       const colorMode = painter.colorModeForRenderPass();
       drawExtrusionTiles(painter, source, layer, coords, depthMode, StencilMode.disabled, colorMode);
     } else {
@@ -43,10 +43,10 @@ function drawExtrusionTiles(painter, source, layer, coords, depthMode, stencilMo
   const context = painter.context;
   const gl = context.gl;
 
-  const patternProperty = layer.paint.get('fill-extrusion-pattern');
+  const patternProperty = layer._paint.get('fill-extrusion-pattern');
   const image = patternProperty.constantOr(1);
   const crossfade = layer.getCrossfadeParameters();
-  const opacity = layer.paint.get('fill-extrusion-opacity');
+  const opacity = layer._paint.get('fill-extrusion-opacity');
 
   for (const coord of coords) {
     const tile = source.getTile(coord);
@@ -72,11 +72,11 @@ function drawExtrusionTiles(painter, source, layer, coords, depthMode, stencilMo
     const matrix = painter.translatePosMatrix(
       coord.posMatrix,
       tile,
-      layer.paint.get('fill-extrusion-translate'),
-      layer.paint.get('fill-extrusion-translate-anchor')
+      layer._paint.get('fill-extrusion-translate'),
+      layer._paint.get('fill-extrusion-translate-anchor')
     );
 
-    const shouldUseVerticalGradient = layer.paint.get('fill-extrusion-vertical-gradient');
+    const shouldUseVerticalGradient = layer._paint.get('fill-extrusion-vertical-gradient');
     const uniformValues = image
       ? fillExtrusionPatternUniformValues(matrix, painter, shouldUseVerticalGradient, opacity, coord, crossfade, tile)
       : fillExtrusionUniformValues(matrix, painter, shouldUseVerticalGradient, opacity);
@@ -93,7 +93,7 @@ function drawExtrusionTiles(painter, source, layer, coords, depthMode, stencilMo
       bucket.layoutVertexBuffer,
       bucket.indexBuffer,
       bucket.segments,
-      layer.paint,
+      layer._paint,
       painter.transform.zoom,
       programConfiguration
     );

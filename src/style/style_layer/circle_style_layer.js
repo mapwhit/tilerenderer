@@ -21,7 +21,7 @@ class CircleStyleLayer extends StyleLayer {
     return (
       getMaximumPaintValue('circle-radius', this, circleBucket) +
       getMaximumPaintValue('circle-stroke-width', this, circleBucket) +
-      translateDistance(this.paint.get('circle-translate'))
+      translateDistance(this._paint.get('circle-translate'))
     );
   }
 
@@ -37,20 +37,20 @@ class CircleStyleLayer extends StyleLayer {
   ) {
     const translatedPolygon = translate(
       queryGeometry,
-      this.paint.get('circle-translate'),
-      this.paint.get('circle-translate-anchor'),
+      this._paint.get('circle-translate'),
+      this._paint.get('circle-translate-anchor'),
       transform.angle,
       pixelsToTileUnits
     );
-    const radius = this.paint.get('circle-radius').evaluate(feature, featureState);
-    const stroke = this.paint.get('circle-stroke-width').evaluate(feature, featureState);
+    const radius = this._paint.get('circle-radius').evaluate(feature, featureState);
+    const stroke = this._paint.get('circle-stroke-width').evaluate(feature, featureState);
     const size = radius + stroke;
 
     // For pitch-alignment: map, compare feature geometry to query geometry in the plane of the tile
     // // Otherwise, compare geometry in the plane of the viewport
     // // A circle with fixed scaling relative to the viewport gets larger in tile space as it moves into the distance
     // // A circle with fixed scaling relative to the map gets smaller in viewport space as it moves into the distance
-    const alignWithMap = this.paint.get('circle-pitch-alignment') === 'map';
+    const alignWithMap = this._paint.get('circle-pitch-alignment') === 'map';
     const transformedPolygon = alignWithMap
       ? translatedPolygon
       : projectQueryGeometry(translatedPolygon, pixelPosMatrix);
@@ -62,11 +62,14 @@ class CircleStyleLayer extends StyleLayer {
 
         let adjustedSize = transformedSize;
         const projectedCenter = vec4.transformMat4([], [point.x, point.y, 0, 1], pixelPosMatrix);
-        if (this.paint.get('circle-pitch-scale') === 'viewport' && this.paint.get('circle-pitch-alignment') === 'map') {
+        if (
+          this._paint.get('circle-pitch-scale') === 'viewport' &&
+          this._paint.get('circle-pitch-alignment') === 'map'
+        ) {
           adjustedSize *= projectedCenter[3] / transform.cameraToCenterDistance;
         } else if (
-          this.paint.get('circle-pitch-scale') === 'map' &&
-          this.paint.get('circle-pitch-alignment') === 'viewport'
+          this._paint.get('circle-pitch-scale') === 'map' &&
+          this._paint.get('circle-pitch-alignment') === 'viewport'
         ) {
           adjustedSize *= transform.cameraToCenterDistance / projectedCenter[3];
         }

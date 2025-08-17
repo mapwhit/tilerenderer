@@ -3,7 +3,7 @@ function hasPattern(type, layers, options) {
   let hasPattern = false;
 
   for (const layer of layers) {
-    const patternProperty = layer.paint.get(`${type}-pattern`);
+    const patternProperty = layer._paint.get(`${type}-pattern`);
     if (!patternProperty.isConstant()) {
       hasPattern = true;
     }
@@ -22,7 +22,7 @@ function hasPattern(type, layers, options) {
 function addPatternDependencies(type, layers, patternFeature, zoom, options) {
   const patterns = options.patternDependencies;
   for (const layer of layers) {
-    const patternProperty = layer.paint.get(`${type}-pattern`);
+    const patternProperty = layer._paint.get(`${type}-pattern`);
 
     const patternPropertyValue = patternProperty.value;
     if (patternPropertyValue.kind !== 'constant') {

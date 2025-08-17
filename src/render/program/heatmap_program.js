@@ -34,7 +34,7 @@ const heatmapTextureUniformValues = (painter, layer, textureUnit, colorRampUnit)
     u_world: [gl.drawingBufferWidth, gl.drawingBufferHeight],
     u_image: textureUnit,
     u_color_ramp: colorRampUnit,
-    u_opacity: layer.paint.get('heatmap-opacity')
+    u_opacity: layer._paint.get('heatmap-opacity')
   };
 };
 

@@ -102,8 +102,8 @@ function calculateMatrix(painter, tile, layer) {
   return painter.translatePosMatrix(
     tile.tileID.posMatrix,
     tile,
-    layer.paint.get('line-translate'),
-    layer.paint.get('line-translate-anchor')
+    layer._paint.get('line-translate'),
+    layer._paint.get('line-translate-anchor')
   );
 }
 

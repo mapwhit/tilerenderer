@@ -7,7 +7,7 @@ module.exports = {
 };
 
 function getMaximumPaintValue(property, layer, bucket) {
-  const value = layer.paint.get(property).value;
+  const value = layer._paint.get(property).value;
   if (value.kind === 'constant') {
     return value.value;
   }
