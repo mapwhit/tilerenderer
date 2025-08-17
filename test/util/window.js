@@ -14,7 +14,8 @@ function create() {
     // Send jsdom console output to the node console object.
     virtualConsole: new jsdom.VirtualConsole().sendTo(console),
     // load images
-    resources: 'usable'
+    resources: 'usable',
+    runScripts: 'dangerously' // allow scripts to run - needed for RTL plugin loading
   });
 
   window.devicePixelRatio = 1;
@@ -57,6 +58,9 @@ function create() {
   window.Worker ??= WebWorker;
 
   globalThis.document ??= window.document;
+
+  require('../../src/source/rtl_text_plugin');
+  window.registerRTLTextPlugin ??= globalThis.registerRTLTextPlugin;
 
   return window;
 }
