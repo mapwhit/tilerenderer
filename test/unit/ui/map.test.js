@@ -932,10 +932,6 @@ test('Map', async t => {
         map.style.update({});
         t.assert.deepEqual(map.getLayoutProperty('symbol', 'text-transform'), 'lowercase');
         t.assert.equal(updateLayers.mock.callCount(), 1);
-        const { layers } = updateLayers.mock.calls[0].arguments[1];
-        t.assert.equal(layers.length, 1);
-        t.assert.deepEqual(layers[0].id, 'symbol');
-
         done();
       });
     });

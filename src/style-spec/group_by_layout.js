@@ -13,8 +13,13 @@ function stringify(obj) {
   return '{' + keys.map(key => `${key}:${stringify(obj[key])}`).join(',') + '}';
 }
 
+// TODO: this is a temporary hack
+const mapProperty = {
+  layout: 'layoutObj'
+};
+
 function getKey(layer) {
-  return refProperties.map(k => stringify(layer[k])).join('/');
+  return refProperties.map(k => stringify(layer[mapProperty[k] ?? k])).join('/');
 }
 
 module.exports = groupByLayout;

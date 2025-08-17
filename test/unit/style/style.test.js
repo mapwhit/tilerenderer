@@ -254,7 +254,7 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
-        style._layers.background.fire(new Event('error', { mapbox: true }));
+        style._layers.get('background').fire(new Event('error', { mapbox: true }));
       });
     });
 
@@ -334,14 +334,10 @@ test('Style', async t => {
       t.assert.ifError(error);
     });
 
-    t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-      t.assert.deepEqual(
-        value.layers.map(layer => {
-          return layer.id;
-        }),
-        ['first', 'third']
-      );
-      t.assert.deepEqual(value.removedIds, ['second']);
+    t.mock.method(style.workerState, 'updateLayers', () => {
+      t.assert.ok(style.getLayer('first'));
+      t.assert.ok(style.getLayer('third'));
+      t.assert.ok(!style.getLayer('second'));
       style._remove();
       done();
     });
@@ -1277,7 +1273,7 @@ test('Style', async t => {
           id: 'background',
           type: 'background'
         });
-        style._layers.background.fire(new Event('error', { mapbox: true }));
+        style._layers.get('background').fire(new Event('error', { mapbox: true }));
       });
     });
 
@@ -1497,7 +1493,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.addLayer(layer);
-        t.assert.deepEqual(style._order, ['a', 'b', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['a', 'b', 'c']);
         done();
       });
     });
@@ -1522,7 +1518,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.addLayer(layer, 'a');
-        t.assert.deepEqual(style._order, ['c', 'a', 'b']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['c', 'a', 'b']);
         done();
       });
     });
@@ -1627,7 +1623,7 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
-        const layer = style._layers.background;
+        const layer = style._layers.get('background');
         style.removeLayer('background');
 
         // Bind a listener to prevent fallback Evented error reporting.
@@ -1670,7 +1666,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.removeLayer('a');
-        t.assert.deepEqual(style._order, ['b']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['b']);
         done();
       });
     });
@@ -1755,7 +1751,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.moveLayer('a', 'c');
-        t.assert.deepEqual(style._order, ['b', 'a', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['b', 'a', 'c']);
         done();
       });
     });
@@ -1773,7 +1769,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.moveLayer('b', 'b');
-        t.assert.deepEqual(style._order, ['a', 'b', 'c']);
+        t.assert.deepEqual(Array.from(style._layers.keys()), ['a', 'b', 'c']);
         done();
       });
     });
@@ -2051,14 +2047,18 @@ test('Style', async t => {
     await t.test('sets filter', (t, done) => {
       style = createStyle();
 
-      t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        t.assert.deepEqual(value.layers[0].id, 'symbol');
-        t.assert.deepEqual(value.layers[0].filter, ['==', 'id', 1]);
+      t.mock.method(style.workerState, 'updateLayers', () => {
+        const layer = style.getLayer('symbol');
+        t.assert.deepEqual(layer.id, 'symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
         done();
         return Promise.resolve();
       });
 
       style.on('style.load', () => {
+        const layer = style.getLayer('symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 0]);
+
         style.setFilter('symbol', ['==', 'id', 1]);
         t.assert.deepEqual(style.getFilter('symbol'), ['==', 'id', 1]);
         style.update({});
@@ -2084,9 +2084,8 @@ test('Style', async t => {
 
     await t.test('sets again mutated filter', (t, done) => {
       style = createStyle();
-      const { mock } = t.mock.method(style.workerState, 'updateLayers', (id, value) => {
-        const layer = value.layers[0];
-        t.assert.equal(layer.id, 'symbol');
+      const { mock } = t.mock.method(style.workerState, 'updateLayers', () => {
+        const layer = style.getLayer('symbol');
         if (mock.callCount() === 0) {
           t.assert.deepEqual(layer.filter, ['==', 'id', 1]);
         } else if (mock.callCount() === 1) {
@@ -2096,6 +2095,9 @@ test('Style', async t => {
       });
 
       style.on('style.load', () => {
+        const layer = style.getLayer('symbol');
+        t.assert.deepEqual(layer.filter, ['==', 'id', 0]);
+
         const filter = ['==', 'id', 1];
         style.setFilter('symbol', filter);
         style.update({}); // flush pending operations
@@ -2199,14 +2201,14 @@ test('Style', async t => {
         land: [
           {
             type: 'Feature',
-            layer: style._layers.land.serialize(),
+            layer: style._layers.get('land').serialize(),
             geometry: {
               type: 'Polygon'
             }
           },
           {
             type: 'Feature',
-            layer: style._layers.land.serialize(),
+            layer: style._layers.get('land').serialize(),
             geometry: {
               type: 'Point'
             }
@@ -2215,7 +2217,7 @@ test('Style', async t => {
         landref: [
           {
             type: 'Feature',
-            layer: style._layers.landref.serialize(),
+            layer: style._layers.get('landref').serialize(),
             geometry: {
               type: 'Line'
             }

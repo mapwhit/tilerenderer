@@ -152,7 +152,7 @@ class FeatureIndex {
         continue;
       }
 
-      const styleLayer = styleLayers[layerID];
+      const styleLayer = styleLayers.get(layerID);
       if (!styleLayer) continue;
 
       const intersectionZ = !intersectionTest || intersectionTest(feature, styleLayer);
