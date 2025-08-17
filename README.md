@@ -9,6 +9,13 @@ This project began as a fork of the [mapbox-gl-js] with the following changes:
 - written in idiomatic java script
 - targeting only ever-green browsers
 
+## Coding style
+
+Object properties and functions are:
+- private, start with `#`, can only be used by the methods of the object
+- internal, start with `_`, can only be used by objects defined witing this module, can be changed and removed without notice
+- public, otherwise
+
 ## License
 
 [BSD-3-Clause](LICENSE.txt)
