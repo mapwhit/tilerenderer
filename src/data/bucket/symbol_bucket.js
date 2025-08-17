@@ -186,7 +186,7 @@ class SymbolBucket {
     this.textSizeData = getSizeData(this.zoom, unevaluatedLayoutValues['text-size']);
     this.iconSizeData = getSizeData(this.zoom, unevaluatedLayoutValues['icon-size']);
 
-    const layout = this.layers[0].layout;
+    const layout = this.layers[0]._layout;
     const zOrderByViewportY = layout.get('symbol-z-order') === 'viewport-y';
     this.sortFeaturesByY =
       zOrderByViewportY &&
@@ -236,7 +236,7 @@ class SymbolBucket {
 
   populate(features, options) {
     const layer = this.layers[0];
-    const layout = layer.layout;
+    const layout = layer._layout;
 
     const textFont = layout.get('text-font');
     const textField = layout.get('text-field');

@@ -75,7 +75,7 @@ const lineSDFUniformValues = (painter, tile, layer, dasharray, crossfade) => {
   const lineAtlas = painter.lineAtlas;
   const tileRatio = calculateTileRatio(tile, transform);
 
-  const round = layer.layout.get('line-cap') === 'round';
+  const round = layer._layout.get('line-cap') === 'round';
 
   const posA = lineAtlas.getDash(dasharray.from, round);
   const posB = lineAtlas.getDash(dasharray.to, round);

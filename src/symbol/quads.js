@@ -22,7 +22,7 @@ const { GLYPH_PBF_BORDER } = require('../style/parse_glyph_pbf');
  */
 function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature) {
   const image = shapedIcon.image;
-  const layout = layer.layout;
+  const layout = layer._layout;
 
   // If you have a 10px icon that isn't perfectly aligned to the pixel grid it will cover 11 actual
   // pixels. The quad needs to be padded to account for this, otherwise they'll look slightly clipped
@@ -71,7 +71,7 @@ function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature)
     bl = new Point(left, bottom);
   }
 
-  const angle = (layer.layout.get('icon-rotate').evaluate(feature, {}) * Math.PI) / 180;
+  const angle = (layer._layout.get('icon-rotate').evaluate(feature, {}) * Math.PI) / 180;
 
   if (angle) {
     const sin = Math.sin(angle);
@@ -94,8 +94,8 @@ function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature)
  */
 function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
   const oneEm = 24;
-  const textRotate = (layer.layout.get('text-rotate').evaluate(feature, {}) * Math.PI) / 180;
-  const textOffset = layer.layout
+  const textRotate = (layer._layout.get('text-rotate').evaluate(feature, {}) * Math.PI) / 180;
+  const textOffset = layer._layout
     .get('text-offset')
     .evaluate(feature, {})
     .map(t => t * oneEm);

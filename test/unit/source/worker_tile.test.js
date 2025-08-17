@@ -70,7 +70,7 @@ test('WorkerTile.parse layer with layout property', async t => {
 
   const result = await makeWorkerTile(params, createLineWrapper(), layerIndex, {});
   t.assert.ok(result.buckets.values().next().value);
-  t.assert.equal(result.buckets.values().next().value.layers[0].layout._values['line-join'].value.value, 'bevel');
+  t.assert.equal(result.buckets.values().next().value.layers[0]._layout._values['line-join'].value.value, 'bevel');
 });
 
 test('WorkerTile.parse layer with layout property using global-state', async t => {
@@ -94,7 +94,7 @@ test('WorkerTile.parse layer with layout property using global-state', async t =
     {}
   );
   t.assert.ok(result.buckets.values().next().value);
-  t.assert.equal(result.buckets.values().next().value.layers[0].layout._values['line-join'].value.value, 'bevel');
+  t.assert.equal(result.buckets.values().next().value.layers[0]._layout._values['line-join'].value.value, 'bevel');
 });
 
 test('WorkerTile.parse layer with paint property using global-state', async t => {

@@ -161,7 +161,7 @@ class LineBucket {
   }
 
   addFeature(feature, geometry, index, imagePositions) {
-    const layout = this.layers[0].layout;
+    const layout = this.layers[0]._layout;
     const join = layout.get('line-join').evaluate(feature, {});
     const cap = layout.get('line-cap');
     const miterLimit = layout.get('line-miter-limit');

@@ -117,6 +117,7 @@ class StyleLayer extends Evented {
   }
 
   setLayoutProperty(name, value) {
+    this.layout[name] = value;
     if (name === 'visibility') {
       this.visibility = value === 'none' ? value : 'visible';
       return;
@@ -184,7 +185,7 @@ class StyleLayer extends Evented {
       this._crossfadeParameters = parameters.getCrossfadeParameters();
     }
     if (this._unevaluatedLayout) {
-      this.layout = this._unevaluatedLayout.possiblyEvaluate(parameters);
+      this._layout = this._unevaluatedLayout.possiblyEvaluate(parameters);
     }
 
     this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
