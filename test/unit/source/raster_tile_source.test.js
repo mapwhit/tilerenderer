@@ -5,17 +5,7 @@ const { OverscaledTileID } = require('../../../src/source/tile_id');
 
 function createSource(options) {
   options.tiles ??= loadTile;
-  const source = new RasterTileSource(
-    'id',
-    options,
-    {
-      async send() {},
-      nextWorkerId() {
-        return 0;
-      }
-    },
-    options.eventedParent
-  );
+  const source = new RasterTileSource('id', options, options.eventedParent);
   source.onAdd({
     transform: { angle: 0, pitch: 0, showCollisionBoxes: false }
   });

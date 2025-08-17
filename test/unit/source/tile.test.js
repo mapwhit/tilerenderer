@@ -9,7 +9,6 @@ const { fromVectorTileJs: vtpbf } = require('@mapwhit/vt-pbf');
 const FeatureIndex = require('../../../src/data/feature_index');
 const { CollisionBoxArray } = require('../../../src/data/array_types');
 const Context = require('../../../src/gl/context');
-const { serialize, deserialize } = require('../../../src/util/transfer_registry');
 
 test('Tile', async t => {
   let globalWindow;
@@ -218,8 +217,8 @@ function createVectorData(options) {
   const collisionBoxArray = new CollisionBoxArray();
   return Object.assign(
     {
-      collisionBoxArray: deserialize(serialize(collisionBoxArray)),
-      featureIndex: deserialize(serialize(new FeatureIndex(new OverscaledTileID(1, 0, 1, 1, 1)))),
+      collisionBoxArray,
+      featureIndex: new FeatureIndex(new OverscaledTileID(1, 0, 1, 1, 1)),
       buckets: []
     },
     options

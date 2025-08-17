@@ -24,6 +24,7 @@
     "@mapwhit/vt-pbf": "^2.0.0",
     "@pirxpilot/nanoassert": "~1",
     "csscolorparser": "^1.0.3",
+    "dynload": "^1.0.2",
     "earcut": "^3.0.1",
     "geojson-vt": "^4.0.2",
     "grid-index": "^1.1.0",

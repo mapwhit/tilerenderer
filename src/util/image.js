@@ -1,7 +1,5 @@
 const assert = require('assert');
 
-const { register } = require('./transfer_registry');
-
 function createImage(image, { width, height }, channels, data) {
   if (!data) {
     data = new Uint8Array(width * height * channels);
@@ -114,9 +112,6 @@ class RGBAImage {
     copyImage(srcImg, dstImg, srcPt, dstPt, size, 4);
   }
 }
-
-register('AlphaImage', AlphaImage);
-register('RGBAImage', RGBAImage);
 
 module.exports = {
   AlphaImage,

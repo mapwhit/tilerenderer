@@ -1,7 +1,6 @@
 const { RGBAImage } = require('../util/image');
 
 const warn = require('../util/warn');
-const { register } = require('../util/transfer_registry');
 
 // DEMData is a data structure for decoding, backfilling, and storing elevation data for processing in the hillshade shaders
 // data can be populated either from a pngraw image tile or from serliazed data sent back from a worker. When data is initially
@@ -120,7 +119,5 @@ class DEMData {
     }
   }
 }
-
-register('DEMData', DEMData);
 
 module.exports = DEMData;

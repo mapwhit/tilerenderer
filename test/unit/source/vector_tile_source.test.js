@@ -6,18 +6,7 @@ const { Evented } = require('@mapwhit/events');
 
 function createSource(options) {
   options.tiles ??= loadTile;
-  const source = new VectorTileSource(
-    'id',
-    options,
-    {
-      async send() {},
-      async broadcast() {},
-      nextWorkerId() {
-        return 0;
-      }
-    },
-    options.eventedParent
-  );
+  const source = new VectorTileSource('id', options, options.eventedParent, {});
   source.onAdd({
     transform: { showCollisionBoxes: false },
     getGlobalState: () => ({})

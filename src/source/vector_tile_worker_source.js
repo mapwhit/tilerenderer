@@ -1,19 +1,6 @@
 const { VectorTile } = require('@mapwhit/vector-tile');
 const Protobuf = require('@mapwhit/pbf');
-const WorkerTile = require('./worker_tile');
-
-function loadVectorTile(params) {
-  if (!params.response) {
-    throw new Error('no tile data');
-  }
-  const { data } = params.response;
-  if (!data) {
-    return;
-  }
-  return {
-    vectorTile: new VectorTile(new Protobuf(data))
-  };
-}
+const makeWorkerTile = require('./worker_tile');
 
 /**
  * The {@link WorkerSource} implementation that supports {@link VectorTileSource}.
@@ -31,10 +18,22 @@ class VectorTileWorkerSource {
    * {@link VectorTileWorkerSource#loadTile}. The default implementation simply
    * loads the pbf at `params.url`.
    */
-  constructor(resources, layerIndex, loadVectorData = loadVectorTile) {
+  constructor(resources, layerIndex) {
     this.resources = resources;
     this.layerIndex = layerIndex;
-    this.loadVectorData = loadVectorData;
+  }
+
+  loadVectorData(params) {
+    if (!params.response) {
+      throw new Error('no tile data');
+    }
+    const { data } = params.response;
+    if (!data) {
+      return;
+    }
+    return {
+      vectorTile: new VectorTile(new Protobuf(data))
+    };
   }
 
   /**
@@ -48,10 +47,7 @@ class VectorTileWorkerSource {
       return;
     }
     const { vectorTile, rawData } = response;
-    const workerTile = new WorkerTile(params);
-    workerTile.globalState = params.globalState;
-    workerTile.vectorTile = vectorTile;
-    const result = await workerTile.parse(vectorTile, this.layerIndex, this.resources);
+    const result = await makeWorkerTile(params, vectorTile, this.layerIndex, this.resources);
     if (rawData) {
       result.rawTileData = rawData;
     }

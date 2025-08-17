@@ -3,7 +3,6 @@ const assert = require('assert');
 const { clone } = require('../util/object');
 const { easeCubicInOut } = require('../util/util');
 const { interpolate, normalizePropertyExpression } = require('@mapwhit/style-expressions');
-const { register } = require('../util/transfer_registry');
 const EvaluationParameters = require('./evaluation_parameters');
 
 /**
@@ -671,12 +670,6 @@ class Properties {
     }
   }
 }
-
-register('DataDrivenProperty', DataDrivenProperty);
-register('DataConstantProperty', DataConstantProperty);
-register('CrossFadedDataDrivenProperty', CrossFadedDataDrivenProperty);
-register('CrossFadedProperty', CrossFadedProperty);
-register('ColorRampProperty', ColorRampProperty);
 
 module.exports = {
   PropertyValue,

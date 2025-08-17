@@ -2,6 +2,7 @@ const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 
 const EXTENT = require('../data/extent');
 const browser = require('../util/browser');
+const GeoJSONWorkerSource = require('./geojson_worker_source');
 
 /**
  * A source containing GeoJSON.
@@ -52,8 +53,9 @@ class GeoJSONSource extends Evented {
   #pendingDataEvents = new Set();
   #newData = false;
   #updateInProgress = false;
+  #worker;
 
-  constructor(id, options, dispatcher, eventedParent) {
+  constructor(id, options, eventedParent, { resources, layerIndex }) {
     super();
 
     this.id = id;
@@ -69,7 +71,6 @@ class GeoJSONSource extends Evented {
     this.reparseOverscaled = true;
     this._removed = false;
 
-    this.dispatcher = dispatcher;
     this.setEventedParent(eventedParent);
 
     this._data = options.data;
@@ -107,6 +108,7 @@ class GeoJSONSource extends Evented {
       },
       options.workerOptions
     );
+    this.#worker = new GeoJSONWorkerSource(resources, layerIndex);
   }
 
   load() {
@@ -165,13 +167,9 @@ class GeoJSONSource extends Evented {
     if (!json) {
       throw new Error('no GeoJSON data');
     }
-    const options = { ...this.workerOptions, data: JSON.stringify(json) };
-    this.workerID ??= this.dispatcher.nextWorkerId();
+    const options = { ...this.workerOptions, data: json };
 
-    // target {this.type}.loadData rather than literally geojson.loadData,
-    // so that other geojson-like source types can easily reuse this
-    // implementation
-    await this.dispatcher.send(`${this.type}.loadData`, options, this.workerID);
+    return await this.#worker.loadData(options);
   }
 
   async loadTile(tile) {
@@ -189,8 +187,8 @@ class GeoJSONSource extends Evented {
     };
 
     const justReloaded = tile.workerID != null;
-    tile.workerID ??= this.dispatcher.nextWorkerId(this.workerID);
-    const data = await this.dispatcher.send('loadTile', params, tile.workerID).finally(() => tile.unloadVectorData());
+    tile.workerID ??= true;
+    const data = await this.#worker.loadTile(params).finally(() => tile.unloadVectorData());
     if (!tile.aborted) {
       tile.loadVectorData(data, this.map.painter, justReloaded);
     }
@@ -206,7 +204,6 @@ class GeoJSONSource extends Evented {
 
   onRemove() {
     this._removed = true;
-    return this.dispatcher.send('removeSource', { type: this.type, source: this.id }, this.workerID);
   }
 
   serialize() {

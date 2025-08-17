@@ -10,7 +10,6 @@ const { bindAll } = require('../util/object');
  * @param {Object} options Source options, specific to the source type (except for `options.type`, which is always
  * required).
  * @param {string} options.type The source type, matching the value of `name` used in {@link Style#addSourceType}.
- * @param {Dispatcher} dispatcher A {@link Dispatcher} instance, which can be used to send messages to the workers.
  *
  * @fires data with `{dataType: 'source', sourceDataType: 'metadata'}` to indicate that any necessary metadata
  * has been loaded so that it's okay to call `loadTile`; and with `{dataType: 'source', sourceDataType: 'content'}`
@@ -25,11 +24,11 @@ const { bindAll } = require('../util/object');
  * if they are floor-ed to the nearest integer.
  */
 
-const vector = require('../source/vector_tile_source');
-const raster = require('../source/raster_tile_source');
-const rasterDem = require('../source/raster_dem_tile_source');
-const geojson = require('../source/geojson_source');
-const image = require('../source/image_source');
+const vector = require('./vector_tile_source');
+const raster = require('./raster_tile_source');
+const rasterDem = require('./raster_dem_tile_source');
+const geojson = require('./geojson_source');
+const image = require('./image_source');
 
 const sourceTypes = {
   vector,
@@ -46,15 +45,10 @@ const sourceTypes = {
  * @param {Object} source A source definition object compliant with
  * [`mapbox-gl-style-spec`](https://www.mapbox.com/mapbox-gl-style-spec/#sources) or, for a third-party source type,
  * with that type's requirements.
- * @param {Dispatcher} dispatcher
  * @returns {Source}
  */
-function create(id, specification, dispatcher, eventedParent) {
-  const source = new sourceTypes[specification.type](id, specification, dispatcher, eventedParent);
-
-  if (source.id !== id) {
-    throw new Error(`Expected Source id to be ${id} instead of ${source.id}`);
-  }
+function create(id, specification, eventedParent, { resources, layerIndex }) {
+  const source = new sourceTypes[specification.type](id, specification, eventedParent, { resources, layerIndex });
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;

@@ -7,7 +7,7 @@ const SymbolBucket = require('../data/bucket/symbol_bucket');
 const LineBucket = require('../data/bucket/line_bucket');
 const FillBucket = require('../data/bucket/fill_bucket');
 const FillExtrusionBucket = require('../data/bucket/fill_extrusion_bucket');
-const { mapObject, values } = require('../util/object');
+const { mapObject } = require('../util/object');
 const warn = require('../util/warn');
 const assert = require('assert');
 const ImageAtlas = require('../render/image_atlas');
@@ -15,134 +15,118 @@ const GlyphAtlas = require('../render/glyph_atlas');
 const EvaluationParameters = require('../style/evaluation_parameters');
 const { OverscaledTileID } = require('./tile_id');
 
-class WorkerTile {
-  constructor(params) {
-    this.tileID = new OverscaledTileID(
-      params.tileID.overscaledZ,
-      params.tileID.wrap,
-      params.tileID.canonical.z,
-      params.tileID.canonical.x,
-      params.tileID.canonical.y
-    );
-    this.uid = params.uid;
-    this.zoom = params.zoom;
-    this.pixelRatio = params.pixelRatio;
-    this.tileSize = params.tileSize;
-    this.source = params.source;
-    this.overscaling = this.tileID.overscaleFactor();
-    this.showCollisionBoxes = params.showCollisionBoxes;
-    this.globalState = params.globalState;
-  }
+module.exports = makeWorkerTile;
 
-  async parse(data, layerIndex, resources) {
-    this.status = 'parsing';
-    this.data = data;
+async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
+  const tileID = createTileID(params);
 
-    this.collisionBoxArray = new CollisionBoxArray();
-    const sourceLayerCoder = dictionaryCoder(Object.keys(data.layers));
+  const overscaling = tileID.overscaleFactor();
+  const { uid, zoom, pixelRatio, source, showCollisionBoxes, globalState } = params;
 
-    const featureIndex = new FeatureIndex(this.tileID);
-    featureIndex.bucketLayerIDs = [];
+  const collisionBoxArray = new CollisionBoxArray();
+  const sourceLayerCoder = dictionaryCoder(Object.keys(vectorTile.layers));
 
-    const buckets = {};
+  const featureIndex = new FeatureIndex(tileID);
+  featureIndex.bucketLayerIDs = [];
 
-    const options = {
-      featureIndex,
-      iconDependencies: {},
-      patternDependencies: {},
-      glyphDependencies: {}
-    };
+  const buckets = new Map();
 
-    const layerFamilies = layerIndex.familiesBySource[this.source];
-    for (const sourceLayerId in layerFamilies) {
-      const sourceLayer = data.layers[sourceLayerId];
-      if (!sourceLayer) {
-        continue;
-      }
+  const options = {
+    featureIndex,
+    iconDependencies: {},
+    patternDependencies: {},
+    glyphDependencies: {}
+  };
 
-      if (sourceLayer.version === 1) {
-        warn.once(
-          `Vector tile source "${this.source}" layer "${sourceLayerId}" ` +
-            'does not use vector tile spec v2 and therefore may have some rendering errors.'
-        );
-      }
-
-      const sourceLayerIndex = sourceLayerCoder.encode(sourceLayerId);
-      const features = [];
-      for (let index = 0; index < sourceLayer.length; index++) {
-        const feature = sourceLayer.feature(index);
-        features.push({ feature, index, sourceLayerIndex });
-      }
-
-      for (const family of layerFamilies[sourceLayerId]) {
-        const layer = family[0];
-
-        assert(layer.source === this.source);
-        if (layer.minzoom && this.zoom < Math.floor(layer.minzoom)) continue;
-        if (layer.maxzoom && this.zoom >= layer.maxzoom) continue;
-        if (layer.visibility === 'none') continue;
-
-        recalculateLayers(family, this.zoom, this.globalState);
-
-        const bucket = (buckets[layer.id] = layer.createBucket({
-          index: featureIndex.bucketLayerIDs.length,
-          layers: family,
-          zoom: this.zoom,
-          pixelRatio: this.pixelRatio,
-          overscaling: this.overscaling,
-          collisionBoxArray: this.collisionBoxArray,
-          sourceLayerIndex: sourceLayerIndex,
-          sourceID: this.source,
-          globalState: this.globalState
-        }));
-
-        bucket.populate(features, options);
-        featureIndex.bucketLayerIDs.push(family.map(l => l.id));
-      }
+  const layerFamilies = layerIndex.familiesBySource[source] ?? {};
+  for (const [sourceLayerId, sourceLayerFamilies] of Object.entries(layerFamilies)) {
+    const sourceLayer = vectorTile.layers[sourceLayerId];
+    if (!sourceLayer) {
+      continue;
     }
 
-    const stacks = mapObject(options.glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
-    const icons = Object.keys(options.iconDependencies);
-    const patterns = Object.keys(options.patternDependencies);
-    const tasks = [
-      Object.keys(stacks).length ? resources.getGlyphs({ uid: this.uid, stacks }) : {},
-      icons.length ? resources.getImages({ icons }) : {},
-      patterns.length ? resources.getImages({ icons: patterns }) : {}
-    ];
-    const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
-    const glyphAtlas = new GlyphAtlas(glyphMap);
-    const imageAtlas = new ImageAtlas(iconMap, patternMap);
-
-    for (const key in buckets) {
-      const bucket = buckets[key];
-      if (bucket instanceof SymbolBucket) {
-        recalculateLayers(bucket.layers, this.zoom, this.globalState);
-        performSymbolLayout(
-          bucket,
-          glyphMap,
-          glyphAtlas.positions,
-          iconMap,
-          imageAtlas.iconPositions,
-          this.showCollisionBoxes
-        );
-      } else if (
-        bucket.hasPattern &&
-        (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
-      ) {
-        recalculateLayers(bucket.layers, this.zoom, this.globalState);
-        bucket.addFeatures(options, imageAtlas.patternPositions);
-      }
+    const sourceLayerIndex = sourceLayerCoder.encode(sourceLayerId);
+    const features = new Array(sourceLayer.length);
+    for (let index = 0; index < sourceLayer.length; index++) {
+      features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex };
     }
 
-    this.status = 'done';
-    return {
-      buckets: values(buckets).filter(b => !b.isEmpty()),
-      featureIndex,
-      collisionBoxArray: this.collisionBoxArray,
-      glyphAtlasImage: glyphAtlas.image,
-      imageAtlas
-    };
+    for (const family of sourceLayerFamilies) {
+      const layer = family[0];
+
+      if (layer.minzoom && zoom < Math.floor(layer.minzoom)) continue;
+      if (layer.maxzoom && zoom >= layer.maxzoom) continue;
+      if (layer.visibility === 'none') continue;
+
+      recalculateLayers(family, zoom, globalState);
+
+      const bucket = layer.createBucket({
+        index: featureIndex.bucketLayerIDs.length,
+        layers: family,
+        zoom,
+        pixelRatio,
+        overscaling,
+        collisionBoxArray,
+        sourceLayerIndex,
+        sourceID: source,
+        globalState
+      });
+      buckets.set(layer.id, bucket);
+      bucket.populate(features, options);
+      featureIndex.bucketLayerIDs.push(family.map(l => l.id));
+    }
   }
+
+  const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(uid, options, resources);
+  for (const [key, bucket] of buckets) {
+    if (bucket instanceof SymbolBucket) {
+      recalculateLayers(bucket.layers, zoom, globalState);
+      performSymbolLayout(
+        bucket,
+        glyphMap,
+        glyphAtlas.positions,
+        iconMap,
+        imageAtlas.iconPositions,
+        showCollisionBoxes
+      );
+    } else if (
+      bucket.hasPattern &&
+      (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
+    ) {
+      recalculateLayers(bucket.layers, zoom, globalState);
+      bucket.addFeatures(options, imageAtlas.patternPositions);
+    }
+  }
+
+  return {
+    buckets: [...buckets.values()].filter(b => !b.isEmpty()),
+    featureIndex,
+    collisionBoxArray,
+    glyphAtlasImage: glyphAtlas.image,
+    imageAtlas
+  };
+}
+
+async function makeAtlasses(uid, options, resources) {
+  const { glyphDependencies, patternDependencies, iconDependencies } = options;
+  const stacks = mapObject(glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
+  const icons = Object.keys(iconDependencies);
+  const patterns = Object.keys(patternDependencies);
+  const tasks = [
+    Object.keys(stacks).length ? resources.getGlyphs({ uid, stacks }) : {},
+    icons.length ? resources.getImages({ icons }) : {},
+    patterns.length ? resources.getImages({ icons: patterns }) : {}
+  ];
+  const [glyphMap, iconMap, patternMap] = await Promise.all(tasks);
+  const glyphAtlas = new GlyphAtlas(glyphMap);
+  const imageAtlas = new ImageAtlas(iconMap, patternMap);
+  return { glyphAtlas, imageAtlas, glyphMap, iconMap };
+}
+
+function createTileID({ tileID }) {
+  const { overscaledZ, wrap, canonical } = tileID;
+  const { x, y, z } = canonical;
+  return new OverscaledTileID(overscaledZ, wrap, z, x, y);
 }
 
 function recalculateLayers(layers, zoom, globalState) {
@@ -152,5 +136,3 @@ function recalculateLayers(layers, zoom, globalState) {
     layer.recalculate(parameters);
   }
 }
-
-module.exports = WorkerTile;

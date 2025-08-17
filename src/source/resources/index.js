@@ -3,9 +3,9 @@ const makeImages = require('./images');
 
 module.exports = { resources };
 
-function resources(actor, mapId) {
-  const glyphs = makeGlyphs({ actor, mapId });
-  const images = makeImages({ actor, mapId });
+function resources(opts) {
+  const glyphs = makeGlyphs(opts);
+  const images = makeImages(opts);
 
   return {
     getGlyphs,

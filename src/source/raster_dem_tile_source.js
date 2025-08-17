@@ -2,12 +2,11 @@ const browser = require('../util/browser');
 const loadImage = require('../util/loader/image');
 const { OverscaledTileID } = require('./tile_id');
 const RasterTileSource = require('./raster_tile_source');
-// ensure DEMData is registered for worker transfer on main thread:
-require('../data/dem_data');
+const DEMData = require('../data/dem_data');
 
 class RasterDEMTileSource extends RasterTileSource {
-  constructor(id, options, dispatcher, eventedParent) {
-    super(id, options, dispatcher, eventedParent);
+  constructor(id, options, eventedParent) {
+    super(id, options, eventedParent);
     this.type = 'raster-dem';
     this.maxzoom = 22;
     this._options = Object.assign({}, options);
@@ -48,7 +47,7 @@ class RasterDEMTileSource extends RasterTileSource {
           rawImageData,
           encoding: this.encoding
         };
-        const dem = await this.dispatcher.send('loadDEMTile', params);
+        const dem = await loadDEMTile(params);
         if (dem) {
           tile.dem = dem;
           tile.needsHillshadePrepare = true;
@@ -122,6 +121,11 @@ class RasterDEMTileSource extends RasterTileSource {
 
     tile.state = 'unloaded';
   }
+}
+
+// biome-ignore lint/suspicious/useAwait: thread
+async function loadDEMTile({ uid, rawImageData, encoding }) {
+  return new DEMData(uid, rawImageData, encoding);
 }
 
 module.exports = RasterDEMTileSource;

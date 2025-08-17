@@ -10,7 +10,7 @@ const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const browser = require('../../../src/util/browser');
 
 // Add a mocked source type for use in these tests
-function MockSourceType(id, sourceOptions, _dispatcher, eventedParent) {
+function MockSourceType(id, sourceOptions, eventedParent) {
   // allow tests to override mocked methods/properties by providing
   // them in the source definition object that's given to Source.create()
   class SourceMock extends Evented {
@@ -57,7 +57,7 @@ function createSourceCache(options, used) {
       },
       options
     ),
-    /* dispatcher */ {}
+    {}
   );
   sc.used = typeof used === 'boolean' ? used : true;
   return sc;

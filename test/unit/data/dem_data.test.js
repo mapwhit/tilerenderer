@@ -2,7 +2,6 @@ const test = require('node:test');
 const _window = require('../../util/window');
 const DEMData = require('../../../src/data/dem_data');
 const { RGBAImage } = require('../../../src/util/image');
-const { serialize, deserialize } = require('../../../src/util/transfer_registry');
 
 function createMockImage(height, width) {
   const pixels = new Uint8Array(height * width * 4);
@@ -142,36 +141,5 @@ test('DEMData.backfillBorder', async t => {
 
     dem0.backfillBorder(dem1, 1, -1);
     t.assert.ok(dem0.get(4, -1) === dem1.get(0, 3), 'backfills neighbor -1, 1');
-  });
-
-  await t.test('DEMData is correctly serialized', t => {
-    const imageData0 = createMockImage(4, 4);
-    const dem0 = new DEMData(0, imageData0);
-    const serialized = serialize(dem0);
-
-    t.assert.deepEqual(
-      serialized,
-      {
-        $name: 'DEMData',
-        uid: 0,
-        dim: 4,
-        stride: 6,
-        data: dem0.data
-      },
-      'serializes DEM'
-    );
-
-    const transferrables = [];
-    serialize(dem0, transferrables);
-    t.assert.deepEqual(new Int32Array(transferrables[0]), dem0.data, 'populates transferrables with correct data');
-  });
-
-  await t.test('DEMData is correctly deserialized', t => {
-    const imageData0 = createMockImage(4, 4);
-    const dem0 = new DEMData(0, imageData0);
-    const serialized = serialize(dem0);
-
-    const deserialized = deserialize(serialized);
-    t.assert.deepEqual(deserialized, dem0, 'deserializes serialized DEMData instance');
   });
 });

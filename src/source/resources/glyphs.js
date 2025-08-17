@@ -4,7 +4,7 @@ module.exports = glyphCache;
 
 const MAX_GLYPH_ID = 65535;
 
-function glyphCache({ actor, mapId, parseGlyphs = parseGlyphPBF }) {
+function glyphCache({ loadGlyphRange: loadGlyphRangeFromStyle, mapId, parseGlyphs = parseGlyphPBF }) {
   const entries = {};
 
   return {
@@ -56,7 +56,7 @@ function glyphCache({ actor, mapId, parseGlyphs = parseGlyphPBF }) {
   }
 
   async function loadGlyphRange(entry, stack, range) {
-    const promise = (entry.requests[range] ??= actor.send('loadGlyphRange', { stack, range }, mapId));
+    const promise = (entry.requests[range] ??= loadGlyphRangeFromStyle({ stack, range }));
     const data = await promise;
     delete entry.requests[range];
     entry.ranges[range] = true;

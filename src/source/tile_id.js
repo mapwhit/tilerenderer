@@ -1,7 +1,6 @@
 const { getTileBBox } = require('@mapbox/whoots-js');
 
 const assert = require('assert');
-const { register } = require('../util/transfer_registry');
 const Coordinate = require('../geo/coordinate');
 
 class CanonicalTileID {
@@ -139,9 +138,6 @@ function calculateKey(wrap, z, x, y) {
   const dim = 1 << z;
   return (dim * dim * wrap + dim * y + x) * 32 + z;
 }
-
-register('CanonicalTileID', CanonicalTileID);
-register('OverscaledTileID', OverscaledTileID, { omit: ['posMatrix'] });
 
 module.exports = {
   CanonicalTileID,

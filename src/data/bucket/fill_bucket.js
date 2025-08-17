@@ -8,7 +8,6 @@ const { default: earcut } = require('earcut');
 const classifyRings = require('../../util/classify_rings');
 const assert = require('assert');
 const EARCUT_MAX_RINGS = 500;
-const { register } = require('../../util/transfer_registry');
 const { hasPattern, addPatternDependencies } = require('./pattern_bucket_features');
 const loadGeometry = require('../load_geometry');
 const EvaluationParameters = require('../../style/evaluation_parameters');
@@ -170,7 +169,5 @@ class FillBucket {
     });
   }
 }
-
-register('FillBucket', FillBucket, { omit: ['layers', 'features'] });
 
 module.exports = FillBucket;

@@ -1,7 +1,5 @@
 const { default: Point } = require('@mapbox/point-geometry');
 
-const { register } = require('../util/transfer_registry');
-
 class Anchor extends Point {
   constructor(x, y, angle, segment) {
     super(x, y);
@@ -15,7 +13,5 @@ class Anchor extends Point {
     return new Anchor(this.x, this.y, this.angle, this.segment);
   }
 }
-
-register('Anchor', Anchor);
 
 module.exports = Anchor;

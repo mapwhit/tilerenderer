@@ -1,4 +1,1 @@
-const worker = require('./source/worker');
-
-/* global self */
-worker(self);
+/* intentionaly empty for now */
