@@ -39,13 +39,15 @@ class Style extends Evented {
     this.lineAtlas = new LineAtlas(256, 512);
     this.crossTileSymbolIndex = new CrossTileSymbolIndex();
 
-    this._layers = {};
-    this._order = [];
+    // insertion operations are done in the order of the layers in the style
+    this._layers = new Map();
     this.sourceCaches = {};
     this.zoomHistory = new ZoomHistory();
     this._loaded = false;
     this._globalState = {};
 
+    this._updatedLayers = new Map();
+    this._removedLayers = new Map();
     this._resetUpdates();
 
     const self = this;
@@ -73,8 +75,7 @@ class Style extends Evented {
         return;
       }
 
-      for (const layerId in this._layers) {
-        const layer = this._layers[layerId];
+      for (const layer of this._layers.values()) {
         if (layer.source === source.id) {
           this._validateLayer(layer);
         }
@@ -129,8 +130,7 @@ class Style extends Evented {
 
     const sourceIdsToReload = new Set();
 
-    for (const layerId in this._layers) {
-      const layer = this._layers[layerId];
+    for (const layer of this._layers.values()) {
       const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
       const paintAffectingGlobalStateRefs = layer.getPaintAffectingGlobalStateRefs();
 
@@ -191,16 +191,14 @@ class Style extends Evented {
 
     const layers = deref(this.stylesheet.layers);
 
-    this._order = layers.map(layer => layer.id);
-
-    this._layers = {};
+    this._layers.clear();
     for (let layer of layers) {
       layer = createStyleLayer(layer);
       layer.setEventedParent(this, { layer: { id: layer.id } });
-      this._layers[layer.id] = layer;
+      this._layers.set(layer.id, layer);
     }
 
-    this.workerState.setLayers(this.id, this._serializeLayers(this._order));
+    this.workerState.setLayers(this.id, this._layers);
 
     this.light = new Light(this.stylesheet.light);
 
@@ -247,10 +245,6 @@ class Style extends Evented {
     return true;
   }
 
-  _serializeLayers(ids) {
-    return ids.map(id => this._layers[id].serialize());
-  }
-
   hasTransitions() {
     if (this.light?.hasTransition()) {
       return true;
@@ -262,8 +256,8 @@ class Style extends Evented {
       }
     }
 
-    for (const id in this._layers) {
-      if (this._layers[id].hasTransition()) {
+    for (const layer of this._layers.values()) {
+      if (layer.hasTransition()) {
         return true;
       }
     }
@@ -286,11 +280,8 @@ class Style extends Evented {
     }
 
     if (this._changed) {
-      const updatedIds = Object.keys(this._updatedLayers);
-      const removedIds = Object.keys(this._removedLayers);
-
-      if (updatedIds.length || removedIds.length) {
-        this._updateWorkerLayers(updatedIds, removedIds);
+      if (this._updatedLayers.size || this._removedLayers.size) {
+        this._updateWorkerLayers();
       }
       for (const id in this._updatedSources) {
         const action = this._updatedSources[id];
@@ -303,7 +294,7 @@ class Style extends Evented {
       }
 
       for (const id in this._updatedPaintProps) {
-        this._layers[id].updateTransitions(parameters);
+        this._layers.get(id).updateTransitions(parameters);
       }
 
       this.light.updateTransitions(parameters);
@@ -317,9 +308,7 @@ class Style extends Evented {
       this.sourceCaches[sourceId].used = false;
     }
 
-    for (const layerId of this._order) {
-      const layer = this._layers[layerId];
-
+    for (const layer of this._layers.values()) {
       layer.recalculate(parameters);
       if (!layer.isHidden(parameters.zoom) && layer.source) {
         this.sourceCaches[layer.source].used = true;
@@ -330,18 +319,15 @@ class Style extends Evented {
     this.z = parameters.zoom;
   }
 
-  _updateWorkerLayers(updatedIds, removedIds) {
-    this.workerState.updateLayers(this.id, {
-      layers: this._serializeLayers(updatedIds),
-      removedIds: removedIds
-    });
+  _updateWorkerLayers() {
+    this.workerState.updateLayers(this.id);
   }
 
   _resetUpdates() {
     this._changed = false;
 
-    this._updatedLayers = {};
-    this._removedLayers = {};
+    this._updatedLayers.clear();
+    this._removedLayers.clear();
 
     this._updatedSources = {};
     this._updatedPaintProps = {};
@@ -411,8 +397,8 @@ class Style extends Evented {
     if (this.sourceCaches[id] === undefined) {
       throw new Error('There is no source with this ID');
     }
-    for (const layerId in this._layers) {
-      if (this._layers[layerId].source === id) {
+    for (const [layerId, layer] of this._layers) {
+      if (layer.source === id) {
         return this.fire(
           new ErrorEvent(new Error(`Source "${id}" cannot be removed while layer "${layerId}" is using it.`))
         );
@@ -455,6 +441,35 @@ class Style extends Evented {
     return this.sourceCaches[id]?.getSource();
   }
 
+  _insertLayer(id, layer, before, move) {
+    if (!before) {
+      if (move) {
+        this._layers.delete(id);
+      }
+      this._layers.set(id, layer);
+      this._layerOrderChanged = true;
+      return;
+    }
+    let beforeFound;
+    const _layers = new Map();
+    for (const [key, value] of this._layers.entries()) {
+      if (key === before) {
+        _layers.set(id, layer);
+        beforeFound = true;
+      }
+      if (move && key === id) {
+        continue;
+      }
+      _layers.set(key, value);
+    }
+    if (!beforeFound) {
+      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
+      return;
+    }
+    this._layers = _layers;
+    this._layerOrderChanged = true;
+  }
+
   /**
    * Add a layer to the map style. The layer will be inserted before the layer with
    * ID `before`, or appended if `before` is omitted.
@@ -481,18 +496,9 @@ class Style extends Evented {
 
     layer.setEventedParent(this, { layer: { id: id } });
 
-    const index = before ? this._order.indexOf(before) : this._order.length;
-    if (before && index === -1) {
-      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
-      return;
-    }
+    this._insertLayer(id, layer, before);
 
-    this._order.splice(index, 0, id);
-    this._layerOrderChanged = true;
-
-    this._layers[id] = layer;
-
-    if (this._removedLayers[id] && layer.source) {
+    if (this._removedLayers.has(id) && layer.source) {
       // If, in the current batch, we have already removed this layer
       // and we are now re-adding it with a different `type`, then we
       // need to clear (rather than just reload) the underyling source's
@@ -500,8 +506,8 @@ class Style extends Evented {
       // buffers that are set up for the _previous_ version of this
       // layer, causing, e.g.:
       // https://github.com/mapbox/mapbox-gl-js/issues/3633
-      const removed = this._removedLayers[id];
-      delete this._removedLayers[id];
+      const removed = this._removedLayers.get(id);
+      this._removedLayers.delete(id);
       if (removed.type !== layer.type) {
         this._updatedSources[layer.source] = 'clear';
       } else {
@@ -522,7 +528,7 @@ class Style extends Evented {
     this._checkLoaded();
     this._changed = true;
 
-    const layer = this._layers[id];
+    const layer = this._layers.get(id);
     if (!layer) {
       this.fire(new ErrorEvent(new Error(`The layer '${id}' does not exist in the map's style and cannot be moved.`)));
       return;
@@ -532,17 +538,7 @@ class Style extends Evented {
       return;
     }
 
-    const index = this._order.indexOf(id);
-    this._order.splice(index, 1);
-
-    const newIndex = before ? this._order.indexOf(before) : this._order.length;
-    if (before && newIndex === -1) {
-      this.fire(new ErrorEvent(new Error(`Layer with id "${before}" does not exist on this map.`)));
-      return;
-    }
-    this._order.splice(newIndex, 0, id);
-
-    this._layerOrderChanged = true;
+    this._insertLayer(id, layer, before, true);
   }
 
   /**
@@ -556,7 +552,7 @@ class Style extends Evented {
   removeLayer(id) {
     this._checkLoaded();
 
-    const layer = this._layers[id];
+    const layer = this._layers.get(id);
     if (!layer) {
       this.fire(
         new ErrorEvent(new Error(`The layer '${id}' does not exist in the map's style and cannot be removed.`))
@@ -566,14 +562,11 @@ class Style extends Evented {
 
     layer.setEventedParent(null);
 
-    const index = this._order.indexOf(id);
-    this._order.splice(index, 1);
-
     this._layerOrderChanged = true;
     this._changed = true;
-    this._removedLayers[id] = layer;
-    delete this._layers[id];
-    delete this._updatedLayers[id];
+    this._removedLayers.set(id, layer);
+    this._layers.delete(id);
+    this._updatedLayers.delete(id);
     delete this._updatedPaintProps[id];
   }
 
@@ -584,7 +577,7 @@ class Style extends Evented {
    * @returns {?Object} a layer, if one with the given `id` exists
    */
   getLayer(id) {
-    return this._layers[id];
+    return this._layers.get(id);
   }
 
   setLayerZoomRange(layerId, minzoom, maxzoom) {
@@ -763,14 +756,14 @@ class Style extends Evented {
         glyphs: this.stylesheet.glyphs,
         transition: this.stylesheet.transition,
         sources: mapObject(this.sourceCaches, source => source.serialize()),
-        layers: this._order.map(id => this._layers[id].serialize())
+        layers: Array.from(this._layers.values()).map(layer => layer.serialize())
       },
       value => value !== undefined
     );
   }
 
   _updateLayer(layer) {
-    this._updatedLayers[layer.id] = true;
+    this._updatedLayers.set(layer.id, layer);
     if (layer.source && !this._updatedSources[layer.source]) {
       this._updatedSources[layer.source] = 'reload';
       this.sourceCaches[layer.source].pause();
@@ -781,12 +774,13 @@ class Style extends Evented {
   _flattenAndSortRenderedFeatures(sourceResults) {
     const features = [];
     const features3D = [];
-    for (let l = this._order.length - 1; l >= 0; l--) {
-      const layerId = this._order[l];
+    const layers = Array.from(this._layers.values());
+    for (let l = layers.length - 1; l >= 0; l--) {
+      const layer = layers[l];
       for (const sourceResult of sourceResults) {
-        const layerFeatures = sourceResult[layerId];
+        const layerFeatures = sourceResult[layer.id];
         if (layerFeatures) {
-          if (this._layers[layerId].type === 'fill-extrusion') {
+          if (layer.type === 'fill-extrusion') {
             for (const featureWrapper of layerFeatures) {
               features3D.push(featureWrapper);
             }
@@ -818,7 +812,7 @@ class Style extends Evented {
         return [];
       }
       for (const layerId of params.layers) {
-        const layer = this._layers[layerId];
+        const layer = this._layers.get(layerId);
         if (layer) {
           includedSources[layer.source] = true;
         }
@@ -921,26 +915,25 @@ class Style extends Evented {
 
     const layerTiles = {};
 
-    for (const layerID of this._order) {
-      const styleLayer = this._layers[layerID];
-      if (styleLayer.type !== 'symbol') continue;
+    for (const layer of this._layers.values()) {
+      if (layer.type !== 'symbol') continue;
 
-      if (!layerTiles[styleLayer.source]) {
-        const sourceCache = this.sourceCaches[styleLayer.source];
-        layerTiles[styleLayer.source] = sourceCache
+      if (!layerTiles[layer.source]) {
+        const sourceCache = this.sourceCaches[layer.source];
+        layerTiles[layer.source] = sourceCache
           .getRenderableIds(true)
           .map(id => sourceCache.getTileByID(id))
           .sort((a, b) => b.tileID.overscaledZ - a.tileID.overscaledZ || (a.tileID.isLessThan(b.tileID) ? -1 : 1));
       }
 
       const layerBucketsChanged = this.crossTileSymbolIndex.addLayer(
-        styleLayer,
-        layerTiles[styleLayer.source],
+        layer,
+        layerTiles[layer.source],
         transform.center.lng
       );
       symbolBucketsChanged = symbolBucketsChanged || layerBucketsChanged;
     }
-    this.crossTileSymbolIndex.pruneUnusedLayers(this._order);
+    this.crossTileSymbolIndex.pruneUnusedLayers(this._layers.keys());
 
     // Anything that changes our "in progress" layer and tile indices requires us
     // to start over. When we start over, we do a full placement instead of incremental
@@ -955,7 +948,7 @@ class Style extends Evented {
     ) {
       this.pauseablePlacement = new PauseablePlacement(
         transform,
-        this._order,
+        this._layers.size - 1,
         forceFullPlacement,
         showCollisionBoxes,
         fadeDuration,
@@ -971,7 +964,7 @@ class Style extends Evented {
       // render frame
       this.placement.setStale();
     } else {
-      this.pauseablePlacement.continuePlacement(this._order, this._layers, layerTiles);
+      this.pauseablePlacement.continuePlacement(Array.from(this._layers.values()), layerTiles);
 
       if (this.pauseablePlacement.isDone()) {
         this.placement = this.pauseablePlacement.commit(this.placement, browser.now());
@@ -987,10 +980,9 @@ class Style extends Evented {
     }
 
     if (placementCommitted || symbolBucketsChanged) {
-      for (const layerID of this._order) {
-        const styleLayer = this._layers[layerID];
-        if (styleLayer.type !== 'symbol') continue;
-        this.placement.updateLayerOpacities(styleLayer, layerTiles[styleLayer.source]);
+      for (const layer of this._layers.values()) {
+        if (layer.type !== 'symbol') continue;
+        this.placement.updateLayerOpacities(layer, layerTiles[layer.source]);
       }
     }
 

@@ -260,12 +260,9 @@ class CrossTileSymbolIndex {
   }
 
   pruneUnusedLayers(usedLayers) {
-    const usedLayerMap = {};
-    usedLayers.forEach(usedLayer => {
-      usedLayerMap[usedLayer] = true;
-    });
+    const usedLayersSet = new Set(usedLayers);
     for (const layerId in this.layerIndexes) {
-      if (!usedLayerMap[layerId]) {
+      if (!usedLayersSet.has(layerId)) {
         delete this.layerIndexes[layerId];
       }
     }

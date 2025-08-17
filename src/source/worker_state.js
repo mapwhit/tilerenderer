@@ -22,8 +22,8 @@ class WorkerState {
     this.getLayerIndex(mapId).replace(layers);
   }
 
-  updateLayers(mapId, params) {
-    this.getLayerIndex(mapId).update(params.layers, params.removedIds);
+  updateLayers(mapId) {
+    this.getLayerIndex(mapId).update();
   }
 
   getLayerIndex(mapId) {
