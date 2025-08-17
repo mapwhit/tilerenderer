@@ -46,10 +46,10 @@ class VectorTileWorkerSource {
     if (!response) {
       return;
     }
-    const { vectorTile, rawData } = response;
+    const { vectorTile } = response;
     const result = await makeWorkerTile(params, vectorTile, this.layerIndex, this.resources);
-    if (rawData) {
-      result.rawTileData = rawData;
+    if (vectorTile) {
+      result.vectorTile = vectorTile;
     }
     return result;
   }

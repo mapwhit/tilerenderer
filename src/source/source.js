@@ -47,8 +47,12 @@ const sourceTypes = {
  * with that type's requirements.
  * @returns {Source}
  */
-function create(id, specification, eventedParent, { resources, layerIndex }) {
-  const source = new sourceTypes[specification.type](id, specification, eventedParent, { resources, layerIndex });
+function create(id, specification, eventedParent, { resources, layerIndex, showTileBoundaries }) {
+  const source = new sourceTypes[specification.type](id, specification, eventedParent, {
+    resources,
+    layerIndex,
+    showTileBoundaries
+  });
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;
