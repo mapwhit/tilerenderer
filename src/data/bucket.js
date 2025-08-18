@@ -19,25 +19,37 @@
 
 // style may have changed between creating a bucket when tile was loaded and rendering it
 function updateBuckets(buckets, style) {
+  if (!style._changed) {
+    return;
+  }
   // Guard against the case where the map's style has been set to null while
   // this bucket has been parsing.
   if (!style) {
+    for (const bucket of buckets.values()) {
+      bucket.destroy();
+    }
     buckets.clear();
     return;
   }
 
-  for (const [, bucket] of buckets) {
+  const updatedAlready = new Set();
+  for (const [id, bucket] of buckets) {
+    if (updatedAlready.has(id)) {
+      continue;
+    }
+    updatedAlready.add(id);
+
     const layers = bucket.layerIds.map(id => style.getLayer(id)).filter(Boolean);
 
     if (layers.length === 0) {
-      delete bucket.layers;
-      delete bucket.stateDependentLayers;
+      bucket.destroy();
+      buckets.delete(id);
       continue;
     }
 
     // swap out the layers in the bucket with the current style layers
     bucket.layers = layers;
-    bucket.stateDependentLayers = layers.filter(l => l.isStateDependent());
+    bucket.stateDependentLayers = layers.filter(layer => layer.isStateDependent());
   }
 }
 

@@ -58,7 +58,7 @@ class Tile {
    * @param painter
    * @returns {undefined}
    */
-  loadVectorData(data, painter, justReloaded) {
+  loadVectorData(data, painter) {
     if (this.hasData()) {
       this.unloadVectorData();
     }
@@ -88,32 +88,11 @@ class Tile {
     }
     this.collisionBoxArray = data.collisionBoxArray;
 
-    // TODO: update buckets only when style has changed
     updateBuckets(data.buckets, painter.style);
 
-    this.buckets.clear();
-    for (const bucket of data.buckets.values()) {
-      for (const layer of bucket.layers) {
-        this.buckets.set(layer.id, bucket);
-      }
-    }
-
-    this.hasSymbolBuckets = false;
-    for (const bucket of this.buckets.values()) {
-      if (bucket instanceof SymbolBucket) {
-        this.hasSymbolBuckets = true;
-        if (justReloaded) {
-          bucket.justReloaded = true;
-        } else {
-          break;
-        }
-      }
-    }
-
-    this.queryPadding = 0;
-    for (const [id, bucket] of this.buckets) {
-      this.queryPadding = Math.max(this.queryPadding, painter.style.getLayer(id).queryRadius(bucket));
-    }
+    this.buckets = data.buckets;
+    this.hasSymbolBuckets = data.hasSymbolBuckets;
+    this.queryPadding = data.queryPadding;
 
     if (data.imageAtlas) {
       this.imageAtlas = data.imageAtlas;
