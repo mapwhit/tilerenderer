@@ -4,7 +4,9 @@ const { Evented } = require('@mapwhit/events');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
 const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 const featureFilter = require('../style-spec/feature_filter');
+const createKey = require('../util/key');
 
+const keyProperties = require('../style-spec/util/ref_properties');
 const TRANSITION_SUFFIX = '-transition';
 
 /**
@@ -14,6 +16,8 @@ const TRANSITION_SUFFIX = '-transition';
  * `this._paint` - internal representation of paint properties necessary to calculate expressions
  */
 class StyleLayer extends Evented {
+  #key;
+
   constructor(layer, properties) {
     super();
 
@@ -52,8 +56,24 @@ class StyleLayer extends Evented {
   }
 
   setFilter(filter) {
+    this.#key = undefined;
     this.filter = filter;
     this._featureFilter = featureFilter(filter);
+  }
+
+  _setZoomRange(minzoom, maxzoom) {
+    if (this.minzoom === minzoom && this.maxzoom === maxzoom) {
+      return;
+    }
+    if (minzoom != null) {
+      this.#key = undefined;
+      this.minzoom = minzoom;
+    }
+    if (maxzoom != null) {
+      this.#key = undefined;
+      this.maxzoom = maxzoom;
+    }
+    return true;
   }
 
   getCrossfadeParameters() {
@@ -117,6 +137,7 @@ class StyleLayer extends Evented {
   }
 
   setLayoutProperty(name, value) {
+    this.#key = undefined;
     this.layout[name] = value;
     if (name === 'visibility') {
       this.visibility = value === 'none' ? value : 'visible';
@@ -189,6 +210,13 @@ class StyleLayer extends Evented {
     }
 
     this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
+  }
+
+  get key() {
+    if (!this.#key) {
+      this.#key = createKey(keyProperties, this);
+    }
+    return this.#key;
   }
 
   serialize() {

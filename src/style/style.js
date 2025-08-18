@@ -588,15 +588,9 @@ class Style extends Evented {
       return;
     }
 
-    if (layer.minzoom === minzoom && layer.maxzoom === maxzoom) return;
-
-    if (minzoom != null) {
-      layer.minzoom = minzoom;
+    if (layer._setZoomRange(minzoom, maxzoom)) {
+      this._updateLayer(layer);
     }
-    if (maxzoom != null) {
-      layer.maxzoom = maxzoom;
-    }
-    this._updateLayer(layer);
   }
 
   setFilter(layerId, filter) {
