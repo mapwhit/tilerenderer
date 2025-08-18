@@ -251,21 +251,6 @@ class StyleLayer extends Evented {
     }
     return false;
   }
-
-  get layoutObj() {
-    if (!this._unevaluatedLayout) {
-      return undefined;
-    }
-    const { _values } = this._unevaluatedLayout;
-    const result = {};
-    for (const property of Object.keys(_values)) {
-      const value = _values[property].value;
-      if (value !== undefined) {
-        result[property] = value;
-      }
-    }
-    return result;
-  }
 }
 
 module.exports = StyleLayer;
