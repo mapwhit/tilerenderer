@@ -21,7 +21,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   const tileID = createTileID(params);
 
   const overscaling = tileID.overscaleFactor();
-  const { uid, zoom, pixelRatio, source, showCollisionBoxes, globalState } = params;
+  const { uid, zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
 
   const collisionBoxArray = new CollisionBoxArray();
   const sourceLayerCoder = dictionaryCoder(Object.keys(vectorTile.layers));
@@ -29,7 +29,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   const featureIndex = new FeatureIndex(tileID);
   featureIndex.bucketLayerIDs = [];
 
-  const buckets = new Map();
+  const uniqueBuckets = new Map();
 
   const options = {
     featureIndex,
@@ -51,18 +51,18 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
       features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex };
     }
 
-    for (const family of sourceLayerFamilies.values()) {
-      const layer = family[0];
+    for (const layers of sourceLayerFamilies.values()) {
+      const layer = layers[0];
 
       if (layer.minzoom && zoom < Math.floor(layer.minzoom)) continue;
       if (layer.maxzoom && zoom >= layer.maxzoom) continue;
       if (layer.visibility === 'none') continue;
 
-      recalculateLayers(family, zoom, globalState);
+      recalculateLayers(layers, zoom, globalState);
 
       const bucket = layer.createBucket({
         index: featureIndex.bucketLayerIDs.length,
-        layers: family,
+        layers,
         zoom,
         pixelRatio,
         overscaling,
@@ -71,15 +71,19 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
         sourceID: source,
         globalState
       });
-      buckets.set(layer.id, bucket);
+      uniqueBuckets.set(layer.id, bucket);
       bucket.populate(features, options);
-      featureIndex.bucketLayerIDs.push(family.map(l => l.id));
+      featureIndex.bucketLayerIDs.push(layers.map(l => l.id));
     }
   }
 
+  const buckets = new Map();
   const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(uid, options, resources);
-  for (const [key, bucket] of buckets) {
+  let hasSymbolBuckets = false;
+  let queryPadding = 0;
+  for (const bucket of uniqueBuckets.values()) {
     if (bucket instanceof SymbolBucket) {
+      hasSymbolBuckets = true;
       recalculateLayers(bucket.layers, zoom, globalState);
       performSymbolLayout(
         bucket,
@@ -89,6 +93,9 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
         imageAtlas.iconPositions,
         showCollisionBoxes
       );
+      if (justReloaded) {
+        bucket.justReloaded = true;
+      }
     } else if (
       bucket.hasPattern &&
       (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
@@ -96,19 +103,29 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
       recalculateLayers(bucket.layers, zoom, globalState);
       bucket.addFeatures(options, imageAtlas.patternPositions);
     }
+    if (bucket.isEmpty()) {
+      continue; // Skip empty buckets
+    }
+    bucket.stateDependentLayers = [];
+    for (const layer of bucket.layers) {
+      if (painter?.style) {
+        queryPadding = Math.max(queryPadding, painter.style.getLayer(layer.id).queryRadius(bucket));
+      }
+      if (layer.isStateDependent()) {
+        bucket.stateDependentLayers.push(layer);
+      }
+      buckets.set(layer.id, bucket);
+    }
   }
 
-  buckets.forEach((bucket, id, map) => {
-    if (bucket.isEmpty()) {
-      map.delete(id);
-    }
-  });
   return {
     buckets,
     featureIndex,
     collisionBoxArray,
     glyphAtlasImage: glyphAtlas.image,
-    imageAtlas
+    imageAtlas,
+    hasSymbolBuckets,
+    queryPadding
   };
 }
 

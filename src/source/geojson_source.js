@@ -183,14 +183,15 @@ class GeoJSONSource extends Evented {
       source: this.id,
       pixelRatio: browser.devicePixelRatio,
       showCollisionBoxes: this.map.showCollisionBoxes,
-      globalState: this.map.getGlobalState()
+      globalState: this.map.getGlobalState(),
+      justReloaded: tile.workerID != null,
+      painter: this.map.painter
     };
 
-    const justReloaded = tile.workerID != null;
     tile.workerID ??= true;
     const data = await this.#worker.loadTile(params).finally(() => tile.unloadVectorData());
     if (!tile.aborted) {
-      tile.loadVectorData(data, this.map.painter, justReloaded);
+      tile.loadVectorData(data, this.map.painter);
     }
   }
 

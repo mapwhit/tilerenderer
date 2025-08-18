@@ -96,7 +96,8 @@ class VectorTileSource extends Evented {
         source: this.id,
         pixelRatio: browser.devicePixelRatio,
         showCollisionBoxes: this.map.showCollisionBoxes,
-        globalState: this.map.getGlobalState()
+        globalState: this.map.getGlobalState(),
+        painter: this.map.painter
       };
       tile.workerID ??= true;
       const data = await this.#worker.loadTile(params);
