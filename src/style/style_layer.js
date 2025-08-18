@@ -6,7 +6,7 @@ const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 const featureFilter = require('../style-spec/feature_filter');
 const createKey = require('../util/key');
 
-const keyProperties = require('../style-spec/util/ref_properties');
+const keyProperties = ['type', 'minzoom', 'maxzoom', 'filter', 'layout'];
 const TRANSITION_SUFFIX = '-transition';
 
 /**
@@ -32,7 +32,7 @@ class StyleLayer extends Evented {
 
     if (layer.type !== 'background') {
       this.source = layer.source;
-      this['source-layer'] = this.sourceLayer = layer['source-layer'];
+      this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
       this._featureFilter = featureFilter(layer.filter);
     }

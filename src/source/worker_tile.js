@@ -38,8 +38,8 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
     glyphDependencies: {}
   };
 
-  const layerFamilies = layerIndex.familiesBySource[source] ?? {};
-  for (const [sourceLayerId, sourceLayerFamilies] of Object.entries(layerFamilies)) {
+  const layerFamilies = layerIndex.familiesBySource.get(source) ?? new Map();
+  for (const [sourceLayerId, sourceLayerFamilies] of layerFamilies) {
     const sourceLayer = vectorTile.layers[sourceLayerId];
     if (!sourceLayer) {
       continue;
@@ -51,7 +51,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
       features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex };
     }
 
-    for (const family of sourceLayerFamilies) {
+    for (const family of sourceLayerFamilies.values()) {
       const layer = family[0];
 
       if (layer.minzoom && zoom < Math.floor(layer.minzoom)) continue;
