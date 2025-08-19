@@ -78,7 +78,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   }
 
   const buckets = new Map();
-  const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(uid, options, resources);
+  const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(options, resources);
   let hasSymbolBuckets = false;
   let queryPadding = 0;
   for (const bucket of uniqueBuckets.values()) {
@@ -129,13 +129,12 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   };
 }
 
-async function makeAtlasses(uid, options, resources) {
-  const { glyphDependencies, patternDependencies, iconDependencies } = options;
+async function makeAtlasses({ glyphDependencies, patternDependencies, iconDependencies }, resources) {
   const stacks = mapObject(glyphDependencies, glyphs => Object.keys(glyphs).map(Number));
   const icons = Object.keys(iconDependencies);
   const patterns = Object.keys(patternDependencies);
   const tasks = [
-    Object.keys(stacks).length ? resources.getGlyphs({ uid, stacks }) : {},
+    Object.keys(stacks).length ? resources.getGlyphs({ stacks }) : {},
     icons.length ? resources.getImages({ icons }) : {},
     patterns.length ? resources.getImages({ icons: patterns }) : {}
   ];

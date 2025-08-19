@@ -4,7 +4,7 @@ module.exports = glyphCache;
 
 const MAX_GLYPH_ID = 65535;
 
-function glyphCache({ loadGlyphRange: loadGlyphRangeFromStyle, mapId, parseGlyphs = parseGlyphPBF }) {
+function glyphCache({ loadGlyphRange: loadGlyphRangeFromStyle, parseGlyphs = parseGlyphPBF }) {
   const entries = {};
 
   return {

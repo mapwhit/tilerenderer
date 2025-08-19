@@ -69,9 +69,8 @@ class ImageManager {
     for (const id of ids) {
       const image = this.images[id];
       if (image) {
-        // Clone the image so that our own copy of its ArrayBuffer doesn't get transferred.
         response[id] = {
-          data: image.data.clone(),
+          data: image.data,
           pixelRatio: image.pixelRatio,
           sdf: image.sdf
         };

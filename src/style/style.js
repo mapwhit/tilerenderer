@@ -993,13 +993,11 @@ class Style extends Evented {
   }
 
   // Callbacks from web workers
-  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
-  async getImages({ icons }) {
+  getImages({ icons }) {
     return this.imageManager.getImages(icons);
   }
 
-  // biome-ignore lint/suspicious/useAwait: FIXME code expect Promise
-  async loadGlyphRange({ stack, range }) {
+  loadGlyphRange({ stack, range }) {
     return this.glyphManager.loadGlyphRange(stack, range);
   }
 }
