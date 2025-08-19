@@ -27,20 +27,14 @@ build/min/package.json: package.json | $$(@D)/.dir
 
 GLSL = $(wildcard src/shaders/*.glsl)
 
-build/min/src/shaders/%.glsl.txt: src/shaders/%.glsl  | $$(@D)/.dir meta/node_modules
-	$(NODE_BIN)/webpack-glsl-minify \
-	    --preserveUniforms=true \
-	    --preserveDefines=true \
-	    --preserveVariables=true \
-		--output=sourceOnly \
+build/min/src/shaders/%.glsl.js: src/shaders/%.glsl  | $$(@D)/.dir meta/node_modules
+	$(NODE_BIN)/glsl-minify \
+	    --preserveUniforms \
+	    --preserveDefines \
+	    --preserveVariables \
+		--output=source \
 		--outDir=build/min \
-		--ext=.txt \
 		$<
-
-%.glsl.js: %.glsl.txt
-	printf "module.exports=String.raw\`" > $@
-	cat $< >> $@
-	echo "\`" >> $@
 
 PREBUILD = \
 	build/min/package.json \
