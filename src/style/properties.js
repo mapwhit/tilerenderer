@@ -406,7 +406,7 @@ class PossiblyEvaluatedPropertyValue {
  * in a way that allows flow to know which of these two cases applies for any given property name, and if you attempt
  * to use a `PossiblyEvaluatedPropertyValue` as if it was a scalar, or vice versa, you will get a type error. (However,
  * there's at least one case in which flow fails to produce a type error that you should be aware of: in a context such
- * as `layer.paint.get('foo-opacity') === 0`, if `foo-opacity` is data-driven, than the left-hand side is of type
+ * as `layer._paint.get('foo-opacity') === 0`, if `foo-opacity` is data-driven, than the left-hand side is of type
  * `PossiblyEvaluatedPropertyValue<number>`, but flow will not complain about comparing this to a number using `===`.
  * See https://github.com/facebook/flow/issues/2359.)
  *

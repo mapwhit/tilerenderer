@@ -26,7 +26,7 @@ const murmur3 = require('murmurhash-js');
 //   5.  For composite `*-size` expressions: two zoom levels of curve stops that "cover" the zoom level of the
 //       bucket. These go into a vertex buffer and are used by the shader to interpolate the size at render time.
 //
-// (1) and (2) are stored in `bucket.layers[0].layout`. The remainder are below.
+// (1) and (2) are stored in `bucket.layers[0]._layout`. The remainder are below.
 //
 
 function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePositions, showCollisionBoxes) {
@@ -37,7 +37,7 @@ function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePo
   bucket.compareText = {};
   bucket.iconsNeedLinear = false;
 
-  const layout = bucket.layers[0].layout;
+  const layout = bucket.layers[0]._layout;
   const unevaluatedLayoutValues = bucket.layers[0]._unevaluatedLayout._values;
 
   const sizes = {};
@@ -172,7 +172,7 @@ function addFeature(bucket, feature, shapedTextOrientations, shapedIcon, glyphPo
     textMaxSize = layoutTextSize;
   }
 
-  const layout = bucket.layers[0].layout;
+  const layout = bucket.layers[0]._layout;
   const textOffset = layout.get('text-offset').evaluate(feature, {});
   const iconOffset = layout.get('icon-offset').evaluate(feature, {});
 
@@ -301,7 +301,7 @@ function addTextVertices(
   let textSizeData = null;
 
   if (sizeData.functionType === 'source') {
-    textSizeData = [10 * layer.layout.get('text-size').evaluate(feature, {})];
+    textSizeData = [10 * layer._layout.get('text-size').evaluate(feature, {})];
   } else if (sizeData.functionType === 'composite') {
     textSizeData = [
       10 * sizes.compositeTextSizes[0].evaluate(feature, {}),
@@ -370,7 +370,7 @@ function addSymbol(
   if (shapedTextOrientations.horizontal) {
     // As a collision approximation, we can use either the vertical or the horizontal version of the feature
     // We're counting on the two versions having similar dimensions
-    const textRotate = layer.layout.get('text-rotate').evaluate(feature, {});
+    const textRotate = layer._layout.get('text-rotate').evaluate(feature, {});
     textCollisionFeature = new CollisionFeature(
       collisionBoxArray,
       line,
@@ -430,7 +430,7 @@ function addSymbol(
       shapedTextOrientations.horizontal,
       feature
     );
-    const iconRotate = layer.layout.get('icon-rotate').evaluate(feature, {});
+    const iconRotate = layer._layout.get('icon-rotate').evaluate(feature, {});
     iconCollisionFeature = new CollisionFeature(
       collisionBoxArray,
       line,
@@ -452,7 +452,7 @@ function addSymbol(
     let iconSizeData = null;
 
     if (sizeData.functionType === 'source') {
-      iconSizeData = [10 * layer.layout.get('icon-size').evaluate(feature, {})];
+      iconSizeData = [10 * layer._layout.get('icon-size').evaluate(feature, {})];
     } else if (sizeData.functionType === 'composite') {
       iconSizeData = [
         10 * sizes.compositeIconSizes[0].evaluate(feature, {}),

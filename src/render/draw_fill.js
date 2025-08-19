@@ -11,8 +11,8 @@ const {
 module.exports = drawFill;
 
 function drawFill(painter, sourceCache, layer, coords) {
-  const color = layer.paint.get('fill-color');
-  const opacity = layer.paint.get('fill-opacity');
+  const color = layer._paint.get('fill-color');
+  const opacity = layer._paint.get('fill-opacity');
 
   if (opacity.constantOr(1) === 0) {
     return;
@@ -20,7 +20,7 @@ function drawFill(painter, sourceCache, layer, coords) {
 
   const colorMode = painter.colorModeForRenderPass();
 
-  const pattern = layer.paint.get('fill-pattern');
+  const pattern = layer._paint.get('fill-pattern');
   const pass =
     painter.opaquePassEnabledForLayer() &&
     !pattern.constantOr(1) &&
@@ -39,7 +39,7 @@ function drawFill(painter, sourceCache, layer, coords) {
   }
 
   // Draw stroke
-  if (painter.renderPass === 'translucent' && layer.paint.get('fill-antialias')) {
+  if (painter.renderPass === 'translucent' && layer._paint.get('fill-antialias')) {
     // If we defined a different color for the fill outline, we are
     // going to ignore the bits in 0x07 and just care about the global
     // clipping mask.
@@ -59,7 +59,7 @@ function drawFill(painter, sourceCache, layer, coords) {
 function drawFillTiles(painter, sourceCache, layer, coords, depthMode, colorMode, isOutline) {
   const gl = painter.context.gl;
 
-  const patternProperty = layer.paint.get('fill-pattern');
+  const patternProperty = layer._paint.get('fill-pattern');
   const image = patternProperty?.constantOr(1);
   const crossfade = layer.getCrossfadeParameters();
 
@@ -103,8 +103,8 @@ function drawFillTiles(painter, sourceCache, layer, coords, depthMode, colorMode
     const tileMatrix = painter.translatePosMatrix(
       coord.posMatrix,
       tile,
-      layer.paint.get('fill-translate'),
-      layer.paint.get('fill-translate-anchor')
+      layer._paint.get('fill-translate'),
+      layer._paint.get('fill-translate-anchor')
     );
 
     if (!isOutline) {
@@ -135,7 +135,7 @@ function drawFillTiles(painter, sourceCache, layer, coords, depthMode, colorMode
       bucket.layoutVertexBuffer,
       indexBuffer,
       segments,
-      layer.paint,
+      layer._paint,
       painter.transform.zoom,
       programConfiguration
     );

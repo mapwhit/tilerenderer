@@ -13,8 +13,11 @@ test('StyleLayerIndex.replace', t => {
     ])
   );
 
-  const families = index.familiesBySource['source']['layer'];
-  t.assert.equal(families.length, 2);
+  t.assert.deepEqual(index.familiesBySource.size, 1);
+  t.assert.deepEqual(index.familiesBySource.get('source').size, 1);
+  const group = index.familiesBySource.get('source').get('layer');
+  t.assert.equal(group.size, 2);
+  const families = Array.from(group.values());
   t.assert.equal(families[0].length, 1);
   t.assert.equal(families[0][0].id, '1');
   t.assert.equal(families[1].length, 2);
@@ -22,7 +25,7 @@ test('StyleLayerIndex.replace', t => {
   t.assert.equal(families[1][1].id, '3');
 
   index.replace([]);
-  t.assert.deepEqual(index.familiesBySource, {});
+  t.assert.deepEqual(index.familiesBySource.size, 0);
 });
 
 test('StyleLayerIndex.update', t => {
@@ -66,8 +69,9 @@ test('StyleLayerIndex.update', t => {
 
   index.update();
 
-  const families = index.familiesBySource['bar']['layer'];
-  t.assert.equal(families.length, 2);
+  const group = index.familiesBySource.get('bar').get('layer');
+  t.assert.equal(group.size, 2);
+  const families = Array.from(group.values());
   t.assert.equal(families[0].length, 1);
   t.assert.equal(families[0][0].getPaintProperty('fill-color'), 'cyan');
   t.assert.equal(families[1].length, 2);
@@ -90,13 +94,16 @@ test('StyleLayerIndex.familiesBySource', t => {
     ])
   );
 
-  const ids = mapObject(index.familiesBySource, bySource => {
-    return mapObject(bySource, families => {
-      return families.map(family => {
-        return family.map(layer => layer.id);
-      });
-    });
-  });
+  const ids = {};
+  for (const [source, bySource] of index.familiesBySource) {
+    ids[source] = {};
+    for (const [sourceLayer, families] of bySource) {
+      ids[source][sourceLayer] = [];
+      for (const family of families.values()) {
+        ids[source][sourceLayer].push(family.map(layer => layer.id));
+      }
+    }
+  }
 
   t.assert.deepEqual(ids, {
     A: {
@@ -135,6 +142,8 @@ test('StyleLayerIndex groups families even if layout key order differs', t => {
     ])
   );
 
-  const families = index.familiesBySource['source']['layer'];
+  const group = index.familiesBySource.get('source').get('layer');
+  t.assert.equal(group.size, 1);
+  const families = Array.from(group.values());
   t.assert.equal(families[0].length, 2);
 });

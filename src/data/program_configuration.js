@@ -485,9 +485,9 @@ class ProgramConfiguration {
     const self = new ProgramConfiguration();
     const keys = [];
 
-    for (const property in layer.paint._values) {
+    for (const property in layer._paint._values) {
       if (!filterProperties(property)) continue;
-      const value = layer.paint.get(property);
+      const value = layer._paint.get(property);
       if (
         !(value instanceof PossiblyEvaluatedPropertyValue) ||
         !supportsPropertyExpression(value.property.specification)
@@ -585,7 +585,7 @@ class ProgramConfiguration {
           if (binder instanceof ConstantBinder || binder instanceof CrossFadedConstantBinder) continue;
           if (binder.expression.isStateDependent === true) {
             //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
-            const value = layer.paint.get(property);
+            const value = layer._paint.get(property);
             binder.expression = value.value;
             binder.updatePaintArray(pos.start, pos.end, feature, featureState, options);
             dirty = true;

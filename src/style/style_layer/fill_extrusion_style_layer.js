@@ -17,7 +17,7 @@ class FillExtrusionStyleLayer extends StyleLayer {
   }
 
   queryRadius() {
-    return translateDistance(this.paint.get('fill-extrusion-translate'));
+    return translateDistance(this._paint.get('fill-extrusion-translate'));
   }
 
   is3D() {
@@ -36,13 +36,13 @@ class FillExtrusionStyleLayer extends StyleLayer {
   ) {
     const translatedPolygon = translate(
       queryGeometry,
-      this.paint.get('fill-extrusion-translate'),
-      this.paint.get('fill-extrusion-translate-anchor'),
+      this._paint.get('fill-extrusion-translate'),
+      this._paint.get('fill-extrusion-translate-anchor'),
       transform.angle,
       pixelsToTileUnits
     );
-    const height = this.paint.get('fill-extrusion-height').evaluate(feature, featureState);
-    const base = this.paint.get('fill-extrusion-base').evaluate(feature, featureState);
+    const height = this._paint.get('fill-extrusion-height').evaluate(feature, featureState);
+    const base = this._paint.get('fill-extrusion-base').evaluate(feature, featureState);
 
     const projectedQueryGeometry = projectQueryGeometry(translatedPolygon, pixelPosMatrix, transform, 0);
 

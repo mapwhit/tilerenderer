@@ -4,10 +4,20 @@ const { Evented } = require('@mapwhit/events');
 const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
 const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
 const featureFilter = require('../style-spec/feature_filter');
+const createKey = require('../util/key');
 
+const keyProperties = ['type', 'minzoom', 'maxzoom', 'filter', 'layout'];
 const TRANSITION_SUFFIX = '-transition';
 
+/**
+ * Representing a style layer in the map.
+ * Properties:
+ * `this.paint` - paint properties of the layer as defined in the map style
+ * `this._paint` - internal representation of paint properties necessary to calculate expressions
+ */
 class StyleLayer extends Evented {
+  #key;
+
   constructor(layer, properties) {
     super();
 
@@ -22,7 +32,7 @@ class StyleLayer extends Evented {
 
     if (layer.type !== 'background') {
       this.source = layer.source;
-      this['source-layer'] = this.sourceLayer = layer['source-layer'];
+      this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
       this._featureFilter = featureFilter(layer.filter);
     }
@@ -46,8 +56,24 @@ class StyleLayer extends Evented {
   }
 
   setFilter(filter) {
+    this.#key = undefined;
     this.filter = filter;
     this._featureFilter = featureFilter(filter);
+  }
+
+  _setZoomRange(minzoom, maxzoom) {
+    if (this.minzoom === minzoom && this.maxzoom === maxzoom) {
+      return;
+    }
+    if (minzoom != null) {
+      this.#key = undefined;
+      this.minzoom = minzoom;
+    }
+    if (maxzoom != null) {
+      this.#key = undefined;
+      this.maxzoom = maxzoom;
+    }
+    return true;
   }
 
   getCrossfadeParameters() {
@@ -111,6 +137,8 @@ class StyleLayer extends Evented {
   }
 
   setLayoutProperty(name, value) {
+    this.#key = undefined;
+    this.layout[name] = value;
     if (name === 'visibility') {
       this.visibility = value === 'none' ? value : 'visible';
       return;
@@ -127,6 +155,7 @@ class StyleLayer extends Evented {
   }
 
   setPaintProperty(name, value) {
+    this.paint[name] = value;
     if (name.endsWith(TRANSITION_SUFFIX)) {
       this._transitionablePaint.setTransition(name.slice(0, -TRANSITION_SUFFIX.length), value || undefined);
       return false;
@@ -177,10 +206,17 @@ class StyleLayer extends Evented {
       this._crossfadeParameters = parameters.getCrossfadeParameters();
     }
     if (this._unevaluatedLayout) {
-      this.layout = this._unevaluatedLayout.possiblyEvaluate(parameters);
+      this._layout = this._unevaluatedLayout.possiblyEvaluate(parameters);
     }
 
-    this.paint = this._transitioningPaint.possiblyEvaluate(parameters);
+    this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
+  }
+
+  get key() {
+    if (!this.#key) {
+      this.#key = createKey(keyProperties, this);
+    }
+    return this.#key;
   }
 
   serialize() {
@@ -228,8 +264,8 @@ class StyleLayer extends Evented {
   }
 
   isStateDependent() {
-    for (const property in this.paint._values) {
-      const value = this.paint.get(property);
+    for (const property in this._paint._values) {
+      const value = this._paint.get(property);
       if (
         !(value instanceof PossiblyEvaluatedPropertyValue) ||
         !supportsPropertyExpression(value.property.specification)
@@ -242,21 +278,6 @@ class StyleLayer extends Evented {
       }
     }
     return false;
-  }
-
-  get layoutObj() {
-    if (!this._unevaluatedLayout) {
-      return undefined;
-    }
-    const { _values } = this._unevaluatedLayout;
-    const result = {};
-    for (const property of Object.keys(_values)) {
-      const value = _values[property].value;
-      if (value !== undefined) {
-        result[property] = value;
-      }
-    }
-    return result;
   }
 }
 
