@@ -691,7 +691,9 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
           style.setGlobalState({ circleColor: { default: 'red' } });
-          style.update({});
+          style.update({
+            globalState: style.getGlobalState()
+          });
 
           t.assert.ok(style.sourceCaches['circle-source-id'].resume.mock.callCount() > 0);
           t.assert.ok(style.sourceCaches['circle-source-id'].reload.mock.callCount() > 0);
@@ -761,7 +763,9 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ showCircles: { default: true } });
-        style.update({});
+        style.update({
+          globalState: style.getGlobalState()
+        });
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -795,7 +799,9 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalState({ circleColor: { default: 'red' } });
-        style.update({});
+        style.update({
+          globalState: style.getGlobalState()
+        });
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -832,7 +838,9 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
           style.setGlobalState({ circleColor: { default: 'red' } });
-          style.update({});
+          style.update({
+            globalState: style.getGlobalState()
+          });
 
           t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -848,6 +856,11 @@ test('Style', async t => {
         style = new Style(new StubMap());
         style.loadJSON(
           createStyleJSON({
+            state: {
+              lineJoin: {
+                default: 'bevel'
+              }
+            },
             sources: {
               'line-source-id': createGeoJSONSource()
             },
@@ -872,7 +885,9 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['line-source-id'], 'reload');
 
           style.setGlobalState({ lineColor: { default: 'red' } });
-          style.update({});
+          style.update({
+            globalState: style.getGlobalState()
+          });
 
           t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);
@@ -1011,7 +1026,9 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
-        style.update({});
+        style.update({
+          globalState: style.getGlobalState()
+        });
 
         t.assert.ok(style.sourceCaches['circle-source-id'].resume.mock.callCount() > 0);
         t.assert.ok(style.sourceCaches['circle-source-id'].reload.mock.callCount() > 0);
@@ -1112,7 +1129,9 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle'], 'reload');
 
         style.setGlobalStateProperty('showCircle', true);
-        style.update({});
+        style.update({
+          globalState: style.getGlobalState()
+        });
 
         t.assert.equal(style.sourceCaches['circle'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle'].reload.mock.callCount(), 0);
@@ -1145,7 +1164,9 @@ test('Style', async t => {
         t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
-        style.update({});
+        style.update({
+          globalState: style.getGlobalState()
+        });
 
         t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -1182,7 +1203,9 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['circle-source-id'], 'reload');
 
           style.setGlobalStateProperty('circleColor', 'red');
-          style.update({});
+          style.update({
+            globalState: style.getGlobalState()
+          });
 
           t.assert.equal(style.sourceCaches['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['circle-source-id'].reload.mock.callCount(), 0);
@@ -1198,6 +1221,11 @@ test('Style', async t => {
         style = new Style(new StubMap());
         style.loadJSON(
           createStyleJSON({
+            state: {
+              lineJoin: {
+                default: 'bevel'
+              }
+            },
             sources: {
               'line-source-id': createGeoJSONSource()
             },
@@ -1222,7 +1250,9 @@ test('Style', async t => {
           t.mock.method(style.sourceCaches['line-source-id'], 'reload');
 
           style.setGlobalStateProperty('lineColor', 'red');
-          style.update({});
+          style.update({
+            globalState: style.getGlobalState()
+          });
 
           t.assert.equal(style.sourceCaches['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style.sourceCaches['line-source-id'].reload.mock.callCount(), 0);
