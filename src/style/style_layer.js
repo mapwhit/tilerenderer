@@ -32,7 +32,7 @@ class StyleLayer extends Evented {
 
     if (layer.type !== 'background') {
       this.source = layer.source;
-      this.sourceLayer = layer['source-layer'];
+      this['source-layer'] = this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
       this._featureFilter = featureFilter(layer.filter);
     }
