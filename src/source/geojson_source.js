@@ -207,13 +207,6 @@ class GeoJSONSource extends Evented {
     this._removed = true;
   }
 
-  serialize() {
-    return Object.assign({}, this._options, {
-      type: this.type,
-      data: this.data
-    });
-  }
-
   hasTransition() {
     return false;
   }

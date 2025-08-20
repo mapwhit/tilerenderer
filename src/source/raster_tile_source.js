@@ -45,10 +45,6 @@ class RasterTileSource extends Evented {
     this.load();
   }
 
-  serialize() {
-    return Object.assign({}, this._options);
-  }
-
   hasTile(tileID) {
     return !this.tileBounds || this.tileBounds.contains(tileID.canonical);
   }
