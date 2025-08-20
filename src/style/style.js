@@ -20,6 +20,20 @@ const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
 const StyleLayerIndex = require('../style/style_layer_index');
 const { resources } = require('../source/resources');
 
+const properties = [
+  'version',
+  'name',
+  'metadata',
+  'center',
+  'zoom',
+  'bearing',
+  'pitch',
+  'state',
+  'sprite',
+  'glyphs',
+  'transition'
+];
+
 /**
  * @private
  */
@@ -158,6 +172,7 @@ class Style extends Evented {
   _load(json) {
     this._loaded = true;
     this.stylesheet = json;
+    properties.forEach(prop => (this[prop] = json[prop]));
 
     this.sources = {};
     for (const id in json.sources) {
@@ -427,6 +442,7 @@ class Style extends Evented {
     const geojsonSource = this._sources[id].getSource();
     assert(geojsonSource.type === 'geojson');
 
+    this.sources[id].data = data;
     geojsonSource.setData(data);
     this._changed = true;
   }
@@ -649,6 +665,10 @@ class Style extends Evented {
     if (deepEqual(layer.getLayoutProperty(name), value)) return;
 
     layer.setLayoutProperty(name, value);
+    const layerObject = this.layers.find(({ id }) => id === layerId);
+    layerObject.layout ??= {};
+    layerObject.layout[name] = value;
+
     this._updateLayer(layer);
   }
 
@@ -674,6 +694,10 @@ class Style extends Evented {
     }
 
     if (deepEqual(layer.getPaintProperty(name), value)) return;
+
+    const layerObject = this.layers.find(({ id }) => id === layerId);
+    layerObject.paint ??= {};
+    layerObject.paint[name] = value;
 
     this._updatePaintProperty(layer, name, value);
   }
