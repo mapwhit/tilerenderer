@@ -597,6 +597,10 @@ class Style extends Evented {
     }
   }
 
+  get layers() {
+    return Array.from(this._layers.values()).map(layer => layer.serialize());
+  }
+
   setFilter(layerId, filter) {
     this._checkLoaded();
 
@@ -749,7 +753,7 @@ class Style extends Evented {
         glyphs: this.stylesheet.glyphs,
         transition: this.stylesheet.transition,
         sources: this.sources,
-        layers: Array.from(this._layers.values()).map(layer => layer.serialize())
+        layers: this.layers
       },
       value => value !== undefined
     );
