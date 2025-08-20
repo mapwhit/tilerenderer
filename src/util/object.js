@@ -1,20 +1,3 @@
-/*
- * Compute the difference between the keys in one object and the keys
- * in another object.
- *
- * @returns keys difference
- * @private
- */
-function keysDifference(obj, other) {
-  const difference = [];
-  for (const i in obj) {
-    if (!(i in other)) {
-      difference.push(i);
-    }
-  }
-  return difference;
-}
-
 /**
  * Given an object and a number of properties as strings, return version
  * of that object with only those properties.
@@ -140,7 +123,6 @@ function arraysIntersect(a, b) {
 }
 
 module.exports = {
-  keysDifference,
   pick,
   bindAll,
   mapObject,

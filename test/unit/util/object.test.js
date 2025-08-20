@@ -5,14 +5,11 @@ const {
   clone,
   deepEqual,
   filterObject,
-  keysDifference,
   mapObject,
   pick
 } = require('../../../src/util/object');
 
 test('object', async t => {
-  t.assert.deepEqual(keysDifference({ a: 1 }, {}), ['a'], 'keysDifference');
-  t.assert.deepEqual(keysDifference({ a: 1 }, { a: 1 }), [], 'keysDifference');
   t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c']), { a: 1, c: 3 }, 'pick');
   t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c', 'd']), { a: 1, c: 3 }, 'pick');
 

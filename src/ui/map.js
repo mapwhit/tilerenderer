@@ -741,8 +741,7 @@ class Map extends Camera {
     for (const id in sources) {
       const source = sources[id];
       const tiles = source._tiles;
-      for (const t in tiles) {
-        const tile = tiles[t];
+      for (const tile of tiles.values()) {
         if (!(tile.state === 'loaded' || tile.state === 'errored')) return false;
       }
     }
