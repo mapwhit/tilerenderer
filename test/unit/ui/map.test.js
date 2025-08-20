@@ -267,9 +267,9 @@ test('Map', async t => {
       t.assert.equal(map.areTilesLoaded(), true, 'returns true if there are no sources on the map');
       map.on('load', () => {
         map.addSource('geojson', createStyleSource());
-        map.style.sourceCaches.geojson._tiles.fakeTile = new Tile(new OverscaledTileID(0, 0, 0, 0, 0));
+        map.style._sources.geojson._tiles.fakeTile = new Tile(new OverscaledTileID(0, 0, 0, 0, 0));
         t.assert.equal(map.areTilesLoaded(), false, 'returns false if tiles are loading');
-        map.style.sourceCaches.geojson._tiles.fakeTile.state = 'loaded';
+        map.style._sources.geojson._tiles.fakeTile.state = 'loaded';
         t.assert.equal(map.areTilesLoaded(), true, 'returns true if tiles are loaded');
         done();
       });
