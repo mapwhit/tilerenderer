@@ -29,7 +29,7 @@ const fillExtrusionPatternUniforms = (context, locations) => ({
 });
 
 const fillExtrusionUniformValues = (matrix, painter, shouldUseVerticalGradient, opacity) => {
-  const light = painter.style.light;
+  const light = painter.style._light;
   const _lp = light.properties.get('position');
   const lightPos = [_lp.x, _lp.y, _lp.z];
   const lightMat = mat3.create();

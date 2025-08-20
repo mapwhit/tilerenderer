@@ -193,7 +193,8 @@ class Style extends Evented {
 
     this.#layerIndex.replace(this._layers);
 
-    this.light = new Light(this.stylesheet.light);
+    this.light = this.stylesheet.light;
+    this._light = new Light(this.light);
 
     this.setGlobalState(this.stylesheet.state ?? null);
 
@@ -239,7 +240,7 @@ class Style extends Evented {
   }
 
   hasTransitions() {
-    if (this.light?.hasTransition()) {
+    if (this._light?.hasTransition()) {
       return true;
     }
 
@@ -290,7 +291,7 @@ class Style extends Evented {
         this._layers.get(id).updateTransitions(parameters);
       }
 
-      this.light.updateTransitions(parameters);
+      this._light.updateTransitions(parameters);
 
       this._resetUpdates();
 
@@ -308,7 +309,7 @@ class Style extends Evented {
       }
     }
 
-    this.light.recalculate(parameters);
+    this._light.recalculate(parameters);
     this.z = parameters.zoom;
   }
 
@@ -736,7 +737,7 @@ class Style extends Evented {
         version: this.stylesheet.version,
         name: this.stylesheet.name,
         metadata: this.stylesheet.metadata,
-        light: this.stylesheet.light,
+        light: this.light,
         center: this.stylesheet.center,
         zoom: this.stylesheet.zoom,
         bearing: this.stylesheet.bearing,
@@ -839,13 +840,13 @@ class Style extends Evented {
   }
 
   getLight() {
-    return this.light.getLight();
+    return this._light.getLight();
   }
 
   setLight(lightOptions) {
     this._checkLoaded();
 
-    const light = this.light.getLight();
+    const light = this._light.getLight();
     let _update = false;
     for (const key in lightOptions) {
       if (!deepEqual(lightOptions[key], light[key])) {
@@ -866,8 +867,8 @@ class Style extends Evented {
       )
     };
 
-    this.light.setLight(lightOptions);
-    this.light.updateTransitions(parameters);
+    this._light.setLight(lightOptions);
+    this._light.updateTransitions(parameters);
   }
 
   _remove() {
