@@ -5,6 +5,7 @@ const LngLat = require('../../../src/geo/lng_lat');
 const Tile = require('../../../src/source/tile');
 const { OverscaledTileID } = require('../../../src/source/tile_id');
 const { Event, ErrorEvent } = require('@mapwhit/events');
+const { serialize } = require('../../util/serialize_style');
 
 const fixed = require('../../util/mapbox-gl-js-test/fixed');
 const fixedNum = fixed.Num;
@@ -280,6 +281,7 @@ test('Map', async t => {
     await t.test('returns the style', (t, done) => {
       const style = createStyle();
       const map = createMap({ style: style });
+      map.style.serialize = serialize.bind(undefined, map.style);
 
       map.on('load', () => {
         t.assert.deepEqual(map.getStyle(), style);
@@ -290,6 +292,7 @@ test('Map', async t => {
     await t.test('returns the style with added sources', (t, done) => {
       const style = createStyle();
       const map = createMap({ style: style });
+      map.style.serialize = serialize.bind(undefined, map.style);
 
       map.on('load', () => {
         map.addSource('geojson', createStyleSource());
@@ -319,6 +322,7 @@ test('Map', async t => {
     await t.test('returns the style with added layers', (t, done) => {
       const style = createStyle();
       const map = createMap({ style: style });
+      map.style.serialize = serialize.bind(undefined, map.style);
       const layer = {
         id: 'background',
         type: 'background'
@@ -339,6 +343,7 @@ test('Map', async t => {
     await t.test('returns the style with added source and layer', (t, done) => {
       const style = createStyle();
       const map = createMap({ style: style });
+      map.style.serialize = serialize.bind(undefined, map.style);
       const source = createStyleSource();
       const layer = {
         id: 'fill',

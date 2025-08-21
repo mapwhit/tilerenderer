@@ -687,7 +687,7 @@ class Map extends Camera {
    */
   getStyle() {
     if (this.style) {
-      return this.style.serialize();
+      return this.style.serialize?.() ?? this.style;
     }
   }
 

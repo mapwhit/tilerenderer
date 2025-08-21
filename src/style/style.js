@@ -762,27 +762,6 @@ class Style extends Evented {
     return Object.assign({ duration: 300, delay: 0 }, this.stylesheet?.transition);
   }
 
-  serialize() {
-    return filterObject(
-      {
-        version: this.stylesheet.version,
-        name: this.stylesheet.name,
-        metadata: this.stylesheet.metadata,
-        light: this.light,
-        center: this.stylesheet.center,
-        zoom: this.stylesheet.zoom,
-        bearing: this.stylesheet.bearing,
-        pitch: this.stylesheet.pitch,
-        sprite: this.stylesheet.sprite,
-        glyphs: this.stylesheet.glyphs,
-        transition: this.stylesheet.transition,
-        sources: this.sources,
-        layers: this.layers
-      },
-      value => value !== undefined
-    );
-  }
-
   _updateLayer(layer) {
     this._updatedLayers.set(layer.id, layer);
     if (layer.source && !this._updatedSources[layer.source]) {
