@@ -77,26 +77,6 @@ test('VectorTileSource', async t => {
     });
   });
 
-  await t.test('serialize TileJSON', t => {
-    function loadTile() {
-      return Promise.resolve({ data: new ArrayBuffer(0) });
-    }
-
-    const source = createSource({
-      minzoom: 1,
-      maxzoom: 10,
-      attribution: 'Mapbox',
-      tiles: loadTile
-    });
-    t.assert.deepEqual(source.serialize(), {
-      type: 'vector',
-      minzoom: 1,
-      maxzoom: 10,
-      attribution: 'Mapbox',
-      tiles: loadTile
-    });
-  });
-
   await t.test('respects TileJSON.bounds', (t, done) => {
     const source = createSource({
       minzoom: 0,

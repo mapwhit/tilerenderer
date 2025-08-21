@@ -73,7 +73,7 @@ class GeoJSONSource extends Evented {
 
     this.setEventedParent(eventedParent);
 
-    this._data = options.data;
+    this.data = options.data;
     this._options = Object.assign({}, options);
 
     if (options.maxzoom !== undefined) this.maxzoom = options.maxzoom;
@@ -127,7 +127,7 @@ class GeoJSONSource extends Evented {
    * @returns {GeoJSONSource} this
    */
   setData(data) {
-    this._data = data;
+    this.data = data;
     this.#updateData();
     return this;
   }
@@ -144,7 +144,7 @@ class GeoJSONSource extends Evented {
       this.fire(new Event('dataloading', { dataType: 'source' }));
       while (this.#newData) {
         this.#newData = false;
-        await this._updateWorkerData(this._data);
+        await this._updateWorkerData(this.data);
       }
       this.#pendingDataEvents.forEach(sourceDataType =>
         this.fire(new Event('data', { dataType: 'source', sourceDataType }))
@@ -205,13 +205,6 @@ class GeoJSONSource extends Evented {
 
   onRemove() {
     this._removed = true;
-  }
-
-  serialize() {
-    return Object.assign({}, this._options, {
-      type: this.type,
-      data: this._data
-    });
   }
 
   hasTransition() {

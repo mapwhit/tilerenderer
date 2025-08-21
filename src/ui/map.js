@@ -687,7 +687,7 @@ class Map extends Camera {
    */
   getStyle() {
     if (this.style) {
-      return this.style.serialize();
+      return this.style.serialize?.() ?? this.style;
     }
   }
 
@@ -727,7 +727,7 @@ class Map extends Camera {
    * @returns {boolean} A Boolean indicating whether the source is loaded.
    */
   isSourceLoaded(id) {
-    const source = this.style?.sourceCaches[id];
+    const source = this.style?._sources[id];
     if (source === undefined) {
       this.fire(new ErrorEvent(new Error(`There is no source with ID '${id}'`)));
       return;
@@ -743,7 +743,7 @@ class Map extends Camera {
    */
 
   areTilesLoaded() {
-    const sources = this.style?.sourceCaches;
+    const sources = this.style?._sources;
     for (const id in sources) {
       const source = sources[id];
       const tiles = source._tiles;

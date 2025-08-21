@@ -191,14 +191,6 @@ class ImageSource extends Evented {
     return Promise.resolve();
   }
 
-  serialize() {
-    return {
-      type: 'image',
-      url: this.options.url,
-      coordinates: this.coordinates
-    };
-  }
-
   hasTransition() {
     return false;
   }

@@ -162,39 +162,3 @@ test('GeoJSONSource.update', async t => {
     source.load();
   });
 });
-
-test('GeoJSONSource.serialize', async t => {
-  await t.test('serialize source with inline data', t => {
-    const source = new GeoJSONSource('id', { data: hawkHill }, null, {});
-    t.assert.deepEqual(source.serialize(), {
-      type: 'geojson',
-      data: hawkHill
-    });
-  });
-
-  await t.test('serialize source with url', t => {
-    const source = new GeoJSONSource('id', { data: 'local://data.json' }, null, {});
-    t.assert.deepEqual(source.serialize(), {
-      type: 'geojson',
-      data: 'local://data.json'
-    });
-  });
-
-  await t.test('serialize source with updated data', t => {
-    const source = new GeoJSONSource('id', { data: {} }, null, {});
-    source.setData(hawkHill);
-    t.assert.deepEqual(source.serialize(), {
-      type: 'geojson',
-      data: hawkHill
-    });
-  });
-
-  await t.test('serialize source with additional options', t => {
-    const source = new GeoJSONSource('id', { data: {}, cluster: true }, null, {});
-    t.assert.deepEqual(source.serialize(), {
-      type: 'geojson',
-      data: {},
-      cluster: true
-    });
-  });
-});

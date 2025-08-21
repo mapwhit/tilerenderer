@@ -36,7 +36,6 @@ function MockSourceType(id, sourceOptions, eventedParent) {
     }
     abortTile() {}
     unloadTile() {}
-    serialize() {}
   }
   const source = new SourceMock();
 

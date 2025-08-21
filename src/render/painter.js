@@ -284,7 +284,7 @@ class Painter {
 
     this.symbolFadeChange = style.placement.symbolFadeChange(browser.now());
 
-    const sourceCaches = style.sourceCaches;
+    const sourceCaches = style._sources;
 
     for (const id in sourceCaches) {
       const sourceCache = sourceCaches[id];

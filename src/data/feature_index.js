@@ -160,8 +160,7 @@ class FeatureIndex {
       }
 
       const geojsonFeature = new GeoJSONFeature(feature, z, x, y);
-      // TODO: remove serialize
-      geojsonFeature.layer = styleLayer.serialize();
+      geojsonFeature.layer = styleLayer;
       const layerResult = (result[layerID] ??= []);
       layerResult.push({ featureIndex, feature: geojsonFeature, intersectionZ });
     }

@@ -121,10 +121,6 @@ class SourceCache extends Evented {
     return this._source.abortTile?.(tile);
   }
 
-  serialize() {
-    return this._source.serialize();
-  }
-
   prepare(context) {
     this._source.prepare?.();
 

@@ -12,13 +12,26 @@ const browser = require('../util/browser');
 const { getType: getSourceType, setType: setSourceType } = require('../source/source');
 const { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } = require('../source/query_features');
 const SourceCache = require('../source/source_cache');
-const deref = require('../style-spec/deref');
 const plugin = require('../source/rtl_text_plugin');
 const PauseablePlacement = require('./pauseable_placement');
 const ZoomHistory = require('./zoom_history');
 const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
 const StyleLayerIndex = require('../style/style_layer_index');
 const { resources } = require('../source/resources');
+
+const properties = [
+  'version',
+  'name',
+  'metadata',
+  'center',
+  'zoom',
+  'bearing',
+  'pitch',
+  'state',
+  'sprite',
+  'glyphs',
+  'transition'
+];
 
 /**
  * @private
@@ -42,7 +55,7 @@ class Style extends Evented {
 
     // insertion operations are done in the order of the layers in the style
     this._layers = new Map();
-    this.sourceCaches = {};
+    this._sources = {};
     this.zoomHistory = new ZoomHistory();
     this._loaded = false;
     this._globalState = {};
@@ -58,7 +71,7 @@ class Style extends Evented {
         return;
       }
 
-      const sourceCache = this.sourceCaches[event.sourceId];
+      const sourceCache = this._sources[event.sourceId];
       if (!sourceCache) {
         return;
       }
@@ -139,7 +152,7 @@ class Style extends Evented {
       }
     }
 
-    for (const id in this.sourceCaches) {
+    for (const id in this._sources) {
       if (sourceIdsToReload.has(id)) {
         this._reloadSource(id);
         this._changed = true;
@@ -158,7 +171,9 @@ class Style extends Evented {
   _load(json) {
     this._loaded = true;
     this.stylesheet = json;
+    properties.forEach(prop => (this[prop] = json[prop]));
 
+    this.sources = {};
     for (const id in json.sources) {
       this.addSource(id, json.sources[id]);
     }
@@ -182,10 +197,13 @@ class Style extends Evented {
 
     this.glyphManager.setGlyphsLoader(json.glyphs);
 
-    const layers = deref(this.stylesheet.layers);
+    const layers = this.stylesheet.layers;
 
     this._layers.clear();
     for (let layer of layers) {
+      if (layer.ref) {
+        continue; // just ignore layers that reference other layers
+      }
       layer = createStyleLayer(layer);
       layer.setEventedParent(this, { layer: { id: layer.id } });
       this._layers.set(layer.id, layer);
@@ -193,7 +211,8 @@ class Style extends Evented {
 
     this.#layerIndex.replace(this._layers);
 
-    this.light = new Light(this.stylesheet.light);
+    this.light = this.stylesheet.light;
+    this._light = new Light(this.light);
 
     this.setGlobalState(this.stylesheet.state ?? null);
 
@@ -202,7 +221,7 @@ class Style extends Evented {
   }
 
   _validateLayer(layer) {
-    const sourceCache = this.sourceCaches[layer.source];
+    const sourceCache = this._sources[layer.source];
     if (!sourceCache) {
       return;
     }
@@ -231,7 +250,7 @@ class Style extends Evented {
 
     if (Object.keys(this._updatedSources).length) return false;
 
-    for (const id in this.sourceCaches) if (!this.sourceCaches[id].loaded()) return false;
+    for (const id in this._sources) if (!this._sources[id].loaded()) return false;
 
     if (!this.imageManager.isLoaded()) return false;
 
@@ -239,12 +258,12 @@ class Style extends Evented {
   }
 
   hasTransitions() {
-    if (this.light?.hasTransition()) {
+    if (this._light?.hasTransition()) {
       return true;
     }
 
-    for (const id in this.sourceCaches) {
-      if (this.sourceCaches[id].hasTransition()) {
+    for (const id in this._sources) {
+      if (this._sources[id].hasTransition()) {
         return true;
       }
     }
@@ -290,25 +309,25 @@ class Style extends Evented {
         this._layers.get(id).updateTransitions(parameters);
       }
 
-      this.light.updateTransitions(parameters);
+      this._light.updateTransitions(parameters);
 
       this._resetUpdates();
 
       this.fire(new Event('data', { dataType: 'style' }));
     }
 
-    for (const sourceId in this.sourceCaches) {
-      this.sourceCaches[sourceId].used = false;
+    for (const sourceId in this._sources) {
+      this._sources[sourceId].used = false;
     }
 
     for (const layer of this._layers.values()) {
       layer.recalculate(parameters);
       if (!layer.isHidden(parameters.zoom) && layer.source) {
-        this.sourceCaches[layer.source].used = true;
+        this._sources[layer.source].used = true;
       }
     }
 
-    this.light.recalculate(parameters);
+    this._light.recalculate(parameters);
     this.z = parameters.zoom;
   }
 
@@ -355,7 +374,7 @@ class Style extends Evented {
   addSource(id, source) {
     this._checkLoaded();
 
-    if (this.sourceCaches[id] !== undefined) {
+    if (this._sources[id] !== undefined) {
       throw new Error('There is already a source with this ID');
     }
 
@@ -365,7 +384,9 @@ class Style extends Evented {
       );
     }
 
-    const sourceCache = (this.sourceCaches[id] = new SourceCache(id, source, {
+    this.sources[id] = source;
+
+    const sourceCache = (this._sources[id] = new SourceCache(id, source, {
       resources: this.#resources,
       layerIndex: this.#layerIndex,
       showTileBoundaries: this.map.showTileBoundaries
@@ -373,7 +394,7 @@ class Style extends Evented {
     sourceCache.style = this;
     sourceCache.setEventedParent(this, () => ({
       isSourceLoaded: this.loaded(),
-      source: sourceCache.serialize(),
+      source: sourceCache,
       sourceId: id
     }));
 
@@ -389,7 +410,7 @@ class Style extends Evented {
   removeSource(id) {
     this._checkLoaded();
 
-    if (this.sourceCaches[id] === undefined) {
+    if (this._sources[id] === undefined) {
       throw new Error('There is no source with this ID');
     }
     for (const [layerId, layer] of this._layers) {
@@ -400,8 +421,8 @@ class Style extends Evented {
       }
     }
 
-    const sourceCache = this.sourceCaches[id];
-    delete this.sourceCaches[id];
+    const sourceCache = this._sources[id];
+    delete this._sources[id];
     delete this._updatedSources[id];
     sourceCache.fire(new Event('data', { sourceDataType: 'metadata', dataType: 'source', sourceId: id }));
     sourceCache.setEventedParent(null);
@@ -419,10 +440,11 @@ class Style extends Evented {
   setGeoJSONSourceData(id, data) {
     this._checkLoaded();
 
-    assert(this.sourceCaches[id] !== undefined, 'There is no source with this ID');
-    const geojsonSource = this.sourceCaches[id].getSource();
+    assert(this._sources[id] !== undefined, 'There is no source with this ID');
+    const geojsonSource = this._sources[id].getSource();
     assert(geojsonSource.type === 'geojson');
 
+    this.sources[id].data = data;
     geojsonSource.setData(data);
     this._changed = true;
   }
@@ -433,7 +455,7 @@ class Style extends Evented {
    * @returns {Object} source
    */
   getSource(id) {
-    return this.sourceCaches[id]?.getSource();
+    return this._sources[id]?.getSource();
   }
 
   _insertLayer(id, layer, before, move) {
@@ -507,7 +529,7 @@ class Style extends Evented {
         this._updatedSources[layer.source] = 'clear';
       } else {
         this._updatedSources[layer.source] = 'reload';
-        this.sourceCaches[layer.source].pause();
+        this._sources[layer.source].pause();
       }
     }
     this._updateLayer(layer);
@@ -593,6 +615,10 @@ class Style extends Evented {
     }
   }
 
+  get layers() {
+    return Array.from(this._layers.values());
+  }
+
   setFilter(layerId, filter) {
     this._checkLoaded();
 
@@ -641,6 +667,10 @@ class Style extends Evented {
     if (deepEqual(layer.getLayoutProperty(name), value)) return;
 
     layer.setLayoutProperty(name, value);
+    const layerObject = this.layers.find(({ id }) => id === layerId);
+    layerObject.layout ??= {};
+    layerObject.layout[name] = value;
+
     this._updateLayer(layer);
   }
 
@@ -667,6 +697,10 @@ class Style extends Evented {
 
     if (deepEqual(layer.getPaintProperty(name), value)) return;
 
+    const layerObject = this.layers.find(({ id }) => id === layerId);
+    layerObject.paint ??= {};
+    layerObject.paint[name] = value;
+
     this._updatePaintProperty(layer, name, value);
   }
 
@@ -688,7 +722,7 @@ class Style extends Evented {
     this._checkLoaded();
     const sourceId = feature.source;
     const sourceLayer = feature.sourceLayer;
-    const sourceCache = this.sourceCaches[sourceId];
+    const sourceCache = this._sources[sourceId];
 
     if (sourceCache === undefined) {
       this.fire(new ErrorEvent(new Error(`The source '${sourceId}' does not exist in the map's style.`)));
@@ -711,7 +745,7 @@ class Style extends Evented {
     this._checkLoaded();
     const sourceId = feature.source;
     const sourceLayer = feature.sourceLayer;
-    const sourceCache = this.sourceCaches[sourceId];
+    const sourceCache = this._sources[sourceId];
 
     if (sourceCache === undefined) {
       this.fire(new ErrorEvent(new Error(`The source '${sourceId}' does not exist in the map's style.`)));
@@ -730,32 +764,11 @@ class Style extends Evented {
     return Object.assign({ duration: 300, delay: 0 }, this.stylesheet?.transition);
   }
 
-  serialize() {
-    return filterObject(
-      {
-        version: this.stylesheet.version,
-        name: this.stylesheet.name,
-        metadata: this.stylesheet.metadata,
-        light: this.stylesheet.light,
-        center: this.stylesheet.center,
-        zoom: this.stylesheet.zoom,
-        bearing: this.stylesheet.bearing,
-        pitch: this.stylesheet.pitch,
-        sprite: this.stylesheet.sprite,
-        glyphs: this.stylesheet.glyphs,
-        transition: this.stylesheet.transition,
-        sources: mapObject(this.sourceCaches, source => source.serialize()),
-        layers: Array.from(this._layers.values()).map(layer => layer.serialize())
-      },
-      value => value !== undefined
-    );
-  }
-
   _updateLayer(layer) {
     this._updatedLayers.set(layer.id, layer);
     if (layer.source && !this._updatedSources[layer.source]) {
       this._updatedSources[layer.source] = 'reload';
-      this.sourceCaches[layer.source].pause();
+      this._sources[layer.source].pause();
     }
     this._changed = true;
   }
@@ -809,10 +822,10 @@ class Style extends Evented {
     }
 
     const sourceResults = [];
-    for (const id in this.sourceCaches) {
+    for (const id in this._sources) {
       if (params.layers && !includedSources[id]) continue;
       sourceResults.push(
-        queryRenderedFeatures(this.sourceCaches[id], this._layers, queryGeometry.viewport, params, transform)
+        queryRenderedFeatures(this._sources[id], this._layers, queryGeometry.viewport, params, transform)
       );
     }
 
@@ -822,7 +835,7 @@ class Style extends Evented {
       sourceResults.push(
         queryRenderedSymbols(
           this._layers,
-          this.sourceCaches,
+          this._sources,
           queryGeometry.viewport,
           params,
           this.placement.collisionIndex,
@@ -834,18 +847,18 @@ class Style extends Evented {
   }
 
   querySourceFeatures(sourceID, params) {
-    const sourceCache = this.sourceCaches[sourceID];
+    const sourceCache = this._sources[sourceID];
     return sourceCache ? querySourceFeatures(sourceCache, params) : [];
   }
 
   getLight() {
-    return this.light.getLight();
+    return this._light.getLight();
   }
 
   setLight(lightOptions) {
     this._checkLoaded();
 
-    const light = this.light.getLight();
+    const light = this._light.getLight();
     let _update = false;
     for (const key in lightOptions) {
       if (!deepEqual(lightOptions[key], light[key])) {
@@ -866,40 +879,40 @@ class Style extends Evented {
       )
     };
 
-    this.light.setLight(lightOptions);
-    this.light.updateTransitions(parameters);
+    this._light.setLight(lightOptions);
+    this._light.updateTransitions(parameters);
   }
 
   _remove() {
     this._rtlTextPluginCallbackUnregister?.();
-    for (const id in this.sourceCaches) {
-      this.sourceCaches[id].clearTiles();
+    for (const id in this._sources) {
+      this._sources[id].clearTiles();
     }
   }
 
   _clearSource(id) {
-    this.sourceCaches[id].clearTiles();
+    this._sources[id].clearTiles();
   }
 
   _reloadSource(id) {
-    this.sourceCaches[id].resume();
-    this.sourceCaches[id].reload();
+    this._sources[id].resume();
+    this._sources[id].reload();
   }
 
   _updateSources(transform) {
-    for (const id in this.sourceCaches) {
-      this.sourceCaches[id].update(transform);
+    for (const id in this._sources) {
+      this._sources[id].update(transform);
     }
   }
 
   _reloadSources() {
-    for (const sourceCache of Object.values(this.sourceCaches)) {
+    for (const sourceCache of Object.values(this._sources)) {
       sourceCache.reload(); // Should be a no-op if called before any tiles load
     }
   }
 
   _generateCollisionBoxes() {
-    for (const id in this.sourceCaches) {
+    for (const id in this._sources) {
       this._reloadSource(id);
     }
   }
@@ -914,7 +927,7 @@ class Style extends Evented {
       if (layer.type !== 'symbol') continue;
 
       if (!layerTiles[layer.source]) {
-        const sourceCache = this.sourceCaches[layer.source];
+        const sourceCache = this._sources[layer.source];
         layerTiles[layer.source] = sourceCache
           .getRenderableIds(true)
           .map(id => sourceCache.getTileByID(id))
@@ -987,8 +1000,8 @@ class Style extends Evented {
   }
 
   _releaseSymbolFadeTiles() {
-    for (const id in this.sourceCaches) {
-      this.sourceCaches[id].releaseSymbolFadeTiles();
+    for (const id in this._sources) {
+      this._sources[id].releaseSymbolFadeTiles();
     }
   }
 

@@ -13,17 +13,6 @@ class RasterDEMTileSource extends RasterTileSource {
     this.encoding = options.encoding || 'mapbox';
   }
 
-  serialize() {
-    return {
-      type: 'raster-dem',
-      url: this.url,
-      tileSize: this.tileSize,
-      tiles: this.tiles,
-      bounds: this.bounds,
-      encoding: this.encoding
-    };
-  }
-
   async loadTile(tile) {
     try {
       tile.abortController = new window.AbortController();

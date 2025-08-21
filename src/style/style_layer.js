@@ -32,7 +32,7 @@ class StyleLayer extends Evented {
 
     if (layer.type !== 'background') {
       this.source = layer.source;
-      this.sourceLayer = layer['source-layer'];
+      this['source-layer'] = this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
       this._featureFilter = featureFilter(layer.filter);
     }
@@ -217,34 +217,6 @@ class StyleLayer extends Evented {
       this.#key = createKey(keyProperties, this);
     }
     return this.#key;
-  }
-
-  serialize() {
-    const output = {
-      id: this.id,
-      type: this.type,
-      source: this.source,
-      'source-layer': this.sourceLayer,
-      metadata: this.metadata,
-      minzoom: this.minzoom,
-      maxzoom: this.maxzoom,
-      filter: this.filter,
-      layout: this._unevaluatedLayout?.serialize(),
-      paint: this._transitionablePaint?.serialize()
-    };
-
-    if (this.visibility === 'none') {
-      output.layout = output.layout || {};
-      output.layout.visibility = 'none';
-    }
-
-    return filterObject(output, (value, key) => {
-      return (
-        value !== undefined &&
-        !(key === 'layout' && !Object.keys(value).length) &&
-        !(key === 'paint' && !Object.keys(value).length)
-      );
-    });
   }
 
   is3D() {

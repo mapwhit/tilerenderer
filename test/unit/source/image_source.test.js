@@ -92,19 +92,4 @@ test('ImageSource', async t => {
     source.onAdd(new StubMap());
     respond();
   });
-
-  await t.test('serialize url and coordinates', t => {
-    const url = new ArrayBuffer(0);
-    const source = createSource({ url });
-
-    const serialized = source.serialize();
-    t.assert.equal(serialized.type, 'image');
-    t.assert.equal(serialized.url, url);
-    t.assert.deepEqual(serialized.coordinates, [
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [0, 1]
-    ]);
-  });
 });
