@@ -614,7 +614,7 @@ class Style extends Evented {
   }
 
   get layers() {
-    return Array.from(this._layers.values()).map(layer => layer.serialize());
+    return Array.from(this._layers.values());
   }
 
   setFilter(layerId, filter) {

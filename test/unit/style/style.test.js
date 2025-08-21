@@ -2106,7 +2106,7 @@ test('Style', async t => {
       style = createStyle();
       style.on('style.load', () => {
         style.setFilter('symbol', null);
-        t.assert.equal(style.getLayer('symbol').serialize().filter, undefined);
+        t.assert.equal(style.getLayer('symbol').filter, undefined);
         done();
       });
     });
@@ -2186,14 +2186,14 @@ test('Style', async t => {
         land: [
           {
             type: 'Feature',
-            layer: style._layers.get('land').serialize(),
+            layer: style._layers.get('land'),
             geometry: {
               type: 'Polygon'
             }
           },
           {
             type: 'Feature',
-            layer: style._layers.get('land').serialize(),
+            layer: style._layers.get('land'),
             geometry: {
               type: 'Point'
             }
@@ -2202,7 +2202,7 @@ test('Style', async t => {
         landref: [
           {
             type: 'Feature',
-            layer: style._layers.get('landref').serialize(),
+            layer: style._layers.get('landref'),
             geometry: {
               type: 'Line'
             }
