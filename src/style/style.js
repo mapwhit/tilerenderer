@@ -12,7 +12,6 @@ const browser = require('../util/browser');
 const { getType: getSourceType, setType: setSourceType } = require('../source/source');
 const { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } = require('../source/query_features');
 const SourceCache = require('../source/source_cache');
-const deref = require('../style-spec/deref');
 const plugin = require('../source/rtl_text_plugin');
 const PauseablePlacement = require('./pauseable_placement');
 const ZoomHistory = require('./zoom_history');
@@ -198,10 +197,13 @@ class Style extends Evented {
 
     this.glyphManager.setGlyphsLoader(json.glyphs);
 
-    const layers = deref(this.stylesheet.layers);
+    const layers = this.stylesheet.layers;
 
     this._layers.clear();
     for (let layer of layers) {
+      if (layer.ref) {
+        continue; // just ignore layers that reference other layers
+      }
       layer = createStyleLayer(layer);
       layer.setEventedParent(this, { layer: { id: layer.id } });
       this._layers.set(layer.id, layer);

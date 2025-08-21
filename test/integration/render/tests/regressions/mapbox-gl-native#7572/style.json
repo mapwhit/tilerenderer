@@ -44,7 +44,14 @@
     },
     {
       "id": "b",
-      "ref": "a"
+      "type": "symbol",
+      "source": "geojson",
+      "layout": {
+        "icon-image": "generic_icon",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-offset": [0, 0]
+      }
     }
   ]
 }

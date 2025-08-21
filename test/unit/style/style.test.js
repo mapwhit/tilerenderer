@@ -1664,31 +1664,6 @@ test('Style', async t => {
         done();
       });
     });
-
-    await t.test('does not remove dereffed layers', (t, done) => {
-      style = new Style(new StubMap());
-      style.loadJSON(
-        createStyleJSON({
-          layers: [
-            {
-              id: 'a',
-              type: 'background'
-            },
-            {
-              id: 'b',
-              ref: 'a'
-            }
-          ]
-        })
-      );
-
-      style.on('style.load', () => {
-        style.removeLayer('a');
-        t.assert.equal(style.getLayer('a'), undefined);
-        t.assert.notEqual(style.getLayer('b'), undefined);
-        done();
-      });
-    });
   });
 
   await t.test('Style.moveLayer', async t => {
@@ -2256,7 +2231,12 @@ test('Style', async t => {
         },
         {
           id: 'landref',
-          ref: 'land',
+          type: 'line',
+          source: 'mapbox',
+          'source-layer': 'water',
+          layout: {
+            'line-cap': 'round'
+          },
           paint: {
             'line-color': 'blue'
           }
