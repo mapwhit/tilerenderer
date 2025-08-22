@@ -24,9 +24,9 @@ const padding = 1;
 class ImageManager {
   #loadedState = Promise.withResolvers();
   constructor() {
-    this.images = {};
+    this.images = new Map();
 
-    this.patterns = {};
+    this.patterns = new Map();
     this.atlasImage = new RGBAImage({ width: 1, height: 1 });
     this.dirty = true;
   }
@@ -44,22 +44,22 @@ class ImageManager {
   }
 
   getImage(id) {
-    return this.images[id];
+    return this.images.get(id);
   }
 
   addImage(id, image) {
-    assert(!this.images[id]);
-    this.images[id] = image;
+    assert(!this.images.has(id));
+    this.images.set(id, image);
   }
 
   removeImage(id) {
-    assert(this.images[id]);
-    delete this.images[id];
-    delete this.patterns[id];
+    assert(this.images.has(id));
+    this.images.delete(id);
+    this.patterns.delete(id);
   }
 
   listImages() {
-    return Object.keys(this.images);
+    return Array.from(this.images.keys());
   }
 
   async getImages(ids) {
@@ -67,7 +67,7 @@ class ImageManager {
 
     const response = {};
     for (const id of ids) {
-      const image = this.images[id];
+      const image = this.images.get(id);
       if (image) {
         response[id] = {
           data: image.data,
@@ -87,7 +87,7 @@ class ImageManager {
   }
 
   getPattern(id) {
-    const pattern = this.patterns[id];
+    const pattern = this.patterns.get(id);
     if (pattern) {
       return pattern.position;
     }
@@ -101,7 +101,7 @@ class ImageManager {
     const h = image.data.height + padding * 2;
     const bin = { w, h, x: 0, y: 0 };
     const position = new ImagePosition(bin, image);
-    this.patterns[id] = { bin, position };
+    this.patterns.set(id, { bin, position });
     this._updatePatternAtlas();
 
     return position;
@@ -121,8 +121,8 @@ class ImageManager {
 
   _updatePatternAtlas() {
     const bins = [];
-    for (const id in this.patterns) {
-      bins.push(this.patterns[id].bin);
+    for (const { bin } of this.patterns.values()) {
+      bins.push(bin);
     }
 
     const { w, h } = potpack(bins);
@@ -130,11 +130,10 @@ class ImageManager {
     const dst = this.atlasImage;
     dst.resize({ width: w ?? 1, height: h ?? 1 });
 
-    for (const id in this.patterns) {
-      const { bin } = this.patterns[id];
+    for (const [id, { bin }] of this.patterns) {
       const x = bin.x + padding;
       const y = bin.y + padding;
-      const src = this.images[id].data;
+      const src = this.images.get(id).data;
       const w = src.width;
       const h = src.height;
 
