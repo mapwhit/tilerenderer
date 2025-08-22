@@ -820,6 +820,23 @@ class Map extends Camera {
   }
 
   /**
+   * Returns an image, specified by ID, currently available in the map.
+   * This includes both images from the style's original sprite
+   * and any images that have been added at runtime using {@link Map.addImage}.
+   *
+   * @param id - The ID of the image.
+   * @returns An image in the map with the specified ID.
+   *
+   * @example
+   * ```js
+   * let coffeeShopIcon = map.getImage("coffee_cup");
+   * ```
+   */
+  getImage(id) {
+    return this.style.getImage(id);
+  }
+
+  /**
    * Define wether the image has been added or not
    *
    * @param id The ID of the image.
