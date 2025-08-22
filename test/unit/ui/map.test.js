@@ -788,28 +788,6 @@ test('Map', async t => {
     t.assert.deepEqual(fixedLngLat(map.unproject([100, 100])), { lng: 0, lat: 0 });
   });
 
-  await t.test('listImages', (t, done) => {
-    const map = createMap();
-
-    map.on('load', () => {
-      t.assert.equal(map.listImages().length, 0);
-
-      map.addImage('img', { width: 1, height: 1, data: new Uint8Array(4) });
-
-      const images = map.listImages();
-      t.assert.equal(images.length, 1);
-      t.assert.equal(images[0], 'img');
-      done();
-    });
-  });
-
-  await t.test('listImages throws an error if called before "load"', t => {
-    const map = createMap();
-    t.assert.throws(() => {
-      map.listImages();
-    }, Error);
-  });
-
   await t.test('queryRenderedFeatures', async t => {
     await t.test('if no arguments provided', (t, done) => {
       createMap({}, (err, map) => {

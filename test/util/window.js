@@ -48,6 +48,11 @@ function create() {
       return false;
     };
   globalThis.HTMLImageElement ??= window.HTMLImageElement;
+  globalThis.HTMLImageElement.prototype.decode ??= function () {
+    return new Promise(resolve => {
+      this.addEventListener('load', resolve);
+    });
+  };
   globalThis.HTMLCanvasElement ??= window.HTMLCanvasElement;
   globalThis.HTMLVideoElement ??= window.HTMLVideoElement;
   window.ImageBitmap ??= function () {

@@ -798,6 +798,16 @@ class Map extends Camera {
    */
   addImage(id, image, { pixelRatio = 1, sdf = false } = {}) {
     if (image instanceof HTMLImageElement) {
+      if (!image.complete) {
+        const promise = new Promise(resolve => {
+          image.decode().then(() => {
+            const { width, height, data } = browser.getImageData(image);
+            resolve({ data: new RGBAImage({ width, height }, data), pixelRatio, sdf });
+          });
+        });
+        this.style.addImage(id, { promise });
+        return;
+      }
       const { width, height, data } = browser.getImageData(image);
       this.style.addImage(id, { data: new RGBAImage({ width, height }, data), pixelRatio, sdf });
     } else if (image.width === undefined || image.height === undefined) {
@@ -817,6 +827,23 @@ class Map extends Camera {
         sdf
       });
     }
+  }
+
+  /**
+   * Returns an image, specified by ID, currently available in the map.
+   * This includes both images from the style's original sprite
+   * and any images that have been added at runtime using {@link Map.addImage}.
+   *
+   * @param id - The ID of the image.
+   * @returns An image in the map with the specified ID.
+   *
+   * @example
+   * ```js
+   * let coffeeShopIcon = map.getImage("coffee_cup");
+   * ```
+   */
+  getImage(id) {
+    return this.style.getImage(id);
   }
 
   /**
