@@ -23,6 +23,7 @@ const padding = 1;
 */
 class ImageManager {
   #loadedState = Promise.withResolvers();
+  #imageQueue = new Map();
   constructor() {
     this.images = new Map();
 
@@ -48,13 +49,22 @@ class ImageManager {
   }
 
   addImage(id, image) {
-    assert(!this.images.has(id));
+    assert(!(this.images.has(id) || this.#imageQueue.has(id)));
+    if (image.promise) {
+      this.#imageQueue.set(id, image.promise);
+      image.promise.then(image => {
+        this.#imageQueue.delete(id);
+        this.images.set(id, image);
+      });
+      return;
+    }
     this.images.set(id, image);
   }
 
   removeImage(id) {
-    assert(this.images.has(id));
+    assert(this.images.has(id) || this.#imageQueue.has(id));
     this.images.delete(id);
+    this.#imageQueue.delete(id);
     this.patterns.delete(id);
   }
 
@@ -67,7 +77,13 @@ class ImageManager {
 
     const response = {};
     for (const id of ids) {
-      const image = this.images.get(id);
+      let image = this.images.get(id);
+      if (!image) {
+        if (!this.#imageQueue.has(id)) {
+          continue;
+        }
+        image = await this.#imageQueue.get(id);
+      }
       if (image) {
         response[id] = {
           data: image.data,

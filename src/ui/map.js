@@ -798,6 +798,16 @@ class Map extends Camera {
    */
   addImage(id, image, { pixelRatio = 1, sdf = false } = {}) {
     if (image instanceof HTMLImageElement) {
+      if (!image.complete) {
+        const promise = new Promise(resolve => {
+          image.decode().then(() => {
+            const { width, height, data } = browser.getImageData(image);
+            resolve({ data: new RGBAImage({ width, height }, data), pixelRatio, sdf });
+          });
+        });
+        this.style.addImage(id, { promise });
+        return;
+      }
       const { width, height, data } = browser.getImageData(image);
       this.style.addImage(id, { data: new RGBAImage({ width, height }, data), pixelRatio, sdf });
     } else if (image.width === undefined || image.height === undefined) {
