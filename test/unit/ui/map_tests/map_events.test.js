@@ -1,0 +1,48 @@
+const test = require('node:test');
+const Map = require('../../../../src/ui/map');
+const { ErrorEvent } = require('@mapwhit/events');
+const { createMap, createStyle, initWindow } = require('../../../util/util');
+
+test('map events', async t => {
+  initWindow(t);
+
+  await t.test('emits load event after a style is set', (t, done) => {
+    const map = new Map({ container: window.document.createElement('div') });
+
+    map.on('load', fail);
+
+    setTimeout(() => {
+      map.off('load', fail);
+      map.on('load', pass);
+      map.setStyle(createStyle());
+    }, 1);
+
+    function fail() {
+      t.assert.ok(false);
+    }
+    function pass() {
+      done();
+    }
+  });
+
+  await t.test('error event', async t => {
+    await t.test('logs errors to console when it has NO listeners', t => {
+      const map = createMap();
+      const stub = t.mock.method(console, 'error', () => {});
+      const error = new Error('test');
+      map.fire(new ErrorEvent(error));
+      t.assert.equal(stub.mock.callCount(), 1);
+      t.assert.equal(stub.mock.calls[0].arguments[0], error);
+    });
+
+    await t.test('calls listeners', (t, done) => {
+      const map = createMap();
+      const error = new Error('test');
+      map.on('error', event => {
+        t.assert.equal(event.error, error);
+        done();
+      });
+      map.fire(new ErrorEvent(error));
+    });
+  });
+});
