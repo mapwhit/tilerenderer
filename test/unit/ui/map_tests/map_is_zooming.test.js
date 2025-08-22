@@ -1,5 +1,5 @@
 const test = require('node:test');
-const _window = require('../../../util/window');
+const { initWindow } = require('../../../util/util');
 const Map = require('../../../../src/ui/map');
 const DOM = require('../../../../src/util/dom');
 
@@ -8,14 +8,7 @@ function createMap() {
 }
 
 test('Map.isZooming', async t => {
-  let globalWindow;
-  t.before(() => {
-    globalWindow = globalThis.window;
-    globalThis.window = _window;
-  });
-  t.after(() => {
-    globalThis.window = globalWindow;
-  });
+  initWindow(t);
 
   await t.test('Map.isZooming returns false by default', t => {
     const map = createMap();

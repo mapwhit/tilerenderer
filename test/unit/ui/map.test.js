@@ -1,5 +1,4 @@
 const test = require('node:test');
-const _window = require('../../util/window');
 const Map = require('../../../src/ui/map');
 const LngLat = require('../../../src/geo/lng_lat');
 const Tile = require('../../../src/source/tile');
@@ -11,56 +10,10 @@ const fixed = require('../../util/mapbox-gl-js-test/fixed');
 const fixedNum = fixed.Num;
 const fixedLngLat = fixed.LngLat;
 const fixedCoord = fixed.Coord;
-
-function createMap(options, callback) {
-  const container = window.document.createElement('div');
-  Object.defineProperty(container, 'offsetWidth', { value: 200, configurable: true });
-  Object.defineProperty(container, 'offsetHeight', { value: 200, configurable: true });
-
-  const map = new Map(
-    Object.assign(
-      {
-        container: container,
-        interactive: false,
-        attributionControl: false,
-        trackResize: true,
-        style: {
-          version: 8,
-          sources: {},
-          layers: []
-        }
-      },
-      options
-    )
-  );
-
-  if (callback)
-    map.on('load', () => {
-      callback(null, map);
-    });
-
-  return map;
-}
-
-function createStyleSource() {
-  return {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: []
-    }
-  };
-}
+const { createMap, createStyleSource, createStyle, initWindow } = require('../../util/util');
 
 test('Map', async t => {
-  let globalWindow;
-  t.before(() => {
-    globalWindow = globalThis.window;
-    globalThis.window = _window;
-  });
-  t.after(() => {
-    globalThis.window = globalWindow;
-  });
+  initWindow(t);
 
   await t.test('constructor', t => {
     const map = createMap({ interactive: true, style: null });
@@ -237,9 +190,8 @@ test('Map', async t => {
   await t.test('is_Loaded', async t => {
     await t.test('Map.isSourceLoaded', (t, done) => {
       const style = createStyle();
-      const map = createMap({ style: style });
-
-      map.on('load', () => {
+      createMap({ style: style }, (error, map) => {
+        t.assert.ifError(error);
         map.on('data', e => {
           if (e.dataType === 'source' && e.sourceDataType === 'metadata') {
             t.assert.equal(map.isSourceLoaded('geojson'), true, 'true when loaded');
@@ -1318,15 +1270,3 @@ test('Map', async t => {
     });
   });
 });
-
-function createStyle() {
-  return {
-    version: 8,
-    center: [-73.9749, 40.7736],
-    zoom: 12.5,
-    bearing: 29,
-    pitch: 50,
-    sources: {},
-    layers: []
-  };
-}

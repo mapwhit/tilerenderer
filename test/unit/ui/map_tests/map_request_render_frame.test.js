@@ -1,28 +1,8 @@
 const test = require('node:test');
-const _window = require('../../../util/window');
-const Map = require('../../../../src/ui/map');
-const DOM = require('../../../../src/util/dom');
-
-function createMap() {
-  return new Map({
-    container: DOM.create('div', '', window.document.body),
-    style: {
-      version: 8,
-      sources: {},
-      layers: []
-    }
-  });
-}
+const { createMap, initWindow } = require('../../../util/util');
 
 test('Map._requestRenderFrame', async t => {
-  let globalWindow;
-  t.before(() => {
-    globalWindow = globalThis.window;
-    globalThis.window = _window;
-  });
-  t.after(() => {
-    globalThis.window = globalWindow;
-  });
+  initWindow(t);
 
   await t.test('Map._requestRenderFrame schedules a new render frame if necessary', t => {
     const map = createMap();
