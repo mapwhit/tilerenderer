@@ -2,7 +2,6 @@ const { getCoordinatesCenter } = require('../util/util');
 
 const { CanonicalTileID } = require('./tile_id');
 const LngLat = require('../geo/lng_lat');
-const { default: Point } = require('@mapbox/point-geometry');
 const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
 const loadImage = require('../util/loader/image');
 const EXTENT = require('../data/extent');
@@ -124,10 +123,10 @@ class ImageSource extends Evented {
     // tile.
     const tileCoords = cornerZ0Coords.map(coord => {
       const zoomedCoord = coord.zoomTo(centerCoord.zoom);
-      return new Point(
-        Math.round((zoomedCoord.column - centerCoord.column) * EXTENT),
-        Math.round((zoomedCoord.row - centerCoord.row) * EXTENT)
-      );
+      return {
+        x: Math.round((zoomedCoord.column - centerCoord.column) * EXTENT),
+        y: Math.round((zoomedCoord.row - centerCoord.row) * EXTENT)
+      };
     });
 
     this._boundsArray = new RasterBoundsArray();

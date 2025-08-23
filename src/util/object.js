@@ -1,34 +1,3 @@
-/*
- * Polyfill for Object.values. Not fully spec compliant, but we don't
- * need it to be.
- *
- * @private
- */
-function values(obj) {
-  const result = [];
-  for (const k in obj) {
-    result.push(obj[k]);
-  }
-  return result;
-}
-
-/*
- * Compute the difference between the keys in one object and the keys
- * in another object.
- *
- * @returns keys difference
- * @private
- */
-function keysDifference(obj, other) {
-  const difference = [];
-  for (const i in obj) {
-    if (!(i in other)) {
-      difference.push(i);
-    }
-  }
-  return difference;
-}
-
 /**
  * Given an object and a number of properties as strings, return version
  * of that object with only those properties.
@@ -44,14 +13,8 @@ function keysDifference(obj, other) {
  * @private
  */
 function pick(src, properties) {
-  const result = {};
-  for (let i = 0; i < properties.length; i++) {
-    const k = properties[i];
-    if (k in src) {
-      result[k] = src[k];
-    }
-  }
-  return result;
+  const entries = properties.filter(p => p in src).map(p => [p, src[p]]);
+  return Object.fromEntries(entries);
 }
 
 /**
@@ -91,11 +54,9 @@ function bindAll(fns, context) {
  * @private
  */
 function mapObject(input, iterator, context) {
-  const output = {};
-  for (const key in input) {
-    output[key] = iterator.call(context || this, input[key], key, input);
-  }
-  return output;
+  context ??= this;
+  const entries = Object.entries(input).map(([k, v]) => [k, iterator.call(context, v, k, input)]);
+  return Object.fromEntries(entries);
 }
 
 /**
@@ -104,13 +65,9 @@ function mapObject(input, iterator, context) {
  * @private
  */
 function filterObject(input, iterator, context) {
-  const output = {};
-  for (const key in input) {
-    if (iterator.call(context || this, input[key], key, input)) {
-      output[key] = input[key];
-    }
-  }
-  return output;
+  context ??= this;
+  const entries = Object.entries(input).filter(([k, v]) => iterator.call(context, v, k, input));
+  return Object.fromEntries(entries);
 }
 
 /**
@@ -166,8 +123,6 @@ function arraysIntersect(a, b) {
 }
 
 module.exports = {
-  values,
-  keysDifference,
   pick,
   bindAll,
   mapObject,

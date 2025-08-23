@@ -105,25 +105,29 @@ function getLineWidth(lineWidth, lineGapWidth) {
 }
 
 function offsetLine(rings, offset) {
-  const newRings = [];
-  const zero = new Point(0, 0);
+  const newRings = new Array(rings.length);
   for (let k = 0; k < rings.length; k++) {
     const ring = rings[k];
-    const newRing = [];
-    for (let i = 0; i < ring.length; i++) {
-      const a = ring[i - 1];
-      const b = ring[i];
+    const newRing = new Array(ring.length);
+    newRings[k] = newRing;
+
+    let b = ring[0];
+    let aToB = new Point(0, 0);
+    for (let i = 0; i < ring.length - 1; i++) {
       const c = ring[i + 1];
-      const aToB = i === 0 ? zero : b.sub(a)._unit()._perp();
-      const bToC = i === ring.length - 1 ? zero : c.sub(b)._unit()._perp();
+      const bToC = c.sub(b)._unit()._perp();
       const extrude = aToB._add(bToC)._unit();
-
       const cosHalfAngle = extrude.x * bToC.x + extrude.y * bToC.y;
-      extrude._mult(1 / cosHalfAngle);
+      if (cosHalfAngle !== 0) {
+        extrude._div(cosHalfAngle);
+      }
+      newRing[i] = extrude._mult(offset)._add(b);
 
-      newRing.push(extrude._mult(offset)._add(b));
+      b = c;
+      aToB = bToC;
     }
-    newRings.push(newRing);
+
+    newRing[ring.length - 1] = aToB._unit()._mult(offset)._add(b);
   }
   return newRings;
 }

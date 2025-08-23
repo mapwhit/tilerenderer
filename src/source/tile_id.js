@@ -142,5 +142,6 @@ function calculateKey(wrap, z, x, y) {
 module.exports = {
   CanonicalTileID,
   UnwrappedTileID,
-  OverscaledTileID
+  OverscaledTileID,
+  calculateKey
 };
