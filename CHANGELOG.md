@@ -1,4 +1,25 @@
 
+1.0.0 / 2025-08-23
+==================
+
+ * remove worker - use main thread for all functionality
+ * remove serialization
+ * optimize creating and populating buckets and implement many localized optimizations
+ * remove unused `refreshExpiredTiles` and `maxTileCacheSize` options
+ * add more unit test and render tests
+ * test parsing layers with `global-state` expression in paint property
+ * fix order of 3D features in query results (fix ##7883)
+ * fix fill extrusion querying for colinear points (#9454)
+ * fix extrusion querying for: (#9138)
+ * fix Query point translation for multi-point geometry
+ * fix race condition the sometimes cause images not being displayed
+ * remove warning about v1 spec tiles
+ * add `removeFeatureState` (#7761)
+ * replace `prepublish` script with `prepare` script
+ * use `@mapwhit/gsls-minify` to minify .gsls files
+ * add `--test-bail` option to integration tests
+ * use `dot` test reporter for both unit and integration test
+
 0.52.1 / 2025-08-08
 ===================
 
