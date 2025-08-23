@@ -729,6 +729,10 @@ class Style extends Evented {
       return;
     }
     const sourceType = sourceCache.getSource().type;
+    if (sourceType === 'geojson' && sourceLayer) {
+      this.fire(new ErrorEvent(new Error('GeoJSON sources cannot have a sourceLayer parameter.')));
+      return;
+    }
     if (sourceType === 'vector' && !sourceLayer) {
       this.fire(new ErrorEvent(new Error('The sourceLayer parameter must be provided for vector source types.')));
       return;
@@ -739,6 +743,32 @@ class Style extends Evented {
     }
 
     sourceCache.setFeatureState(sourceLayer, feature.id, state);
+  }
+
+  removeFeatureState(target, key) {
+    this._checkLoaded();
+    const sourceId = target.source;
+    const sourceCache = this._sources[sourceId];
+
+    if (sourceCache === undefined) {
+      this.fire(new ErrorEvent(new Error(`The source '${sourceId}' does not exist in the map's style.`)));
+      return;
+    }
+
+    const sourceType = sourceCache.getSource().type;
+    const sourceLayer = sourceType === 'vector' ? target.sourceLayer : undefined;
+
+    if (sourceType === 'vector' && !sourceLayer) {
+      this.fire(new ErrorEvent(new Error('The sourceLayer parameter must be provided for vector source types.')));
+      return;
+    }
+
+    if (key && typeof target.id !== 'string' && typeof target.id !== 'number') {
+      this.fire(new ErrorEvent(new Error('A feature id is required to remove its specific state property.')));
+      return;
+    }
+
+    sourceCache.removeFeatureState(sourceLayer, target.id, key);
   }
 
   getFeatureState(feature) {
@@ -774,21 +804,37 @@ class Style extends Evented {
   }
 
   _flattenAndSortRenderedFeatures(sourceResults) {
-    const features = [];
+    // Feature order is complicated.
+    // The order between features in two 2D layers is always determined by layer order.
+    // The order between features in two 3D layers is always determined by depth.
+    // The order between a feature in a 2D layer and a 3D layer is tricky:
+    //      Most often layer order determines the feature order in this case. If
+    //      a line layer is above a extrusion layer the line feature will be rendered
+    //      above the extrusion. If the line layer is below the extrusion layer,
+    //      it will be rendered below it.
+    //
+    //      There is a weird case though.
+    //      You have layers in this order: extrusion_layer_a, line_layer, extrusion_layer_b
+    //      Each layer has a feature that overlaps the other features.
+    //      The feature in extrusion_layer_a is closer than the feature in extrusion_layer_b so it is rendered above.
+    //      The feature in line_layer is rendered above extrusion_layer_a.
+    //      This means that that the line_layer feature is above the extrusion_layer_b feature despite
+    //      it being in an earlier layer.
+
+    const isLayer3D = layer => layer.type === 'fill-extrusion';
+
+    const layerIndex = new Map();
     const features3D = [];
     const layers = Array.from(this._layers.values());
     for (let l = layers.length - 1; l >= 0; l--) {
       const layer = layers[l];
-      for (const sourceResult of sourceResults) {
-        const layerFeatures = sourceResult[layer.id];
-        if (layerFeatures) {
-          if (layer.type === 'fill-extrusion') {
+      if (isLayer3D(layer)) {
+        layerIndex.set(layer.id, l);
+        for (const sourceResult of sourceResults) {
+          const layerFeatures = sourceResult[layer.id];
+          if (layerFeatures) {
             for (const featureWrapper of layerFeatures) {
               features3D.push(featureWrapper);
-            }
-          } else {
-            for (const featureWrapper of layerFeatures) {
-              features.push(featureWrapper.feature);
             }
           }
         }
@@ -796,11 +842,31 @@ class Style extends Evented {
     }
 
     features3D.sort((a, b) => {
-      return a.intersectionZ - b.intersectionZ;
+      return b.intersectionZ - a.intersectionZ;
     });
 
-    for (const featureWrapper of features3D) {
-      features.push(featureWrapper.feature);
+    const features = [];
+    for (let l = layers.length - 1; l >= 0; l--) {
+      const layer = layers[l];
+
+      if (isLayer3D(layer)) {
+        // add all 3D features that are in or above the current layer
+        for (let i = features3D.length - 1; i >= 0; i--) {
+          const topmost3D = features3D[i].feature;
+          if (layerIndex.get(topmost3D.layer.id) < l) break;
+          features.push(topmost3D);
+          features3D.pop();
+        }
+      } else {
+        for (const sourceResult of sourceResults) {
+          const layerFeatures = sourceResult[layer.id];
+          if (layerFeatures) {
+            for (const featureWrapper of layerFeatures) {
+              features.push(featureWrapper.feature);
+            }
+          }
+        }
+      }
     }
 
     return features;

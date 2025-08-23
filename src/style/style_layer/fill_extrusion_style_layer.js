@@ -66,27 +66,42 @@ function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
     // triangle of the face, using only the xy plane. It doesn't matter if the
     // point is outside the first triangle because all the triangles in the face
     // are in the same plane.
-    const a = projectedFace[0];
-    const b = projectedFace[1];
-    const c = projectedFace[3];
-    const p = projectedQueryGeometry[0];
+    //
+    // Check whether points are coincident and use other points if they are.
+    let i = 0;
+    const a = projectedFace[i++];
+    let b;
+    while (!b || a.equals(b)) {
+      b = projectedFace[i++];
+      if (!b) return Number.POSITIVE_INFINITY;
+    }
 
-    const ab = b.sub(a);
-    const ac = c.sub(a);
-    const ap = p.sub(a);
+    // Loop until point `c` is not colinear with points `a` and `b`.
+    for (; i < projectedFace.length; i++) {
+      const c = projectedFace[i];
+      const p = projectedQueryGeometry[0];
 
-    const dotABAB = dot(ab, ab);
-    const dotABAC = dot(ab, ac);
-    const dotACAC = dot(ac, ac);
-    const dotAPAB = dot(ap, ab);
-    const dotAPAC = dot(ap, ac);
-    const denom = dotABAB * dotACAC - dotABAC * dotABAC;
-    const v = (dotACAC * dotAPAB - dotABAC * dotAPAC) / denom;
-    const w = (dotABAB * dotAPAC - dotABAC * dotAPAB) / denom;
-    const u = 1 - v - w;
+      const ab = b.sub(a);
+      const ac = c.sub(a);
+      const ap = p.sub(a);
 
-    // Use the barycentric weighting along with the original triangle z coordinates to get the point of intersection.
-    return a.z * u + b.z * v + c.z * w;
+      const dotABAB = dot(ab, ab);
+      const dotABAC = dot(ab, ac);
+      const dotACAC = dot(ac, ac);
+      const dotAPAB = dot(ap, ab);
+      const dotAPAC = dot(ap, ac);
+      const denom = dotABAB * dotACAC - dotABAC * dotABAC;
+
+      const v = (dotACAC * dotAPAB - dotABAC * dotAPAC) / denom;
+      const w = (dotABAB * dotAPAC - dotABAC * dotAPAB) / denom;
+      const u = 1 - v - w;
+
+      // Use the barycentric weighting along with the original triangle z coordinates to get the point of intersection.
+      const distance = a.z * u + b.z * v + c.z * w;
+
+      if (Number.isFinite(distance)) return distance;
+    }
+    return Number.POSITIVE_INFINITY;
   }
   // The counts as closest is less clear when the query is a box. This
   // returns the distance to the nearest point on the face, whether it is
@@ -191,4 +206,4 @@ function projectQueryGeometry(queryGeometry, pixelPosMatrix, transform, z) {
   return projectedQueryGeometry;
 }
 
-module.exports = FillExtrusionStyleLayer;
+module.exports = { FillExtrusionStyleLayer, getIntersectionDistance };
