@@ -1,9 +1,9 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const ejs = require('ejs');
-const styleSpec = require('../../src/style-spec/reference/v8.json');
+import fs from 'node:fs';
+import path from 'node:path';
+import ejs from 'ejs';
+import styleSpec from '../../src/style-spec/reference/v8.json' with { type: 'json' };
 
-const spec = require('../../src/style-spec/reference/v8');
+const spec = structuredClone(styleSpec);
 
 function typeToClass(property) {
   switch (property['property-type']) {
@@ -103,5 +103,5 @@ for (const layer of layers) {
 }
 
 function resolve(file) {
-  return path.resolve(__dirname, file);
+  return path.resolve(import.meta.dirname, file);
 }
