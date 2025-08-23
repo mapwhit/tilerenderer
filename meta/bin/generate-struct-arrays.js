@@ -31,7 +31,6 @@ const typeAbbreviations = {
 
 const arraysWithStructAccessors = [];
 const arrayTypeEntries = new Set();
-const extras = [];
 const layoutCache = {};
 
 function normalizeMembers(members, usedTypes) {
@@ -71,7 +70,7 @@ function createStructArrayType(name, layout, includeStructAccessors = false) {
       includeStructAccessors
     });
   } else {
-    arrayTypeEntries.add(`${arrayClass}: ${layoutClass}`);
+    arrayTypeEntries.add(`${layoutClass} as ${arrayClass}`);
   }
   return arrayClass;
 }
@@ -160,29 +159,27 @@ const {
 createStructArrayType('symbol_layout', symbolLayoutAttributes);
 createStructArrayType('symbol_dynamic_layout', dynamicLayoutAttributes);
 createStructArrayType('symbol_opacity', placementOpacityAttributes);
-extras.push(createStructArrayType('collision_box', collisionBox, true));
+createStructArrayType('collision_box', collisionBox, true);
 createStructArrayType('collision_box_layout', collisionBoxLayout);
 createStructArrayType('collision_circle_layout', collisionCircleLayout);
 createStructArrayType('collision_vertex', collisionVertexAttributes);
-extras.push(createStructArrayType('placed_symbol', placement, true));
-extras.push(createStructArrayType('symbol_instance', symbolInstance, true));
-extras.push(createStructArrayType('glyph_offset', glyphOffset, true));
-extras.push(createStructArrayType('symbol_line_vertex', lineVertex, true));
+createStructArrayType('placed_symbol', placement, true);
+createStructArrayType('symbol_instance', symbolInstance, true);
+createStructArrayType('glyph_offset', glyphOffset, true);
+createStructArrayType('symbol_line_vertex', lineVertex, true);
 
 // feature index array
-extras.push(
-  createStructArrayType(
-    'feature_index',
-    createLayout([
-      // the index of the feature in the original vectortile
-      { type: 'Uint32', name: 'featureIndex' },
-      // the source layer the feature appears in
-      { type: 'Uint16', name: 'sourceLayerIndex' },
-      // the bucket the feature appears in
-      { type: 'Uint16', name: 'bucketIndex' }
-    ]),
-    true
-  )
+createStructArrayType(
+  'feature_index',
+  createLayout([
+    // the index of the feature in the original vectortile
+    { type: 'Uint32', name: 'featureIndex' },
+    // the source layer the feature appears in
+    { type: 'Uint16', name: 'sourceLayerIndex' },
+    // the bucket the feature appears in
+    { type: 'Uint16', name: 'bucketIndex' }
+  ]),
+  true
 );
 
 // triangle index array
@@ -244,16 +241,14 @@ fs.writeFileSync(
   resolve('../../src/data/array_types.js'),
   `// This file is generated. Edit the template at meta/bin/generate-struct-arrays.js.ejs and instead.
 
-const assert = require('assert');
-const { Struct, StructArray } = require('../util/struct_array');
+import assert from 'assert';
+
+import { Struct, StructArray } from '../util/struct_array.js';
 
 ${layouts.map(structArrayLayoutJs).join('\n')}
 ${arraysWithStructAccessors.map(structArrayJs).join('\n')}
-module.exports = {
-  ${layouts.map(layout => layout.className).join(',\n  ')},
-  ${[...arrayTypeEntries].join(',\n  ')},
-
-  ${extras.sort().join(',\n  ')}
+export {
+  ${[...arrayTypeEntries].join(',\n  ')}
 };
 `
 );
