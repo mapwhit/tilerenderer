@@ -1,6 +1,6 @@
-const { sphericalToCartesian } = require('../util/util');
-const { Evented } = require('@mapwhit/events');
-const interpolate = require('../util/interpolate');
+import { Evented } from '@mapwhit/events';
+import interpolate from '../util/interpolate.js';
+import { sphericalToCartesian } from '../util/util.js';
 
 const lightSpec = {
   anchor: {
@@ -40,7 +40,7 @@ const lightSpec = {
   }
 };
 
-const { Properties, Transitionable, DataConstantProperty } = require('./properties');
+import { DataConstantProperty, Properties, Transitionable } from './properties.js';
 
 class LightPositionProperty {
   constructor(specification) {
@@ -109,4 +109,4 @@ class Light extends Evented {
   }
 }
 
-module.exports = Light;
+export default Light;

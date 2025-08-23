@@ -1,4 +1,4 @@
-module.exports = checkMaxAngle;
+export default checkMaxAngle;
 
 /**
  * Labels placed around really sharp angles aren't readable. Check if any

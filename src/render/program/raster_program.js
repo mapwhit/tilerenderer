@@ -1,6 +1,6 @@
-const { Uniform1i, Uniform1f, Uniform2f, Uniform3f, UniformMatrix4f } = require('../uniform_binding');
+import { Uniform1f, Uniform1i, Uniform2f, Uniform3f, UniformMatrix4f } from '../uniform_binding.js';
 
-const rasterUniforms = (context, locations) => ({
+export const rasterUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_tl_parent: new Uniform2f(context, locations.u_tl_parent),
   u_scale_parent: new Uniform1f(context, locations.u_scale_parent),
@@ -16,7 +16,7 @@ const rasterUniforms = (context, locations) => ({
   u_spin_weights: new Uniform3f(context, locations.u_spin_weights)
 });
 
-const rasterUniformValues = (matrix, parentTL, parentScaleBy, fade, layer) => ({
+export const rasterUniformValues = (matrix, parentTL, parentScaleBy, fade, layer) => ({
   u_matrix: matrix,
   u_tl_parent: parentTL,
   u_scale_parent: parentScaleBy,
@@ -46,5 +46,3 @@ function contrastFactor(contrast) {
 function saturationFactor(saturation) {
   return saturation > 0 ? 1 - 1 / (1.001 - saturation) : -saturation;
 }
-
-module.exports = { rasterUniforms, rasterUniformValues };

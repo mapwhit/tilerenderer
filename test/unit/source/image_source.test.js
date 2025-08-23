@@ -1,9 +1,9 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const ImageSource = require('../../../src/source/image_source');
-const { Evented } = require('@mapwhit/events');
-const Transform = require('../../../src/geo/transform');
-const browser = require('../../../src/util/browser');
+import test from 'node:test';
+import { Evented } from '@mapwhit/events';
+import Transform from '../../../src/geo/transform.js';
+import ImageSource from '../../../src/source/image_source.js';
+import browser from '../../../src/util/browser.js';
+import _window from '../../util/window.js';
 
 function createSource(options) {
   options = Object.assign(

@@ -1,7 +1,7 @@
-const test = require('node:test');
-const { getIconQuads } = require('../../../src/symbol/quads');
-const Anchor = require('../../../src/symbol/anchor');
-const SymbolStyleLayer = require('../../../src/style/style_layer/symbol_style_layer');
+import test from 'node:test';
+import SymbolStyleLayer from '../../../src/style/style_layer/symbol_style_layer.js';
+import Anchor from '../../../src/symbol/anchor.js';
+import { getIconQuads } from '../../../src/symbol/quads.js';
 
 function createLayer(layer) {
   const result = new SymbolStyleLayer(layer);

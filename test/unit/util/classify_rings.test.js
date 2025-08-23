@@ -1,13 +1,13 @@
-const test = require('node:test');
-const fs = require('fs');
-const path = require('path');
-const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapwhit/vector-tile');
-const classifyRings = require('../../../src/util/classify_rings');
+import fs from 'fs';
+import test from 'node:test';
+import path from 'path';
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
+import classifyRings from '../../../src/util/classify_rings.js';
 
 // Load a fill feature from fixture tile.
 const vt = new VectorTile(
-  new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
 );
 const feature = vt.layers.water.feature(0);
 

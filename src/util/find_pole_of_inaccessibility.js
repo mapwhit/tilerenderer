@@ -1,7 +1,6 @@
-const { default: Queue } = require('tinyqueue');
-
-const { default: Point } = require('@mapbox/point-geometry');
-const { distToSegmentSquared } = require('./intersection_tests');
+import Point from '@mapbox/point-geometry';
+import Queue from 'tinyqueue';
+import { distToSegmentSquared } from './intersection_tests.js';
 
 /**
  * Finds an approximation of a polygon's Pole Of Inaccessibiliy https://en.wikipedia.org/wiki/Pole_of_inaccessibility
@@ -13,7 +12,7 @@ const { distToSegmentSquared } = require('./intersection_tests');
  * @returns Pole of Inaccessibiliy.
  * @private
  */
-module.exports = function (polygonRings, precision = 1, debug = false) {
+export default function (polygonRings, precision = 1, debug = false) {
   // find the bounding box of the outer ring
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
@@ -77,7 +76,7 @@ module.exports = function (polygonRings, precision = 1, debug = false) {
   }
 
   return bestCell.p;
-};
+}
 
 function compareMax(a, b) {
   return b.max - a.max;

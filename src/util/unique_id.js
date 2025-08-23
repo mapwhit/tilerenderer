@@ -7,6 +7,6 @@ let id = 1;
  * @returns unique numeric id.
  * @private
  */
-module.exports = function uniqueId() {
+export default function uniqueId() {
   return id++;
-};
+}

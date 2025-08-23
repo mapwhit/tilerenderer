@@ -1,9 +1,6 @@
-const interpolate = require('../util/interpolate');
-
-const Anchor = require('../symbol/anchor');
-const checkMaxAngle = require('./check_max_angle');
-
-module.exports = { getAnchors, getCenterAnchor };
+import Anchor from '../symbol/anchor.js';
+import interpolate from '../util/interpolate.js';
+import checkMaxAngle from './check_max_angle.js';
 
 function getLineLength(line) {
   let lineLength = 0;
@@ -24,7 +21,7 @@ function getShapedLabelLength(shapedText, shapedIcon) {
   );
 }
 
-function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSize, boxScale) {
+export function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSize, boxScale) {
   const angleWindowSize = getAngleWindowSize(shapedText, glyphSize, boxScale);
   const labelLength = getShapedLabelLength(shapedText, shapedIcon) * boxScale;
 
@@ -55,7 +52,17 @@ function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSize, boxS
   }
 }
 
-function getAnchors(line, spacing, maxAngle, shapedText, shapedIcon, glyphSize, boxScale, overscaling, tileExtent) {
+export function getAnchors(
+  line,
+  spacing,
+  maxAngle,
+  shapedText,
+  shapedIcon,
+  glyphSize,
+  boxScale,
+  overscaling,
+  tileExtent
+) {
   // Resample a line to get anchor points for labels and check that each
   // potential label passes text-max-angle check and has enough froom to fit
   // on the line.

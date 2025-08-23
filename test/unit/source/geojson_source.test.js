@@ -1,10 +1,10 @@
-const test = require('node:test');
-const Tile = require('../../../src/source/tile');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const GeoJSONSource = require('../../../src/source/geojson_source');
-const Transform = require('../../../src/geo/transform');
-const LngLat = require('../../../src/geo/lng_lat');
-const GeoJSONWorkerSource = require('../../../src/source/geojson_worker_source');
+import test from 'node:test';
+import LngLat from '../../../src/geo/lng_lat.js';
+import Transform from '../../../src/geo/transform.js';
+import GeoJSONSource from '../../../src/source/geojson_source.js';
+import GeoJSONWorkerSource from '../../../src/source/geojson_worker_source.js';
+import Tile from '../../../src/source/tile.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
 
 const hawkHill = {
   type: 'FeatureCollection',

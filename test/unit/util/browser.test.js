@@ -1,5 +1,5 @@
-const test = require('node:test');
-const browser = require('../../../src/util/browser');
+import test from 'node:test';
+import browser from '../../../src/util/browser.js';
 
 test('browser', async t => {
   await t.test('frame', (t, done) => {

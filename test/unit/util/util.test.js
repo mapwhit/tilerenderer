@@ -1,16 +1,17 @@
-const test = require('node:test');
+import test from 'node:test';
+import Coordinate from '../../../src/geo/coordinate.js';
 
-const Coordinate = require('../../../src/geo/coordinate');
-const {
+import {
+  bezier,
+  clamp,
   easeCubicInOut,
   getCoordinatesCenter,
-  clamp,
-  wrap,
-  bezier,
+  isClosedPolygon,
   isCounterClockwise,
-  isClosedPolygon
-} = require('../../../src/util/util');
-const { default: Point } = require('@mapbox/point-geometry');
+  wrap
+} from '../../../src/util/util.js';
+
+import Point from '@mapbox/point-geometry';
 
 test('util', async t => {
   t.assert.equal(easeCubicInOut(0), 0, 'easeCubicInOut=0');

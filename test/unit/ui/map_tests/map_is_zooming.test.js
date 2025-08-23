@@ -1,7 +1,8 @@
-const test = require('node:test');
-const { initWindow } = require('../../../util/util');
-const Map = require('../../../../src/ui/map');
-const DOM = require('../../../../src/util/dom');
+import test from 'node:test';
+import Map from '../../../../src/ui/map.js';
+import browser from '../../../../src/util/browser.js';
+import DOM from '../../../../src/util/dom.js';
+import { initWindow } from '../../../util/util.js';
 
 function createMap() {
   return new Map({ container: DOM.create('div', '', window.document.body) });

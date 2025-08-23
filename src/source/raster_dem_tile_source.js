@@ -1,10 +1,10 @@
-const browser = require('../util/browser');
-const loadImage = require('../util/loader/image');
-const { calculateKey } = require('./tile_id');
-const RasterTileSource = require('./raster_tile_source');
-const DEMData = require('../data/dem_data');
+import DEMData from '../data/dem_data.js';
+import browser from '../util/browser.js';
+import loadImage from '../util/loader/image.js';
+import RasterTileSource from './raster_tile_source.js';
+import { calculateKey } from './tile_id.js';
 
-class RasterDEMTileSource extends RasterTileSource {
+export default class RasterDEMTileSource extends RasterTileSource {
   constructor(id, options, eventedParent) {
     super(id, options, eventedParent);
     this.type = 'raster-dem';
@@ -70,8 +70,6 @@ class RasterDEMTileSource extends RasterTileSource {
 async function loadDEMTile({ uid, rawImageData, encoding }) {
   return new DEMData(uid, rawImageData, encoding);
 }
-
-module.exports = RasterDEMTileSource;
 
 function getNeighboringTiles(tileID) {
   const {

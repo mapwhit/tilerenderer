@@ -1,11 +1,13 @@
-const { Evented } = require('@mapwhit/events');
+import { Evented } from '@mapwhit/events';
+import browser from './browser.js';
 
 function getDefaultWorkerCount() {
-  const browser = require('./browser');
   return Math.max(Math.floor(browser.hardwareConcurrency / 2), 1);
 }
 
 const config = new Evented();
+
+export default config;
 
 config.set = function set(c) {
   Object.assign(config, c);
@@ -20,5 +22,3 @@ config.set({
   WORKER_COUNT: getDefaultWorkerCount(),
   WORKER_URL: ''
 });
-
-module.exports = config;

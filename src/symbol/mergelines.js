@@ -1,4 +1,4 @@
-module.exports = function (features) {
+export default function (features) {
   const leftIndex = new Map();
   const rightIndex = new Map();
   const mergedFeatures = [];
@@ -73,4 +73,4 @@ module.exports = function (features) {
     const { x, y } = geom.at(onRight ? -1 : 0);
     return `${text}:${x}:${y}`;
   }
-};
+}

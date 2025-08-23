@@ -1,11 +1,7 @@
-const assert = require('assert');
-const { mat4 } = require('@mapbox/gl-matrix');
+import assert from 'assert';
+import glMatrix from '@mapbox/gl-matrix';
 
-module.exports = {
-  queryRenderedFeatures,
-  queryRenderedSymbols,
-  querySourceFeatures
-};
+const { mat4 } = glMatrix;
 
 /*
  * Returns a matrix that can be used to convert from tile coordinates to viewport pixel coordinates.
@@ -35,7 +31,7 @@ function queryIncludes3DLayer(layers, styleLayers, sourceID) {
   return false;
 }
 
-function queryRenderedFeatures(sourceCache, styleLayers, queryGeometry, params, transform) {
+export function queryRenderedFeatures(sourceCache, styleLayers, queryGeometry, params, transform) {
   const has3DLayer = queryIncludes3DLayer(params?.layers, styleLayers, sourceCache.id);
   const maxPitchScaleFactor = transform.maxPitchScaleFactor();
   const tilesIn = sourceCache.tilesIn(queryGeometry, maxPitchScaleFactor, has3DLayer);
@@ -77,7 +73,14 @@ function queryRenderedFeatures(sourceCache, styleLayers, queryGeometry, params, 
   return result;
 }
 
-function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, collisionIndex, retainedQueryData) {
+export function queryRenderedSymbols(
+  styleLayers,
+  sourceCaches,
+  queryGeometry,
+  params,
+  collisionIndex,
+  retainedQueryData
+) {
   const result = {};
   const renderedSymbols = collisionIndex.queryRenderedSymbols(queryGeometry);
   const bucketQueryData = [];
@@ -141,7 +144,7 @@ function queryRenderedSymbols(styleLayers, sourceCaches, queryGeometry, params, 
   return result;
 }
 
-function querySourceFeatures(sourceCache, params) {
+export function querySourceFeatures(sourceCache, params) {
   const tiles = sourceCache.getRenderableIds().map(id => {
     return sourceCache.getTileByID(id);
   });

@@ -1,10 +1,10 @@
-const test = require('node:test');
-const { assertEqualWithPrecision } = require('../../util/assert');
-const Camera = require('../../../src/ui/camera');
-const Transform = require('../../../src/geo/transform');
-const taskQueue = require('../../../src/util/task_queue');
-const browser = require('../../../src/util/browser');
-const fixed = require('../../util/mapbox-gl-js-test/fixed');
+import test from 'node:test';
+import Transform from '../../../src/geo/transform.js';
+import Camera from '../../../src/ui/camera.js';
+import browser from '../../../src/util/browser.js';
+import taskQueue from '../../../src/util/task_queue.js';
+import { assertEqualWithPrecision } from '../../util/assert.js';
+import fixed from '../../util/mapbox-gl-js-test/fixed.js';
 const fixedLngLat = fixed.LngLat;
 const fixedNum = fixed.Num;
 

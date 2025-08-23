@@ -1,11 +1,12 @@
-const jsdom = require('jsdom');
-const canvas = require('canvas');
-const gl = require('gl');
-const WebWorker = require('./web_worker');
+import canvas from 'canvas';
+import gl from 'gl';
+import jsdom from 'jsdom';
+import WebWorker from './web_worker.js';
+import '../../src/source/rtl_text_plugin.js';
 
 const _window = create();
 
-module.exports = _window;
+export default _window;
 
 function create() {
   // Create new window and inject into exported object
@@ -64,7 +65,6 @@ function create() {
 
   globalThis.document ??= window.document;
 
-  require('../../src/source/rtl_text_plugin');
   window.registerRTLTextPlugin ??= globalThis.registerRTLTextPlugin;
 
   return window;

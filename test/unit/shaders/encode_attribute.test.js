@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { packUint8ToFloat } = require('../../../src/shaders/encode_attribute');
+import test from 'node:test';
+import { packUint8ToFloat } from '../../../src/shaders/encode_attribute.js';
 
 test('packUint8ToFloat', t => {
   t.assert.equal(packUint8ToFloat(0, 0), 0);

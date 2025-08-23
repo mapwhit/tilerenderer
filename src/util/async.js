@@ -8,7 +8,7 @@
  * called with an array, containing the results of each async call.
  * @private
  */
-exports.all = function (array, fn, callback) {
+export function all(array, fn, callback) {
   if (!array.length) return callback(null, []);
   let remaining = array.length;
   const results = new Array(array.length);
@@ -20,4 +20,4 @@ exports.all = function (array, fn, callback) {
       if (--remaining === 0) callback(error, results);
     });
   });
-};
+}

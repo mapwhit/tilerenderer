@@ -1,5 +1,5 @@
-const test = require('node:test');
-const Coordinate = require('../../../src/geo/coordinate');
+import test from 'node:test';
+import Coordinate from '../../../src/geo/coordinate.js';
 
 test('Coordinate', async t => {
   await t.test('constructor', t => {

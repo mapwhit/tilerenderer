@@ -1,6 +1,6 @@
-const test = require('node:test');
-const mergeLines = require('../../../src/symbol/mergelines');
-const { default: Point } = require('@mapbox/point-geometry');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import mergeLines from '../../../src/symbol/mergelines.js';
 
 function makeFeatures(lines) {
   const features = [];

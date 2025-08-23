@@ -49,4 +49,4 @@ const exported = {
   }
 };
 
-module.exports = exported;
+export default exported;

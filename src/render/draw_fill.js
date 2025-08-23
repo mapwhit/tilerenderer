@@ -1,14 +1,15 @@
-const { Color } = require('@mapwhit/style-expressions');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const {
-  fillUniformValues,
-  fillPatternUniformValues,
-  fillOutlineUniformValues,
-  fillOutlinePatternUniformValues
-} = require('./program/fill_program');
+import { Color } from '@mapwhit/style-expressions';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
 
-module.exports = drawFill;
+import {
+  fillOutlinePatternUniformValues,
+  fillOutlineUniformValues,
+  fillPatternUniformValues,
+  fillUniformValues
+} from './program/fill_program.js';
+
+export default drawFill;
 
 function drawFill(painter, sourceCache, layer, coords) {
   const color = layer._paint.get('fill-color');

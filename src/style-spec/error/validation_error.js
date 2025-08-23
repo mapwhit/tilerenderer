@@ -1,4 +1,4 @@
-module.exports = class ValidationError {
+export default class ValidationError {
   constructor(key, value, message, identifier) {
     this.message = (key ? `${key}: ` : '') + message;
     if (identifier) this.identifier = identifier;
@@ -7,4 +7,4 @@ module.exports = class ValidationError {
       this.line = value.__line__;
     }
   }
-};
+}

@@ -1,4 +1,4 @@
-const { Color } = require('@mapwhit/style-expressions');
+import { Color } from '@mapwhit/style-expressions';
 
 const ZERO = 0x0000;
 const ONE = 0x0001;
@@ -18,4 +18,4 @@ class ColorMode {
   }
 }
 
-module.exports = ColorMode;
+export default ColorMode;

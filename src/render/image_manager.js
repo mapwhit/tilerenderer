@@ -1,9 +1,8 @@
-const { default: potpack } = require('potpack');
-
-const { RGBAImage } = require('../util/image');
-const { ImagePosition } = require('./image_atlas');
-const Texture = require('./texture');
-const assert = require('assert');
+import assert from 'assert';
+import potpack from 'potpack';
+import { RGBAImage } from '../util/image.js';
+import { ImagePosition } from './image_atlas.js';
+import Texture from './texture.js';
 
 // When copied into the atlas texture, image data is padded by one pixel on each side. Icon
 // images are padded with fully transparent pixels, while pattern images are padded with a
@@ -21,7 +20,7 @@ const padding = 1;
     data-driven support for `*-pattern`, we'll likely use per-bucket pattern atlases, and that would be a good time
     to refactor this.
 */
-class ImageManager {
+export default class ImageManager {
   #loadedState = Promise.withResolvers();
   #imageQueue = new Map();
   constructor() {
@@ -165,5 +164,3 @@ class ImageManager {
     this.dirty = true;
   }
 }
-
-module.exports = ImageManager;

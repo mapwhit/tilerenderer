@@ -1,8 +1,8 @@
-const test = require('node:test');
-const GeoJSONWorkerSource = require('../../../src/source/geojson_worker_source');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
-const { create: createLayers } = require('../../util/layers');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import GeoJSONWorkerSource from '../../../src/source/geojson_worker_source.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import StyleLayerIndex from '../../../src/style/style_layer_index.js';
+import { create as createLayers } from '../../util/layers.js';
 
 test('GeoJSONWorkerSource.constructor', t => {
   const resources = {};

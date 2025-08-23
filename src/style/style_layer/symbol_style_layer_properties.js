@@ -1,6 +1,6 @@
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const { Properties, DataConstantProperty, DataDrivenProperty } = require('../properties');
+import { DataConstantProperty, DataDrivenProperty, Properties } from '../properties.js';
 
 const layout = new Properties({
   'symbol-placement': new DataConstantProperty({
@@ -291,4 +291,4 @@ const paint = new Properties({
   })
 });
 
-module.exports = { paint, layout };
+export default { paint, layout };

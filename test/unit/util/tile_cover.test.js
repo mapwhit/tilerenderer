@@ -1,6 +1,6 @@
-const test = require('node:test');
-const tileCover = require('../../../src/util/tile_cover');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import tileCover from '../../../src/util/tile_cover.js';
 
 test('tileCover', async t => {
   await t.test('.cover', async t => {

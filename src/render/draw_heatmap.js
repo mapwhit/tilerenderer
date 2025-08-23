@@ -1,12 +1,11 @@
-const Texture = require('./texture');
-const { Color } = require('@mapwhit/style-expressions');
-const DepthMode = require('../gl/depth_mode');
-const StencilMode = require('../gl/stencil_mode');
-const ColorMode = require('../gl/color_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { heatmapUniformValues, heatmapTextureUniformValues } = require('./program/heatmap_program');
-
-module.exports = drawHeatmap;
+import { Color } from '@mapwhit/style-expressions';
+import ColorMode from '../gl/color_mode.js';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { heatmapTextureUniformValues, heatmapUniformValues } from './program/heatmap_program.js';
+import Texture from './texture.js';
+export default drawHeatmap;
 
 function drawHeatmap(painter, sourceCache, layer, coords) {
   if (layer._paint.get('heatmap-opacity') === 0) {

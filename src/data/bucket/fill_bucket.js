@@ -1,16 +1,17 @@
-const { FillLayoutArray } = require('../array_types');
+import assert from 'assert';
+import earcut from 'earcut';
+import EvaluationParameters from '../../style/evaluation_parameters.js';
+import classifyRings from '../../util/classify_rings.js';
+import { FillLayoutArray } from '../array_types.js';
+import { LineIndexArray, TriangleIndexArray } from '../index_array_type.js';
+import loadGeometry from '../load_geometry.js';
+import { ProgramConfigurationSet } from '../program_configuration.js';
+import SegmentVector from '../segment.js';
+import layout from './fill_attributes.js';
+import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
 
-const { members: layoutAttributes } = require('./fill_attributes');
-const SegmentVector = require('../segment');
-const { ProgramConfigurationSet } = require('../program_configuration');
-const { LineIndexArray, TriangleIndexArray } = require('../index_array_type');
-const { default: earcut } = require('earcut');
-const classifyRings = require('../../util/classify_rings');
-const assert = require('assert');
 const EARCUT_MAX_RINGS = 500;
-const { hasPattern, addPatternDependencies } = require('./pattern_bucket_features');
-const loadGeometry = require('../load_geometry');
-const EvaluationParameters = require('../../style/evaluation_parameters');
+const layoutAttributes = layout.members;
 
 class FillBucket {
   constructor(options) {
@@ -170,4 +171,4 @@ class FillBucket {
   }
 }
 
-module.exports = FillBucket;
+export default FillBucket;

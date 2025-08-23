@@ -1,5 +1,5 @@
-const test = require('node:test');
-const LngLat = require('../../../src/geo/lng_lat');
+import test from 'node:test';
+import LngLat from '../../../src/geo/lng_lat.js';
 
 test('LngLat', async t => {
   await t.test('constructor', t => {

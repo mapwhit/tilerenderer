@@ -1,36 +1,36 @@
-const {
-  symbolLayoutAttributes,
-  collisionVertexAttributes,
-  collisionBoxLayout,
-  collisionCircleLayout,
-  dynamicLayoutAttributes
-} = require('./symbol_attributes');
-
-const {
-  SymbolLayoutArray,
-  SymbolDynamicLayoutArray,
-  SymbolOpacityArray,
+import { Formatted } from '@mapwhit/style-expressions';
+import { VectorTileFeature } from '@mapwhit/vector-tile';
+import EvaluationParameters from '../../style/evaluation_parameters.js';
+import mergeLines from '../../symbol/mergelines.js';
+import { getSizeData } from '../../symbol/symbol_size.js';
+import transformText from '../../symbol/transform_text.js';
+import { allowsVerticalWritingMode } from '../../util/script_detection.js';
+import { verticalizedCharacterMap } from '../../util/verticalize_punctuation.js';
+import {
   CollisionBoxLayoutArray,
   CollisionCircleLayoutArray,
   CollisionVertexArray,
-  PlacedSymbolArray,
-  SymbolInstanceArray,
   GlyphOffsetArray,
-  SymbolLineVertexArray
-} = require('../array_types');
-const SegmentVector = require('../segment');
-const { ProgramConfigurationSet } = require('../program_configuration');
-const { TriangleIndexArray, LineIndexArray } = require('../index_array_type');
-const transformText = require('../../symbol/transform_text');
-const mergeLines = require('../../symbol/mergelines');
-const { allowsVerticalWritingMode } = require('../../util/script_detection');
-const loadGeometry = require('../load_geometry');
-const mvt = require('@mapwhit/vector-tile');
-const vectorTileFeatureTypes = mvt.VectorTileFeature.types;
-const { verticalizedCharacterMap } = require('../../util/verticalize_punctuation');
-const { getSizeData } = require('../../symbol/symbol_size');
-const EvaluationParameters = require('../../style/evaluation_parameters');
-const { Formatted } = require('@mapwhit/style-expressions');
+  PlacedSymbolArray,
+  SymbolDynamicLayoutArray,
+  SymbolInstanceArray,
+  SymbolLayoutArray,
+  SymbolLineVertexArray,
+  SymbolOpacityArray
+} from '../array_types.js';
+import { LineIndexArray, TriangleIndexArray } from '../index_array_type.js';
+import loadGeometry from '../load_geometry.js';
+import { ProgramConfigurationSet } from '../program_configuration.js';
+import SegmentVector from '../segment.js';
+import {
+  collisionBoxLayout,
+  collisionCircleLayout,
+  collisionVertexAttributes,
+  dynamicLayoutAttributes,
+  symbolLayoutAttributes
+} from './symbol_attributes.js';
+
+const vectorTileFeatureTypes = VectorTileFeature.types;
 
 // Opacity arrays are frequently updated but don't contain a lot of information, so we pack them
 // tight. Each Uint32 is actually four duplicate Uint8s for the four corners of a glyph
@@ -58,7 +58,7 @@ function addVertex(array, anchorX, anchorY, ox, oy, tx, ty, sizeVertex) {
   );
 }
 
-function addDynamicAttributes(dynamicLayoutVertexArray, p, angle) {
+export function addDynamicAttributes(dynamicLayoutVertexArray, p, angle) {
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
@@ -707,6 +707,4 @@ function deserializeCollisionBoxesForSymbol(
 // but we expect there to be many fewer boxes/lines than glyphs
 SymbolBucket.MAX_GLYPHS = 65535;
 
-SymbolBucket.addDynamicAttributes = addDynamicAttributes;
-
-module.exports = SymbolBucket;
+export default SymbolBucket;

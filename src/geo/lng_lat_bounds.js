@@ -1,4 +1,4 @@
-const LngLat = require('./lng_lat');
+import LngLat from './lng_lat.js';
 
 /**
  * A `LngLatBounds` object represents a geographical bounding box,
@@ -250,4 +250,4 @@ class LngLatBounds {
  * var v3 = [[-73.9876, 40.7661], [-73.9397, 40.8002]];
  */
 
-module.exports = LngLatBounds;
+export default LngLatBounds;

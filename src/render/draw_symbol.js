@@ -1,20 +1,19 @@
-const drawCollisionDebug = require('./draw_collision_debug');
+import glMatrix from '@mapbox/gl-matrix';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import pixelsToTileUnits from '../source/pixels_to_tile_units.js';
+import properties from '../style/style_layer/symbol_style_layer_properties.js';
+import * as symbolProjection from '../symbol/projection.js';
+import * as symbolSize from '../symbol/symbol_size.js';
+import drawCollisionDebug from './draw_collision_debug.js';
+import { symbolIconUniformValues, symbolSDFUniformValues } from './program/symbol_program.js';
 
-const pixelsToTileUnits = require('../source/pixels_to_tile_units');
-const symbolProjection = require('../symbol/projection');
-const symbolSize = require('../symbol/symbol_size');
-const { mat4 } = require('@mapbox/gl-matrix');
+const { mat4 } = glMatrix;
 const identityMat4 = mat4.identity(new Float32Array(16));
-const properties = require('../style/style_layer/symbol_style_layer_properties');
 const symbolLayoutProperties = properties.layout;
-const StencilMode = require('../gl/stencil_mode');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { symbolIconUniformValues, symbolSDFUniformValues } = require('./program/symbol_program');
 
-module.exports = drawSymbols;
-
-function drawSymbols(painter, sourceCache, layer, coords) {
+export default function drawSymbols(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;
 
   // Disable the stencil test so that labels aren't clipped to tile boundaries.

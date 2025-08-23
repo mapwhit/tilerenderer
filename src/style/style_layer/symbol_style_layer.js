@@ -1,10 +1,9 @@
-const StyleLayer = require('../style_layer');
-
-const SymbolBucket = require('../../data/bucket/symbol_bucket');
-const resolveTokens = require('../../util/token');
-const { isExpression } = require('@mapwhit/style-expressions');
-const assert = require('assert');
-const properties = require('./symbol_style_layer_properties');
+import assert from 'assert';
+import { isExpression } from '@mapwhit/style-expressions';
+import SymbolBucket from '../../data/bucket/symbol_bucket.js';
+import resolveTokens from '../../util/token.js';
+import StyleLayer from '../style_layer.js';
+import properties from './symbol_style_layer_properties.js';
 
 class SymbolStyleLayer extends StyleLayer {
   constructor(layer) {
@@ -63,4 +62,4 @@ class SymbolStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = SymbolStyleLayer;
+export default SymbolStyleLayer;

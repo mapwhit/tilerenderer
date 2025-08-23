@@ -1,6 +1,6 @@
-const test = require('node:test');
-const group = require('../../../src/util/group_layers');
-const createStyleLayer = require('../../../src/style/create_style_layer');
+import test from 'node:test';
+import createStyleLayer from '../../../src/style/create_style_layer.js';
+import group from '../../../src/util/group_layers.js';
 
 test('group layers whose key properties are identical', t => {
   const a = createStyleLayer({

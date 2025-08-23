@@ -1,6 +1,5 @@
-const UnitBezier = require('@mapbox/unitbezier');
-
-const Coordinate = require('../geo/coordinate');
+import UnitBezier from '@mapbox/unitbezier';
+import Coordinate from '../geo/coordinate.js';
 
 /**
  * @module util
@@ -14,7 +13,7 @@ const Coordinate = require('../geo/coordinate');
  *
  * @private
  */
-function easeCubicInOut(t) {
+export function easeCubicInOut(t) {
   if (t <= 0) return 0;
   if (t >= 1) return 1;
   const t2 = t * t;
@@ -32,7 +31,7 @@ function easeCubicInOut(t) {
  * @param p2y control point 2 y coordinate
  * @private
  */
-function bezier(p1x, p1y, p2x, p2y) {
+export function bezier(p1x, p1y, p2x, p2y) {
   const bezier = new UnitBezier(p1x, p1y, p2x, p2y);
   return function (t) {
     return bezier.solve(t);
@@ -45,7 +44,7 @@ function bezier(p1x, p1y, p2x, p2y) {
  *
  * @private
  */
-const ease = bezier(0.25, 0.1, 0.25, 1);
+export const ease = bezier(0.25, 0.1, 0.25, 1);
 
 /**
  * constrain n to the given range via min + max
@@ -56,7 +55,7 @@ const ease = bezier(0.25, 0.1, 0.25, 1);
  * @returns the clamped value
  * @private
  */
-function clamp(n, min, max) {
+export function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
 }
 
@@ -69,7 +68,7 @@ function clamp(n, min, max) {
  * @returns constrained number
  * @private
  */
-function wrap(n, min, max) {
+export function wrap(n, min, max) {
   const d = max - min;
   const w = ((((n - min) % d) + d) % d) + min;
   return w === min ? max : w;
@@ -81,7 +80,7 @@ function wrap(n, min, max) {
  * @returns centerpoint
  * @private
  */
-function getCoordinatesCenter(coords) {
+export function getCoordinatesCenter(coords) {
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
@@ -108,7 +107,7 @@ function getCoordinatesCenter(coords) {
  * @returns true for a counter clockwise set of points
  */
 // http://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
-function isCounterClockwise(a, b, c) {
+export function isCounterClockwise(a, b, c) {
   return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
 }
 
@@ -120,7 +119,7 @@ function isCounterClockwise(a, b, c) {
  * @private
  * @param ring Exterior or interior ring
  */
-function calculateSignedArea(ring) {
+export function calculateSignedArea(ring) {
   let sum = 0;
   const len = ring.length;
   let p2 = ring[len - 1]; // last point
@@ -138,7 +137,7 @@ function calculateSignedArea(ring) {
  * @param points array of points
  * @return true if the points are a closed polygon
  */
-function isClosedPolygon(points) {
+export function isClosedPolygon(points) {
   // If it is 2 points that are the same then it is a point
   // If it is 3 points with start and end the same then it is a line
   if (points.length < 4) return false;
@@ -162,7 +161,7 @@ function isClosedPolygon(points) {
  * @return cartesian coordinates in [x, y, z]
  */
 
-function sphericalToCartesian([r, azimuthal, polar]) {
+export function sphericalToCartesian([r, azimuthal, polar]) {
   // We abstract "north"/"up" (compass-wise) to be 0° when really this is 90° (π/2):
   // correct for that here
   azimuthal += 90;
@@ -177,16 +176,3 @@ function sphericalToCartesian([r, azimuthal, polar]) {
     z: r * Math.cos(polar)
   };
 }
-
-module.exports = {
-  easeCubicInOut,
-  bezier,
-  ease,
-  clamp,
-  wrap,
-  getCoordinatesCenter,
-  isCounterClockwise,
-  calculateSignedArea,
-  isClosedPolygon,
-  sphericalToCartesian
-};

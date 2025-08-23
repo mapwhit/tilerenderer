@@ -1,9 +1,8 @@
-const { getTileBBox } = require('@mapbox/whoots-js');
+import assert from 'assert';
+import { getTileBBox } from '@mapbox/whoots-js';
+import Coordinate from '../geo/coordinate.js';
 
-const assert = require('assert');
-const Coordinate = require('../geo/coordinate');
-
-class CanonicalTileID {
+export class CanonicalTileID {
   constructor(z, x, y) {
     assert(z >= 0 && z <= 25);
     assert(x >= 0 && x < 2 ** z);
@@ -23,7 +22,7 @@ class CanonicalTileID {
   }
 }
 
-class UnwrappedTileID {
+export class UnwrappedTileID {
   constructor(wrap, canonical) {
     this.wrap = wrap;
     this.canonical = canonical;
@@ -31,7 +30,7 @@ class UnwrappedTileID {
   }
 }
 
-class OverscaledTileID {
+export class OverscaledTileID {
   constructor(overscaledZ, wrap, z, x, y) {
     assert(overscaledZ >= z);
     this.overscaledZ = overscaledZ;
@@ -132,16 +131,9 @@ class OverscaledTileID {
   }
 }
 
-function calculateKey(wrap, z, x, y) {
+export function calculateKey(wrap, z, x, y) {
   wrap *= 2;
   if (wrap < 0) wrap = wrap * -1 - 1;
   const dim = 1 << z;
   return (dim * dim * wrap + dim * y + x) * 32 + z;
 }
-
-module.exports = {
-  CanonicalTileID,
-  UnwrappedTileID,
-  OverscaledTileID,
-  calculateKey
-};

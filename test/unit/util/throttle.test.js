@@ -1,6 +1,5 @@
-const test = require('node:test');
-
-const throttle = require('../../../src/util/throttle');
+import test from 'node:test';
+import throttle from '../../../src/util/throttle.js';
 
 test('throttle', async t => {
   await t.test('does not execute unthrottled function unless throttled function is invoked', t => {

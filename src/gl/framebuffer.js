@@ -1,4 +1,4 @@
-const { ColorAttachment, DepthAttachment } = require('./value');
+import { ColorAttachment, DepthAttachment } from './value.js';
 
 class Framebuffer {
   constructor(context, width, height) {
@@ -25,4 +25,4 @@ class Framebuffer {
   }
 }
 
-module.exports = Framebuffer;
+export default Framebuffer;

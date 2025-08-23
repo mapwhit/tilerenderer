@@ -1,13 +1,13 @@
-const test = require('node:test');
-const SourceCache = require('../../../src/source/source_cache');
-const { setType } = require('../../../src/source/source');
-const Tile = require('../../../src/source/tile');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const Transform = require('../../../src/geo/transform');
-const LngLat = require('../../../src/geo/lng_lat');
-const { default: Point } = require('@mapbox/point-geometry');
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const browser = require('../../../src/util/browser');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import LngLat from '../../../src/geo/lng_lat.js';
+import Transform from '../../../src/geo/transform.js';
+import { setType } from '../../../src/source/source.js';
+import SourceCache from '../../../src/source/source_cache.js';
+import Tile from '../../../src/source/tile.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import browser from '../../../src/util/browser.js';
 
 // Add a mocked source type for use in these tests
 function MockSourceType(id, sourceOptions, eventedParent) {

@@ -1,5 +1,5 @@
-const test = require('node:test').test;
-const uniqueId = require('../../../src/util/unique_id');
+import { test } from 'node:test';
+import uniqueId from '../../../src/util/unique_id.js';
 
 test('unique_id', t => {
   t.assert.equal(typeof uniqueId(), 'number', 'should be a number');

@@ -1,5 +1,5 @@
-const test = require('node:test').test;
-const async = require('../../../src/util/async');
+import { test } from 'node:test';
+import * as async from '../../../src/util/async.js';
 
 test('async', async t => {
   await t.test('asyncAll - sync', (t, done) => {

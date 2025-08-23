@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 /**
  * A [fifo cache](http://en.wikipedia.org/wiki/Cache_algorithms)
@@ -119,4 +119,4 @@ class TileCache {
   }
 }
 
-module.exports = TileCache;
+export default TileCache;

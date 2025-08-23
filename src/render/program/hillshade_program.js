@@ -1,11 +1,12 @@
-const assert = require('assert');
-const { mat4 } = require('@mapbox/gl-matrix');
+import assert from 'assert';
+import glMatrix from '@mapbox/gl-matrix';
+import EXTENT from '../../data/extent.js';
+import Coordinate from '../../geo/coordinate.js';
+import { Uniform1f, Uniform1i, Uniform2f, UniformColor, UniformMatrix4f } from '../uniform_binding.js';
 
-const { Uniform1i, Uniform1f, Uniform2f, UniformColor, UniformMatrix4f } = require('../uniform_binding');
-const EXTENT = require('../../data/extent');
-const Coordinate = require('../../geo/coordinate');
+const { mat4 } = glMatrix;
 
-const hillshadeUniforms = (context, locations) => ({
+export const hillshadeUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_image: new Uniform1i(context, locations.u_image),
   u_latrange: new Uniform2f(context, locations.u_latrange),
@@ -15,7 +16,7 @@ const hillshadeUniforms = (context, locations) => ({
   u_accent: new UniformColor(context, locations.u_accent)
 });
 
-const hillshadePrepareUniforms = (context, locations) => ({
+export const hillshadePrepareUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_image: new Uniform1i(context, locations.u_image),
   u_dimension: new Uniform2f(context, locations.u_dimension),
@@ -23,7 +24,7 @@ const hillshadePrepareUniforms = (context, locations) => ({
   u_maxzoom: new Uniform1f(context, locations.u_maxzoom)
 });
 
-const hillshadeUniformValues = (painter, tile, layer) => {
+export const hillshadeUniformValues = (painter, tile, layer) => {
   const shadow = layer._paint.get('hillshade-shadow-color');
   const highlight = layer._paint.get('hillshade-highlight-color');
   const accent = layer._paint.get('hillshade-accent-color');
@@ -45,7 +46,7 @@ const hillshadeUniformValues = (painter, tile, layer) => {
   };
 };
 
-const hillshadeUniformPrepareValues = (tile, maxzoom) => {
+export const hillshadeUniformPrepareValues = (tile, maxzoom) => {
   assert(tile.dem);
   const stride = tile.dem.stride;
   const matrix = mat4.create();
@@ -68,10 +69,3 @@ function getTileLatRange(painter, tileID) {
   const coordinate1 = new Coordinate(coordinate0.column, coordinate0.row + 1, coordinate0.zoom);
   return [painter.transform.coordinateLocation(coordinate0).lat, painter.transform.coordinateLocation(coordinate1).lat];
 }
-
-module.exports = {
-  hillshadeUniforms,
-  hillshadePrepareUniforms,
-  hillshadeUniformValues,
-  hillshadeUniformPrepareValues
-};

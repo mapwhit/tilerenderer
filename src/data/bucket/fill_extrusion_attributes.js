@@ -1,4 +1,4 @@
-const { createLayout } = require('../../util/struct_array');
+import { createLayout } from '../../util/struct_array.js';
 
 const layout = createLayout(
   [
@@ -8,4 +8,4 @@ const layout = createLayout(
   4
 );
 
-module.exports = layout;
+export default layout;

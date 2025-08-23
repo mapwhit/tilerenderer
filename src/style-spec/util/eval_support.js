@@ -1,4 +1,4 @@
-module.exports = (function () {
+export default (function () {
   try {
     new Function('');
     return true;

@@ -1,16 +1,7 @@
-const { isCounterClockwise } = require('./util');
-const { default: Point } = require('@mapbox/point-geometry');
+import Point from '@mapbox/point-geometry';
+import { isCounterClockwise } from './util.js';
 
-module.exports = {
-  polygonIntersectsBufferedPoint,
-  polygonIntersectsMultiPolygon,
-  polygonIntersectsBufferedMultiLine,
-  polygonIntersectsPolygon,
-  distToSegmentSquared,
-  polygonIntersectsBox
-};
-
-function polygonIntersectsPolygon(polygonA, polygonB) {
+export function polygonIntersectsPolygon(polygonA, polygonB) {
   for (let i = 0; i < polygonA.length; i++) {
     if (polygonContainsPoint(polygonB, polygonA[i])) return true;
   }
@@ -24,13 +15,13 @@ function polygonIntersectsPolygon(polygonA, polygonB) {
   return false;
 }
 
-function polygonIntersectsBufferedPoint(polygon, point, radius) {
+export function polygonIntersectsBufferedPoint(polygon, point, radius) {
   if (polygonContainsPoint(polygon, point)) return true;
   if (pointIntersectsBufferedLine(point, polygon, radius)) return true;
   return false;
 }
 
-function polygonIntersectsMultiPolygon(polygon, multiPolygon) {
+export function polygonIntersectsMultiPolygon(polygon, multiPolygon) {
   if (polygon.length === 1) {
     return multiPolygonContainsPoint(multiPolygon, polygon[0]);
   }
@@ -53,7 +44,7 @@ function polygonIntersectsMultiPolygon(polygon, multiPolygon) {
   return false;
 }
 
-function polygonIntersectsBufferedMultiLine(polygon, multiLine, radius) {
+export function polygonIntersectsBufferedMultiLine(polygon, multiLine, radius) {
   for (let i = 0; i < multiLine.length; i++) {
     const line = multiLine[i];
 
@@ -122,7 +113,7 @@ function pointIntersectsBufferedLine(p, line, radius) {
 }
 
 // Code from http://stackoverflow.com/a/1501725/331379.
-function distToSegmentSquared(p, v, w) {
+export function distToSegmentSquared(p, v, w) {
   const l2 = v.distSqr(w);
   if (l2 === 0) return p.distSqr(v);
   const t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
@@ -163,7 +154,7 @@ function polygonContainsPoint(ring, p) {
   return c;
 }
 
-function polygonIntersectsBox(ring, boxX1, boxY1, boxX2, boxY2) {
+export function polygonIntersectsBox(ring, boxX1, boxY1, boxX2, boxY2) {
   for (const p of ring) {
     if (boxX1 <= p.x && boxY1 <= p.y && boxX2 >= p.x && boxY2 >= p.y) return true;
   }

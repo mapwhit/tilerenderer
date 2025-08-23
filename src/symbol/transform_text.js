@@ -1,4 +1,4 @@
-const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
+import { plugin as rtlTextPlugin } from '../source/rtl_text_plugin.js';
 
 function transformText(text, layer, feature) {
   const transform = layer._layout.get('text-transform').evaluate(feature, {});
@@ -15,9 +15,9 @@ function transformText(text, layer, feature) {
   return text;
 }
 
-module.exports = function (text, layer, feature) {
+export default function (text, layer, feature) {
   text.sections.forEach(section => {
     section.text = transformText(section.text, layer, feature);
   });
   return text;
-};
+}

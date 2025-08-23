@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { properties, serialize } = require('../../util/serialize_style');
+import test from 'node:test';
+import { properties, serialize } from '../../util/serialize_style.js';
 
 test('style properties', t => {
   t.assert.deepEqual(properties(), [

@@ -1,5 +1,5 @@
-const config = require('./config');
+import config from './config.js';
 
-module.exports = function () {
+export default function () {
   return new window.Worker(config.WORKER_URL);
-};
+}

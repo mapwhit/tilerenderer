@@ -12,7 +12,7 @@
  * // justName = { name: 'Charlie' }
  * @private
  */
-function pick(src, properties) {
+export function pick(src, properties) {
   const entries = properties.filter(p => p in src).map(p => [p, src[p]]);
   return Object.fromEntries(entries);
 }
@@ -38,7 +38,7 @@ function pick(src, properties) {
  * setTimeout(myClass.ontimer, 100);
  * @private
  */
-function bindAll(fns, context) {
+export function bindAll(fns, context) {
   fns.forEach(fn => {
     if (!context[fn]) {
       return;
@@ -53,7 +53,7 @@ function bindAll(fns, context) {
  *
  * @private
  */
-function mapObject(input, iterator, context) {
+export function mapObject(input, iterator, context) {
   context ??= this;
   const entries = Object.entries(input).map(([k, v]) => [k, iterator.call(context, v, k, input)]);
   return Object.fromEntries(entries);
@@ -64,7 +64,7 @@ function mapObject(input, iterator, context) {
  *
  * @private
  */
-function filterObject(input, iterator, context) {
+export function filterObject(input, iterator, context) {
   context ??= this;
   const entries = Object.entries(input).filter(([k, v]) => iterator.call(context, v, k, input));
   return Object.fromEntries(entries);
@@ -75,7 +75,7 @@ function filterObject(input, iterator, context) {
  *
  * @private
  */
-function deepEqual(a, b) {
+export function deepEqual(a, b) {
   if (Array.isArray(a)) {
     if (!Array.isArray(b) || a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) {
@@ -100,7 +100,7 @@ function deepEqual(a, b) {
  *
  * @private
  */
-function clone(input) {
+export function clone(input) {
   if (Array.isArray(input)) {
     return input.map(clone);
   }
@@ -115,19 +115,9 @@ function clone(input) {
  *
  * @private
  */
-function arraysIntersect(a, b) {
+export function arraysIntersect(a, b) {
   for (let l = 0; l < a.length; l++) {
     if (b.indexOf(a[l]) >= 0) return true;
   }
   return false;
 }
-
-module.exports = {
-  pick,
-  bindAll,
-  mapObject,
-  filterObject,
-  deepEqual,
-  clone,
-  arraysIntersect
-};

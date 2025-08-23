@@ -1,15 +1,16 @@
-const { LineLayoutArray } = require('../array_types');
+import { VectorTileFeature } from '@mapwhit/vector-tile';
+import EvaluationParameters from '../../style/evaluation_parameters.js';
+import { LineLayoutArray } from '../array_types.js';
+import EXTENT from '../extent.js';
+import { TriangleIndexArray } from '../index_array_type.js';
+import loadGeometry from '../load_geometry.js';
+import { ProgramConfigurationSet } from '../program_configuration.js';
+import SegmentVector from '../segment.js';
+import layout from './line_attributes.js';
+import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
 
-const { members: layoutAttributes } = require('./line_attributes');
-const SegmentVector = require('../segment');
-const { ProgramConfigurationSet } = require('../program_configuration');
-const { TriangleIndexArray } = require('../index_array_type');
-const EXTENT = require('../extent');
-const mvt = require('@mapwhit/vector-tile');
-const vectorTileFeatureTypes = mvt.VectorTileFeature.types;
-const { hasPattern, addPatternDependencies } = require('./pattern_bucket_features');
-const loadGeometry = require('../load_geometry');
-const EvaluationParameters = require('../../style/evaluation_parameters');
+const layoutAttributes = layout.members;
+const vectorTileFeatureTypes = VectorTileFeature.types;
 
 // NOTE ON EXTRUDE SCALE:
 // scale the extrusion vector so that the normal length is this value.
@@ -629,4 +630,4 @@ function calculateFullDistance(vertices, first, len) {
   return total;
 }
 
-module.exports = LineBucket;
+export default LineBucket;

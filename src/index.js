@@ -1,32 +1,56 @@
-require('./util/polyfill');
+import './util/polyfill.js';
 
-module.exports = {
-  version: require('../package.json').version,
-  setRTLTextPlugin: require('./source/rtl_text_plugin').setRTLTextPlugin,
-  Map: require('./ui/map'),
-  Style: require('./style/style'),
-  LngLat: require('./geo/lng_lat'),
-  LngLatBounds: require('./geo/lng_lat_bounds'),
-  Point: require('@mapbox/point-geometry').default,
-  Evented: require('@mapwhit/events').Evented,
-  config: require('./util/config'),
+import packageJSON from '../package.json' with { type: 'json' };
+import config from './util/config.js';
 
-  get workerCount() {
-    return this.config.WORKER_COUNT;
+import { default as Point } from '@mapbox/point-geometry';
+import { Evented } from '@mapwhit/events';
+import { default as LngLat } from './geo/lng_lat.js';
+import { default as LngLatBounds } from './geo/lng_lat_bounds.js';
+import { setRTLTextPlugin } from './source/rtl_text_plugin.js';
+import { default as Style } from './style/style.js';
+import { default as Map } from './ui/map.js';
+
+const { version } = packageJSON;
+
+export { version, config, setRTLTextPlugin, Point, LngLat, LngLatBounds, Style, Map, Evented };
+
+// for commonjs backward compatibility
+const mapwhit = {
+  version,
+  config,
+  setRTLTextPlugin,
+  Point,
+  LngLat,
+  LngLatBounds,
+  Style,
+  Map,
+  Evented
+};
+
+const properties = {
+  workerCount: {
+    get() {
+      return config.WORKER_COUNT;
+    },
+    set(count) {
+      config.WORKER_COUNT = count;
+    }
   },
-
-  set workerCount(count) {
-    this.config.WORKER_COUNT = count;
-  },
-
-  get workerUrl() {
-    return this.config.WORKER_URL;
-  },
-
-  set workerUrl(url) {
-    this.config.WORKER_URL = url;
+  workerUrl: {
+    get() {
+      return config.WORKER_URL;
+    },
+    set(url) {
+      config.WORKER_URL = url;
+    }
   }
 };
+
+Object.defineProperties(mapwhit, properties);
+Object.defineProperties(config, properties);
+
+export default mapwhit;
 
 /**
  * The version of Mapbox GL JS in use as specified in `package.json`,
@@ -48,5 +72,6 @@ module.exports = {
  */
 
 // canary assert: used to confirm that asserts have been removed from production build
-const assert = require('assert');
+import assert from 'assert';
+
 assert(true, 'canary assert');

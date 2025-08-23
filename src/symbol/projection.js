@@ -1,21 +1,12 @@
-const { default: Point } = require('@mapbox/point-geometry');
+import glMatrix from '@mapbox/gl-matrix';
+import Point from '@mapbox/point-geometry';
+import { addDynamicAttributes } from '../data/bucket/symbol_bucket.js';
+import properties from '../style/style_layer/symbol_style_layer_properties.js';
+import { WritingMode } from '../symbol/shaping.js';
+import * as symbolSize from './symbol_size.js';
 
-const { mat4, vec4 } = require('@mapbox/gl-matrix');
-const symbolSize = require('./symbol_size');
-const { addDynamicAttributes } = require('../data/bucket/symbol_bucket');
-const properties = require('../style/style_layer/symbol_style_layer_properties');
+const { mat4, vec4 } = glMatrix;
 const symbolLayoutProperties = properties.layout;
-
-const { WritingMode } = require('../symbol/shaping');
-
-module.exports = {
-  updateLineLabels,
-  getLabelPlaneMatrix,
-  getGlCoordMatrix,
-  project,
-  placeFirstAndLastGlyph,
-  xyTransformMat4
-};
 
 /*
  * # Overview of coordinate spaces
@@ -65,7 +56,7 @@ module.exports = {
 /*
  * Returns a matrix for converting from tile units to the correct label coordinate space.
  */
-function getLabelPlaneMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, pixelsToTileUnits) {
+export function getLabelPlaneMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, pixelsToTileUnits) {
   const m = mat4.identity(new Float32Array(16));
   if (pitchWithMap) {
     mat4.identity(m);
@@ -84,7 +75,7 @@ function getLabelPlaneMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, 
 /*
  * Returns a matrix for converting from the correct label coordinate space to gl coords.
  */
-function getGlCoordMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, pixelsToTileUnits) {
+export function getGlCoordMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, pixelsToTileUnits) {
   const m = mat4.identity(new Float32Array(16));
   if (pitchWithMap) {
     mat4.multiply(m, m, posMatrix);
@@ -100,7 +91,7 @@ function getGlCoordMatrix(posMatrix, pitchWithMap, rotateWithMap, transform, pix
   return m;
 }
 
-function project(point, matrix) {
+export function project(point, matrix) {
   const pos = [point.x, point.y, 0, 1];
   xyTransformMat4(pos, pos, matrix);
   const w = pos[3];
@@ -122,7 +113,7 @@ function isVisible(anchorPos, clippingBuffer) {
  *  Update the `dynamicLayoutVertexBuffer` for the buffer with the correct glyph positions for the current map view.
  *  This is only run on labels that are aligned with lines. Horizontal labels are handled entirely in the shader.
  */
-function updateLineLabels(
+export function updateLineLabels(
   bucket,
   posMatrix,
   painter,
@@ -233,7 +224,7 @@ function updateLineLabels(
   }
 }
 
-function placeFirstAndLastGlyph(
+export function placeFirstAndLastGlyph(
   fontScale,
   glyphOffsetArray,
   lineOffsetX,
@@ -591,7 +582,7 @@ function hideGlyphs(num, dynamicLayoutVertexArray) {
 
 // For line label layout, we're not using z output and our w input is always 1
 // This custom matrix transformation ignores those components to make projection faster
-function xyTransformMat4(out, a, m) {
+export function xyTransformMat4(out, a, m) {
   const x = a[0];
   const y = a[1];
   out[0] = m[0] * x + m[4] * y + m[12];

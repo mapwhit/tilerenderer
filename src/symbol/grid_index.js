@@ -1,4 +1,4 @@
-const { clamp } = require('../util/util');
+import { clamp } from '../util/util.js';
 
 /**
  * GridIndex is a data structure for testing the intersection of
@@ -280,7 +280,7 @@ class GridIndex {
   }
 }
 
-module.exports = GridIndex;
+export default GridIndex;
 
 function circlesCollide(x1, y1, r1, x2, y2, r2) {
   const dx = x2 - x1;

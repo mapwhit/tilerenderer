@@ -1,5 +1,5 @@
-const test = require('node:test');
-const ImageManager = require('../../../src/render/image_manager');
+import test from 'node:test';
+import ImageManager from '../../../src/render/image_manager.js';
 
 test('ImageManager', async t => {
   let imageManager;

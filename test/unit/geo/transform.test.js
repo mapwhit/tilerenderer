@@ -1,9 +1,9 @@
-const test = require('node:test');
-const { default: Point } = require('@mapbox/point-geometry');
-const Transform = require('../../../src/geo/transform');
-const LngLat = require('../../../src/geo/lng_lat');
-const { OverscaledTileID, CanonicalTileID } = require('../../../src/source/tile_id');
-const fixed = require('../../util/mapbox-gl-js-test/fixed');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import LngLat from '../../../src/geo/lng_lat.js';
+import Transform from '../../../src/geo/transform.js';
+import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';
+import fixed from '../../util/mapbox-gl-js-test/fixed.js';
 const fixedLngLat = fixed.LngLat;
 const fixedCoord = fixed.Coord;
 

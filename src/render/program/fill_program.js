@@ -1,11 +1,11 @@
-const { patternUniformValues } = require('./pattern');
-const { Uniform1i, Uniform1f, Uniform2f, Uniform4f, UniformMatrix4f } = require('../uniform_binding');
+import { Uniform1f, Uniform1i, Uniform2f, Uniform4f, UniformMatrix4f } from '../uniform_binding.js';
+import { patternUniformValues } from './pattern.js';
 
-const fillUniforms = (context, locations) => ({
+export const fillUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix)
 });
 
-const fillPatternUniforms = (context, locations) => ({
+export const fillPatternUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_image: new Uniform1i(context, locations.u_image),
   u_texsize: new Uniform2f(context, locations.u_texsize),
@@ -15,12 +15,12 @@ const fillPatternUniforms = (context, locations) => ({
   u_fade: new Uniform1f(context, locations.u_fade)
 });
 
-const fillOutlineUniforms = (context, locations) => ({
+export const fillOutlineUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_world: new Uniform2f(context, locations.u_world)
 });
 
-const fillOutlinePatternUniforms = (context, locations) => ({
+export const fillOutlinePatternUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_world: new Uniform2f(context, locations.u_world),
   u_image: new Uniform1i(context, locations.u_image),
@@ -31,30 +31,19 @@ const fillOutlinePatternUniforms = (context, locations) => ({
   u_fade: new Uniform1f(context, locations.u_fade)
 });
 
-const fillUniformValues = matrix => ({
+export const fillUniformValues = matrix => ({
   u_matrix: matrix
 });
 
-const fillPatternUniformValues = (matrix, painter, crossfade, tile) =>
+export const fillPatternUniformValues = (matrix, painter, crossfade, tile) =>
   Object.assign(fillUniformValues(matrix), patternUniformValues(crossfade, painter, tile));
 
-const fillOutlineUniformValues = (matrix, drawingBufferSize) => ({
+export const fillOutlineUniformValues = (matrix, drawingBufferSize) => ({
   u_matrix: matrix,
   u_world: drawingBufferSize
 });
 
-const fillOutlinePatternUniformValues = (matrix, painter, crossfade, tile, drawingBufferSize) =>
+export const fillOutlinePatternUniformValues = (matrix, painter, crossfade, tile, drawingBufferSize) =>
   Object.assign(fillPatternUniformValues(matrix, painter, crossfade, tile), {
     u_world: drawingBufferSize
   });
-
-module.exports = {
-  fillUniforms,
-  fillPatternUniforms,
-  fillOutlineUniforms,
-  fillOutlinePatternUniforms,
-  fillUniformValues,
-  fillPatternUniformValues,
-  fillOutlineUniformValues,
-  fillOutlinePatternUniformValues
-};

@@ -1,7 +1,7 @@
-const test = require('node:test');
-const { queryRenderedFeatures, querySourceFeatures } = require('../../../src/source/query_features.js');
-const SourceCache = require('../../../src/source/source_cache.js');
-const Transform = require('../../../src/geo/transform.js');
+import test from 'node:test';
+import Transform from '../../../src/geo/transform.js';
+import { queryRenderedFeatures, querySourceFeatures } from '../../../src/source/query_features.js';
+import SourceCache from '../../../src/source/source_cache.js';
 
 test('QueryFeatures.rendered', async t => {
   await t.test('returns empty object if source returns no tiles', t => {

@@ -1,20 +1,20 @@
-const { FillExtrusionLayoutArray } = require('../array_types');
-
-const { members: layoutAttributes } = require('./fill_extrusion_attributes');
-const SegmentVector = require('../segment');
-const { ProgramConfigurationSet } = require('../program_configuration');
-const { TriangleIndexArray } = require('../index_array_type');
-const EXTENT = require('../extent');
-const { default: earcut } = require('earcut');
-const {
-  VectorTileFeature: { types: vectorTileFeatureTypes }
-} = require('@mapwhit/vector-tile');
-const classifyRings = require('../../util/classify_rings');
-const assert = require('assert');
+import assert from 'assert';
+import { VectorTileFeature } from '@mapwhit/vector-tile';
+import earcut from 'earcut';
+import classifyRings from '../../util/classify_rings.js';
+import { FillExtrusionLayoutArray } from '../array_types.js';
+import EXTENT from '../extent.js';
+import { TriangleIndexArray } from '../index_array_type.js';
+import { ProgramConfigurationSet } from '../program_configuration.js';
+import SegmentVector from '../segment.js';
+import layout from './fill_extrusion_attributes.js';
 const EARCUT_MAX_RINGS = 500;
-const { hasPattern, addPatternDependencies } = require('./pattern_bucket_features');
-const loadGeometry = require('../load_geometry');
-const EvaluationParameters = require('../../style/evaluation_parameters');
+import EvaluationParameters from '../../style/evaluation_parameters.js';
+import loadGeometry from '../load_geometry.js';
+import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
+
+const { types: vectorTileFeatureTypes } = VectorTileFeature;
+const layoutAttributes = layout.members;
 
 const FACTOR = 2 ** 13;
 
@@ -238,7 +238,7 @@ class FillExtrusionBucket {
   }
 }
 
-module.exports = FillExtrusionBucket;
+export default FillExtrusionBucket;
 
 function isBoundaryEdge(p1, p2) {
   return (p1.x === p2.x && (p1.x < 0 || p1.x > EXTENT)) || (p1.y === p2.y && (p1.y < 0 || p1.y > EXTENT));

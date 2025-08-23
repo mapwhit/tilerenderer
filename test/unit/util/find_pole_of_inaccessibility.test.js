@@ -1,6 +1,6 @@
-const test = require('node:test');
-const { default: Point } = require('@mapbox/point-geometry');
-const findPoleOfInaccessibility = require('../../../src/util/find_pole_of_inaccessibility');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import findPoleOfInaccessibility from '../../../src/util/find_pole_of_inaccessibility.js';
 
 test('polygon_poi', t => {
   const closedRing = [new Point(0, 0), new Point(10, 10), new Point(10, 0), new Point(0, 0)];

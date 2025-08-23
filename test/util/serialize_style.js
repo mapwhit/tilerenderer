@@ -1,12 +1,9 @@
-const styleSpec = require('../../src/style-spec/reference/v8.json');
-
-module.exports = { properties, serialize };
-
-function properties() {
+import styleSpec from '../../src/style-spec/reference/v8.json' with { type: 'json' };
+export function properties() {
   return Object.keys(styleSpec.$root);
 }
 
-function serialize(style) {
+export function serialize(style) {
   if (!style) {
     return;
   }

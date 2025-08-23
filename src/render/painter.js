@@ -1,37 +1,37 @@
-const browser = require('../util/browser');
+import glMatrix from '@mapbox/gl-matrix';
+import { Color } from '@mapwhit/style-expressions';
+import { LineStripIndexArray, PosArray, RasterBoundsArray, TriangleIndexArray } from '../data/array_types.js';
+import EXTENT from '../data/extent.js';
+import posAttributes from '../data/pos_attributes.js';
+import ProgramConfiguration from '../data/program_configuration.js';
+import rasterBoundsAttributes from '../data/raster_bounds_attributes.js';
+import SegmentVector from '../data/segment.js';
+import ColorMode from '../gl/color_mode.js';
+import Context from '../gl/context.js';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import shaders from '../shaders/index.js';
+import pixelsToTileUnits from '../source/pixels_to_tile_units.js';
+import SourceCache from '../source/source_cache.js';
+import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
+import browser from '../util/browser.js';
+import background from './draw_background.js';
+import circle from './draw_circle.js';
+import debug from './draw_debug.js';
+import fill from './draw_fill.js';
+import fillExtrusion from './draw_fill_extrusion.js';
+import heatmap from './draw_heatmap.js';
+import hillshade from './draw_hillshade.js';
+import line from './draw_line.js';
+import raster from './draw_raster.js';
+import symbol from './draw_symbol.js';
+import Program from './program.js';
+import { clippingMaskUniformValues } from './program/clipping_mask_program.js';
+import { programUniforms } from './program/program_uniforms.js';
+import updateTileMasks from './tile_mask.js';
 
-const { mat4 } = require('@mapbox/gl-matrix');
-const SourceCache = require('../source/source_cache');
-const EXTENT = require('../data/extent');
-const pixelsToTileUnits = require('../source/pixels_to_tile_units');
-const SegmentVector = require('../data/segment');
-const { RasterBoundsArray, PosArray, TriangleIndexArray, LineStripIndexArray } = require('../data/array_types');
-const rasterBoundsAttributes = require('../data/raster_bounds_attributes');
-const posAttributes = require('../data/pos_attributes');
-const ProgramConfiguration = require('../data/program_configuration');
-const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
-const shaders = require('../shaders');
-const Program = require('./program');
-const { programUniforms } = require('./program/program_uniforms');
-const Context = require('../gl/context');
-const DepthMode = require('../gl/depth_mode');
-const StencilMode = require('../gl/stencil_mode');
-const ColorMode = require('../gl/color_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const updateTileMasks = require('./tile_mask');
-const { clippingMaskUniformValues } = require('./program/clipping_mask_program');
-const { Color } = require('@mapwhit/style-expressions');
-const symbol = require('./draw_symbol');
-const circle = require('./draw_circle');
-const heatmap = require('./draw_heatmap');
-const line = require('./draw_line');
-const fill = require('./draw_fill');
-const fillExtrusion = require('./draw_fill_extrusion');
-const hillshade = require('./draw_hillshade');
-const raster = require('./draw_raster');
-const background = require('./draw_background');
-const debug = require('./draw_debug');
-
+const { mat4 } = glMatrix;
 const draw = {
   symbol,
   circle,
@@ -51,7 +51,7 @@ const draw = {
  * @param {Canvas} gl an experimental-webgl drawing context
  * @private
  */
-class Painter {
+export default class Painter {
   constructor(gl, transform) {
     this.context = new Context(gl);
     this.transform = transform;
@@ -478,5 +478,3 @@ class Painter {
     return this.cache[key];
   }
 }
-
-module.exports = Painter;

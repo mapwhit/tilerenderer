@@ -1,6 +1,5 @@
-const browser = require('../util/browser');
-
-const { Placement } = require('../symbol/placement');
+import { Placement } from '../symbol/placement.js';
+import browser from '../util/browser.js';
 
 class LayerPlacement {
   constructor() {
@@ -84,4 +83,4 @@ class PauseablePlacement {
   }
 }
 
-module.exports = PauseablePlacement;
+export default PauseablePlacement;

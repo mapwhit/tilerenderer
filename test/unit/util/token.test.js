@@ -1,5 +1,5 @@
-const test = require('node:test');
-const resolveTokens = require('../../../src/util/token');
+import test from 'node:test';
+import resolveTokens from '../../../src/util/token.js';
 
 test('resolveToken', t => {
   t.assert.equal('3 Fine Fields', resolveTokens({ a: 3, b: 'Fine', c: 'Fields' }, '{a} {b} {c}'));

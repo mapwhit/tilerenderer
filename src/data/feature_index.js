@@ -1,14 +1,13 @@
-const loadGeometry = require('./load_geometry');
-const EXTENT = require('./extent');
-const featureFilter = require('../style-spec/feature_filter');
-const Grid = require('grid-index');
-const dictionaryCoder = require('../util/dictionary_coder');
-const GeoJSONFeature = require('../util/vectortile_to_geojson');
-const { arraysIntersect } = require('../util/object');
-const EvaluationParameters = require('../style/evaluation_parameters');
-const { polygonIntersectsBox } = require('../util/intersection_tests');
-
-const { FeatureIndexArray } = require('./array_types');
+import Grid from 'grid-index';
+import featureFilter from '../style-spec/feature_filter/index.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import dictionaryCoder from '../util/dictionary_coder.js';
+import { polygonIntersectsBox } from '../util/intersection_tests.js';
+import { arraysIntersect } from '../util/object.js';
+import GeoJSONFeature from '../util/vectortile_to_geojson.js';
+import { FeatureIndexArray } from './array_types.js';
+import EXTENT from './extent.js';
+import loadGeometry from './load_geometry.js';
 
 class FeatureIndex {
   constructor(tileID, grid = new Grid(EXTENT, 16, 0), featureIndexArray = new FeatureIndexArray()) {
@@ -189,7 +188,7 @@ class FeatureIndex {
   }
 }
 
-module.exports = FeatureIndex;
+export default FeatureIndex;
 
 function getBounds(geometry) {
   let minX = Number.POSITIVE_INFINITY;

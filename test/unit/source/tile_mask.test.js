@@ -1,6 +1,6 @@
-const test = require('node:test');
-const updateTileMasks = require('../../../src/render/tile_mask');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import updateTileMasks from '../../../src/render/tile_mask.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
 
 test('computeTileMasks', async t => {
   class Tile {

@@ -1,12 +1,12 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const Style = require('../../../src/style/style');
-const SourceCache = require('../../../src/source/source_cache');
-const StyleLayer = require('../../../src/style/style_layer');
-const Transform = require('../../../src/geo/transform');
-const { Event, Evented } = require('@mapwhit/events');
-const plugin = require('../../../src/source/rtl_text_plugin');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import { Event, Evented } from '@mapwhit/events';
+import Transform from '../../../src/geo/transform.js';
+import plugin from '../../../src/source/rtl_text_plugin.js';
+import SourceCache from '../../../src/source/source_cache.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import Style from '../../../src/style/style.js';
+import StyleLayer from '../../../src/style/style_layer.js';
+import _window from '../../util/window.js';
 
 function createStyleJSON(properties) {
   return Object.assign(

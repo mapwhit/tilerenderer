@@ -1,8 +1,6 @@
-const makeGlyphs = require('./glyphs');
+import makeGlyphs from './glyphs.js';
 
-module.exports = { resources };
-
-function resources(opts) {
+export function resources(opts) {
   const glyphs = makeGlyphs(opts);
 
   return {

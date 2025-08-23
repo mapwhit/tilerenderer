@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { StructArrayLayout3i6, FeatureIndexArray } = require('../../../src/data/array_types');
+import test from 'node:test';
+import { FeatureIndexArray, StructArrayLayout3i6 } from '../../../src/data/array_types.js';
 
 test('StructArray', async t => {
   class TestArray extends StructArrayLayout3i6 {}

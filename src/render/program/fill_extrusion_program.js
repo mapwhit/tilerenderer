@@ -1,9 +1,10 @@
-const { patternUniformValues } = require('./pattern');
-const { Uniform1i, Uniform1f, Uniform2f, Uniform3f, Uniform4f, UniformMatrix4f } = require('../uniform_binding');
+import glMatrix from '@mapbox/gl-matrix';
+import { Uniform1f, Uniform1i, Uniform2f, Uniform3f, Uniform4f, UniformMatrix4f } from '../uniform_binding.js';
+import { patternUniformValues } from './pattern.js';
 
-const { mat3, vec3 } = require('@mapbox/gl-matrix');
+const { mat3, vec3 } = glMatrix;
 
-const fillExtrusionUniforms = (context, locations) => ({
+export const fillExtrusionUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_lightpos: new Uniform3f(context, locations.u_lightpos),
   u_lightintensity: new Uniform1f(context, locations.u_lightintensity),
@@ -12,7 +13,7 @@ const fillExtrusionUniforms = (context, locations) => ({
   u_opacity: new Uniform1f(context, locations.u_opacity)
 });
 
-const fillExtrusionPatternUniforms = (context, locations) => ({
+export const fillExtrusionPatternUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_lightpos: new Uniform3f(context, locations.u_lightpos),
   u_lightintensity: new Uniform1f(context, locations.u_lightintensity),
@@ -28,7 +29,7 @@ const fillExtrusionPatternUniforms = (context, locations) => ({
   u_opacity: new Uniform1f(context, locations.u_opacity)
 });
 
-const fillExtrusionUniformValues = (matrix, painter, shouldUseVerticalGradient, opacity) => {
+export const fillExtrusionUniformValues = (matrix, painter, shouldUseVerticalGradient, opacity) => {
   const light = painter.style._light;
   const _lp = light.properties.get('position');
   const lightPos = [_lp.x, _lp.y, _lp.z];
@@ -50,7 +51,7 @@ const fillExtrusionUniformValues = (matrix, painter, shouldUseVerticalGradient, 
   };
 };
 
-const fillExtrusionPatternUniformValues = (
+export const fillExtrusionPatternUniformValues = (
   matrix,
   painter,
   shouldUseVerticalGradient,
@@ -66,11 +67,4 @@ const fillExtrusionPatternUniformValues = (
       u_height_factor: -(2 ** coord.overscaledZ) / tile.tileSize / 8
     }
   );
-};
-
-module.exports = {
-  fillExtrusionUniforms,
-  fillExtrusionPatternUniforms,
-  fillExtrusionUniformValues,
-  fillExtrusionPatternUniformValues
 };

@@ -1,37 +1,38 @@
-const test = require('node:test');
-const {
+import test from 'node:test';
+import { Color } from '@mapwhit/style-expressions';
+import gl from 'gl';
+import Context from '../../../src/gl/context.js';
+import {
+  ActiveTextureUnit,
+  BindElementBuffer,
+  BindFramebuffer,
+  BindRenderbuffer,
+  BindTexture,
+  BindVertexArrayOES,
+  BindVertexBuffer,
+  Blend,
+  BlendColor,
+  BlendFunc,
   ClearColor,
   ClearDepth,
   ClearStencil,
   ColorMask,
+  DepthFunc,
   DepthMask,
-  StencilMask,
-  StencilFunc,
-  StencilOp,
-  StencilTest,
   DepthRange,
   DepthTest,
-  DepthFunc,
-  Blend,
-  BlendFunc,
-  BlendColor,
-  Program,
-  ActiveTextureUnit,
-  Viewport,
-  BindFramebuffer,
-  BindRenderbuffer,
-  BindTexture,
-  BindVertexBuffer,
-  BindElementBuffer,
-  BindVertexArrayOES,
   PixelStoreUnpack,
-  PixelStoreUnpackPremultiplyAlpha
-} = require('../../../src/gl/value');
-const Context = require('../../../src/gl/context');
-const { Color } = require('@mapwhit/style-expressions');
-const { deepEqual } = require('../../../src/util/object');
+  PixelStoreUnpackPremultiplyAlpha,
+  Program,
+  StencilFunc,
+  StencilMask,
+  StencilOp,
+  StencilTest,
+  Viewport
+} from '../../../src/gl/value.js';
+import { deepEqual } from '../../../src/util/object.js';
 
-const context = new Context(require('gl')(10, 10));
+const context = new Context(gl(10, 10));
 
 async function ValueTest(Constructor, options, t) {
   await t.test('constructor', t => {

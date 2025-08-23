@@ -1,4 +1,4 @@
-const { default: Point } = require('@mapbox/point-geometry');
+import Point from '@mapbox/point-geometry';
 
 class Anchor extends Point {
   constructor(x, y, angle, segment) {
@@ -14,4 +14,4 @@ class Anchor extends Point {
   }
 }
 
-module.exports = Anchor;
+export default Anchor;

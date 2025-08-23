@@ -1,9 +1,8 @@
-const StencilMode = require('../gl/stencil_mode');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { circleUniformValues } = require('./program/circle_program');
-
-module.exports = drawCircles;
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { circleUniformValues } from './program/circle_program.js';
+export default drawCircles;
 
 function drawCircles(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;

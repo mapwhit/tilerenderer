@@ -1,5 +1,5 @@
-const test = require('node:test');
-const GridIndex = require('../../../src/symbol/grid_index');
+import test from 'node:test';
+import GridIndex from '../../../src/symbol/grid_index.js';
 
 test('GridIndex', async t => {
   await t.test('indexes features', t => {

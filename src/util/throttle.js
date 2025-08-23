@@ -3,7 +3,7 @@
  Throttle the given function to run at most every period milliseconds.
  * @private
  */
-module.exports = function throttle(fn, time) {
+export default function throttle(fn, time) {
   let pending = false;
   let timerId = 0;
 
@@ -23,4 +23,4 @@ module.exports = function throttle(fn, time) {
     }
     return timerId;
   };
-};
+}

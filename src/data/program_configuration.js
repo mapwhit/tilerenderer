@@ -1,14 +1,14 @@
-const { packUint8ToFloat } = require('../shaders/encode_attribute');
-const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
-const { PossiblyEvaluatedPropertyValue } = require('../style/properties');
-const {
+import { supportsPropertyExpression } from '@mapwhit/style-expressions';
+import { Uniform1f, Uniform4f, UniformColor } from '../render/uniform_binding.js';
+import { packUint8ToFloat } from '../shaders/encode_attribute.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import { PossiblyEvaluatedPropertyValue } from '../style/properties.js';
+import {
+  PatternLayoutArray,
   StructArrayLayout1f4,
   StructArrayLayout2f8,
-  StructArrayLayout4f16,
-  PatternLayoutArray
-} = require('./array_types');
-const EvaluationParameters = require('../style/evaluation_parameters');
-const { Uniform1f, UniformColor, Uniform4f } = require('../render/uniform_binding');
+  StructArrayLayout4f16
+} from './array_types.js';
 
 function packColor(color) {
   return [packUint8ToFloat(255 * color.r, 255 * color.g), packUint8ToFloat(255 * color.b, 255 * color.a)];
@@ -471,7 +471,7 @@ class CrossFadedCompositeBinder {
  *
  * @private
  */
-class ProgramConfiguration {
+export default class ProgramConfiguration {
   constructor() {
     this.binders = {};
     this.cacheKey = '';
@@ -676,7 +676,7 @@ class ProgramConfiguration {
   }
 }
 
-class ProgramConfigurationSet {
+export class ProgramConfigurationSet {
   constructor(layoutAttributes, layers, zoom, filterProperties = () => true) {
     this.programConfigurations = {};
     for (const layer of layers) {
@@ -775,7 +775,3 @@ function layoutType(property, type, binderType) {
   const layoutException = getLayoutException(property);
   return layoutException?.[binderType] || defaultLayouts[type][binderType];
 }
-
-ProgramConfiguration.ProgramConfigurationSet = ProgramConfigurationSet;
-
-module.exports = ProgramConfiguration;

@@ -132,4 +132,4 @@ class SourceFeatureState {
   }
 }
 
-module.exports = SourceFeatureState;
+export default SourceFeatureState;

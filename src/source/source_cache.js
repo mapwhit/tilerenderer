@@ -1,13 +1,13 @@
-const { create: createSource } = require('./source');
-const Tile = require('./tile');
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const TileCache = require('./tile_cache');
-const Coordinate = require('../geo/coordinate');
-const EXTENT = require('../data/extent');
-const { default: Point } = require('@mapbox/point-geometry');
-const browser = require('../util/browser');
-const { OverscaledTileID } = require('./tile_id');
-const SourceFeatureState = require('./source_state');
+import Point from '@mapbox/point-geometry';
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import EXTENT from '../data/extent.js';
+import Coordinate from '../geo/coordinate.js';
+import browser from '../util/browser.js';
+import { create as createSource } from './source.js';
+import SourceFeatureState from './source_state.js';
+import Tile from './tile.js';
+import TileCache from './tile_cache.js';
+import { OverscaledTileID } from './tile_id.js';
 
 /**
  * `SourceCache` is responsible for
@@ -777,4 +777,4 @@ function isRasterType(type) {
   return type === 'raster' || type === 'image';
 }
 
-module.exports = SourceCache;
+export default SourceCache;

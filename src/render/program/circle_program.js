@@ -1,7 +1,7 @@
-const { Uniform1i, Uniform1f, Uniform2f, UniformMatrix4f } = require('../uniform_binding');
-const pixelsToTileUnits = require('../../source/pixels_to_tile_units');
+import pixelsToTileUnits from '../../source/pixels_to_tile_units.js';
+import { Uniform1f, Uniform1i, Uniform2f, UniformMatrix4f } from '../uniform_binding.js';
 
-const circleUniforms = (context, locations) => ({
+export const circleUniforms = (context, locations) => ({
   u_camera_to_center_distance: new Uniform1f(context, locations.u_camera_to_center_distance),
   u_scale_with_map: new Uniform1i(context, locations.u_scale_with_map),
   u_pitch_with_map: new Uniform1i(context, locations.u_pitch_with_map),
@@ -9,7 +9,7 @@ const circleUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix)
 });
 
-const circleUniformValues = (painter, coord, tile, layer) => {
+export const circleUniformValues = (painter, coord, tile, layer) => {
   const transform = painter.transform;
 
   let pitchWithMap;
@@ -36,5 +36,3 @@ const circleUniformValues = (painter, coord, tile, layer) => {
     u_extrude_scale: extrudeScale
   };
 };
-
-module.exports = { circleUniforms, circleUniformValues };

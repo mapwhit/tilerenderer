@@ -1,23 +1,23 @@
-const assert = require('assert');
+import assert from 'assert';
 
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const createStyleLayer = require('./create_style_layer');
-const loadSprite = require('./load_sprite');
-const ImageManager = require('../render/image_manager');
-const GlyphManager = require('../render/glyph_manager');
-const Light = require('./light');
-const LineAtlas = require('../render/line_atlas');
-const { clone, deepEqual, filterObject, mapObject } = require('../util/object');
-const browser = require('../util/browser');
-const { getType: getSourceType, setType: setSourceType } = require('../source/source');
-const { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } = require('../source/query_features');
-const SourceCache = require('../source/source_cache');
-const plugin = require('../source/rtl_text_plugin');
-const PauseablePlacement = require('./pauseable_placement');
-const ZoomHistory = require('./zoom_history');
-const CrossTileSymbolIndex = require('../symbol/cross_tile_symbol_index');
-const StyleLayerIndex = require('../style/style_layer_index');
-const { resources } = require('../source/resources');
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import GlyphManager from '../render/glyph_manager.js';
+import ImageManager from '../render/image_manager.js';
+import LineAtlas from '../render/line_atlas.js';
+import { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } from '../source/query_features.js';
+import { resources } from '../source/resources/index.js';
+import plugin from '../source/rtl_text_plugin.js';
+import { getType as getSourceType, setType as setSourceType } from '../source/source.js';
+import SourceCache from '../source/source_cache.js';
+import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
+import browser from '../util/browser.js';
+import { clone, deepEqual, filterObject, mapObject } from '../util/object.js';
+import createStyleLayer from './create_style_layer.js';
+import Light from './light.js';
+import loadSprite from './load_sprite.js';
+import PauseablePlacement from './pauseable_placement.js';
+import StyleLayerIndex from './style_layer_index.js';
+import ZoomHistory from './zoom_history.js';
 
 const properties = [
   'version',
@@ -1084,4 +1084,4 @@ class Style extends Evented {
 Style.getSourceType = getSourceType;
 Style.setSourceType = setSourceType;
 
-module.exports = Style;
+export default Style;

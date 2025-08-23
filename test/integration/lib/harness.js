@@ -1,15 +1,14 @@
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const { pipeline } = require('node:stream/promises');
-const { createWriteStream } = require('node:fs');
-const { promisify } = require('node:util');
-
-const colors = require('chalk');
-const template = require('lodash.template');
-const shuffler = require('shuffle-seed');
-const { report } = require('node:process');
-
-module.exports = harness;
+import { createWriteStream } from 'node:fs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { report } from 'node:process';
+import { pipeline } from 'node:stream/promises';
+import { promisify } from 'node:util';
+import colors from 'chalk';
+import template from 'lodash.template';
+import shuffler from 'shuffle-seed';
+import loader from './loader.js';
+export default harness;
 
 async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
@@ -97,7 +96,7 @@ async function runSequence(sequence, runTest, { testReporter, bail }) {
 }
 
 async function generateTestSequence(cwd, implementation, options) {
-  const loader = require('./loader')();
+  const loaderInstance = loader();
   const { tests = [], ignores = {}, fixtureFilename = 'style.json' } = options;
 
   const files = fs.glob(`**/${fixtureFilename}`, { cwd });
@@ -112,9 +111,10 @@ async function generateTestSequence(cwd, implementation, options) {
 
   async function fixtureToStyle(fixture) {
     const id = path.dirname(fixture);
-    const style = require(path.join(cwd, fixture));
+    const styleData = await fs.readFile(path.join(cwd, fixture), 'utf8');
+    const style = JSON.parse(styleData);
 
-    await loader.localizeURLs(style);
+    await loaderInstance.localizeURLs(style);
 
     style.metadata ??= style.metadata || {};
     const test = (style.metadata.test = Object.assign(
@@ -169,7 +169,9 @@ async function writeResults(cwd, options, tests) {
   console.log(`Results at: ${p}`);
 
   async function* resuts() {
-    const resultsTemplate = template(await fs.readFile(path.join(__dirname, '..', 'results.html.tmpl'), 'utf8'));
+    const resultsTemplate = template(
+      await fs.readFile(path.join(import.meta.dirname, '..', 'results.html.tmpl'), 'utf8')
+    );
     const itemTemplate = template(await fs.readFile(path.join(cwd, 'result_item.html.tmpl'), 'utf8'));
     const unsuccessful = tests.filter(test => test.status === 'failed' || test.status === 'errored');
     const hasFailedTests = unsuccessful.length > 0;

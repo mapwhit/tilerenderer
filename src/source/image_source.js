@@ -1,14 +1,13 @@
-const { getCoordinatesCenter } = require('../util/util');
-
-const { CanonicalTileID } = require('./tile_id');
-const LngLat = require('../geo/lng_lat');
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const loadImage = require('../util/loader/image');
-const EXTENT = require('../data/extent');
-const { RasterBoundsArray } = require('../data/array_types');
-const rasterBoundsAttributes = require('../data/raster_bounds_attributes');
-const SegmentVector = require('../data/segment');
-const Texture = require('../render/texture');
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import { RasterBoundsArray } from '../data/array_types.js';
+import EXTENT from '../data/extent.js';
+import rasterBoundsAttributes from '../data/raster_bounds_attributes.js';
+import SegmentVector from '../data/segment.js';
+import LngLat from '../geo/lng_lat.js';
+import Texture from '../render/texture.js';
+import loadImage from '../util/loader/image.js';
+import { getCoordinatesCenter } from '../util/util.js';
+import { CanonicalTileID } from './tile_id.js';
 
 /**
  * A data source containing an image.
@@ -195,4 +194,4 @@ class ImageSource extends Evented {
   }
 }
 
-module.exports = ImageSource;
+export default ImageSource;

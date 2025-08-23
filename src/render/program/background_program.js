@@ -1,13 +1,13 @@
-const { bgPatternUniformValues } = require('./pattern');
-const { Uniform1i, Uniform1f, Uniform2f, UniformColor, UniformMatrix4f } = require('../uniform_binding');
+import { Uniform1f, Uniform1i, Uniform2f, UniformColor, UniformMatrix4f } from '../uniform_binding.js';
+import { bgPatternUniformValues } from './pattern.js';
 
-const backgroundUniforms = (context, locations) => ({
+export const backgroundUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_opacity: new Uniform1f(context, locations.u_opacity),
   u_color: new UniformColor(context, locations.u_color)
 });
 
-const backgroundPatternUniforms = (context, locations) => ({
+export const backgroundPatternUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_opacity: new Uniform1f(context, locations.u_opacity),
   u_image: new Uniform1i(context, locations.u_image),
@@ -26,21 +26,14 @@ const backgroundPatternUniforms = (context, locations) => ({
   u_tile_units_to_pixels: new Uniform1f(context, locations.u_tile_units_to_pixels)
 });
 
-const backgroundUniformValues = (matrix, opacity, color) => ({
+export const backgroundUniformValues = (matrix, opacity, color) => ({
   u_matrix: matrix,
   u_opacity: opacity,
   u_color: color
 });
 
-const backgroundPatternUniformValues = (matrix, opacity, painter, image, tile, crossfade) =>
+export const backgroundPatternUniformValues = (matrix, opacity, painter, image, tile, crossfade) =>
   Object.assign(bgPatternUniformValues(image, crossfade, painter, tile), {
     u_matrix: matrix,
     u_opacity: opacity
   });
-
-module.exports = {
-  backgroundUniforms,
-  backgroundPatternUniforms,
-  backgroundUniformValues,
-  backgroundPatternUniformValues
-};

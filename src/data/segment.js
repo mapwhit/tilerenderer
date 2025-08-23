@@ -1,4 +1,4 @@
-const warn = require('../util/warn');
+import warn from '../util/warn.js';
 
 class SegmentVector {
   constructor(segments = []) {
@@ -56,4 +56,4 @@ class SegmentVector {
  */
 SegmentVector.MAX_VERTEX_ARRAY_LENGTH = 2 ** 16 - 1;
 
-module.exports = SegmentVector;
+export default SegmentVector;

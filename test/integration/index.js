@@ -1,2 +1,2 @@
-module.exports.render = require('./lib/render');
-module.exports.query = require('./lib/query');
+export { default as render } from './lib/render.js';
+export { default as query } from './lib/query.js';

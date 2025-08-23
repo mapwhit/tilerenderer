@@ -1,21 +1,21 @@
-const { Uniform1i, Uniform1f, Uniform2f, Uniform4f, UniformMatrix4f } = require('../uniform_binding');
-const pixelsToTileUnits = require('../../source/pixels_to_tile_units');
-const browser = require('../../util/browser');
+import pixelsToTileUnits from '../../source/pixels_to_tile_units.js';
+import browser from '../../util/browser.js';
+import { Uniform1f, Uniform1i, Uniform2f, Uniform4f, UniformMatrix4f } from '../uniform_binding.js';
 
-const lineUniforms = (context, locations) => ({
+export const lineUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_ratio: new Uniform1f(context, locations.u_ratio),
   u_gl_units_to_pixels: new Uniform2f(context, locations.u_gl_units_to_pixels)
 });
 
-const lineGradientUniforms = (context, locations) => ({
+export const lineGradientUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_ratio: new Uniform1f(context, locations.u_ratio),
   u_gl_units_to_pixels: new Uniform2f(context, locations.u_gl_units_to_pixels),
   u_image: new Uniform1i(context, locations.u_image)
 });
 
-const linePatternUniforms = (context, locations) => ({
+export const linePatternUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_texsize: new Uniform2f(context, locations.u_texsize),
   u_ratio: new Uniform1f(context, locations.u_ratio),
@@ -25,7 +25,7 @@ const linePatternUniforms = (context, locations) => ({
   u_fade: new Uniform1f(context, locations.u_fade)
 });
 
-const lineSDFUniforms = (context, locations) => ({
+export const lineSDFUniforms = (context, locations) => ({
   u_matrix: new UniformMatrix4f(context, locations.u_matrix),
   u_ratio: new Uniform1f(context, locations.u_ratio),
   u_gl_units_to_pixels: new Uniform2f(context, locations.u_gl_units_to_pixels),
@@ -38,7 +38,7 @@ const lineSDFUniforms = (context, locations) => ({
   u_mix: new Uniform1f(context, locations.u_mix)
 });
 
-const lineUniformValues = (painter, tile, layer) => {
+export const lineUniformValues = (painter, tile, layer) => {
   const transform = painter.transform;
 
   return {
@@ -48,13 +48,13 @@ const lineUniformValues = (painter, tile, layer) => {
   };
 };
 
-const lineGradientUniformValues = (painter, tile, layer) => {
+export const lineGradientUniformValues = (painter, tile, layer) => {
   return Object.assign(lineUniformValues(painter, tile, layer), {
     u_image: 0
   });
 };
 
-const linePatternUniformValues = (painter, tile, layer, crossfade) => {
+export const linePatternUniformValues = (painter, tile, layer, crossfade) => {
   const transform = painter.transform;
   const tileZoomRatio = calculateTileRatio(tile, transform);
   return {
@@ -70,7 +70,7 @@ const linePatternUniformValues = (painter, tile, layer, crossfade) => {
   };
 };
 
-const lineSDFUniformValues = (painter, tile, layer, dasharray, crossfade) => {
+export const lineSDFUniformValues = (painter, tile, layer, dasharray, crossfade) => {
   const transform = painter.transform;
   const lineAtlas = painter.lineAtlas;
   const tileRatio = calculateTileRatio(tile, transform);
@@ -106,14 +106,3 @@ function calculateMatrix(painter, tile, layer) {
     layer._paint.get('line-translate-anchor')
   );
 }
-
-module.exports = {
-  lineUniforms,
-  lineGradientUniforms,
-  linePatternUniforms,
-  lineSDFUniforms,
-  lineUniformValues,
-  lineGradientUniformValues,
-  linePatternUniformValues,
-  lineSDFUniformValues
-};

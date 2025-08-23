@@ -1,7 +1,7 @@
-const test = require('node:test');
-const Light = require('../../../src/style/light');
-const { Color } = require('@mapwhit/style-expressions');
-const { sphericalToCartesian } = require('../../../src/util/util');
+import test from 'node:test';
+import { Color } from '@mapwhit/style-expressions';
+import Light from '../../../src/style/light.js';
+import { sphericalToCartesian } from '../../../src/util/util.js';
 
 const spec = {
   anchor: {

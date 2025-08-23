@@ -1,5 +1,5 @@
-const { AlphaImage } = require('../util/image');
-const { default: potpack } = require('potpack');
+import potpack from 'potpack';
+import { AlphaImage } from '../util/image.js';
 
 const padding = 1;
 
@@ -46,4 +46,4 @@ class GlyphAtlas {
   }
 }
 
-module.exports = GlyphAtlas;
+export default GlyphAtlas;

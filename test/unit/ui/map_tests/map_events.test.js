@@ -1,7 +1,7 @@
-const test = require('node:test');
-const Map = require('../../../../src/ui/map');
-const { ErrorEvent } = require('@mapwhit/events');
-const { createMap, createStyle, initWindow } = require('../../../util/util');
+import test from 'node:test';
+import { ErrorEvent } from '@mapwhit/events';
+import Map from '../../../../src/ui/map.js';
+import { createMap, createStyle, initWindow } from '../../../util/util.js';
 
 test('map events', async t => {
   initWindow(t);

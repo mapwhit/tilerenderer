@@ -1,6 +1,6 @@
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const { Properties, CrossFadedProperty, DataConstantProperty } = require('../properties');
+import { CrossFadedProperty, DataConstantProperty, Properties } from '../properties.js';
 
 const paint = new Properties({
   'background-color': new DataConstantProperty({
@@ -22,4 +22,4 @@ const paint = new Properties({
   })
 });
 
-module.exports = { paint };
+export default { paint };

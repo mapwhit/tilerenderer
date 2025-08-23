@@ -1,8 +1,8 @@
-const test = require('node:test');
-const CollisionFeature = require('../../../src/symbol/collision_feature');
-const Anchor = require('../../../src/symbol/anchor');
-const { default: Point } = require('@mapbox/point-geometry');
-const { CollisionBoxArray } = require('../../../src/data/array_types');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import { CollisionBoxArray } from '../../../src/data/array_types.js';
+import Anchor from '../../../src/symbol/anchor.js';
+import CollisionFeature from '../../../src/symbol/collision_feature.js';
 
 test('CollisionFeature', async t => {
   const collisionBoxArray = new CollisionBoxArray();

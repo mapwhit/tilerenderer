@@ -1,9 +1,8 @@
-const StencilMode = require('../gl/stencil_mode');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { backgroundUniformValues, backgroundPatternUniformValues } = require('./program/background_program');
-
-module.exports = drawBackground;
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { backgroundPatternUniformValues, backgroundUniformValues } from './program/background_program.js';
+export default drawBackground;
 
 function drawBackground(painter, sourceCache, layer) {
   const color = layer._paint.get('background-color');

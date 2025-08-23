@@ -1,5 +1,5 @@
-const test = require('node:test');
-const createStyleLayer = require('../../../../src/style/create_style_layer');
+import test from 'node:test';
+import createStyleLayer from '../../../../src/style/create_style_layer.js';
 
 test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {

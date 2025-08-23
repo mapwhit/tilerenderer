@@ -1,13 +1,14 @@
-const LngLat = require('./lng_lat');
+import glMatrix from '@mapbox/gl-matrix';
+import Point from '@mapbox/point-geometry';
+import EXTENT from '../data/extent.js';
+import { UnwrappedTileID } from '../source/tile_id.js';
+import interpolate from '../util/interpolate.js';
+import tileCover from '../util/tile_cover.js';
+import { clamp, wrap } from '../util/util.js';
+import Coordinate from './coordinate.js';
+import LngLat from './lng_lat.js';
 
-const { default: Point } = require('@mapbox/point-geometry');
-const Coordinate = require('./coordinate');
-const { wrap, clamp } = require('../util/util');
-const interpolate = require('../util/interpolate');
-const tileCover = require('../util/tile_cover');
-const { UnwrappedTileID } = require('../source/tile_id');
-const EXTENT = require('../data/extent');
-const { vec4, mat4, mat2 } = require('@mapbox/gl-matrix');
+const { mat2, mat4, vec4 } = glMatrix;
 
 /**
  * A single transform, generally used for a single tile to be
@@ -612,4 +613,4 @@ class Transform {
   }
 }
 
-module.exports = Transform;
+export default Transform;

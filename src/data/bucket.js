@@ -18,7 +18,7 @@
  */
 
 // style may have changed between creating a bucket when tile was loaded and rendering it
-function updateBuckets(buckets, style) {
+export function updateBuckets(buckets, style) {
   if (!style._changed) {
     return;
   }
@@ -52,7 +52,3 @@ function updateBuckets(buckets, style) {
     bucket.stateDependentLayers = layers.filter(layer => layer.isStateDependent());
   }
 }
-
-module.exports = {
-  updateBuckets
-};

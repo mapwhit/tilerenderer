@@ -1,6 +1,6 @@
-const { Uniform1i, Uniform1f, Uniform2f, UniformMatrix4f } = require('../uniform_binding');
+import { Uniform1f, Uniform1i, Uniform2f, UniformMatrix4f } from '../uniform_binding.js';
 
-const symbolIconUniforms = (context, locations) => ({
+export const symbolIconUniforms = (context, locations) => ({
   u_is_size_zoom_constant: new Uniform1i(context, locations.u_is_size_zoom_constant),
   u_is_size_feature_constant: new Uniform1i(context, locations.u_is_size_feature_constant),
   u_size_t: new Uniform1f(context, locations.u_size_t),
@@ -19,7 +19,7 @@ const symbolIconUniforms = (context, locations) => ({
   u_texture: new Uniform1i(context, locations.u_texture)
 });
 
-const symbolSDFUniforms = (context, locations) => ({
+export const symbolSDFUniforms = (context, locations) => ({
   u_is_size_zoom_constant: new Uniform1i(context, locations.u_is_size_zoom_constant),
   u_is_size_feature_constant: new Uniform1i(context, locations.u_is_size_feature_constant),
   u_size_t: new Uniform1f(context, locations.u_size_t),
@@ -40,7 +40,7 @@ const symbolSDFUniforms = (context, locations) => ({
   u_is_halo: new Uniform1f(context, locations.u_is_halo)
 });
 
-const symbolIconUniformValues = (
+export const symbolIconUniformValues = (
   functionType,
   size,
   rotateInShader,
@@ -74,7 +74,7 @@ const symbolIconUniformValues = (
   };
 };
 
-const symbolSDFUniformValues = (
+export const symbolSDFUniformValues = (
   functionType,
   size,
   rotateInShader,
@@ -108,5 +108,3 @@ const symbolSDFUniformValues = (
     }
   );
 };
-
-module.exports = { symbolIconUniforms, symbolSDFUniforms, symbolIconUniformValues, symbolSDFUniformValues };

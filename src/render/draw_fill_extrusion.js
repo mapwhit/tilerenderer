@@ -1,10 +1,9 @@
-const DepthMode = require('../gl/depth_mode');
-const StencilMode = require('../gl/stencil_mode');
-const ColorMode = require('../gl/color_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { fillExtrusionUniformValues, fillExtrusionPatternUniformValues } = require('./program/fill_extrusion_program');
-
-module.exports = draw;
+import ColorMode from '../gl/color_mode.js';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { fillExtrusionPatternUniformValues, fillExtrusionUniformValues } from './program/fill_extrusion_program.js';
+export default draw;
 
 function draw(painter, source, layer, coords) {
   const opacity = layer._paint.get('fill-extrusion-opacity');
