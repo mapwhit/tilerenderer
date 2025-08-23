@@ -1,14 +1,15 @@
-const DepthMode = require('../gl/depth_mode');
-const Texture = require('./texture');
-const CullFaceMode = require('../gl/cull_face_mode');
-const {
-  lineUniformValues,
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import Texture from './texture.js';
+
+import {
+  lineGradientUniformValues,
   linePatternUniformValues,
   lineSDFUniformValues,
-  lineGradientUniformValues
-} = require('./program/line_program');
+  lineUniformValues
+} from './program/line_program.js';
 
-module.exports = function drawLine(painter, sourceCache, layer, coords) {
+export default function drawLine(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;
 
   const opacity = layer._paint.get('line-opacity');
@@ -96,4 +97,4 @@ module.exports = function drawLine(painter, sourceCache, layer, coords) {
     firstTile = false;
     // once refactored so that bound texture state is managed, we'll also be able to remove this firstTile/programChanged logic
   }
-};
+}

@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 class IndexBuffer {
   constructor(context, array, dynamicDraw) {
@@ -49,4 +49,4 @@ class IndexBuffer {
   }
 }
 
-module.exports = IndexBuffer;
+export default IndexBuffer;

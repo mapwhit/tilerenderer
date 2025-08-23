@@ -1,6 +1,5 @@
-const parseGlyphPBF = require('../../style/parse_glyph_pbf');
-
-module.exports = glyphCache;
+import parseGlyphPBF from '../../style/parse_glyph_pbf.js';
+export default glyphCache;
 
 const MAX_GLYPH_ID = 65535;
 

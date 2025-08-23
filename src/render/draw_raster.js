@@ -1,13 +1,11 @@
-const { clamp } = require('../util/util');
-
-const ImageSource = require('../source/image_source');
-const browser = require('../util/browser');
-const StencilMode = require('../gl/stencil_mode');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { rasterUniformValues } = require('./program/raster_program');
-
-module.exports = drawRaster;
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import ImageSource from '../source/image_source.js';
+import browser from '../util/browser.js';
+import { clamp } from '../util/util.js';
+import { rasterUniformValues } from './program/raster_program.js';
+export default drawRaster;
 
 function drawRaster(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;

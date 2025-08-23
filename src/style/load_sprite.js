@@ -1,8 +1,7 @@
-const browser = require('../util/browser');
-const { RGBAImage } = require('../util/image');
-const loadImage = require('../util/loader/image');
-
-module.exports = loadSprite;
+import browser from '../util/browser.js';
+import { RGBAImage } from '../util/image.js';
+import loadImage from '../util/loader/image.js';
+export default loadSprite;
 
 async function loadSprite(sprite) {
   const image = await loadImage(sprite.image);

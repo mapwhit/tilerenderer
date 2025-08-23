@@ -75,4 +75,4 @@ class Coordinate {
   }
 }
 
-module.exports = Coordinate;
+export default Coordinate;

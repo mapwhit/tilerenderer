@@ -1,6 +1,6 @@
-const { charHasRotatedVerticalOrientation } = require('./script_detection');
+import { charHasRotatedVerticalOrientation } from './script_detection.js';
 
-const verticalizedCharacterMap = {
+export const verticalizedCharacterMap = {
   '!': '︕',
   '#': '＃',
   $: '＄',
@@ -86,7 +86,7 @@ const verticalizedCharacterMap = {
   '｣': '﹂'
 };
 
-function verticalizePunctuation(input) {
+export default function verticalizePunctuation(input) {
   let output = '';
 
   for (let i = 0; i < input.length; i++) {
@@ -106,7 +106,3 @@ function verticalizePunctuation(input) {
 
   return output;
 }
-
-verticalizePunctuation.verticalizedCharacterMap = verticalizedCharacterMap;
-
-module.exports = verticalizePunctuation;

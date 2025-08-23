@@ -1,8 +1,8 @@
-const { pick } = require('../util/object');
+import { pick } from '../util/object.js';
 
-module.exports = function (tileJSON) {
+export default function (tileJSON) {
   return tileJSON.resourceSets ? fromResourseSets(tileJSON) : fromTileJSON(tileJSON);
-};
+}
 
 function fromTileJSON(tileJSON) {
   const result = pick(tileJSON, ['tiles', 'minzoom', 'maxzoom', 'attribution', 'bounds']);

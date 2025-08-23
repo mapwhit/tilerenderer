@@ -54,4 +54,4 @@ function WebWorker() {
   return parentBus;
 }
 
-module.exports = WebWorker;
+export default WebWorker;

@@ -1,6 +1,5 @@
-const StyleLayer = require('../style_layer');
-
-const properties = require('./hillshade_style_layer_properties');
+import StyleLayer from '../style_layer.js';
+import properties from './hillshade_style_layer_properties.js';
 
 class HillshadeStyleLayer extends StyleLayer {
   constructor(layer) {
@@ -12,4 +11,4 @@ class HillshadeStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = HillshadeStyleLayer;
+export default HillshadeStyleLayer;

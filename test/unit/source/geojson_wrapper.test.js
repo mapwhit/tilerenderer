@@ -1,5 +1,5 @@
-const test = require('node:test');
-const Wrapper = require('../../../src/source/geojson_wrapper');
+import test from 'node:test';
+import Wrapper from '../../../src/source/geojson_wrapper.js';
 
 test('geojsonwrapper', async t => {
   await t.test('linestring', t => {

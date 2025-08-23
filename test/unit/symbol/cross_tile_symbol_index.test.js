@@ -1,6 +1,6 @@
-const test = require('node:test');
-const CrossTileSymbolIndex = require('../../../src/symbol/cross_tile_symbol_index');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import CrossTileSymbolIndex from '../../../src/symbol/cross_tile_symbol_index.js';
 
 const styleLayer = {
   id: 'test'

@@ -1,5 +1,5 @@
 const DOM = {};
-module.exports = DOM;
+export default DOM;
 
 DOM.create = function (tagName, className, container) {
   const el = window.document.createElement(tagName);

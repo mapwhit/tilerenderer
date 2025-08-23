@@ -1,16 +1,19 @@
-const { PNG } = require('pngjs');
-const Map = require('../src/ui/map');
-const config = require('../src/util/config');
-const browser = require('../src/util/browser');
-const { setRTLTextPlugin, registerForPluginAvailability } = require('../src/source/rtl_text_plugin');
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
+import fs from 'node:fs';
+import path from 'node:path';
+import util from 'node:util';
+import { PNG } from 'pngjs';
+import Map from '../src/ui/map.js';
+import browser from '../src/util/browser.js';
+import config from '../src/util/config.js';
 
-const rtlText = path.join(__dirname, './node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
-setRTLTextPlugin(`file://${rtlText}`);
+const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
-module.exports = async function (style, options, _callback) {
+export default async function (style, options, _callback) {
+  const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
+    '../src/source/rtl_text_plugin.js'
+  );
+  clearRTLTextPlugin();
+  setRTLTextPlugin(rtlText);
   await util.promisify(registerForPluginAvailability)();
 
   let wasCallbackCalled = false;
@@ -139,7 +142,7 @@ module.exports = async function (style, options, _callback) {
       }, operation[1]);
     } else if (operation[0] === 'addImage') {
       const { data, width, height } = PNG.sync.read(
-        fs.readFileSync(path.join(__dirname, './integration', operation[2]))
+        fs.readFileSync(path.join(import.meta.dirname, './integration', operation[2]))
       );
       map.addImage(operation[1], { width, height, data: new Uint8Array(data) }, operation[3] || {});
       applyOperations(map, operations.slice(1), callback);
@@ -148,4 +151,4 @@ module.exports = async function (style, options, _callback) {
       applyOperations(map, operations.slice(1), callback);
     }
   }
-};
+}

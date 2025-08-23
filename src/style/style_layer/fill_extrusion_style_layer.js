@@ -1,13 +1,14 @@
-const StyleLayer = require('../style_layer');
+import glMatrix from '@mapbox/gl-matrix';
+import Point from '@mapbox/point-geometry';
+import FillExtrusionBucket from '../../data/bucket/fill_extrusion_bucket.js';
+import { polygonIntersectsMultiPolygon, polygonIntersectsPolygon } from '../../util/intersection_tests.js';
+import { translate, translateDistance } from '../query_utils.js';
+import StyleLayer from '../style_layer.js';
+import properties from './fill_extrusion_style_layer_properties.js';
 
-const FillExtrusionBucket = require('../../data/bucket/fill_extrusion_bucket');
-const { polygonIntersectsPolygon, polygonIntersectsMultiPolygon } = require('../../util/intersection_tests');
-const { translateDistance, translate } = require('../query_utils');
-const properties = require('./fill_extrusion_style_layer_properties');
-const { vec4 } = require('@mapbox/gl-matrix');
-const { default: Point } = require('@mapbox/point-geometry');
+const { vec4 } = glMatrix;
 
-class FillExtrusionStyleLayer extends StyleLayer {
+export class FillExtrusionStyleLayer extends StyleLayer {
   constructor(layer) {
     super(layer, properties);
   }
@@ -57,7 +58,7 @@ function dot(a, b) {
   return a.x * b.x + a.y * b.y;
 }
 
-function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
+export function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
   if (projectedQueryGeometry.length === 1) {
     // For point queries calculate the z at which the point intersects the face
     // using barycentric coordinates.
@@ -205,5 +206,3 @@ function projectQueryGeometry(queryGeometry, pixelPosMatrix, transform, z) {
   }
   return projectedQueryGeometry;
 }
-
-module.exports = { FillExtrusionStyleLayer, getIntersectionDistance };

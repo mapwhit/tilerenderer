@@ -1,18 +1,18 @@
-const { mat4 } = require('@mapbox/gl-matrix');
-const EXTENT = require('../data/extent');
-const { PosArray } = require('../data/array_types');
-const { LineIndexArray } = require('../data/index_array_type');
-const posAttributes = require('../data/pos_attributes');
-const SegmentVector = require('../data/segment');
-const DepthMode = require('../gl/depth_mode');
-const StencilMode = require('../gl/stencil_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { debugUniformValues } = require('./program/debug_program');
-const { Color } = require('@mapwhit/style-expressions');
+import glMatrix from '@mapbox/gl-matrix';
+import { Color } from '@mapwhit/style-expressions';
+import { PosArray } from '../data/array_types.js';
+import EXTENT from '../data/extent.js';
+import { LineIndexArray } from '../data/index_array_type.js';
+import posAttributes from '../data/pos_attributes.js';
+import SegmentVector from '../data/segment.js';
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { debugUniformValues } from './program/debug_program.js';
 
-module.exports = drawDebug;
+const { mat4 } = glMatrix;
 
-function drawDebug(painter, sourceCache, coords) {
+export default function drawDebug(painter, sourceCache, coords) {
   for (let i = 0; i < coords.length; i++) {
     drawDebugTile(painter, sourceCache, coords[i]);
   }

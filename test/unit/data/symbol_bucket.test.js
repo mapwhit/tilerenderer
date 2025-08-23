@@ -1,26 +1,26 @@
-const test = require('node:test');
-const fs = require('fs');
-const path = require('path');
-const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapwhit/vector-tile');
-const SymbolBucket = require('../../../src/data/bucket/symbol_bucket');
-const { CollisionBoxArray } = require('../../../src/data/array_types');
-const SymbolStyleLayer = require('../../../src/style/style_layer/symbol_style_layer');
-const featureFilter = require('../../../src/style-spec/feature_filter');
-const { performSymbolLayout } = require('../../../src/symbol/symbol_layout');
-const { Placement } = require('../../../src/symbol/placement');
-const Transform = require('../../../src/geo/transform');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const Tile = require('../../../src/source/tile');
-const CrossTileSymbolIndex = require('../../../src/symbol/cross_tile_symbol_index');
-const FeatureIndex = require('../../../src/data/feature_index');
+import fs from 'fs';
+import test from 'node:test';
+import path from 'path';
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
+import { CollisionBoxArray } from '../../../src/data/array_types.js';
+import SymbolBucket from '../../../src/data/bucket/symbol_bucket.js';
+import FeatureIndex from '../../../src/data/feature_index.js';
+import Transform from '../../../src/geo/transform.js';
+import Tile from '../../../src/source/tile.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import featureFilter from '../../../src/style-spec/feature_filter/index.js';
+import SymbolStyleLayer from '../../../src/style/style_layer/symbol_style_layer.js';
+import CrossTileSymbolIndex from '../../../src/symbol/cross_tile_symbol_index.js';
+import { Placement } from '../../../src/symbol/placement.js';
+import { performSymbolLayout } from '../../../src/symbol/symbol_layout.js';
 
 // Load a point feature from fixture tile.
 const vt = new VectorTile(
-  new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
 );
 const feature = vt.layers.place_label.feature(10);
-const glyphs = JSON.parse(fs.readFileSync(path.join(__dirname, '/../../fixtures/fontstack-glyphs.json')));
+const glyphs = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/fontstack-glyphs.json')));
 
 const collisionBoxArray = new CollisionBoxArray();
 const transform = new Transform();

@@ -1,8 +1,9 @@
-const test = require('node:test');
-const fs = require('fs');
-const path = require('path');
-const shaping = require('../../../src/symbol/shaping');
-const { Formatted } = require('@mapwhit/style-expressions');
+import fs from 'fs';
+import test from 'node:test';
+import path from 'path';
+import { Formatted } from '@mapwhit/style-expressions';
+import * as shaping from '../../../src/symbol/shaping.js';
+import expectedLinebreak from '../../expected/text-shaping-linebreak.json' with { type: 'json' };
 const WritingMode = shaping.WritingMode;
 
 let UPDATE = false;
@@ -14,7 +15,7 @@ test('shaping', t => {
   const oneEm = 24;
   const fontStack = 'Test';
   const glyphs = {
-    Test: JSON.parse(fs.readFileSync(path.join(__dirname, '/../../fixtures/fontstack-glyphs.json')))
+    Test: JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/fontstack-glyphs.json')))
   };
 
   let shaped;
@@ -35,10 +36,13 @@ test('shaping', t => {
     WritingMode.horizontal
   );
   if (UPDATE)
-    fs.writeFileSync(path.join(__dirname, '/../../expected/text-shaping-null.json'), JSON.stringify(shaped, null, 2));
+    fs.writeFileSync(
+      path.join(import.meta.dirname, '/../../expected/text-shaping-null.json'),
+      JSON.stringify(shaped, null, 2)
+    );
   t.assert.deepEqual(
     shaped,
-    JSON.parse(fs.readFileSync(path.join(__dirname, '/../../expected/text-shaping-null.json')))
+    JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '/../../expected/text-shaping-null.json')))
   );
 
   // Default shaping.
@@ -57,12 +61,12 @@ test('shaping', t => {
   );
   if (UPDATE)
     fs.writeFileSync(
-      path.join(__dirname, '/../../expected/text-shaping-default.json'),
+      path.join(import.meta.dirname, '/../../expected/text-shaping-default.json'),
       JSON.stringify(shaped, null, 2)
     );
   t.assert.deepEqual(
     shaped,
-    JSON.parse(fs.readFileSync(path.join(__dirname, '/../../expected/text-shaping-default.json')))
+    JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '/../../expected/text-shaping-default.json')))
   );
 
   // Letter spacing.
@@ -81,12 +85,12 @@ test('shaping', t => {
   );
   if (UPDATE)
     fs.writeFileSync(
-      path.join(__dirname, '/../../expected/text-shaping-spacing.json'),
+      path.join(import.meta.dirname, '/../../expected/text-shaping-spacing.json'),
       JSON.stringify(shaped, null, 2)
     );
   t.assert.deepEqual(
     shaped,
-    JSON.parse(fs.readFileSync(path.join(__dirname, '/../../expected/text-shaping-spacing.json')))
+    JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '/../../expected/text-shaping-spacing.json')))
   );
 
   // Line break.
@@ -105,13 +109,13 @@ test('shaping', t => {
   );
   if (UPDATE)
     fs.writeFileSync(
-      path.join(__dirname, '/../../expected/text-shaping-linebreak.json'),
+      path.join(import.meta.dirname, '/../../expected/text-shaping-linebreak.json'),
       JSON.stringify(shaped, null, 2)
     );
-  t.assert.deepEqual(shaped, require('../../expected/text-shaping-linebreak.json'));
+  t.assert.deepEqual(shaped, expectedLinebreak);
 
   const expectedNewLine = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '/../../expected/text-shaping-newline.json'))
+    fs.readFileSync(path.join(import.meta.dirname, '/../../expected/text-shaping-newline.json'))
   );
 
   shaped = shaping.shapeText(
@@ -129,7 +133,7 @@ test('shaping', t => {
   );
   if (UPDATE)
     fs.writeFileSync(
-      path.join(__dirname, '/../../expected/text-shaping-newline.json'),
+      path.join(import.meta.dirname, '/../../expected/text-shaping-newline.json'),
       JSON.stringify(shaped, null, 2)
     );
   t.assert.deepEqual(shaped, expectedNewLine);
@@ -150,7 +154,7 @@ test('shaping', t => {
   t.assert.deepEqual(shaped.positionedGlyphs, expectedNewLine.positionedGlyphs);
 
   const expectedNewLinesInMiddle = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '/../../expected/text-shaping-newlines-in-middle.json'))
+    fs.readFileSync(path.join(import.meta.dirname, '/../../expected/text-shaping-newlines-in-middle.json'))
   );
 
   shaped = shaping.shapeText(
@@ -168,7 +172,7 @@ test('shaping', t => {
   );
   if (UPDATE)
     fs.writeFileSync(
-      path.join(__dirname, '/../../expected/text-shaping-newlines-in-middle.json'),
+      path.join(import.meta.dirname, '/../../expected/text-shaping-newlines-in-middle.json'),
       JSON.stringify(shaped, null, 2)
     );
   t.assert.deepEqual(shaped, expectedNewLinesInMiddle);

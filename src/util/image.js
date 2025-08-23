@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 function createImage(image, { width, height }, channels, data) {
   if (!data) {
@@ -75,7 +75,7 @@ function copyImage(srcImg, dstImg, srcPt, dstPt, size, channels) {
   return dstImg;
 }
 
-class AlphaImage {
+export class AlphaImage {
   constructor(size, data) {
     createImage(this, size, 1, data);
   }
@@ -95,7 +95,7 @@ class AlphaImage {
 
 // Not premultiplied, because ImageData is not premultiplied.
 // UNPACK_PREMULTIPLY_ALPHA_WEBGL must be used when uploading to a texture.
-class RGBAImage {
+export class RGBAImage {
   constructor(size, data) {
     createImage(this, size, 4, data);
   }
@@ -112,8 +112,3 @@ class RGBAImage {
     copyImage(srcImg, dstImg, srcPt, dstPt, size, 4);
   }
 }
-
-module.exports = {
-  AlphaImage,
-  RGBAImage
-};

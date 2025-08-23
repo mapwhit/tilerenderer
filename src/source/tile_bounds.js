@@ -1,6 +1,5 @@
-const LngLatBounds = require('../geo/lng_lat_bounds');
-
-const { clamp } = require('../util/util');
+import LngLatBounds from '../geo/lng_lat_bounds.js';
+import { clamp } from '../util/util.js';
 
 class TileBounds {
   constructor(bounds, minzoom = 0, maxzoom = 24) {
@@ -37,4 +36,4 @@ function latY(lat, zoom) {
   return 2 ** (zoom - 1) + 0.5 * Math.log((1 + f) / (1 - f)) * -scale;
 }
 
-module.exports = TileBounds;
+export default TileBounds;

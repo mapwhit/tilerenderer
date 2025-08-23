@@ -1,4 +1,4 @@
-function hasPattern(type, layers, options) {
+export function hasPattern(type, layers, options) {
   const patterns = options.patternDependencies;
   let hasPattern = false;
 
@@ -19,7 +19,7 @@ function hasPattern(type, layers, options) {
   return hasPattern;
 }
 
-function addPatternDependencies(type, layers, patternFeature, zoom, options) {
+export function addPatternDependencies(type, layers, patternFeature, zoom, options) {
   const patterns = options.patternDependencies;
   for (const layer of layers) {
     const patternProperty = layer._paint.get(`${type}-pattern`);
@@ -40,5 +40,3 @@ function addPatternDependencies(type, layers, patternFeature, zoom, options) {
   }
   return patternFeature;
 }
-
-module.exports = { hasPattern, addPatternDependencies };

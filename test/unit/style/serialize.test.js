@@ -1,9 +1,9 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const { Evented } = require('@mapwhit/events');
-const Transform = require('../../../src/geo/transform');
-const Style = require('../../../src/style/style');
-const { properties, serialize } = require('../../util/serialize_style');
+import test from 'node:test';
+import { Evented } from '@mapwhit/events';
+import Transform from '../../../src/geo/transform.js';
+import Style from '../../../src/style/style.js';
+import { properties, serialize } from '../../util/serialize_style.js';
+import _window from '../../util/window.js';
 
 function createStyleJSON(properties) {
   return Object.assign(

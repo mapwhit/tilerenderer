@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { CanonicalTileID, OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';
 
 test('CanonicalTileID', async t => {
   await t.test('constructor', t => {

@@ -1,5 +1,5 @@
-const test = require('node:test');
-const GlyphManager = require('../../../src/render/glyph_manager');
+import test from 'node:test';
+import GlyphManager from '../../../src/render/glyph_manager.js';
 
 test('GlyphManager', async t => {
   let glyphManager;

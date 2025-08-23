@@ -1,4 +1,4 @@
-const { LineIndexArray, TriangleIndexArray, LineStripIndexArray } = require('./array_types');
+export { LineIndexArray, LineStripIndexArray, TriangleIndexArray } from './array_types.js';
 
 /**
  * An index array stores Uint16 indices of vertexes in a corresponding vertex array. We use
@@ -7,8 +7,3 @@ const { LineIndexArray, TriangleIndexArray, LineStripIndexArray } = require('./a
  * forming a line strip.
  * @private
  */
-module.exports = {
-  LineIndexArray,
-  TriangleIndexArray,
-  LineStripIndexArray
-};

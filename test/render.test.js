@@ -1,13 +1,14 @@
-globalThis.window ??= require('./util/window');
+import ignores from './ignores.json' with { type: 'json' };
+import { render } from './integration/index.js';
+import suiteImplementation from './suite_implementation.js';
+import getArgs from './util/args.js';
+import _window from './util/window.js';
 
-const { render: suite } = require('./integration');
-const suiteImplementation = require('./suite_implementation');
-const getArgs = require('./util/args');
-const ignores = require('./ignores.json');
+globalThis.window ??= _window;
 
 const options = {
   ignores,
   ...getArgs()
 };
 
-suite.run('js', options, suiteImplementation);
+render('js', options, suiteImplementation);

@@ -1,8 +1,8 @@
-const test = require('node:test');
-const LngLat = require('../../../../src/geo/lng_lat');
-const fixed = require('../../../util/mapbox-gl-js-test/fixed');
+import test from 'node:test';
+import LngLat from '../../../../src/geo/lng_lat.js';
+import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
 const fixedCoord = fixed.Coord;
-const { createMap, initWindow } = require('../../../util/util');
+import { createMap, initWindow } from '../../../util/util.js';
 
 test('queryRenderedFeatures', async t => {
   initWindow(t);

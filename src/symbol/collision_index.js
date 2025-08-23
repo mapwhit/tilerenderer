@@ -1,9 +1,7 @@
-const { default: Point } = require('@mapbox/point-geometry');
-
-const intersectionTests = require('../util/intersection_tests');
-const Grid = require('./grid_index');
-
-const projection = require('../symbol/projection');
+import Point from '@mapbox/point-geometry';
+import * as projection from '../symbol/projection.js';
+import * as intersectionTests from '../util/intersection_tests.js';
+import Grid from './grid_index.js';
 
 // When a symbol crosses the edge that causes it to be included in
 // collision detection, it will cause changes in the symbols around
@@ -382,4 +380,4 @@ function markCollisionCircleUsed(collisionCircles, index, used) {
   collisionCircles[index + 4] = used ? 1 : 0;
 }
 
-module.exports = CollisionIndex;
+export default CollisionIndex;

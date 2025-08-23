@@ -1,10 +1,11 @@
-const test = require('node:test');
-const Map = require('../../../../src/ui/map');
-const Tile = require('../../../../src/source/tile');
-const { OverscaledTileID } = require('../../../../src/source/tile_id');
-const fixed = require('../../../util/mapbox-gl-js-test/fixed');
+import test from 'node:test';
+import Tile from '../../../../src/source/tile.js';
+import { OverscaledTileID } from '../../../../src/source/tile_id.js';
+import Map from '../../../../src/ui/map.js';
+import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
+import { createMap, createStyle, createStyleSource, initWindow } from '../../../util/util.js';
+
 const fixedLngLat = fixed.LngLat;
-const { createMap, createStyleSource, createStyle, initWindow } = require('../../../util/util');
 
 test('Map', async t => {
   initWindow(t);

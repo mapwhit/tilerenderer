@@ -1,13 +1,12 @@
-const { default: Point } = require('@mapbox/point-geometry');
-
-const StyleLayer = require('../style_layer');
-const LineBucket = require('../../data/bucket/line_bucket');
-const { polygonIntersectsBufferedMultiLine } = require('../../util/intersection_tests');
-const { getMaximumPaintValue, translateDistance, translate } = require('../query_utils');
-const properties = require('./line_style_layer_properties');
-const EvaluationParameters = require('../evaluation_parameters');
-const renderColorRamp = require('../../util/color_ramp');
-const { DataDrivenProperty } = require('../properties');
+import Point from '@mapbox/point-geometry';
+import LineBucket from '../../data/bucket/line_bucket.js';
+import renderColorRamp from '../../util/color_ramp.js';
+import { polygonIntersectsBufferedMultiLine } from '../../util/intersection_tests.js';
+import EvaluationParameters from '../evaluation_parameters.js';
+import { DataDrivenProperty } from '../properties.js';
+import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';
+import StyleLayer from '../style_layer.js';
+import properties from './line_style_layer_properties.js';
 
 class LineFloorwidthProperty extends DataDrivenProperty {
   possiblyEvaluate(value, parameters) {
@@ -95,7 +94,7 @@ class LineStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = LineStyleLayer;
+export default LineStyleLayer;
 
 function getLineWidth(lineWidth, lineGapWidth) {
   if (lineGapWidth > 0) {

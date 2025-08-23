@@ -1,21 +1,19 @@
-const { bindAll } = require('../util/object');
-const warn = require('../util/warn');
-
-const browser = require('../util/browser');
-const DOM = require('../util/dom');
-const loadImage = require('../util/loader/image');
-
-const Style = require('../style/style');
-const EvaluationParameters = require('../style/evaluation_parameters');
-const Painter = require('../render/painter');
-const Transform = require('../geo/transform');
-const Camera = require('./camera');
-const LngLat = require('../geo/lng_lat');
-const LngLatBounds = require('../geo/lng_lat_bounds');
-const { default: Point } = require('@mapbox/point-geometry');
-const { RGBAImage } = require('../util/image');
-const { Event, ErrorEvent } = require('@mapwhit/events');
-const taskQueue = require('../util/task_queue');
+import Point from '@mapbox/point-geometry';
+import { ErrorEvent, Event } from '@mapwhit/events';
+import LngLat from '../geo/lng_lat.js';
+import LngLatBounds from '../geo/lng_lat_bounds.js';
+import Transform from '../geo/transform.js';
+import Painter from '../render/painter.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import Style from '../style/style.js';
+import browser from '../util/browser.js';
+import DOM from '../util/dom.js';
+import { RGBAImage } from '../util/image.js';
+import loadImage from '../util/loader/image.js';
+import { bindAll } from '../util/object.js';
+import taskQueue from '../util/task_queue.js';
+import warn from '../util/warn.js';
+import Camera from './camera.js';
 
 const defaultMinZoom = 0;
 const defaultMaxZoom = 22;
@@ -1523,7 +1521,7 @@ class Map extends Camera {
   }
 }
 
-module.exports = Map;
+export default Map;
 
 function removeNode(node) {
   if (node.parentNode) {

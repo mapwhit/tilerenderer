@@ -1,5 +1,5 @@
-const dynload = require('dynload');
-const browser = require('../util/browser');
+import dynload from 'dynload';
+import browser from '../util/browser.js';
 
 let pluginRequested = false;
 let pluginURL;
@@ -15,7 +15,7 @@ const rtlPlugin = {
   setRTLTextPlugin
 };
 
-function registerForPluginAvailability(callback) {
+export function registerForPluginAvailability(callback) {
   if (plugin.isLoaded()) {
     callback();
     return;
@@ -25,13 +25,13 @@ function registerForPluginAvailability(callback) {
   return () => _loadedCallbacks.splice(_loadedCallbacks.indexOf(callback), 1);
 }
 
-function clearRTLTextPlugin() {
+export function clearRTLTextPlugin() {
   _loadedCallbacks.length = 0;
   pluginRequested = false;
   pluginURL = undefined;
 }
 
-function setRTLTextPlugin(url, callback) {
+export function setRTLTextPlugin(url, callback) {
   if (pluginRequested) {
     throw new Error('setRTLTextPlugin cannot be called multiple times.');
   }
@@ -82,11 +82,11 @@ async function loadScript(url) {
   return promise;
 }
 
-const plugin = (rtlPlugin.plugin = {
+export const plugin = (rtlPlugin.plugin = {
   applyArabicShaping: null,
   processBidirectionalText: null,
   processStyledBidirectionalText: null,
   isLoaded: () => plugin.applyArabicShaping != null
 });
 
-module.exports = rtlPlugin;
+export default rtlPlugin;

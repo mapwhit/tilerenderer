@@ -1,3 +1,2 @@
-const { createLayout } = require('../util/struct_array');
-
-module.exports = createLayout([{ name: 'a_pos', type: 'Int16', components: 2 }]);
+import { createLayout } from '../util/struct_array.js';
+export default createLayout([{ name: 'a_pos', type: 'Int16', components: 2 }]);

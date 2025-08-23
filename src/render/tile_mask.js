@@ -1,4 +1,4 @@
-const { OverscaledTileID, CanonicalTileID } = require('../source/tile_id');
+import { CanonicalTileID, OverscaledTileID } from '../source/tile_id.js';
 
 // Updates the TileMasks for all renderable tiles. A TileMask describes all regions
 // within that tile that are *not* covered by other renderable tiles.
@@ -50,7 +50,7 @@ const { OverscaledTileID, CanonicalTileID } = require('../source/tile_id');
 // be considered. For example, adding TileID 4/8/13 to renderableTiles won't affect the TileMask for
 // 2/1/3, since it is not a descendant of it.
 
-module.exports = function (renderableTiles, context) {
+export default function (renderableTiles, context) {
   const sortedRenderables = renderableTiles.sort((a, b) => {
     return a.tileID.isLessThan(b.tileID) ? -1 : b.tileID.isLessThan(a.tileID) ? 1 : 0;
   });
@@ -73,7 +73,7 @@ module.exports = function (renderableTiles, context) {
     );
     tile.setMask(mask, context);
   }
-};
+}
 
 function computeTileMasks(rootTile, ref, childArray, lowerBound, mask) {
   // If the reference or any of its children is found in the list, we need to recurse.

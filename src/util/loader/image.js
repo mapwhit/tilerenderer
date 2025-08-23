@@ -1,4 +1,4 @@
-module.exports = image;
+export default image;
 
 function image(data) {
   if (!data) {

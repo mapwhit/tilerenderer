@@ -1,6 +1,6 @@
-const test = require('node:test');
-const renderColorRamp = require('../../../src/util/color_ramp');
-const { createPropertyExpression } = require('@mapwhit/style-expressions');
+import test from 'node:test';
+import { createPropertyExpression } from '@mapwhit/style-expressions';
+import renderColorRamp from '../../../src/util/color_ramp.js';
 
 const spec = {
   function: true,

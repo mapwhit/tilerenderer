@@ -1,9 +1,9 @@
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const { pick } = require('../util/object');
-const loadTileJSON = require('./load_tilejson');
-const TileBounds = require('./tile_bounds');
-const browser = require('../util/browser');
-const VectorTileWorkerSource = require('./vector_tile_worker_source');
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import browser from '../util/browser.js';
+import { pick } from '../util/object.js';
+import loadTileJSON from './load_tilejson.js';
+import TileBounds from './tile_bounds.js';
+import VectorTileWorkerSource from './vector_tile_worker_source.js';
 
 class VectorTileSource extends Evented {
   #worker;
@@ -125,4 +125,4 @@ class VectorTileSource extends Evented {
   }
 }
 
-module.exports = VectorTileSource;
+export default VectorTileSource;

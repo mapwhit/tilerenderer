@@ -1,16 +1,16 @@
-const test = require('node:test');
-const fs = require('fs');
-const path = require('path');
-const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapwhit/vector-tile');
-const { default: Point } = require('@mapbox/point-geometry');
-const segment = require('../../../src/data/segment');
-const LineBucket = require('../../../src/data/bucket/line_bucket');
-const LineStyleLayer = require('../../../src/style/style_layer/line_style_layer');
+import fs from 'fs';
+import test from 'node:test';
+import path from 'path';
+import Point from '@mapbox/point-geometry';
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
+import LineBucket from '../../../src/data/bucket/line_bucket.js';
+import segment from '../../../src/data/segment.js';
+import LineStyleLayer from '../../../src/style/style_layer/line_style_layer.js';
 
 // Load a line feature from fixture tile.
 const vt = new VectorTile(
-  new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
 );
 const feature = vt.layers.road.feature(0);
 

@@ -1,9 +1,7 @@
-const _window = require('./window');
-const Map = require('../../src/ui/map');
+import Map from '../../src/ui/map.js';
+import _window from './window.js';
 
-module.exports = { createMap, createStyleSource, createStyle, initWindow };
-
-function createMap(options, callback) {
+export function createMap(options, callback) {
   const container = window.document.createElement('div');
   Object.defineProperty(container, 'offsetWidth', { value: 200, configurable: true });
   Object.defineProperty(container, 'offsetHeight', { value: 200, configurable: true });
@@ -33,7 +31,7 @@ function createMap(options, callback) {
   return map;
 }
 
-function createStyleSource() {
+export function createStyleSource() {
   return {
     type: 'geojson',
     data: {
@@ -43,7 +41,7 @@ function createStyleSource() {
   };
 }
 
-function createStyle() {
+export function createStyle() {
   return {
     version: 8,
     center: [-73.9749, 40.7736],
@@ -55,7 +53,7 @@ function createStyle() {
   };
 }
 
-function initWindow(t) {
+export function initWindow(t) {
   let globalWindow;
   t.before(() => {
     globalWindow = globalThis.window;

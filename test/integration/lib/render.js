@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const PNG = require('pngjs').PNG;
-const harness = require('./harness');
-const pixelmatch = require('pixelmatch');
+import fs from 'fs';
+import path from 'path';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
+import harness from './harness.js';
 
 function compare(actualPath, expectedPaths, diffPath, callback) {
   const actualImg = fs.createReadStream(actualPath).pipe(new PNG()).on('parsed', doneReading);
@@ -78,10 +78,10 @@ function compare(actualPath, expectedPaths, diffPath, callback) {
  * @param {renderFn} render - a function that performs the rendering
  * @returns {undefined} terminates the process when testing is complete
  */
-exports.run = function (implementation, options, render) {
+export default function run(implementation, options, render) {
   options.seed ??= makeHash();
 
-  const directory = path.join(__dirname, '../render/tests');
+  const directory = path.join(import.meta.dirname, '../render/tests');
   harness(directory, implementation, options, (style, params, done) => {
     render(style, params, (err, data) => {
       if (err) return done(err);
@@ -146,7 +146,7 @@ exports.run = function (implementation, options, render) {
       }
     });
   });
-};
+}
 
 // https://stackoverflow.com/a/1349426/229714
 function makeHash() {

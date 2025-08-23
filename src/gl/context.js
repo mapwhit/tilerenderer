@@ -1,40 +1,40 @@
-const IndexBuffer = require('./index_buffer');
+import { deepEqual } from '../util/object.js';
+import ColorMode from './color_mode.js';
+import Framebuffer from './framebuffer.js';
+import IndexBuffer from './index_buffer.js';
+import VertexBuffer from './vertex_buffer.js';
 
-const VertexBuffer = require('./vertex_buffer');
-const Framebuffer = require('./framebuffer');
-const ColorMode = require('./color_mode');
-const { deepEqual } = require('../util/object');
-const {
+import {
+  ActiveTextureUnit,
+  BindElementBuffer,
+  BindFramebuffer,
+  BindRenderbuffer,
+  BindTexture,
+  BindVertexArrayOES,
+  BindVertexBuffer,
+  Blend,
+  BlendColor,
+  BlendFunc,
   ClearColor,
   ClearDepth,
   ClearStencil,
   ColorMask,
-  DepthMask,
-  StencilMask,
-  StencilFunc,
-  StencilOp,
-  StencilTest,
-  DepthRange,
-  DepthTest,
-  DepthFunc,
-  Blend,
-  BlendFunc,
-  BlendColor,
   CullFace,
   CullFaceSide,
+  DepthFunc,
+  DepthMask,
+  DepthRange,
+  DepthTest,
   FrontFace,
-  Program,
-  ActiveTextureUnit,
-  Viewport,
-  BindFramebuffer,
-  BindRenderbuffer,
-  BindTexture,
-  BindVertexBuffer,
-  BindElementBuffer,
-  BindVertexArrayOES,
   PixelStoreUnpack,
-  PixelStoreUnpackPremultiplyAlpha
-} = require('./value');
+  PixelStoreUnpackPremultiplyAlpha,
+  Program,
+  StencilFunc,
+  StencilMask,
+  StencilOp,
+  StencilTest,
+  Viewport
+} from './value.js';
 
 class Context {
   constructor(gl) {
@@ -190,4 +190,4 @@ class Context {
   }
 }
 
-module.exports = Context;
+export default Context;

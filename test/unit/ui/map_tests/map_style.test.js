@@ -1,12 +1,11 @@
-const test = require('node:test');
-const Map = require('../../../../src/ui/map');
-const { Event } = require('@mapwhit/events');
-const { serialize } = require('../../../util/serialize_style');
-
-const fixed = require('../../../util/mapbox-gl-js-test/fixed');
+import test from 'node:test';
+import { Event } from '@mapwhit/events';
+import Map from '../../../../src/ui/map.js';
+import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
+import { serialize } from '../../../util/serialize_style.js';
 const fixedNum = fixed.Num;
 const fixedLngLat = fixed.LngLat;
-const { createMap, createStyleSource, createStyle, initWindow } = require('../../../util/util');
+import { createMap, createStyle, createStyleSource, initWindow } from '../../../util/util.js';
 
 test('setStyle', async t => {
   initWindow(t);

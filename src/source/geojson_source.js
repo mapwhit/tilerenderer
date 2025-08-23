@@ -1,8 +1,8 @@
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 
-const EXTENT = require('../data/extent');
-const browser = require('../util/browser');
-const GeoJSONWorkerSource = require('./geojson_worker_source');
+import EXTENT from '../data/extent.js';
+import browser from '../util/browser.js';
+import GeoJSONWorkerSource from './geojson_worker_source.js';
 
 /**
  * A source containing GeoJSON.
@@ -212,4 +212,4 @@ class GeoJSONSource extends Evented {
   }
 }
 
-module.exports = GeoJSONSource;
+export default GeoJSONSource;

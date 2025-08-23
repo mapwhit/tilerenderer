@@ -1,8 +1,8 @@
 // Note: all "sizes" are measured in bytes
 
-const assert = require('assert');
+import assert from 'assert';
 
-const viewTypes = {
+export const viewTypes = {
   Int8: Int8Array,
   Uint8: Uint8Array,
   Int16: Int16Array,
@@ -15,7 +15,7 @@ const viewTypes = {
 /**
  * @private
  */
-class Struct {
+export class Struct {
   // The following properties are defined on the prototype of sub classes.
 
   /**
@@ -56,7 +56,7 @@ const RESIZE_MULTIPLIER = 5;
  *
  * @private
  */
-class StructArray {
+export class StructArray {
   // The following properties are defined on the prototype.
 
   constructor() {
@@ -157,7 +157,7 @@ class StructArray {
  *
  * @private
  */
-function createLayout(members, alignment = 1) {
+export function createLayout(members, alignment = 1) {
   let offset = 0;
   let maxSize = 0;
   const layoutMembers = members.map(member => {
@@ -193,5 +193,3 @@ function sizeOf(type) {
 function align(offset, size) {
   return Math.ceil(offset / size) * size;
 }
-
-module.exports = { StructArray, Struct, viewTypes, createLayout };

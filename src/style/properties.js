@@ -1,9 +1,8 @@
-const assert = require('assert');
-
-const { clone } = require('../util/object');
-const { easeCubicInOut } = require('../util/util');
-const { interpolate, normalizePropertyExpression } = require('@mapwhit/style-expressions');
-const EvaluationParameters = require('./evaluation_parameters');
+import assert from 'assert';
+import { interpolate, normalizePropertyExpression } from '@mapwhit/style-expressions';
+import { clone } from '../util/object.js';
+import { easeCubicInOut } from '../util/util.js';
+import EvaluationParameters from './evaluation_parameters.js';
 
 /**
  * Implements a number of classes that define state and behavior for paint and layout properties, most
@@ -60,7 +59,7 @@ const EvaluationParameters = require('./evaluation_parameters');
  *
  *  @private
  */
-class PropertyValue {
+export class PropertyValue {
   constructor(property, value) {
     this.property = property;
     this.value = value;
@@ -97,7 +96,7 @@ class PropertyValue {
  *
  * @private
  */
-class TransitionablePropertyValue {
+export class TransitionablePropertyValue {
   constructor(property) {
     this.property = property;
     this.value = new PropertyValue(property, undefined);
@@ -132,7 +131,7 @@ class TransitionablePropertyValue {
  *
  * @private
  */
-class Transitionable {
+export class Transitionable {
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultTransitionablePropertyValues);
@@ -209,7 +208,7 @@ class Transitionable {
  *
  * @private
  */
-class TransitioningPropertyValue {
+export class TransitioningPropertyValue {
   constructor(property, value, prior, transition, now) {
     this.property = property;
     this.value = value;
@@ -264,7 +263,7 @@ class TransitioningPropertyValue {
  *
  * @private
  */
-class Transitioning {
+export class Transitioning {
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultTransitioningPropertyValues);
@@ -308,7 +307,7 @@ class Transitioning {
  *
  * @private
  */
-class Layout {
+export class Layout {
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPropertyValues);
@@ -374,7 +373,7 @@ class Layout {
  *
  * @private
  */
-class PossiblyEvaluatedPropertyValue {
+export class PossiblyEvaluatedPropertyValue {
   constructor(property, value, parameters) {
     this.property = property;
     this.value = value;
@@ -420,7 +419,7 @@ class PossiblyEvaluatedPropertyValue {
  * given layer type.
  * @private
  */
-class PossiblyEvaluated {
+export class PossiblyEvaluated {
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPossiblyEvaluatedValues);
@@ -438,7 +437,7 @@ class PossiblyEvaluated {
  *
  * @private
  */
-class DataConstantProperty {
+export class DataConstantProperty {
   constructor(specification) {
     this.specification = specification;
     this.specification['property-type'] ??= 'data-constant';
@@ -465,7 +464,7 @@ class DataConstantProperty {
  *
  * @private
  */
-class DataDrivenProperty {
+export class DataDrivenProperty {
   constructor(specification) {
     this.specification = specification;
     this.specification['property-type'] ??= 'data-driven';
@@ -525,7 +524,7 @@ class DataDrivenProperty {
  * @private
  */
 
-class CrossFadedDataDrivenProperty extends DataDrivenProperty {
+export class CrossFadedDataDrivenProperty extends DataDrivenProperty {
   constructor(specification) {
     specification['property-type'] ??= 'cross-faded-data-driven';
     super(specification);
@@ -585,7 +584,7 @@ class CrossFadedDataDrivenProperty extends DataDrivenProperty {
  *
  * @private
  */
-class CrossFadedProperty {
+export class CrossFadedProperty {
   constructor(specification) {
     this.specification = specification;
     this.specification['property-type'] ??= 'cross-faded';
@@ -626,7 +625,7 @@ class CrossFadedProperty {
  * @private
  */
 
-class ColorRampProperty {
+export class ColorRampProperty {
   constructor(specification) {
     this.specification = specification;
     this.specification['property-type'] ??= 'color-ramp';
@@ -652,7 +651,7 @@ class ColorRampProperty {
  *
  * @private
  */
-class Properties {
+export class Properties {
   constructor(properties) {
     this.properties = properties;
     this.defaultPropertyValues = {};
@@ -670,18 +669,3 @@ class Properties {
     }
   }
 }
-
-module.exports = {
-  PropertyValue,
-  Transitionable,
-  Transitioning,
-  Layout,
-  PossiblyEvaluatedPropertyValue,
-  PossiblyEvaluated,
-  DataConstantProperty,
-  DataDrivenProperty,
-  CrossFadedDataDrivenProperty,
-  CrossFadedProperty,
-  ColorRampProperty,
-  Properties
-};

@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 /**
  * @enum {string} AttributeType
@@ -98,4 +98,4 @@ class VertexBuffer {
   }
 }
 
-module.exports = VertexBuffer;
+export default VertexBuffer;

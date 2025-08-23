@@ -1,4 +1,4 @@
-const { RGBAImage } = require('./image');
+import { RGBAImage } from './image.js';
 
 /**
  * Given an expression that should evaluate to a color ramp, return
@@ -6,7 +6,7 @@ const { RGBAImage } = require('./image');
  *
  * @private
  */
-module.exports = function renderColorRamp(expression, colorRampEvaluationParameter) {
+export default function renderColorRamp(expression, colorRampEvaluationParameter) {
   const colorRampData = new Uint8Array(256 * 4);
   const evaluationGlobals = {};
   for (let i = 0, j = 0; i < 256; i++, j += 4) {
@@ -21,4 +21,4 @@ module.exports = function renderColorRamp(expression, colorRampEvaluationParamet
   }
 
   return new RGBAImage({ width: 256, height: 1 }, colorRampData);
-};
+}

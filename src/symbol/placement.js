@@ -1,12 +1,12 @@
-const CollisionIndex = require('./collision_index');
+import assert from 'assert';
+import EXTENT from '../data/extent.js';
+import pixelsToTileUnits from '../source/pixels_to_tile_units.js';
+import properties from '../style/style_layer/symbol_style_layer_properties.js';
+import CollisionIndex from './collision_index.js';
+import * as projection from './projection.js';
+import * as symbolSize from './symbol_size.js';
 
-const EXTENT = require('../data/extent');
-const symbolSize = require('./symbol_size');
-const projection = require('./projection');
-const properties = require('../style/style_layer/symbol_style_layer_properties');
 const symbolLayoutProperties = properties.layout;
-const assert = require('assert');
-const pixelsToTileUnits = require('../source/pixels_to_tile_units');
 
 class OpacityState {
   constructor(prevState, increment, placed, skipFade) {
@@ -44,7 +44,7 @@ class JointPlacement {
   }
 }
 
-class RetainedQueryData {
+export class RetainedQueryData {
   constructor(bucketInstanceId, featureIndex, sourceLayerIndex, bucketIndex, tileID) {
     this.bucketInstanceId = bucketInstanceId;
     this.featureIndex = featureIndex;
@@ -81,7 +81,7 @@ class CollisionGroups {
   }
 }
 
-class Placement {
+export class Placement {
   constructor(transform, fadeDuration, crossSourceCollisions) {
     this.transform = transform.clone();
     this.collisionIndex = new CollisionIndex(this.transform);
@@ -579,8 +579,3 @@ function packOpacity(opacityState) {
     targetBit
   );
 }
-
-module.exports = {
-  RetainedQueryData,
-  Placement
-};

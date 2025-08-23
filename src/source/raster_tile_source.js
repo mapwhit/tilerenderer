@@ -1,9 +1,9 @@
-const { pick } = require('../util/object');
-const loadImage = require('../util/loader/image');
-const { Event, ErrorEvent, Evented } = require('@mapwhit/events');
-const loadTileJSON = require('./load_tilejson');
-const TileBounds = require('./tile_bounds');
-const Texture = require('../render/texture');
+import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import Texture from '../render/texture.js';
+import loadImage from '../util/loader/image.js';
+import { pick } from '../util/object.js';
+import loadTileJSON from './load_tilejson.js';
+import TileBounds from './tile_bounds.js';
 
 class RasterTileSource extends Evented {
   constructor(id, options, eventedParent) {
@@ -109,4 +109,4 @@ class RasterTileSource extends Evented {
   }
 }
 
-module.exports = RasterTileSource;
+export default RasterTileSource;

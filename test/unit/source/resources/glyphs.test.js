@@ -1,8 +1,8 @@
-const test = require('node:test');
-const makeGlyphs = require('../../../../src/source/resources/glyphs');
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const { AlphaImage } = require('../../../../src/util/image');
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import test from 'node:test';
+import makeGlyphs from '../../../../src/source/resources/glyphs.js';
+import { AlphaImage } from '../../../../src/util/image.js';
 
 test('glyphCache', async t => {
   let glyphs;
@@ -88,7 +88,7 @@ test('glyphCache', async t => {
 
 test('glyphCache - real data', async t => {
   function load() {
-    return fs.readFile(path.resolve(__dirname, '../../../fixtures/0-255.pbf'));
+    return fs.readFile(path.resolve(import.meta.dirname, '../../../fixtures/0-255.pbf'));
   }
 
   await t.test('should parse glyph PBF', async () => {

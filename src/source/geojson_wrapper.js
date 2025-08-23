@@ -1,6 +1,6 @@
-const { default: Point } = require('@mapbox/point-geometry');
-const { VectorTileFeature } = require('@mapwhit/vector-tile');
-const EXTENT = require('../data/extent');
+import Point from '@mapbox/point-geometry';
+import { VectorTileFeature } from '@mapwhit/vector-tile';
+import EXTENT from '../data/extent.js';
 
 const { toGeoJSON } = VectorTileFeature.prototype;
 
@@ -76,7 +76,7 @@ class GeoJSONWrapper {
   }
 }
 
-module.exports = GeoJSONWrapper;
+export default GeoJSONWrapper;
 
 function makePoint(arr) {
   return new Point(arr[0], arr[1]);

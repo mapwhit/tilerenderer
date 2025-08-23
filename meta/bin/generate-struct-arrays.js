@@ -6,11 +6,11 @@
  *    - Particular, named StructArray subclasses, when fancy struct accessors are needed (e.g. CollisionBoxArray)
  */
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
 
-const ejs = require('ejs');
-const { createLayout, viewTypes } = require('../../src/util/struct_array');
+import path from 'node:path';
+import ejs from 'ejs';
+import { createLayout, viewTypes } from '../../src/util/struct_array.js';
 
 const structArrayLayoutJs = ejs.compile(fs.readFileSync(resolve('../layout/struct_array_layout.js.ejs'), 'utf8'), {
   strict: true
@@ -116,17 +116,17 @@ function camelize(str) {
 
 global.camelize = camelize;
 
-const posAttributes = require('../../src/data/pos_attributes');
-const rasterBoundsAttributes = require('../../src/data/raster_bounds_attributes');
+import posAttributes from '../../src/data/pos_attributes.js';
+import rasterBoundsAttributes from '../../src/data/raster_bounds_attributes.js';
 
 createStructArrayType('pos', posAttributes);
 createStructArrayType('raster_bounds', rasterBoundsAttributes);
 
-const circleAttributes = require('../../src/data/bucket/circle_attributes');
-const fillAttributes = require('../../src/data/bucket/fill_attributes');
-const fillExtrusionAttributes = require('../../src/data/bucket/fill_extrusion_attributes');
-const lineAttributes = require('../../src/data/bucket/line_attributes');
-const patternAttributes = require('../../src/data/bucket/pattern_attributes');
+import circleAttributes from '../../src/data/bucket/circle_attributes.js';
+import fillAttributes from '../../src/data/bucket/fill_attributes.js';
+import fillExtrusionAttributes from '../../src/data/bucket/fill_extrusion_attributes.js';
+import lineAttributes from '../../src/data/bucket/line_attributes.js';
+import patternAttributes from '../../src/data/bucket/pattern_attributes.js';
 
 // layout vertex arrays
 const layoutAttributes = {
@@ -142,19 +142,19 @@ for (const name in layoutAttributes) {
 }
 
 // symbol layer specific arrays
-const {
-  symbolLayoutAttributes,
-  dynamicLayoutAttributes,
-  placementOpacityAttributes,
+import {
   collisionBox,
   collisionBoxLayout,
   collisionCircleLayout,
   collisionVertexAttributes,
-  placement,
-  symbolInstance,
+  dynamicLayoutAttributes,
   glyphOffset,
-  lineVertex
-} = require('../../src/data/bucket/symbol_attributes');
+  lineVertex,
+  placement,
+  placementOpacityAttributes,
+  symbolInstance,
+  symbolLayoutAttributes
+} from '../../src/data/bucket/symbol_attributes.js';
 
 createStructArrayType('symbol_layout', symbolLayoutAttributes);
 createStructArrayType('symbol_dynamic_layout', dynamicLayoutAttributes);
@@ -254,5 +254,5 @@ export {
 );
 
 function resolve(file) {
-  return path.resolve(__dirname, file);
+  return path.resolve(import.meta.dirname, file);
 }

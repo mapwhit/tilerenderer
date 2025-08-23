@@ -1,11 +1,12 @@
-const StyleLayer = require('../style_layer');
+import glMatrix from '@mapbox/gl-matrix';
+import Point from '@mapbox/point-geometry';
+import CircleBucket from '../../data/bucket/circle_bucket.js';
+import { polygonIntersectsBufferedPoint } from '../../util/intersection_tests.js';
+import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';
+import StyleLayer from '../style_layer.js';
+import properties from './circle_style_layer_properties.js';
 
-const CircleBucket = require('../../data/bucket/circle_bucket');
-const { polygonIntersectsBufferedPoint } = require('../../util/intersection_tests');
-const { getMaximumPaintValue, translateDistance, translate } = require('../query_utils');
-const properties = require('./circle_style_layer_properties');
-const { vec4 } = require('@mapbox/gl-matrix');
-const { default: Point } = require('@mapbox/point-geometry');
+const { vec4 } = glMatrix;
 
 class CircleStyleLayer extends StyleLayer {
   constructor(layer) {
@@ -92,4 +93,4 @@ function projectQueryGeometry(queryGeometry, pixelPosMatrix) {
   });
 }
 
-module.exports = CircleStyleLayer;
+export default CircleStyleLayer;

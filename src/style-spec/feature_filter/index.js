@@ -1,11 +1,9 @@
-const { createExpression, findGlobalStateRefs } = require('@mapwhit/style-expressions');
-
-module.exports = createFilter;
+import { createExpression, findGlobalStateRefs } from '@mapwhit/style-expressions';
 
 createFilter.isExpressionFilter = isExpressionFilter;
 createFilter.addGlobalStateRefs = addGlobalStateRefs;
 
-function isExpressionFilter(filter) {
+export function isExpressionFilter(filter) {
   if (filter === true || filter === false) {
     return true;
   }
@@ -65,7 +63,7 @@ const filterSpec = {
  * @param {Array} filter mapbox gl filter
  * @returns {Function} filter-evaluating function
  */
-function createFilter(filter) {
+export default function createFilter(filter) {
   if (filter === null || filter === undefined) {
     return addGlobalStateRefs(() => true);
   }
@@ -84,7 +82,7 @@ function createFilter(filter) {
   );
 }
 
-function addGlobalStateRefs(filter, getGlobalStateRefs = () => new Set()) {
+export function addGlobalStateRefs(filter, getGlobalStateRefs = () => new Set()) {
   filter.getGlobalStateRefs = getGlobalStateRefs;
   return filter;
 }

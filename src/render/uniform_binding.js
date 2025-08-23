@@ -1,13 +1,13 @@
-const { Color } = require('@mapwhit/style-expressions');
+import { Color } from '@mapwhit/style-expressions';
 
-class Uniform {
+export class Uniform {
   constructor(context, location) {
     this.gl = context.gl;
     this.location = location;
   }
 }
 
-class Uniform1i extends Uniform {
+export class Uniform1i extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = 0;
@@ -21,7 +21,7 @@ class Uniform1i extends Uniform {
   }
 }
 
-class Uniform1f extends Uniform {
+export class Uniform1f extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = 0;
@@ -35,7 +35,7 @@ class Uniform1f extends Uniform {
   }
 }
 
-class Uniform2f extends Uniform {
+export class Uniform2f extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = [0, 0];
@@ -49,7 +49,7 @@ class Uniform2f extends Uniform {
   }
 }
 
-class Uniform3f extends Uniform {
+export class Uniform3f extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = [0, 0, 0];
@@ -63,7 +63,7 @@ class Uniform3f extends Uniform {
   }
 }
 
-class Uniform4f extends Uniform {
+export class Uniform4f extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = [0, 0, 0, 0];
@@ -77,7 +77,7 @@ class Uniform4f extends Uniform {
   }
 }
 
-class UniformColor extends Uniform {
+export class UniformColor extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = Color.transparent;
@@ -92,7 +92,7 @@ class UniformColor extends Uniform {
 }
 
 const emptyMat4 = new Float32Array(16);
-class UniformMatrix4f extends Uniform {
+export class UniformMatrix4f extends Uniform {
   constructor(context, location) {
     super(context, location);
     this.current = emptyMat4;
@@ -116,14 +116,3 @@ class UniformMatrix4f extends Uniform {
     }
   }
 }
-
-module.exports = {
-  Uniform,
-  Uniform1i,
-  Uniform1f,
-  Uniform2f,
-  Uniform3f,
-  Uniform4f,
-  UniformColor,
-  UniformMatrix4f
-};

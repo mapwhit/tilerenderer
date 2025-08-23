@@ -1,6 +1,6 @@
-const test = require('node:test');
-const TileCache = require('../../../src/source/tile_cache');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import TileCache from '../../../src/source/tile_cache.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
 
 const idA = new OverscaledTileID(10, 0, 10, 0, 1);
 const idB = new OverscaledTileID(10, 0, 10, 0, 2);

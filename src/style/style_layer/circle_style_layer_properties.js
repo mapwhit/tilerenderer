@@ -1,6 +1,6 @@
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const { Properties, DataConstantProperty, DataDrivenProperty } = require('../properties');
+import { DataConstantProperty, DataDrivenProperty, Properties } from '../properties.js';
 
 const paint = new Properties({
   'circle-radius': new DataDrivenProperty({
@@ -73,4 +73,4 @@ const paint = new Properties({
   })
 });
 
-module.exports = { paint };
+export default { paint };

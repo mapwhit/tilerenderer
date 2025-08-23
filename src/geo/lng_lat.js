@@ -1,4 +1,5 @@
-const { wrap } = require('../util/util');
+import { wrap } from '../util/util.js';
+import LngLatBounds from './lng_lat_bounds.js';
 
 /**
  * A `LngLat` object represents a given longitude and latitude coordinate, measured in degrees.
@@ -80,7 +81,6 @@ class LngLat {
     const earthCircumferenceInMetersAtEquator = 40075017;
     const latAccuracy = (360 * radius) / earthCircumferenceInMetersAtEquator;
     const lngAccuracy = latAccuracy / Math.cos((Math.PI / 180) * this.lat);
-    const LngLatBounds = require('./lng_lat_bounds');
 
     return new LngLatBounds(
       new LngLat(this.lng - lngAccuracy, this.lat - latAccuracy),
@@ -126,4 +126,4 @@ class LngLat {
  * var v2 = [-122.420679, 37.772537];
  */
 
-module.exports = LngLat;
+export default LngLat;

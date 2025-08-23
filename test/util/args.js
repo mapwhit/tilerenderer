@@ -1,6 +1,5 @@
-const { parseArgs } = require('node:util');
-
-module.exports = getArgs;
+import { parseArgs } from 'node:util';
+export default getArgs;
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,

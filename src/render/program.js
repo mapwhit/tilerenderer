@@ -1,8 +1,7 @@
-const browser = require('../util/browser');
-
-const shaders = require('../shaders');
-const assert = require('assert');
-const VertexArrayObject = require('./vertex_array_object');
+import assert from 'assert';
+import shaders from '../shaders/index.js';
+import browser from '../util/browser.js';
+import VertexArrayObject from './vertex_array_object.js';
 
 class Program {
   constructor(context, source, configuration, fixedUniforms, showOverdrawInspector) {
@@ -130,4 +129,4 @@ class Program {
   }
 }
 
-module.exports = Program;
+export default Program;

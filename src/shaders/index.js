@@ -1,103 +1,155 @@
+// Import all shader sources
+import preludeFragmentSource from '../../build/min/src/shaders/_prelude.fragment.glsl.js';
+import preludeVertexSource from '../../build/min/src/shaders/_prelude.vertex.glsl.js';
+import backgroundFragmentSource from '../../build/min/src/shaders/background.fragment.glsl.js';
+import backgroundVertexSource from '../../build/min/src/shaders/background.vertex.glsl.js';
+import backgroundPatternFragmentSource from '../../build/min/src/shaders/background_pattern.fragment.glsl.js';
+import backgroundPatternVertexSource from '../../build/min/src/shaders/background_pattern.vertex.glsl.js';
+import circleFragmentSource from '../../build/min/src/shaders/circle.fragment.glsl.js';
+import circleVertexSource from '../../build/min/src/shaders/circle.vertex.glsl.js';
+import clippingMaskFragmentSource from '../../build/min/src/shaders/clipping_mask.fragment.glsl.js';
+import clippingMaskVertexSource from '../../build/min/src/shaders/clipping_mask.vertex.glsl.js';
+import collisionBoxFragmentSource from '../../build/min/src/shaders/collision_box.fragment.glsl.js';
+import collisionBoxVertexSource from '../../build/min/src/shaders/collision_box.vertex.glsl.js';
+import collisionCircleFragmentSource from '../../build/min/src/shaders/collision_circle.fragment.glsl.js';
+import collisionCircleVertexSource from '../../build/min/src/shaders/collision_circle.vertex.glsl.js';
+import debugFragmentSource from '../../build/min/src/shaders/debug.fragment.glsl.js';
+import debugVertexSource from '../../build/min/src/shaders/debug.vertex.glsl.js';
+import fillFragmentSource from '../../build/min/src/shaders/fill.fragment.glsl.js';
+import fillVertexSource from '../../build/min/src/shaders/fill.vertex.glsl.js';
+import fillExtrusionFragmentSource from '../../build/min/src/shaders/fill_extrusion.fragment.glsl.js';
+import fillExtrusionVertexSource from '../../build/min/src/shaders/fill_extrusion.vertex.glsl.js';
+import fillExtrusionPatternFragmentSource from '../../build/min/src/shaders/fill_extrusion_pattern.fragment.glsl.js';
+import fillExtrusionPatternVertexSource from '../../build/min/src/shaders/fill_extrusion_pattern.vertex.glsl.js';
+import fillOutlineFragmentSource from '../../build/min/src/shaders/fill_outline.fragment.glsl.js';
+import fillOutlineVertexSource from '../../build/min/src/shaders/fill_outline.vertex.glsl.js';
+import fillOutlinePatternFragmentSource from '../../build/min/src/shaders/fill_outline_pattern.fragment.glsl.js';
+import fillOutlinePatternVertexSource from '../../build/min/src/shaders/fill_outline_pattern.vertex.glsl.js';
+import fillPatternFragmentSource from '../../build/min/src/shaders/fill_pattern.fragment.glsl.js';
+import fillPatternVertexSource from '../../build/min/src/shaders/fill_pattern.vertex.glsl.js';
+import heatmapFragmentSource from '../../build/min/src/shaders/heatmap.fragment.glsl.js';
+import heatmapVertexSource from '../../build/min/src/shaders/heatmap.vertex.glsl.js';
+import heatmapTextureFragmentSource from '../../build/min/src/shaders/heatmap_texture.fragment.glsl.js';
+import heatmapTextureVertexSource from '../../build/min/src/shaders/heatmap_texture.vertex.glsl.js';
+import hillshadeFragmentSource from '../../build/min/src/shaders/hillshade.fragment.glsl.js';
+import hillshadeVertexSource from '../../build/min/src/shaders/hillshade.vertex.glsl.js';
+import hillshadePrepareFragmentSource from '../../build/min/src/shaders/hillshade_prepare.fragment.glsl.js';
+import hillshadePrepareVertexSource from '../../build/min/src/shaders/hillshade_prepare.vertex.glsl.js';
+import lineFragmentSource from '../../build/min/src/shaders/line.fragment.glsl.js';
+import lineVertexSource from '../../build/min/src/shaders/line.vertex.glsl.js';
+import lineGradientFragmentSource from '../../build/min/src/shaders/line_gradient.fragment.glsl.js';
+import lineGradientVertexSource from '../../build/min/src/shaders/line_gradient.vertex.glsl.js';
+import linePatternFragmentSource from '../../build/min/src/shaders/line_pattern.fragment.glsl.js';
+import linePatternVertexSource from '../../build/min/src/shaders/line_pattern.vertex.glsl.js';
+import lineSDFFragmentSource from '../../build/min/src/shaders/line_sdf.fragment.glsl.js';
+import lineSDFVertexSource from '../../build/min/src/shaders/line_sdf.vertex.glsl.js';
+import rasterFragmentSource from '../../build/min/src/shaders/raster.fragment.glsl.js';
+import rasterVertexSource from '../../build/min/src/shaders/raster.vertex.glsl.js';
+import symbolIconFragmentSource from '../../build/min/src/shaders/symbol_icon.fragment.glsl.js';
+import symbolIconVertexSource from '../../build/min/src/shaders/symbol_icon.vertex.glsl.js';
+import symbolSDFFragmentSource from '../../build/min/src/shaders/symbol_sdf.fragment.glsl.js';
+import symbolSDFVertexSource from '../../build/min/src/shaders/symbol_sdf.vertex.glsl.js';
+
 const shaders = {
   prelude: {
-    fragmentSource: require('../../build/min/src/shaders/_prelude.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/_prelude.vertex.glsl.js')
+    fragmentSource: preludeFragmentSource,
+    vertexSource: preludeVertexSource
   },
   background: {
-    fragmentSource: require('../../build/min/src/shaders/background.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/background.vertex.glsl.js')
+    fragmentSource: backgroundFragmentSource,
+    vertexSource: backgroundVertexSource
   },
   backgroundPattern: {
-    fragmentSource: require('../../build/min/src/shaders/background_pattern.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/background_pattern.vertex.glsl.js')
+    fragmentSource: backgroundPatternFragmentSource,
+    vertexSource: backgroundPatternVertexSource
   },
   circle: {
-    fragmentSource: require('../../build/min/src/shaders/circle.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/circle.vertex.glsl.js')
+    fragmentSource: circleFragmentSource,
+    vertexSource: circleVertexSource
   },
   clippingMask: {
-    fragmentSource: require('../../build/min/src/shaders/clipping_mask.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/clipping_mask.vertex.glsl.js')
+    fragmentSource: clippingMaskFragmentSource,
+    vertexSource: clippingMaskVertexSource
   },
   heatmap: {
-    fragmentSource: require('../../build/min/src/shaders/heatmap.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/heatmap.vertex.glsl.js')
+    fragmentSource: heatmapFragmentSource,
+    vertexSource: heatmapVertexSource
   },
   heatmapTexture: {
-    fragmentSource: require('../../build/min/src/shaders/heatmap_texture.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/heatmap_texture.vertex.glsl.js')
+    fragmentSource: heatmapTextureFragmentSource,
+    vertexSource: heatmapTextureVertexSource
   },
   collisionBox: {
-    fragmentSource: require('../../build/min/src/shaders/collision_box.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/collision_box.vertex.glsl.js')
+    fragmentSource: collisionBoxFragmentSource,
+    vertexSource: collisionBoxVertexSource
   },
   collisionCircle: {
-    fragmentSource: require('../../build/min/src/shaders/collision_circle.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/collision_circle.vertex.glsl.js')
+    fragmentSource: collisionCircleFragmentSource,
+    vertexSource: collisionCircleVertexSource
   },
   debug: {
-    fragmentSource: require('../../build/min/src/shaders/debug.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/debug.vertex.glsl.js')
+    fragmentSource: debugFragmentSource,
+    vertexSource: debugVertexSource
   },
   fill: {
-    fragmentSource: require('../../build/min/src/shaders/fill.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill.vertex.glsl.js')
+    fragmentSource: fillFragmentSource,
+    vertexSource: fillVertexSource
   },
   fillOutline: {
-    fragmentSource: require('../../build/min/src/shaders/fill_outline.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill_outline.vertex.glsl.js')
+    fragmentSource: fillOutlineFragmentSource,
+    vertexSource: fillOutlineVertexSource
   },
   fillOutlinePattern: {
-    fragmentSource: require('../../build/min/src/shaders/fill_outline_pattern.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill_outline_pattern.vertex.glsl.js')
+    fragmentSource: fillOutlinePatternFragmentSource,
+    vertexSource: fillOutlinePatternVertexSource
   },
   fillPattern: {
-    fragmentSource: require('../../build/min/src/shaders/fill_pattern.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill_pattern.vertex.glsl.js')
+    fragmentSource: fillPatternFragmentSource,
+    vertexSource: fillPatternVertexSource
   },
   fillExtrusion: {
-    fragmentSource: require('../../build/min/src/shaders/fill_extrusion.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill_extrusion.vertex.glsl.js')
+    fragmentSource: fillExtrusionFragmentSource,
+    vertexSource: fillExtrusionVertexSource
   },
   fillExtrusionPattern: {
-    fragmentSource: require('../../build/min/src/shaders/fill_extrusion_pattern.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/fill_extrusion_pattern.vertex.glsl.js')
+    fragmentSource: fillExtrusionPatternFragmentSource,
+    vertexSource: fillExtrusionPatternVertexSource
   },
   hillshadePrepare: {
-    fragmentSource: require('../../build/min/src/shaders/hillshade_prepare.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/hillshade_prepare.vertex.glsl.js')
+    fragmentSource: hillshadePrepareFragmentSource,
+    vertexSource: hillshadePrepareVertexSource
   },
   hillshade: {
-    fragmentSource: require('../../build/min/src/shaders/hillshade.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/hillshade.vertex.glsl.js')
+    fragmentSource: hillshadeFragmentSource,
+    vertexSource: hillshadeVertexSource
   },
   line: {
-    fragmentSource: require('../../build/min/src/shaders/line.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/line.vertex.glsl.js')
+    fragmentSource: lineFragmentSource,
+    vertexSource: lineVertexSource
   },
   lineGradient: {
-    fragmentSource: require('../../build/min/src/shaders/line_gradient.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/line_gradient.vertex.glsl.js')
+    fragmentSource: lineGradientFragmentSource,
+    vertexSource: lineGradientVertexSource
   },
   linePattern: {
-    fragmentSource: require('../../build/min/src/shaders/line_pattern.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/line_pattern.vertex.glsl.js')
+    fragmentSource: linePatternFragmentSource,
+    vertexSource: linePatternVertexSource
   },
   lineSDF: {
-    fragmentSource: require('../../build/min/src/shaders/line_sdf.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/line_sdf.vertex.glsl.js')
+    fragmentSource: lineSDFFragmentSource,
+    vertexSource: lineSDFVertexSource
   },
   raster: {
-    fragmentSource: require('../../build/min/src/shaders/raster.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/raster.vertex.glsl.js')
+    fragmentSource: rasterFragmentSource,
+    vertexSource: rasterVertexSource
   },
   symbolIcon: {
-    fragmentSource: require('../../build/min/src/shaders/symbol_icon.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/symbol_icon.vertex.glsl.js')
+    fragmentSource: symbolIconFragmentSource,
+    vertexSource: symbolIconVertexSource
   },
   symbolSDF: {
-    fragmentSource: require('../../build/min/src/shaders/symbol_sdf.fragment.glsl.js'),
-    vertexSource: require('../../build/min/src/shaders/symbol_sdf.vertex.glsl.js')
+    fragmentSource: symbolSDFFragmentSource,
+    vertexSource: symbolSDFVertexSource
   }
 };
 
@@ -191,4 +243,4 @@ ${precision} ${type} ${name} = u_${name};
   });
 }
 
-module.exports = shaders;
+export default shaders;

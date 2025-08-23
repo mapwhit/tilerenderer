@@ -1,6 +1,6 @@
-const test = require('node:test');
-const createFilter = require('../../../src/style-spec/feature_filter');
-const convertFilter = require('../../../src/style-spec/feature_filter/convert');
+import test from 'node:test';
+import convertFilter from '../../../src/style-spec/feature_filter/convert.js';
+import createFilter from '../../../src/style-spec/feature_filter/index.js';
 
 test('filter', async t => {
   await t.test('expression, zoom', t => {

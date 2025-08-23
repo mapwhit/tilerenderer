@@ -1,13 +1,11 @@
-const { isExpressionFilter } = require('./index');
-
-module.exports = convertFilter;
+import { isExpressionFilter } from './index.js';
 
 /**
  * Convert the given legacy filter to (the JSON representation of) an
  * equivalent expression
  * @private
  */
-function convertFilter(filter) {
+export default function convertFilter(filter) {
   return _convertFilter(filter, {});
 }
 

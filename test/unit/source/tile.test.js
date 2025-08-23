@@ -1,15 +1,16 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const Tile = require('../../../src/source/tile');
-const GeoJSONWrapper = require('../../../src/source/geojson_wrapper');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const fs = require('fs');
-const path = require('path');
-const vt = require('@mapwhit/vector-tile');
-const Protobuf = require('@mapwhit/pbf');
-const FeatureIndex = require('../../../src/data/feature_index');
-const { CollisionBoxArray } = require('../../../src/data/array_types');
-const Context = require('../../../src/gl/context');
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+import Protobuf from '@mapwhit/pbf';
+import * as vt from '@mapwhit/vector-tile';
+import gl from 'gl';
+import { CollisionBoxArray } from '../../../src/data/array_types.js';
+import FeatureIndex from '../../../src/data/feature_index.js';
+import Context from '../../../src/gl/context.js';
+import GeoJSONWrapper from '../../../src/source/geojson_wrapper.js';
+import Tile from '../../../src/source/tile.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import _window from '../../util/window.js';
 
 test('Tile', async t => {
   let globalWindow;
@@ -131,7 +132,7 @@ test('Tile', async t => {
   await t.test('Tile.setMask', async t => {
     await t.test('simple mask', t => {
       const tile = new Tile(0, 0, 0);
-      const context = new Context(require('gl')(10, 10));
+      const context = new Context(gl(10, 10));
       const a = new OverscaledTileID(1, 0, 1, 0, 0);
       const b = new OverscaledTileID(1, 0, 1, 1, 1);
       const mask = {};
@@ -143,7 +144,7 @@ test('Tile', async t => {
 
     await t.test('complex mask', t => {
       const tile = new Tile(0, 0, 0);
-      const context = new Context(require('gl')(10, 10));
+      const context = new Context(gl(10, 10));
       const a = new OverscaledTileID(1, 0, 1, 0, 1);
       const b = new OverscaledTileID(1, 0, 1, 1, 0);
       const c = new OverscaledTileID(2, 0, 2, 2, 3);
@@ -211,7 +212,7 @@ test('Tile', async t => {
 
 function createVectorTile() {
   return new vt.VectorTile(
-    new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+    new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
   );
 }
 

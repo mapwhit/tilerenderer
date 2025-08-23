@@ -1,12 +1,13 @@
-const { CircleLayoutArray } = require('../array_types');
+import EvaluationParameters from '../../style/evaluation_parameters.js';
+import { CircleLayoutArray } from '../array_types.js';
+import EXTENT from '../extent.js';
+import { TriangleIndexArray } from '../index_array_type.js';
+import loadGeometry from '../load_geometry.js';
+import { ProgramConfigurationSet } from '../program_configuration.js';
+import SegmentVector from '../segment.js';
+import layout from './circle_attributes.js';
 
-const { members: layoutAttributes } = require('./circle_attributes');
-const SegmentVector = require('../segment');
-const { ProgramConfigurationSet } = require('../program_configuration');
-const { TriangleIndexArray } = require('../index_array_type');
-const loadGeometry = require('../load_geometry');
-const EXTENT = require('../extent');
-const EvaluationParameters = require('../../style/evaluation_parameters');
+const layoutAttributes = layout.members;
 
 function addCircleVertex(layoutVertexArray, x, y, extrudeX, extrudeY) {
   layoutVertexArray.emplaceBack(x * 2 + (extrudeX + 1) / 2, y * 2 + (extrudeY + 1) / 2);
@@ -121,4 +122,4 @@ class CircleBucket {
   }
 }
 
-module.exports = CircleBucket;
+export default CircleBucket;

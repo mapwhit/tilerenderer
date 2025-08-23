@@ -1,4 +1,4 @@
-const { bindAll } = require('../util/object');
+import { bindAll } from '../util/object.js';
 
 /**
  * The `Source` interface must be implemented by each source type, including "core" types (`vector`, `raster`,
@@ -24,11 +24,12 @@ const { bindAll } = require('../util/object');
  * if they are floor-ed to the nearest integer.
  */
 
-const vector = require('./vector_tile_source');
-const raster = require('./raster_tile_source');
-const rasterDem = require('./raster_dem_tile_source');
-const geojson = require('./geojson_source');
-const image = require('./image_source');
+import vector from './vector_tile_source.js';
+
+import geojson from './geojson_source.js';
+import image from './image_source.js';
+import rasterDem from './raster_dem_tile_source.js';
+import raster from './raster_tile_source.js';
 
 const sourceTypes = {
   vector,
@@ -47,7 +48,7 @@ const sourceTypes = {
  * with that type's requirements.
  * @returns {Source}
  */
-function create(id, specification, eventedParent, { resources, layerIndex, showTileBoundaries }) {
+export function create(id, specification, eventedParent, { resources, layerIndex, showTileBoundaries }) {
   const source = new sourceTypes[specification.type](id, specification, eventedParent, {
     resources,
     layerIndex,
@@ -58,16 +59,10 @@ function create(id, specification, eventedParent, { resources, layerIndex, showT
   return source;
 }
 
-function getType(name) {
+export function getType(name) {
   return sourceTypes[name];
 }
 
-function setType(name, type) {
+export function setType(name, type) {
   sourceTypes[name] = type;
 }
-
-module.exports = {
-  create,
-  getType,
-  setType
-};

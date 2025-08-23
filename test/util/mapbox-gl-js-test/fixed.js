@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   Num: fixedNum,
   LngLat: fixedLngLat,
   Coord: fixedCoord

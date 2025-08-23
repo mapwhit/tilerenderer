@@ -1,4 +1,4 @@
-module.exports = groupBySource;
+export default groupBySource;
 
 /**
  * Given an collection of layers, divide them by property 'source', then by 'source-layer',

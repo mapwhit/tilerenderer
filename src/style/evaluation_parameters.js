@@ -1,8 +1,8 @@
-const ZoomHistory = require('./zoom_history');
-const { isStringInSupportedScript } = require('../util/script_detection');
-const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
+import { plugin as rtlTextPlugin } from '../source/rtl_text_plugin.js';
+import { isStringInSupportedScript } from '../util/script_detection.js';
+import ZoomHistory from './zoom_history.js';
 
-class EvaluationParameters {
+export default class EvaluationParameters {
   // "options" may also be another EvaluationParameters to copy, see CrossFadedProperty.possiblyEvaluate
   constructor(zoom, options) {
     this.zoom = zoom;
@@ -43,5 +43,3 @@ class EvaluationParameters {
       : { fromScale: 0.5, toScale: 1, t: 1 - (1 - t) * fraction };
   }
 }
-
-module.exports = EvaluationParameters;

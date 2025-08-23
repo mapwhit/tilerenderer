@@ -1,6 +1,6 @@
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const { Properties, ColorRampProperty, DataConstantProperty, DataDrivenProperty } = require('../properties');
+import { ColorRampProperty, DataConstantProperty, DataDrivenProperty, Properties } from '../properties.js';
 
 const paint = new Properties({
   'heatmap-radius': new DataDrivenProperty({
@@ -49,4 +49,4 @@ const paint = new Properties({
   })
 });
 
-module.exports = { paint };
+export default { paint };

@@ -85,4 +85,4 @@ class Texture {
   }
 }
 
-module.exports = Texture;
+export default Texture;

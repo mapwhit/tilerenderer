@@ -1,10 +1,9 @@
-const { filterObject } = require('../util/object');
-
-const { Evented } = require('@mapwhit/events');
-const { Layout, Transitionable, PossiblyEvaluatedPropertyValue } = require('./properties');
-const { supportsPropertyExpression } = require('@mapwhit/style-expressions');
-const featureFilter = require('../style-spec/feature_filter');
-const createKey = require('../util/key');
+import { Evented } from '@mapwhit/events';
+import { supportsPropertyExpression } from '@mapwhit/style-expressions';
+import featureFilter from '../style-spec/feature_filter/index.js';
+import createKey from '../util/key.js';
+import { filterObject } from '../util/object.js';
+import { Layout, PossiblyEvaluatedPropertyValue, Transitionable } from './properties.js';
 
 const keyProperties = ['type', 'minzoom', 'maxzoom', 'filter', 'layout'];
 const TRANSITION_SUFFIX = '-transition';
@@ -253,4 +252,4 @@ class StyleLayer extends Evented {
   }
 }
 
-module.exports = StyleLayer;
+export default StyleLayer;

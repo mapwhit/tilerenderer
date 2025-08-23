@@ -1,5 +1,5 @@
-const test = require('node:test');
-const Anchor = require('../../../src/symbol/anchor');
+import test from 'node:test';
+import Anchor from '../../../src/symbol/anchor.js';
 
 test('Anchor', async t => {
   await t.test('constructor', t => {
