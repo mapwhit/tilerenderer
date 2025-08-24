@@ -23,7 +23,7 @@ DEBUG_FLAG ?= true
 	touch $@
 
 build/min/package.json: package.json | $$(@D)/.dir
-	jq  '{ version }' < $< > $@
+	jq  '{ version, type }' < $< > $@
 
 GLSL = $(wildcard src/shaders/*.glsl)
 
@@ -33,6 +33,7 @@ build/min/src/shaders/%.glsl.js: src/shaders/%.glsl  | $$(@D)/.dir meta/node_mod
 	    --preserveDefines \
 	    --preserveVariables \
 		--output=source \
+		--esModule \
 		--outDir=build/min \
 		$<
 
