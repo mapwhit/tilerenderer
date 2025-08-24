@@ -71,6 +71,7 @@
       },
       "style": {
         "noParameterAssign": "off",
+        "useBlockStatements": "error",
         "useDefaultParameterLast": "off",
         "useNodejsImportProtocol": "off",
         "useTemplate": "off",

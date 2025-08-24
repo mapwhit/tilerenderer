@@ -21,10 +21,18 @@ export default function (polygonRings, precision = 1, debug = false) {
   const outerRing = polygonRings[0];
   for (let i = 0; i < outerRing.length; i++) {
     const p = outerRing[i];
-    if (!i || p.x < minX) minX = p.x;
-    if (!i || p.y < minY) minY = p.y;
-    if (!i || p.x > maxX) maxX = p.x;
-    if (!i || p.y > maxY) maxY = p.y;
+    if (!i || p.x < minX) {
+      minX = p.x;
+    }
+    if (!i || p.y < minY) {
+      minY = p.y;
+    }
+    if (!i || p.x > maxX) {
+      maxX = p.x;
+    }
+    if (!i || p.y > maxY) {
+      maxY = p.y;
+    }
   }
 
   const width = maxX - minX;
@@ -35,7 +43,9 @@ export default function (polygonRings, precision = 1, debug = false) {
   // a priority queue of cells in order of their "potential" (max distance to polygon)
   const cellQueue = new Queue(undefined, compareMax);
 
-  if (cellSize === 0) return new Point(minX, minY);
+  if (cellSize === 0) {
+    return new Point(minX, minY);
+  }
 
   // cover polygon with initial cells
   for (let x = minX; x < maxX; x += cellSize) {
@@ -55,11 +65,15 @@ export default function (polygonRings, precision = 1, debug = false) {
     // update the best cell if we found a better one
     if (cell.d > bestCell.d || !bestCell.d) {
       bestCell = cell;
-      if (debug) console.log('found best %d after %d probes', Math.round(1e4 * cell.d) / 1e4, numProbes);
+      if (debug) {
+        console.log('found best %d after %d probes', Math.round(1e4 * cell.d) / 1e4, numProbes);
+      }
     }
 
     // do not drill down further if there's no chance of a better solution
-    if (cell.max - bestCell.d <= precision) continue;
+    if (cell.max - bestCell.d <= precision) {
+      continue;
+    }
 
     // split the cell into four cells
     h = cell.h / 2;
@@ -101,7 +115,9 @@ function pointToPolygonDist(p, polygon) {
       const a = ring[i];
       const b = ring[j];
 
-      if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+      if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) {
+        inside = !inside;
+      }
 
       minDistSq = Math.min(minDistSq, distToSegmentSquared(p, a, b));
     }

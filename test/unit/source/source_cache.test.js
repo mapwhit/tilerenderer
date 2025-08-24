@@ -27,7 +27,9 @@ function MockSourceType(id, sourceOptions, eventedParent) {
     }
     async loadTile() {}
     onAdd() {
-      if (sourceOptions.noLoad) return;
+      if (sourceOptions.noLoad) {
+        return;
+      }
       if (sourceOptions.error) {
         this.fire(new ErrorEvent(sourceOptions.error));
       } else {

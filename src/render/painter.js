@@ -182,7 +182,9 @@ export default class Painter {
   }
 
   _renderTileClippingMasks(layer, tileIDs) {
-    if (this.currentStencilSource === layer.source || !layer.isTileClipped() || !tileIDs || !tileIDs.length) return;
+    if (this.currentStencilSource === layer.source || !layer.isTileClipped() || !tileIDs || !tileIDs.length) {
+      return;
+    }
 
     this.currentStencilSource = layer.source;
 
@@ -258,7 +260,9 @@ export default class Painter {
   }
 
   depthModeForSublayer(n, mask, func) {
-    if (!this.opaquePassEnabledForLayer()) return DepthMode.disabled;
+    if (!this.opaquePassEnabledForLayer()) {
+      return DepthMode.disabled;
+    }
     const depth = 1 - ((1 + this.currentLayer) * this.numSublayers + n) * this.depthEpsilon;
     return new DepthMode(func || this.context.gl.LEQUAL, mask, [depth, depth]);
   }
@@ -307,9 +311,13 @@ export default class Painter {
     for (const id in sourceCaches) {
       const sourceCache = sourceCaches[id];
       const source = sourceCache.getSource();
-      if (source.type !== 'raster' && source.type !== 'raster-dem') continue;
+      if (source.type !== 'raster' && source.type !== 'raster-dem') {
+        continue;
+      }
       const visibleTiles = [];
-      for (const coord of coordsAscending[id]) visibleTiles.push(sourceCache.getTile(coord));
+      for (const coord of coordsAscending[id]) {
+        visibleTiles.push(sourceCache.getTile(coord));
+      }
       updateTileMasks(visibleTiles, this.context);
     }
 
@@ -331,10 +339,14 @@ export default class Painter {
     this.depthRboNeedsClear = true;
 
     for (const layer of layers) {
-      if (!layer.hasOffscreenPass() || layer.isHidden(this.transform.zoom)) continue;
+      if (!layer.hasOffscreenPass() || layer.isHidden(this.transform.zoom)) {
+        continue;
+      }
 
       const coords = coordsDescending[layer.source];
-      if (!coords.length) continue;
+      if (!coords.length) {
+        continue;
+      }
 
       this.renderLayer(this, sourceCaches[layer.source], layer, coords);
     }
@@ -397,8 +409,12 @@ export default class Painter {
   }
 
   renderLayer(painter, sourceCache, layer, coords) {
-    if (layer.isHidden(this.transform.zoom)) return;
-    if (layer.type !== 'background' && !coords.length) return;
+    if (layer.isHidden(this.transform.zoom)) {
+      return;
+    }
+    if (layer.type !== 'background' && !coords.length) {
+      return;
+    }
     this.id = layer.id;
 
     draw[layer.type](painter, sourceCache, layer, coords);
@@ -410,7 +426,9 @@ export default class Painter {
    * @returns {Float32Array} matrix
    */
   translatePosMatrix(matrix, tile, translate, translateAnchor, inViewportPixelUnitsUnits) {
-    if (!translate[0] && !translate[1]) return matrix;
+    if (!translate[0] && !translate[1]) {
+      return matrix;
+    }
 
     const angle = inViewportPixelUnitsUnits
       ? translateAnchor === 'map'
@@ -457,7 +475,9 @@ export default class Painter {
    * @returns true if a needed image is missing and rendering needs to be skipped.
    */
   isPatternMissing(image) {
-    if (!image) return false;
+    if (!image) {
+      return false;
+    }
     const imagePosA = this.imageManager.getPattern(image.from);
     const imagePosB = this.imageManager.getPattern(image.to);
     return !imagePosA || !imagePosB;

@@ -14,7 +14,9 @@ import warn from '../util/warn.js';
 class DEMData {
   constructor(uid, data, encoding) {
     this.uid = uid;
-    if (data.height !== data.width) throw new RangeError('DEM tiles must be square');
+    if (data.height !== data.width) {
+      throw new RangeError('DEM tiles must be square');
+    }
     if (encoding && encoding !== 'mapbox' && encoding !== 'terrarium') {
       warn.once(`"${encoding}" is not a valid encoding type. Valid types include "mapbox" and "terrarium".`);
       return;
@@ -62,8 +64,9 @@ class DEMData {
   }
 
   _idx(x, y) {
-    if (x < -1 || x >= this.dim + 1 || y < -1 || y >= this.dim + 1)
+    if (x < -1 || x >= this.dim + 1 || y < -1 || y >= this.dim + 1) {
       throw new RangeError('out of range source coordinates for DEM data');
+    }
     return (y + 1) * this.stride + (x + 1);
   }
 
@@ -84,7 +87,9 @@ class DEMData {
   }
 
   backfillBorder(borderTile, dx, dy) {
-    if (this.dim !== borderTile.dim) throw new Error('dem dimension mismatch');
+    if (this.dim !== borderTile.dim) {
+      throw new Error('dem dimension mismatch');
+    }
 
     let xMin = dx * this.dim;
     let xMax = dx * this.dim + this.dim;

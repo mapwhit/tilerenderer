@@ -33,11 +33,15 @@ function drawHeatmap(painter, sourceCache, layer, coords) {
       // Skip tiles that have uncovered parents to avoid flickering; we don't need
       // to use complex tile masking here because the change between zoom levels is subtle,
       // so it's fine to simply render the parent until all its 4 children are loaded
-      if (sourceCache.hasRenderableParent(coord)) continue;
+      if (sourceCache.hasRenderableParent(coord)) {
+        continue;
+      }
 
       const tile = sourceCache.getTile(coord);
       const bucket = tile.getBucket(layer);
-      if (!bucket) continue;
+      if (!bucket) {
+        continue;
+      }
 
       const programConfiguration = bucket.programConfigurations.get(layer.id);
       const program = painter.useProgram('heatmap', programConfiguration);
@@ -127,7 +131,9 @@ function renderTextureToMap(painter, layer) {
   // heatmaps: the kernel texture, prepared in the offscreen pass, and a
   // color ramp texture.
   const fbo = layer.heatmapFbo;
-  if (!fbo) return;
+  if (!fbo) {
+    return;
+  }
   context.activeTexture.set(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, fbo.colorAttachment.get());
 

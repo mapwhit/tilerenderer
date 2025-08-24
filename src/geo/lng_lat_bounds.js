@@ -73,7 +73,9 @@ class LngLatBounds {
       sw2 = obj._sw;
       ne2 = obj._ne;
 
-      if (!sw2 || !ne2) return this;
+      if (!sw2 || !ne2) {
+        return this;
+      }
     } else {
       if (Array.isArray(obj)) {
         if (obj.every(Array.isArray)) {
@@ -231,7 +233,9 @@ class LngLatBounds {
    * llb;   // = LngLatBounds {_sw: LngLat {lng: -73.9876, lat: 40.7661}, _ne: LngLat {lng: -73.9397, lat: 40.8002}}
    */
   static convert(input) {
-    if (!input || input instanceof LngLatBounds) return input;
+    if (!input || input instanceof LngLatBounds) {
+      return input;
+    }
     return new LngLatBounds(input);
   }
 }

@@ -84,7 +84,9 @@ class VertexArrayObject {
     const gl = context.gl;
 
     if (context.extVertexArrayObject) {
-      if (this.vao) this.destroy();
+      if (this.vao) {
+        this.destroy();
+      }
       this.vao = context.extVertexArrayObject.createVertexArrayOES();
       context.bindVertexArrayOES.set(this.vao);
       numPrevAttributes = 0;

@@ -6,10 +6,11 @@ class SegmentVector {
   }
 
   prepareSegment(numVertices, layoutVertexArray, indexArray) {
-    if (numVertices > SegmentVector.MAX_VERTEX_ARRAY_LENGTH)
+    if (numVertices > SegmentVector.MAX_VERTEX_ARRAY_LENGTH) {
       warn.once(
         `Max vertices per segment is ${SegmentVector.MAX_VERTEX_ARRAY_LENGTH}: bucket requested ${numVertices}`
       );
+    }
     let segment = this.segments.at(-1);
     if (!segment || segment.vertexLength + numVertices > SegmentVector.MAX_VERTEX_ARRAY_LENGTH) {
       segment = {

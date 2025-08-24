@@ -74,7 +74,9 @@ export function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
     let b;
     while (!b || a.equals(b)) {
       b = projectedFace[i++];
-      if (!b) return Number.POSITIVE_INFINITY;
+      if (!b) {
+        return Number.POSITIVE_INFINITY;
+      }
     }
 
     // Loop until point `c` is not colinear with points `a` and `b`.
@@ -100,7 +102,9 @@ export function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
       // Use the barycentric weighting along with the original triangle z coordinates to get the point of intersection.
       const distance = a.z * u + b.z * v + c.z * w;
 
-      if (Number.isFinite(distance)) return distance;
+      if (Number.isFinite(distance)) {
+        return distance;
+      }
     }
     return Number.POSITIVE_INFINITY;
   }

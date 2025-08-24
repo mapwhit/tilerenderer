@@ -16,10 +16,14 @@ class Framebuffer {
     const gl = this.context.gl;
 
     const texture = this.colorAttachment.get();
-    if (texture) gl.deleteTexture(texture);
+    if (texture) {
+      gl.deleteTexture(texture);
+    }
 
     const renderbuffer = this.depthAttachment.get();
-    if (renderbuffer) gl.deleteRenderbuffer(renderbuffer);
+    if (renderbuffer) {
+      gl.deleteRenderbuffer(renderbuffer);
+    }
 
     gl.deleteFramebuffer(this.framebuffer);
   }

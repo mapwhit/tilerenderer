@@ -14,7 +14,9 @@ const identityMat4 = mat4.identity(new Float32Array(16));
 const symbolLayoutProperties = properties.layout;
 
 export default function drawSymbols(painter, sourceCache, layer, coords) {
-  if (painter.renderPass !== 'translucent') return;
+  if (painter.renderPass !== 'translucent') {
+    return;
+  }
 
   // Disable the stencil test so that labels aren't clipped to tile boundaries.
   const stencilMode = StencilMode.disabled;
@@ -93,9 +95,13 @@ function drawLayerSymbols(
   for (const coord of coords) {
     const tile = sourceCache.getTile(coord);
     const bucket = tile.getBucket(layer);
-    if (!bucket) continue;
+    if (!bucket) {
+      continue;
+    }
     const buffers = isText ? bucket.text : bucket.icon;
-    if (!buffers || !buffers.segments.get().length) continue;
+    if (!buffers || !buffers.segments.get().length) {
+      continue;
+    }
     const programConfiguration = buffers.programConfigurations.get(layer.id);
 
     const isSDF = isText || bucket.sdfIcons;

@@ -74,7 +74,9 @@ class CircleStyleLayer extends StyleLayer {
           adjustedSize *= transform.cameraToCenterDistance / projectedCenter[3];
         }
 
-        if (polygonIntersectsBufferedPoint(transformedPolygon, transformedPoint, adjustedSize)) return true;
+        if (polygonIntersectsBufferedPoint(transformedPolygon, transformedPoint, adjustedSize)) {
+          return true;
+        }
       }
     }
 

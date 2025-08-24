@@ -22,10 +22,14 @@ export function getSizeData(tileZoom, value) {
   const levels = expression.zoomStops;
 
   let lower = 0;
-  while (lower < levels.length && levels[lower] <= tileZoom) lower++;
+  while (lower < levels.length && levels[lower] <= tileZoom) {
+    lower++;
+  }
   lower = Math.max(0, lower - 1);
   let upper = lower;
-  while (upper < levels.length && levels[upper] < tileZoom + 1) upper++;
+  while (upper < levels.length && levels[upper] < tileZoom + 1) {
+    upper++;
+  }
   upper = Math.min(levels.length - 1, upper);
 
   const zoomRange = {

@@ -137,7 +137,9 @@ export class StructArray {
 
       const oldUint8Array = this.uint8;
       this._refreshViews();
-      if (oldUint8Array) this.uint8.set(oldUint8Array);
+      if (oldUint8Array) {
+        this.uint8.set(oldUint8Array);
+      }
     }
   }
 

@@ -3,8 +3,12 @@ export default DOM;
 
 DOM.create = function (tagName, className, container) {
   const el = window.document.createElement(tagName);
-  if (className) el.className = className;
-  if (container) container.appendChild(el);
+  if (className) {
+    el.className = className;
+  }
+  if (container) {
+    container.appendChild(el);
+  }
   return el;
 };
 

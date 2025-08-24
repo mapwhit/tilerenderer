@@ -5,7 +5,9 @@ import { circleUniformValues } from './program/circle_program.js';
 export default drawCircles;
 
 function drawCircles(painter, sourceCache, layer, coords) {
-  if (painter.renderPass !== 'translucent') return;
+  if (painter.renderPass !== 'translucent') {
+    return;
+  }
 
   const opacity = layer._paint.get('circle-opacity');
   const strokeWidth = layer._paint.get('circle-stroke-width');
@@ -29,7 +31,9 @@ function drawCircles(painter, sourceCache, layer, coords) {
 
     const tile = sourceCache.getTile(coord);
     const bucket = tile.getBucket(layer);
-    if (!bucket) continue;
+    if (!bucket) {
+      continue;
+    }
 
     const programConfiguration = bucket.programConfigurations.get(layer.id);
     const program = painter.useProgram('circle', programConfiguration);

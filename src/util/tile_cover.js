@@ -108,6 +108,10 @@ function scanTriangle(a, b, c, ymin, ymax, scanLine) {
   }
 
   // scan span! scan span!
-  if (ab.dy) scanSpans(ca, ab, ymin, ymax, scanLine);
-  if (bc.dy) scanSpans(ca, bc, ymin, ymax, scanLine);
+  if (ab.dy) {
+    scanSpans(ca, ab, ymin, ymax, scanLine);
+  }
+  if (bc.dy) {
+    scanSpans(ca, bc, ymin, ymax, scanLine);
+  }
 }

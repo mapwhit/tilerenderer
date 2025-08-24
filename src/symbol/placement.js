@@ -96,7 +96,9 @@ export class Placement {
   placeLayerTile(styleLayer, tile, showCollisionBoxes, seenCrossTileIDs) {
     const symbolBucket = tile.getBucket(styleLayer);
     const bucketFeatureIndex = tile.latestFeatureIndex;
-    if (!symbolBucket || !bucketFeatureIndex || styleLayer.id !== symbolBucket.layerIds[0]) return;
+    if (!symbolBucket || !bucketFeatureIndex || styleLayer.id !== symbolBucket.layerIds[0]) {
+      return;
+    }
 
     const collisionBoxArray = tile.collisionBoxArray;
 
@@ -406,10 +408,18 @@ export class Placement {
   }
 
   updateBucketOpacities(bucket, seenCrossTileIDs, collisionBoxArray) {
-    if (bucket.hasTextData()) bucket.text.opacityVertexArray.clear();
-    if (bucket.hasIconData()) bucket.icon.opacityVertexArray.clear();
-    if (bucket.hasCollisionBoxData()) bucket.collisionBox.collisionVertexArray.clear();
-    if (bucket.hasCollisionCircleData()) bucket.collisionCircle.collisionVertexArray.clear();
+    if (bucket.hasTextData()) {
+      bucket.text.opacityVertexArray.clear();
+    }
+    if (bucket.hasIconData()) {
+      bucket.icon.opacityVertexArray.clear();
+    }
+    if (bucket.hasCollisionBoxData()) {
+      bucket.collisionBox.collisionVertexArray.clear();
+    }
+    if (bucket.hasCollisionCircleData()) {
+      bucket.collisionCircle.collisionVertexArray.clear();
+    }
 
     const layout = bucket.layers[0]._layout;
     const duplicateOpacityState = new JointOpacityState(null, 0, false, false, true);

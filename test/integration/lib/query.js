@@ -5,19 +5,31 @@ import { PNG } from 'pngjs';
 import harness from './harness.js';
 
 function deepEqual(a, b) {
-  if (typeof a !== typeof b) return false;
-  if (typeof a === 'number') return Math.abs(a - b) < 1e-10;
-  if (a === null || typeof a !== 'object') return a === b;
+  if (typeof a !== typeof b) {
+    return false;
+  }
+  if (typeof a === 'number') {
+    return Math.abs(a - b) < 1e-10;
+  }
+  if (a === null || typeof a !== 'object') {
+    return a === b;
+  }
 
   const ka = Object.keys(a);
   const kb = Object.keys(b);
 
-  if (ka.length !== kb.length) return false;
+  if (ka.length !== kb.length) {
+    return false;
+  }
 
   ka.sort();
   kb.sort();
 
-  for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i] || !deepEqual(a[ka[i]], b[ka[i]])) return false;
+  for (let i = 0; i < ka.length; i++) {
+    if (ka[i] !== kb[i] || !deepEqual(a[ka[i]], b[ka[i]])) {
+      return false;
+    }
+  }
 
   return true;
 }
@@ -37,7 +49,9 @@ export default function run(implementation, options, query) {
   const directory = path.join(import.meta.dirname, '../query/tests');
   harness(directory, implementation, options, (style, params, done) => {
     query(style, params, (err, data, results) => {
-      if (err) return done(err);
+      if (err) {
+        return done(err);
+      }
 
       const dir = path.join(directory, params.id);
 

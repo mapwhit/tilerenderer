@@ -186,8 +186,12 @@ class StyleLayer extends Evented {
   }
 
   isHidden(zoom) {
-    if (this.minzoom && zoom < this.minzoom) return true;
-    if (this.maxzoom && zoom >= this.maxzoom) return true;
+    if (this.minzoom && zoom < this.minzoom) {
+      return true;
+    }
+    if (this.maxzoom && zoom >= this.maxzoom) {
+      return true;
+    }
     return this.visibility === 'none';
   }
 

@@ -50,7 +50,9 @@ function drawExtrusionTiles(painter, source, layer, coords, depthMode, stencilMo
   for (const coord of coords) {
     const tile = source.getTile(coord);
     const bucket = tile.getBucket(layer);
-    if (!bucket) continue;
+    if (!bucket) {
+      continue;
+    }
 
     const programConfiguration = bucket.programConfigurations.get(layer.id);
     const program = painter.useProgram(image ? 'fillExtrusionPattern' : 'fillExtrusion', programConfiguration);
@@ -65,7 +67,9 @@ function drawExtrusionTiles(painter, source, layer, coords, depthMode, stencilMo
     if (constantPattern && tile.imageAtlas) {
       const posTo = tile.imageAtlas.patternPositions[constantPattern.to];
       const posFrom = tile.imageAtlas.patternPositions[constantPattern.from];
-      if (posTo && posFrom) programConfiguration.setConstantPatternPositions(posTo, posFrom);
+      if (posTo && posFrom) {
+        programConfiguration.setConstantPatternPositions(posTo, posFrom);
+      }
     }
 
     const matrix = painter.translatePosMatrix(

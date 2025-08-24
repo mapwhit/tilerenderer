@@ -181,7 +181,9 @@ class Map extends Camera {
 
     this.resize();
 
-    if (options.style) this.setStyle(options.style);
+    if (options.style) {
+      this.setStyle(options.style);
+    }
 
     this.on('style.load', function () {
       if (this.transform.unmodified) {
@@ -357,7 +359,9 @@ class Map extends Camera {
       this.transform.minZoom = minZoom;
       this._update();
 
-      if (this.getZoom() < minZoom) this.setZoom(minZoom);
+      if (this.getZoom() < minZoom) {
+        this.setZoom(minZoom);
+      }
 
       return this;
     }
@@ -389,7 +393,9 @@ class Map extends Camera {
       this.transform.maxZoom = maxZoom;
       this._update();
 
-      if (this.getZoom() > maxZoom) this.setZoom(maxZoom);
+      if (this.getZoom() > maxZoom) {
+        this.setZoom(maxZoom);
+      }
 
       return this;
     }
@@ -689,7 +695,9 @@ class Map extends Camera {
    * @returns {boolean} A Boolean indicating whether the style is fully loaded.
    */
   isStyleLoaded() {
-    if (!this.style) return warn.once('There is no style added to the map.');
+    if (!this.style) {
+      return warn.once('There is no style added to the map.');
+    }
     return this.style.loaded();
   }
 
@@ -740,7 +748,9 @@ class Map extends Camera {
       const source = sources[id];
       const tiles = source._tiles;
       for (const tile of tiles.values()) {
-        if (!(tile.state === 'loaded' || tile.state === 'errored')) return false;
+        if (!(tile.state === 'loaded' || tile.state === 'errored')) {
+          return false;
+        }
       }
     }
     return true;
@@ -1240,8 +1250,12 @@ class Map extends Camera {
    * @returns {boolean} A Boolean indicating whether the map is fully loaded.
    */
   loaded() {
-    if (this._styleDirty || this._sourcesDirty) return false;
-    if (!this.style || !this.style.loaded()) return false;
+    if (this._styleDirty || this._sourcesDirty) {
+      return false;
+    }
+    if (!this.style || !this.style.loaded()) {
+      return false;
+    }
     return true;
   }
 
@@ -1254,7 +1268,9 @@ class Map extends Camera {
    * @private
    */
   _update(updateStyle) {
-    if (!this.style) return;
+    if (!this.style) {
+      return;
+    }
 
     this._styleDirty = this._styleDirty || updateStyle;
     this._sourcesDirty = true;
@@ -1393,7 +1409,9 @@ class Map extends Camera {
       window.removeEventListener('online', this._onWindowOnline, false);
     }
     const extension = this.painter.context.gl.getExtension('WEBGL_lose_context');
-    if (extension) extension.loseContext();
+    if (extension) {
+      extension.loseContext();
+    }
     removeNode(this._canvasContainer);
     removeNode(this._controlContainer);
     this._container.classList.remove('mapboxgl-map');
@@ -1432,7 +1450,9 @@ class Map extends Camera {
     return !!this._showTileBoundaries;
   }
   set showTileBoundaries(value) {
-    if (this._showTileBoundaries === value) return;
+    if (this._showTileBoundaries === value) {
+      return;
+    }
     this._showTileBoundaries = value;
     this._update();
   }
@@ -1452,7 +1472,9 @@ class Map extends Camera {
     return !!this._showCollisionBoxes;
   }
   set showCollisionBoxes(value) {
-    if (this._showCollisionBoxes === value) return;
+    if (this._showCollisionBoxes === value) {
+      return;
+    }
     this._showCollisionBoxes = value;
     if (value) {
       // When we turn collision boxes on we have to generate them for existing tiles
@@ -1480,7 +1502,9 @@ class Map extends Camera {
     return !!this._showOverdrawInspector;
   }
   set showOverdrawInspector(value) {
-    if (this._showOverdrawInspector === value) return;
+    if (this._showOverdrawInspector === value) {
+      return;
+    }
     this._showOverdrawInspector = value;
     this._update();
   }

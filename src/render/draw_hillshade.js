@@ -6,7 +6,9 @@ import Texture from './texture.js';
 export default drawHillshade;
 
 function drawHillshade(painter, sourceCache, layer, tileIDs) {
-  if (painter.renderPass !== 'offscreen' && painter.renderPass !== 'translucent') return;
+  if (painter.renderPass !== 'offscreen' && painter.renderPass !== 'translucent') {
+    return;
+  }
 
   const context = painter.context;
   const sourceMaxZoom = sourceCache.getSource().maxzoom;
@@ -31,7 +33,9 @@ function renderHillshade(painter, tile, layer, depthMode, stencilMode, colorMode
   const context = painter.context;
   const gl = context.gl;
   const fbo = tile.fbo;
-  if (!fbo) return;
+  if (!fbo) {
+    return;
+  }
 
   const program = painter.useProgram('hillshade');
 

@@ -14,8 +14,12 @@ import Coordinate from '../geo/coordinate.js';
  * @private
  */
 export function easeCubicInOut(t) {
-  if (t <= 0) return 0;
-  if (t >= 1) return 1;
+  if (t <= 0) {
+    return 0;
+  }
+  if (t >= 1) {
+    return 1;
+  }
   const t2 = t * t;
   const t3 = t2 * t;
   return 4 * (t < 0.5 ? t3 : 3 * (t - t2) + t3 - 0.75);
@@ -140,7 +144,9 @@ export function calculateSignedArea(ring) {
 export function isClosedPolygon(points) {
   // If it is 2 points that are the same then it is a point
   // If it is 3 points with start and end the same then it is a line
-  if (points.length < 4) return false;
+  if (points.length < 4) {
+    return false;
+  }
 
   const p1 = points[0];
   const p2 = points[points.length - 1];

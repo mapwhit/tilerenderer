@@ -84,7 +84,9 @@ class FeatureIndex {
       const index = matching[k];
 
       // don't check the same feature more than once
-      if (index === previousIndex) continue;
+      if (index === previousIndex) {
+        continue;
+      }
       previousIndex = index;
 
       const match = this.featureIndexArray.get(index);
@@ -135,13 +137,17 @@ class FeatureIndex {
     intersectionTest
   ) {
     const layerIDs = this.bucketLayerIDs[bucketIndex];
-    if (filterLayerIDs && !arraysIntersect(filterLayerIDs, layerIDs)) return;
+    if (filterLayerIDs && !arraysIntersect(filterLayerIDs, layerIDs)) {
+      return;
+    }
 
     const sourceLayerName = this.sourceLayerCoder.decode(sourceLayerIndex);
     const sourceLayer = this.vtLayers[sourceLayerName];
     const feature = sourceLayer.feature(featureIndex);
 
-    if (!filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) return;
+    if (!filter(new EvaluationParameters(this.tileID.overscaledZ), feature)) {
+      return;
+    }
 
     const { x, y, z } = this.tileID.canonical;
     for (const layerID of layerIDs) {
@@ -150,7 +156,9 @@ class FeatureIndex {
       }
 
       const styleLayer = styleLayers.get(layerID);
-      if (!styleLayer) continue;
+      if (!styleLayer) {
+        continue;
+      }
 
       const intersectionZ = !intersectionTest || intersectionTest(feature, styleLayer);
       if (!intersectionZ) {
@@ -196,10 +204,18 @@ function getBounds(geometry) {
   let maxX = Number.NEGATIVE_INFINITY;
   let maxY = Number.NEGATIVE_INFINITY;
   for (const { x, y } of geometry) {
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
+    if (x < minX) {
+      minX = x;
+    }
+    if (x > maxX) {
+      maxX = x;
+    }
+    if (y < minY) {
+      minY = y;
+    }
+    if (y > maxY) {
+      maxY = y;
+    }
   }
   return { minX, minY, maxX, maxY };
 }

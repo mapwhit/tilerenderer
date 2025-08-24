@@ -57,8 +57,9 @@ class FillExtrusionBucket {
     for (const { feature, index, sourceLayerIndex } of features) {
       if (
         !this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
-      )
+      ) {
         continue;
+      }
 
       const geometry = loadGeometry(feature);
 
@@ -93,7 +94,9 @@ class FillExtrusionBucket {
   }
 
   update(states, vtLayer, imagePositions) {
-    if (!this.stateDependentLayers.length) return;
+    if (!this.stateDependentLayers.length) {
+      return;
+    }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
       imagePositions,
       globalState: this.globalState
@@ -118,7 +121,9 @@ class FillExtrusionBucket {
   }
 
   destroy() {
-    if (!this.layoutVertexBuffer) return;
+    if (!this.layoutVertexBuffer) {
+      return;
+    }
     this.layoutVertexBuffer.destroy();
     this.indexBuffer.destroy();
     this.programConfigurations.destroy();
@@ -157,7 +162,9 @@ class FillExtrusionBucket {
 
               const perp = p1.sub(p2)._perp()._unit();
               const dist = p2.dist(p1);
-              if (edgeDistance + dist > 32768) edgeDistance = 0;
+              if (edgeDistance + dist > 32768) {
+                edgeDistance = 0;
+              }
 
               addVertex(this.layoutVertexArray, p1.x, p1.y, perp.x, perp.y, 0, 0, edgeDistance);
               addVertex(this.layoutVertexArray, p1.x, p1.y, perp.x, perp.y, 0, 1, edgeDistance);

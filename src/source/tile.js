@@ -37,8 +37,12 @@ class Tile {
 
   registerFadeDuration(duration) {
     const fadeEndTime = duration + this.timeAdded;
-    if (fadeEndTime < browser.now()) return;
-    if (this.fadeEndTime && fadeEndTime < this.fadeEndTime) return;
+    if (fadeEndTime < browser.now()) {
+      return;
+    }
+    if (this.fadeEndTime && fadeEndTime < this.fadeEndTime) {
+      return;
+    }
 
     this.fadeEndTime = fadeEndTime;
   }
@@ -163,7 +167,9 @@ class Tile {
     maxPitchScaleFactor,
     pixelPosMatrix
   ) {
-    if (!this.latestFeatureIndex?.vectorTile) return {};
+    if (!this.latestFeatureIndex?.vectorTile) {
+      return {};
+    }
 
     return this.latestFeatureIndex.query(
       {
@@ -182,14 +188,18 @@ class Tile {
   }
 
   querySourceFeatures(result, params) {
-    if (!this.latestFeatureIndex?.vectorTile) return;
+    if (!this.latestFeatureIndex?.vectorTile) {
+      return;
+    }
 
     const vtLayers = this.latestFeatureIndex.loadVTLayers();
 
     const sourceLayer = params ? params.sourceLayer : '';
     const layer = vtLayers._geojsonTileLayer || vtLayers[sourceLayer];
 
-    if (!layer) return;
+    if (!layer) {
+      return;
+    }
 
     const filter = featureFilter(params?.filter);
     const { z, x, y } = this.tileID.canonical;
@@ -222,14 +232,18 @@ class Tile {
 
   setMask(mask, context) {
     // don't redo buffer work if the mask is the same;
-    if (deepEqual(this.mask, mask)) return;
+    if (deepEqual(this.mask, mask)) {
+      return;
+    }
 
     this.mask = mask;
     this.clearMask();
 
     // We want to render the full tile, and keeping the segments/vertices/indices empty means
     // using the global shared buffers for covering the entire tile.
-    if (deepEqual(mask, { 0: true })) return;
+    if (deepEqual(mask, { 0: true })) {
+      return;
+    }
 
     const maskedBoundsArray = new RasterBoundsArray();
     const indexArray = new TriangleIndexArray();
@@ -289,7 +303,9 @@ class Tile {
       const sourceLayerId = bucket.layers[0]['sourceLayer'] || '_geojsonTileLayer';
       const sourceLayer = vtLayers[sourceLayerId];
       const sourceLayerStates = states[sourceLayerId];
-      if (!sourceLayer || !sourceLayerStates || Object.keys(sourceLayerStates).length === 0) continue;
+      if (!sourceLayer || !sourceLayerStates || Object.keys(sourceLayerStates).length === 0) {
+        continue;
+      }
 
       bucket.update(sourceLayerStates, sourceLayer, this.imageAtlas?.patternPositions || {});
       if (painter?.style) {

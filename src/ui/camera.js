@@ -354,8 +354,12 @@ class Camera extends Evented {
     if (
       !deepEqual(
         Object.keys(options.padding).sort((a, b) => {
-          if (a < b) return -1;
-          if (a > b) return 1;
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
           return 0;
         }),
         ['bottom', 'left', 'right', 'top']
@@ -429,7 +433,9 @@ class Camera extends Evented {
     const calculatedOptions = this.cameraForBounds(bounds, options);
 
     // cameraForBounds warns + returns undefined if unable to fit:
-    if (!calculatedOptions) return this;
+    if (!calculatedOptions) {
+      return this;
+    }
 
     options = Object.assign(calculatedOptions, options);
 
@@ -542,7 +548,9 @@ class Camera extends Evented {
       ...options
     };
 
-    if (options.animate === false) options.duration = 0;
+    if (options.animate === false) {
+      options.duration = 0;
+    }
 
     const tr = this.transform;
     const startZoom = this.getZoom();
@@ -820,7 +828,9 @@ class Camera extends Evented {
     // When u₀ = u₁, the optimal path doesn’t require both ascent and descent.
     if (Math.abs(u1) < 0.000001 || !Number.isFinite(S)) {
       // Perform a more or less instantaneous transition if the path is too short.
-      if (Math.abs(w0 - w1) < 0.000001) return this.easeTo(options, eventData);
+      if (Math.abs(w0 - w1) < 0.000001) {
+        return this.easeTo(options, eventData);
+      }
 
       const k = w1 < w0 ? -1 : 1;
       S = Math.abs(Math.log(w1 / w0)) / rho;
@@ -932,8 +942,12 @@ class Camera extends Evented {
   _normalizeBearing(bearing, currentBearing) {
     bearing = wrap(bearing, -180, 180);
     const diff = Math.abs(bearing - currentBearing);
-    if (Math.abs(bearing - 360 - currentBearing) < diff) bearing -= 360;
-    if (Math.abs(bearing + 360 - currentBearing) < diff) bearing += 360;
+    if (Math.abs(bearing - 360 - currentBearing) < diff) {
+      bearing -= 360;
+    }
+    if (Math.abs(bearing + 360 - currentBearing) < diff) {
+      bearing += 360;
+    }
     return bearing;
   }
 
@@ -941,7 +955,9 @@ class Camera extends Evented {
   // interpolating between the two endpoints will cross it.
   _normalizeCenter(center) {
     const tr = this.transform;
-    if (!tr.renderWorldCopies || tr.lngRange) return;
+    if (!tr.renderWorldCopies || tr.lngRange) {
+      return;
+    }
 
     const delta = center.lng - tr.center.lng;
     center.lng += delta > 180 ? -360 : delta < -180 ? 360 : 0;

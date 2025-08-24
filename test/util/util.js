@@ -23,10 +23,11 @@ export function createMap(options, callback) {
     )
   );
 
-  if (callback)
+  if (callback) {
     map.on('load', () => {
       callback(null, map);
     });
+  }
 
   return map;
 }

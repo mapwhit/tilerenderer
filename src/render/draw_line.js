@@ -9,11 +9,15 @@ import {
 import Texture from './texture.js';
 
 export default function drawLine(painter, sourceCache, layer, coords) {
-  if (painter.renderPass !== 'translucent') return;
+  if (painter.renderPass !== 'translucent') {
+    return;
+  }
 
   const opacity = layer._paint.get('line-opacity');
   const width = layer._paint.get('line-width');
-  if (opacity.constantOr(1) === 0 || width.constantOr(1) === 0) return;
+  if (opacity.constantOr(1) === 0 || width.constantOr(1) === 0) {
+    return;
+  }
 
   const depthMode = painter.depthModeForSublayer(0, DepthMode.ReadOnly);
   const colorMode = painter.colorModeForRenderPass();
@@ -35,18 +39,26 @@ export default function drawLine(painter, sourceCache, layer, coords) {
     context.activeTexture.set(gl.TEXTURE0);
 
     let gradientTexture = layer.gradientTexture;
-    if (!layer.gradient) return;
-    if (!gradientTexture) gradientTexture = layer.gradientTexture = new Texture(context, layer.gradient, gl.RGBA);
+    if (!layer.gradient) {
+      return;
+    }
+    if (!gradientTexture) {
+      gradientTexture = layer.gradientTexture = new Texture(context, layer.gradient, gl.RGBA);
+    }
     gradientTexture.bind(gl.LINEAR, gl.CLAMP_TO_EDGE);
   }
 
   for (const coord of coords) {
     const tile = sourceCache.getTile(coord);
 
-    if (image && !tile.patternsLoaded()) continue;
+    if (image && !tile.patternsLoaded()) {
+      continue;
+    }
 
     const bucket = tile.getBucket(layer);
-    if (!bucket) continue;
+    if (!bucket) {
+      continue;
+    }
 
     const programConfiguration = bucket.programConfigurations.get(layer.id);
     const prevProgram = painter.context.program.get();
@@ -57,7 +69,9 @@ export default function drawLine(painter, sourceCache, layer, coords) {
     if (constantPattern && tile.imageAtlas) {
       const posTo = tile.imageAtlas.patternPositions[constantPattern.to];
       const posFrom = tile.imageAtlas.patternPositions[constantPattern.from];
-      if (posTo && posFrom) programConfiguration.setConstantPatternPositions(posTo, posFrom);
+      if (posTo && posFrom) {
+        programConfiguration.setConstantPatternPositions(posTo, posFrom);
+      }
     }
 
     const uniformValues = dasharray

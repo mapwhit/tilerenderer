@@ -16,7 +16,9 @@ export default function taskQueue(thisArg) {
   };
 
   function add(fn) {
-    if (id === Number.MAX_SAFE_INTEGER) id = Number.MIN_SAFE_INTEGER;
+    if (id === Number.MAX_SAFE_INTEGER) {
+      id = Number.MIN_SAFE_INTEGER;
+    }
     id += 1;
     queues.later.push({ fn, id, cancelled: false });
     return id;
@@ -34,9 +36,13 @@ export default function taskQueue(thisArg) {
     queues.running = queues.later;
     queues.later = [];
     for (const { fn, cancelled } of queues.running) {
-      if (cancelled) continue;
+      if (cancelled) {
+        continue;
+      }
       fn.call(thisArg);
-      if (cleared) break;
+      if (cleared) {
+        break;
+      }
     }
     queues.running.length = 0;
     cleared = false;

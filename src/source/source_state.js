@@ -21,7 +21,9 @@ class SourceFeatureState {
     if (this.#deletedStates[sourceLayer] === null) {
       this.#deletedStates[sourceLayer] = {};
       for (const ft in this.#state[sourceLayer]) {
-        if (ft !== feature) this.#deletedStates[sourceLayer][ft] = null;
+        if (ft !== feature) {
+          this.#deletedStates[sourceLayer][ft] = null;
+        }
       }
     } else {
       const featureDeletionQueued =
@@ -29,12 +31,16 @@ class SourceFeatureState {
       if (featureDeletionQueued) {
         this.#deletedStates[sourceLayer][feature] = {};
         for (const prop in this.state[sourceLayer][feature]) {
-          if (!newState[prop]) this.#deletedStates[sourceLayer][feature][prop] = null;
+          if (!newState[prop]) {
+            this.#deletedStates[sourceLayer][feature][prop] = null;
+          }
         }
       } else {
         for (const key in newState) {
           const deletionInQueue = this.#deletedStates[sourceLayer]?.[feature]?.[key] === null;
-          if (deletionInQueue) delete this.#deletedStates[sourceLayer][feature][key];
+          if (deletionInQueue) {
+            delete this.#deletedStates[sourceLayer][feature][key];
+          }
         }
       }
     }
@@ -42,7 +48,9 @@ class SourceFeatureState {
 
   removeFeatureState(sourceLayer, featureId, key) {
     const sourceLayerDeleted = this.#deletedStates[sourceLayer] === null;
-    if (sourceLayerDeleted) return;
+    if (sourceLayerDeleted) {
+      return;
+    }
 
     const feature = String(featureId);
 
@@ -57,7 +65,9 @@ class SourceFeatureState {
       const updateInQueue = this.#stateChanges[sourceLayer]?.[feature];
       if (updateInQueue) {
         this.#deletedStates[sourceLayer][feature] = {};
-        for (key in this.#stateChanges[sourceLayer][feature]) this.#deletedStates[sourceLayer][feature][key] = null;
+        for (key in this.#stateChanges[sourceLayer][feature]) {
+          this.#deletedStates[sourceLayer][feature][key] = null;
+        }
       } else {
         this.#deletedStates[sourceLayer][feature] = null;
       }
@@ -72,11 +82,17 @@ class SourceFeatureState {
     const reconciledState = Object.assign({}, base?.[feature], changes?.[feature]);
 
     //return empty object if the whole source layer is awaiting deletion
-    if (this.#deletedStates[sourceLayer] === null) return {};
+    if (this.#deletedStates[sourceLayer] === null) {
+      return {};
+    }
     if (this.#deletedStates[sourceLayer]) {
       const featureDeletions = this.#deletedStates[sourceLayer][feature];
-      if (featureDeletions === null) return {};
-      for (const prop in featureDeletions) delete reconciledState[prop];
+      if (featureDeletions === null) {
+        return {};
+      }
+      for (const prop in featureDeletions) {
+        delete reconciledState[prop];
+      }
     }
     return reconciledState;
   }
@@ -92,7 +108,9 @@ class SourceFeatureState {
       this.#state[sourceLayer] ??= {};
       const layerStates = {};
       for (const feature in this.#stateChanges[sourceLayer]) {
-        if (!this.#state[sourceLayer][feature]) this.#state[sourceLayer][feature] = {};
+        if (!this.#state[sourceLayer][feature]) {
+          this.#state[sourceLayer][feature] = {};
+        }
         Object.assign(this.#state[sourceLayer][feature], this.#stateChanges[sourceLayer][feature]);
         layerStates[feature] = this.#state[sourceLayer][feature];
       }
@@ -103,13 +121,16 @@ class SourceFeatureState {
       const layerStates = {};
 
       if (this.#deletedStates[sourceLayer] === null) {
-        for (const ft in this.#state[sourceLayer]) layerStates[ft] = {};
+        for (const ft in this.#state[sourceLayer]) {
+          layerStates[ft] = {};
+        }
         this.#state[sourceLayer] = {};
       } else {
         for (const feature in this.#deletedStates[sourceLayer]) {
           const deleteWholeFeatureState = this.#deletedStates[sourceLayer][feature] === null;
-          if (deleteWholeFeatureState) this.#state[sourceLayer][feature] = {};
-          else {
+          if (deleteWholeFeatureState) {
+            this.#state[sourceLayer][feature] = {};
+          } else {
             for (const key of Object.keys(this.#deletedStates[sourceLayer][feature])) {
               delete this.#state[sourceLayer][feature][key];
             }
@@ -124,7 +145,9 @@ class SourceFeatureState {
     this.#stateChanges = {};
     this.#deletedStates = {};
 
-    if (Object.keys(featuresChanged).length === 0) return;
+    if (Object.keys(featuresChanged).length === 0) {
+      return;
+    }
 
     for (const tile of tiles) {
       tile.setFeatureState(featuresChanged, painter);

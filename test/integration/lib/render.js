@@ -15,7 +15,9 @@ function compare(actualPath, expectedPaths, diffPath, callback) {
   let read = 0;
 
   function doneReading() {
-    if (++read < expectedPaths.length + 1) return;
+    if (++read < expectedPaths.length + 1) {
+      return;
+    }
 
     // if we have multiple expected images, we'll compare against each one and pick the one with
     // the least amount of difference; this is useful for covering features that render differently
@@ -84,13 +86,17 @@ export default function run(implementation, options, render) {
   const directory = path.join(import.meta.dirname, '../render/tests');
   harness(directory, implementation, options, (style, params, done) => {
     render(style, params, (err, data) => {
-      if (err) return done(err);
+      if (err) {
+        return done(err);
+      }
 
       let stats;
       const dir = path.join(directory, params.id);
       try {
         stats = fs.statSync(dir, fs.R_OK | fs.W_OK);
-        if (!stats.isDirectory()) throw new Error();
+        if (!stats.isDirectory()) {
+          throw new Error();
+        }
       } catch {
         fs.mkdirSync(dir);
       }
@@ -131,7 +137,9 @@ export default function run(implementation, options, render) {
           .pipe(fs.createWriteStream(actual))
           .on('finish', () => {
             compare(actual, expectedPaths, diff, (err, difference, expected) => {
-              if (err) return done(err);
+              if (err) {
+                return done(err);
+              }
 
               params.difference = difference;
               params.ok = difference <= params.allowed;
@@ -153,7 +161,9 @@ function makeHash() {
   const array = [];
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (let i = 0; i < 10; ++i) array.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+  for (let i = 0; i < 10; ++i) {
+    array.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+  }
 
   // join array elements without commas.
   return array.join('');

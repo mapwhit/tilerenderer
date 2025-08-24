@@ -77,18 +77,28 @@ export function filterObject(input, iterator, context) {
  */
 export function deepEqual(a, b) {
   if (Array.isArray(a)) {
-    if (!Array.isArray(b) || a.length !== b.length) return false;
+    if (!Array.isArray(b) || a.length !== b.length) {
+      return false;
+    }
     for (let i = 0; i < a.length; i++) {
-      if (!deepEqual(a[i], b[i])) return false;
+      if (!deepEqual(a[i], b[i])) {
+        return false;
+      }
     }
     return true;
   }
   if (typeof a === 'object' && a !== null && b !== null) {
-    if (!(typeof b === 'object')) return false;
+    if (!(typeof b === 'object')) {
+      return false;
+    }
     const keys = Object.keys(a);
-    if (keys.length !== Object.keys(b).length) return false;
+    if (keys.length !== Object.keys(b).length) {
+      return false;
+    }
     for (const key in a) {
-      if (!deepEqual(a[key], b[key])) return false;
+      if (!deepEqual(a[key], b[key])) {
+        return false;
+      }
     }
     return true;
   }
@@ -117,7 +127,9 @@ export function clone(input) {
  */
 export function arraysIntersect(a, b) {
   for (let l = 0; l < a.length; l++) {
-    if (b.indexOf(a[l]) >= 0) return true;
+    if (b.indexOf(a[l]) >= 0) {
+      return true;
+    }
   }
   return false;
 }
