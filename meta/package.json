@@ -2,7 +2,8 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@mapwhit/glsl-minify": "~1",
-    "ejs": "^3.1.10"
+    "ejs": "^3.1.10",
+    "esbuild": "^0.25.9"
   },
   "license": "BSD-3-Clause"
 }
