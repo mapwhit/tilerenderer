@@ -1,22 +1,25 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "$schema": "meta/node_modules/@biomejs/biome/configuration_schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "vcs": {
+    "enabled": true,
+    "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
     "ignoreUnknown": true,
-    "include": [
-      "meta",
-      "src",
-      "test"
-    ],
-    "ignore": [
-      "package.json",
-      "build/",
-      "test/**/fixture"
+    "includes": [
+      "**",
+      "!src/css",
+      "!src/style-spec/reference/**/*.json",
+      "!test/fixtures",
+      "!test/integration/**/*.json"
     ]
   },
   "formatter": {
@@ -36,7 +39,8 @@
   },
   "json": {
     "formatter": {
-      "enabled": false
+      "enabled": true,
+      "expand": "always"
     }
   },
   "css": {
@@ -53,35 +57,58 @@
       "recommended": true,
       "correctness": {
         "noNodejsModules": "off",
-        "noUndeclaredVariables": "error"
+        "noUndeclaredVariables": "error",
+        "noUnusedFunctionParameters": "off",
+        "noUnusedVariables": "off",
+        "useValidTypeof": "off"
       },
       "complexity": {
         "noForEach": "off",
         "noThisInStatic": "off",
-        "noUselessThisAlias":"off",
+        "noUselessThisAlias": "off",
         "useArrowFunction": "off",
-        "useLiteralKeys": "off"
+        "useLiteralKeys": "off",
+        "noArguments": "off"
       },
       "style": {
-        "noArguments": "off",
         "noParameterAssign": "off",
         "useDefaultParameterLast": "off",
         "useNodejsImportProtocol": "off",
-        "useTemplate": "off"
+        "useTemplate": "off",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noUselessElse": "error"
       },
       "performance": {
         "noDelete": "off"
       },
       "suspicious": {
         "noAssignInExpressions": "off",
-        "noControlCharactersInRegex": "off",
         "noFallthroughSwitchClause": "off",
         "noGlobalIsNan": "off",
         "noPrototypeBuiltins": "off",
         "noShadowRestrictedNames": "off",
         "useAwait": "error",
-        "useValidTypeof": "off"
+        "useIterableCallbackReturn": "off"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "test/**/*.js"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNodejsImportProtocol": "error"
+          },
+          "suspicious": {
+            "useAwait": "off"
+          }
+        }
+      }
+    }
+  ]
 }
