@@ -102,9 +102,6 @@
         "rules": {
           "style": {
             "useNodejsImportProtocol": "error"
-          },
-          "suspicious": {
-            "useAwait": "off"
           }
         }
       }

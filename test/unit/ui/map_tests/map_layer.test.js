@@ -141,7 +141,7 @@ test('map layers', async t => {
       });
     });
 
-    await t.test('throw before loaded', async t => {
+    await t.test('throw before loaded', t => {
       const map = createMap({
         style: {
           version: 8,
