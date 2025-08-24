@@ -401,15 +401,8 @@ export class PossiblyEvaluatedPropertyValue {
  * an object type with the same keys, and values of type `R`.
  *
  * For properties that don't allow data-driven values, `R` is a scalar type such as `number`, `string`, or `Color`.
- * For data-driven properties, it is `PossiblyEvaluatedPropertyValue`. Critically, the type definitions are set up
- * in a way that allows flow to know which of these two cases applies for any given property name, and if you attempt
- * to use a `PossiblyEvaluatedPropertyValue` as if it was a scalar, or vice versa, you will get a type error. (However,
- * there's at least one case in which flow fails to produce a type error that you should be aware of: in a context such
- * as `layer._paint.get('foo-opacity') === 0`, if `foo-opacity` is data-driven, than the left-hand side is of type
- * `PossiblyEvaluatedPropertyValue<number>`, but flow will not complain about comparing this to a number using `===`.
- * See https://github.com/facebook/flow/issues/2359.)
- *
- * There's also a third, special case possiblity for `R`: for cross-faded properties, it's `?CrossFaded<T>`.
+ * For data-driven properties, it is `PossiblyEvaluatedPropertyValue`.
+ * For cross-faded properties, it's `?CrossFaded<T>`.
  *
  * @private
  */

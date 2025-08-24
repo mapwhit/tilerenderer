@@ -642,12 +642,6 @@ class SourceCache extends Evented {
         err => this._tileLoadError(tile, err)
       );
     }
-
-    // Impossible, but silence flow.
-    if (!tile) {
-      return null;
-    }
-
     tile.uses++;
     this._tiles.set(tileID.key, tile);
     if (!cached) {
