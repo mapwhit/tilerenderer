@@ -91,6 +91,7 @@ class FillBucket {
   uploadPending() {
     return !this.uploaded || this.programConfigurations.needsUpload;
   }
+
   upload(context) {
     if (!this.uploaded) {
       this.layoutVertexBuffer = context.createVertexBuffer(this.layoutVertexArray, layoutAttributes);
@@ -138,16 +139,16 @@ class FillBucket {
         const lineSegment = this.segments2.prepareSegment(ring.length, this.layoutVertexArray, this.indexArray2);
         const lineIndex = lineSegment.vertexLength;
 
-        this.layoutVertexArray.emplaceBack(ring[0].x, ring[0].y);
+        const { x, y } = ring[0];
+        this.layoutVertexArray.emplaceBack(x, y);
         this.indexArray2.emplaceBack(lineIndex + ring.length - 1, lineIndex);
-        flattened.push(ring[0].x);
-        flattened.push(ring[0].y);
+        flattened.push(x, y);
 
         for (let i = 1; i < ring.length; i++) {
-          this.layoutVertexArray.emplaceBack(ring[i].x, ring[i].y);
+          const { x, y } = ring[i];
+          this.layoutVertexArray.emplaceBack(x, y);
           this.indexArray2.emplaceBack(lineIndex + i - 1, lineIndex + i);
-          flattened.push(ring[i].x);
-          flattened.push(ring[i].y);
+          flattened.push(x, y);
         }
 
         lineSegment.vertexLength += ring.length;
