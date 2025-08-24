@@ -83,7 +83,7 @@ function trySerializeObject(recipe, v) {
       try {
         obj = serializeObject(styleSpec[item], v);
         return true;
-      } catch (e) {
+      } catch {
         return false;
       }
     })

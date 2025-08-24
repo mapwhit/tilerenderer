@@ -59,7 +59,6 @@
         "noNodejsModules": "off",
         "noUndeclaredVariables": "error",
         "noUnusedFunctionParameters": "off",
-        "noUnusedVariables": "off",
         "useValidTypeof": "off"
       },
       "complexity": {

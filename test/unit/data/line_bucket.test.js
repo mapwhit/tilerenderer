@@ -23,42 +23,44 @@ function createLine(numPoints) {
 }
 
 test('LineBucket', t => {
-  const layer = new LineStyleLayer({ id: 'test', type: 'line' });
-  layer.recalculate({ zoom: 0, zoomHistory: {} });
+  t.assert.doesNotThrow(() => {
+    const layer = new LineStyleLayer({ id: 'test', type: 'line' });
+    layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  const bucket = new LineBucket({ layers: [layer] });
+    const bucket = new LineBucket({ layers: [layer] });
 
-  const line = {
-    type: 2,
-    properties: {}
-  };
+    const line = {
+      type: 2,
+      properties: {}
+    };
 
-  const polygon = {
-    type: 3,
-    properties: {}
-  };
+    const polygon = {
+      type: 3,
+      properties: {}
+    };
 
-  bucket.addLine([new Point(0, 0)], line);
+    bucket.addLine([new Point(0, 0)], line);
 
-  bucket.addLine([new Point(0, 0)], polygon);
+    bucket.addLine([new Point(0, 0)], polygon);
 
-  bucket.addLine([new Point(0, 0), new Point(0, 0)], line);
+    bucket.addLine([new Point(0, 0), new Point(0, 0)], line);
 
-  bucket.addLine([new Point(0, 0), new Point(0, 0)], polygon);
+    bucket.addLine([new Point(0, 0), new Point(0, 0)], polygon);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(0, 0)], line);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(0, 0)], line);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(0, 0)], polygon);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(0, 0)], polygon);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20)], line);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20)], line);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20)], polygon);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20)], polygon);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20), new Point(0, 0)], line);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20), new Point(0, 0)], line);
 
-  bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20), new Point(0, 0)], polygon);
+    bucket.addLine([new Point(0, 0), new Point(10, 10), new Point(10, 20), new Point(0, 0)], polygon);
 
-  bucket.addFeature(feature, feature.loadGeometry());
+    bucket.addFeature(feature, feature.loadGeometry());
+  });
 });
 
 test('LineBucket segmentation', t => {

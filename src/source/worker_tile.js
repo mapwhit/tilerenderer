@@ -17,7 +17,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   const tileID = createTileID(params);
 
   const overscaling = tileID.overscaleFactor();
-  const { uid, zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
+  const { zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
 
   const collisionBoxArray = new CollisionBoxArray();
   const sourceLayerCoder = dictionaryCoder(Object.keys(vectorTile.layers));

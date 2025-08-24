@@ -91,7 +91,7 @@ export default function run(implementation, options, render) {
       try {
         stats = fs.statSync(dir, fs.R_OK | fs.W_OK);
         if (!stats.isDirectory()) throw new Error();
-      } catch (e) {
+      } catch {
         fs.mkdirSync(dir);
       }
 

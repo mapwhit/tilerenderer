@@ -44,8 +44,10 @@ test('transform', async t => {
 
   await t.test('does not throw on bad center', t => {
     const transform = new Transform();
-    transform.resize(500, 500);
-    transform.center = { lng: 50, lat: -90 };
+    t.assert.doesNotThrow(() => {
+      transform.resize(500, 500);
+      transform.center = { lng: 50, lat: -90 };
+    });
   });
 
   await t.test('setLocationAt', t => {

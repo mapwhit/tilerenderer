@@ -27,16 +27,18 @@ function createPolygon(numPoints) {
 }
 
 test('FillBucket', t => {
-  const layer = new FillStyleLayer({ id: 'test', type: 'fill', layout: {} });
-  layer.recalculate({ zoom: 0, zoomHistory: {} });
+  t.assert.doesNotThrow(() => {
+    const layer = new FillStyleLayer({ id: 'test', type: 'fill', layout: {} });
+    layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  const bucket = new FillBucket({ layers: [layer] });
+    const bucket = new FillBucket({ layers: [layer] });
 
-  bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10)]]);
+    bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10)]]);
 
-  bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10), new Point(10, 20)]]);
+    bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10), new Point(10, 20)]]);
 
-  bucket.addFeature(feature, feature.loadGeometry());
+    bucket.addFeature(feature, feature.loadGeometry());
+  });
 });
 
 test('FillBucket segmentation', t => {

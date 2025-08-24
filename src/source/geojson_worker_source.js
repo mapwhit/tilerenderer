@@ -73,7 +73,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
 function loadJSON(data) {
   try {
     return typeof data === 'string' ? JSON.parse(data) : data;
-  } catch (e) {
+  } catch {
     throw new Error('Input data is not a valid GeoJSON object.');
   }
 }
