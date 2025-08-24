@@ -1,5 +1,5 @@
-import assert from 'assert';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
+import assert from 'assert';
 import earcut from 'earcut';
 import classifyRings from '../../util/classify_rings.js';
 import { FillExtrusionLayoutArray } from '../array_types.js';
@@ -8,7 +8,9 @@ import { TriangleIndexArray } from '../index_array_type.js';
 import { ProgramConfigurationSet } from '../program_configuration.js';
 import SegmentVector from '../segment.js';
 import layout from './fill_extrusion_attributes.js';
+
 const EARCUT_MAX_RINGS = 500;
+
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import loadGeometry from '../load_geometry.js';
 import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';

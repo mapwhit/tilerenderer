@@ -3,8 +3,10 @@ import { Event } from '@mapwhit/events';
 import Map from '../../../../src/ui/map.js';
 import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
 import { serialize } from '../../../util/serialize_style.js';
+
 const fixedNum = fixed.Num;
 const fixedLngLat = fixed.LngLat;
+
 import { createMap, createStyle, createStyleSource, initWindow } from '../../../util/util.js';
 
 test('setStyle', async t => {

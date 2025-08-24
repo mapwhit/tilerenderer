@@ -1,5 +1,5 @@
-import assert from 'assert';
 import glMatrix from '@mapbox/gl-matrix';
+import assert from 'assert';
 
 const { mat4 } = glMatrix;
 

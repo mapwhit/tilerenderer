@@ -1,7 +1,6 @@
 import test from 'node:test';
 import createStyleLayer from '../../../src/style/create_style_layer.js';
 import StyleLayerIndex from '../../../src/style/style_layer_index.js';
-import { mapObject } from '../../../src/util/object.js';
 import { create as createLayers } from '../../util/layers.js';
 
 test('StyleLayerIndex.replace', t => {

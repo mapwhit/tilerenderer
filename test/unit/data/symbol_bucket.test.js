@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
-import path from 'path';
 import Protobuf from '@mapwhit/pbf';
 import { VectorTile } from '@mapwhit/vector-tile';
 import { CollisionBoxArray } from '../../../src/data/array_types.js';
@@ -9,8 +9,8 @@ import FeatureIndex from '../../../src/data/feature_index.js';
 import Transform from '../../../src/geo/transform.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
-import featureFilter from '../../../src/style-spec/feature_filter/index.js';
 import SymbolStyleLayer from '../../../src/style/style_layer/symbol_style_layer.js';
+import featureFilter from '../../../src/style-spec/feature_filter/index.js';
 import CrossTileSymbolIndex from '../../../src/symbol/cross_tile_symbol_index.js';
 import { Placement } from '../../../src/symbol/placement.js';
 import { performSymbolLayout } from '../../../src/symbol/symbol_layout.js';

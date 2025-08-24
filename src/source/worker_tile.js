@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { CollisionBoxArray } from '../data/array_types.js';
 import FillBucket from '../data/bucket/fill_bucket.js';
 import FillExtrusionBucket from '../data/bucket/fill_extrusion_bucket.js';
@@ -11,7 +10,6 @@ import EvaluationParameters from '../style/evaluation_parameters.js';
 import { performSymbolLayout } from '../symbol/symbol_layout.js';
 import dictionaryCoder from '../util/dictionary_coder.js';
 import { mapObject } from '../util/object.js';
-import warn from '../util/warn.js';
 import { OverscaledTileID } from './tile_id.js';
 export default makeWorkerTile;
 

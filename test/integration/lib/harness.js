@@ -1,7 +1,6 @@
 import { createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { report } from 'node:process';
 import { pipeline } from 'node:stream/promises';
 import { promisify } from 'node:util';
 import colors from 'chalk';

@@ -1634,7 +1634,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be removed/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be removed/);
           done();
         });
         style.removeLayer('background');
@@ -1700,7 +1700,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be moved/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be moved/);
           done();
         });
         style.moveLayer('background');
@@ -2091,7 +2091,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be filtered/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be filtered/);
           done();
         });
         style.setFilter('non-existant', ['==', 'id', 1]);
@@ -2143,7 +2143,7 @@ test('Style', async t => {
       style = createStyle();
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot have zoom extent/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot have zoom extent/);
           done();
         });
         style.setLayerZoomRange('non-existant', 5, 12);

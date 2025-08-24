@@ -1,6 +1,5 @@
-import assert from 'assert';
-
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import assert from 'assert';
 import GlyphManager from '../render/glyph_manager.js';
 import ImageManager from '../render/image_manager.js';
 import LineAtlas from '../render/line_atlas.js';
@@ -11,7 +10,7 @@ import { getType as getSourceType, setType as setSourceType } from '../source/so
 import SourceCache from '../source/source_cache.js';
 import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
 import browser from '../util/browser.js';
-import { clone, deepEqual, filterObject, mapObject } from '../util/object.js';
+import { clone, deepEqual } from '../util/object.js';
 import createStyleLayer from './create_style_layer.js';
 import Light from './light.js';
 import loadSprite from './load_sprite.js';

@@ -1,4 +1,3 @@
-import { SymbolInstanceArray } from '../data/array_types.js';
 import EXTENT from '../data/extent.js';
 
 /*

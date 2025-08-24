@@ -170,7 +170,7 @@ test('map layers', async t => {
 
       map.on('style.load', () => {
         map.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be styled/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
           done();
         });
         map.setLayoutProperty('non-existant', 'text-transform', 'lowercase');
@@ -352,7 +352,7 @@ test('map layers', async t => {
 
       map.on('style.load', () => {
         map.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be styled/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be styled/);
           done();
         });
         map.setPaintProperty('non-existant', 'background-color', 'red');

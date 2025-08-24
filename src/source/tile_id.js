@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { getTileBBox } from '@mapbox/whoots-js';
 import Coordinate from '../geo/coordinate.js';
 
 export class CanonicalTileID {

@@ -1,9 +1,10 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
-import path from 'path';
 import { Formatted } from '@mapwhit/style-expressions';
 import * as shaping from '../../../src/symbol/shaping.js';
 import expectedLinebreak from '../../expected/text-shaping-linebreak.json' with { type: 'json' };
+
 const WritingMode = shaping.WritingMode;
 
 let UPDATE = false;

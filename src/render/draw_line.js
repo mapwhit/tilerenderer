@@ -1,13 +1,12 @@
 import CullFaceMode from '../gl/cull_face_mode.js';
 import DepthMode from '../gl/depth_mode.js';
-import Texture from './texture.js';
-
 import {
   lineGradientUniformValues,
   linePatternUniformValues,
   lineSDFUniformValues,
   lineUniformValues
 } from './program/line_program.js';
+import Texture from './texture.js';
 
 export default function drawLine(painter, sourceCache, layer, coords) {
   if (painter.renderPass !== 'translucent') return;

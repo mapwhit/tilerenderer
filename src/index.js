@@ -1,15 +1,14 @@
 import './util/polyfill.js';
 
-import packageJSON from '../package.json' with { type: 'json' };
-import config from './util/config.js';
-
 import { default as Point } from '@mapbox/point-geometry';
 import { Evented } from '@mapwhit/events';
+import packageJSON from '../package.json' with { type: 'json' };
 import { default as LngLat } from './geo/lng_lat.js';
 import { default as LngLatBounds } from './geo/lng_lat_bounds.js';
 import { setRTLTextPlugin } from './source/rtl_text_plugin.js';
 import { default as Style } from './style/style.js';
 import { default as Map } from './ui/map.js';
+import config from './util/config.js';
 
 const { version } = packageJSON;
 

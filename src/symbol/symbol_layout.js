@@ -11,7 +11,7 @@ import clipLine from './clip_line.js';
 import CollisionFeature from './collision_feature.js';
 import { getAnchors, getCenterAnchor } from './get_anchors.js';
 import { getGlyphQuads, getIconQuads } from './quads.js';
-import { WritingMode, shapeIcon, shapeText } from './shaping.js';
+import { shapeIcon, shapeText, WritingMode } from './shaping.js';
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
 // `icon-size` at up to three:

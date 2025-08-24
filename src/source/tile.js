@@ -1,13 +1,12 @@
 import { CollisionBoxArray, RasterBoundsArray } from '../data/array_types.js';
 import { updateBuckets } from '../data/bucket.js';
-import SymbolBucket from '../data/bucket/symbol_bucket.js';
 import EXTENT from '../data/extent.js';
 import { TriangleIndexArray } from '../data/index_array_type.js';
 import rasterBoundsAttributes from '../data/raster_bounds_attributes.js';
 import SegmentVector from '../data/segment.js';
 import Texture from '../render/texture.js';
-import featureFilter from '../style-spec/feature_filter/index.js';
 import EvaluationParameters from '../style/evaluation_parameters.js';
+import featureFilter from '../style-spec/feature_filter/index.js';
 import browser from '../util/browser.js';
 import { deepEqual } from '../util/object.js';
 import uniqueId from '../util/unique_id.js';

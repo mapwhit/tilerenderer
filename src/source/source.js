@@ -24,12 +24,11 @@ import { bindAll } from '../util/object.js';
  * if they are floor-ed to the nearest integer.
  */
 
-import vector from './vector_tile_source.js';
-
 import geojson from './geojson_source.js';
 import image from './image_source.js';
 import rasterDem from './raster_dem_tile_source.js';
 import raster from './raster_tile_source.js';
+import vector from './vector_tile_source.js';
 
 const sourceTypes = {
   vector,

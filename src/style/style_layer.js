@@ -2,7 +2,6 @@ import { Evented } from '@mapwhit/events';
 import { supportsPropertyExpression } from '@mapwhit/style-expressions';
 import featureFilter from '../style-spec/feature_filter/index.js';
 import createKey from '../util/key.js';
-import { filterObject } from '../util/object.js';
 import { Layout, PossiblyEvaluatedPropertyValue, Transitionable } from './properties.js';
 
 const keyProperties = ['type', 'minzoom', 'maxzoom', 'filter', 'layout'];

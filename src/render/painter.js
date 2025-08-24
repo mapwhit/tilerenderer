@@ -26,9 +26,9 @@ import hillshade from './draw_hillshade.js';
 import line from './draw_line.js';
 import raster from './draw_raster.js';
 import symbol from './draw_symbol.js';
-import Program from './program.js';
 import { clippingMaskUniformValues } from './program/clipping_mask_program.js';
 import { programUniforms } from './program/program_uniforms.js';
+import Program from './program.js';
 import updateTileMasks from './tile_mask.js';
 
 const { mat4 } = glMatrix;

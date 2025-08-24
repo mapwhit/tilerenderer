@@ -19,7 +19,7 @@ test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
       id: 'symbol',
       type: 'symbol',
       source: 'source',
-      //@ts-ignore
+      //@ts-expect-error
       filter: ['==', ['global-state', 'showSymbol'], true]
     });
 
@@ -33,9 +33,9 @@ test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
       source: 'source',
       layout: {
         'text-field': '{text}',
-        //@ts-ignore
+        //@ts-expect-error
         'text-size': ['global-state', 'textSize'],
-        //@ts-ignore
+        //@ts-expect-error
         'text-transform': ['global-state', 'textTransform']
       }
     });

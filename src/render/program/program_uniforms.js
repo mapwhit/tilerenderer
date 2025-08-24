@@ -1,12 +1,10 @@
-import { fillExtrusionPatternUniforms, fillExtrusionUniforms } from './fill_extrusion_program.js';
-
-import { fillOutlinePatternUniforms, fillOutlineUniforms, fillPatternUniforms, fillUniforms } from './fill_program.js';
-
 import { backgroundPatternUniforms, backgroundUniforms } from './background_program.js';
 import { circleUniforms } from './circle_program.js';
 import { clippingMaskUniforms } from './clipping_mask_program.js';
 import { collisionUniforms } from './collision_program.js';
 import { debugUniforms } from './debug_program.js';
+import { fillExtrusionPatternUniforms, fillExtrusionUniforms } from './fill_extrusion_program.js';
+import { fillOutlinePatternUniforms, fillOutlineUniforms, fillPatternUniforms, fillUniforms } from './fill_program.js';
 import { heatmapTextureUniforms, heatmapUniforms } from './heatmap_program.js';
 import { hillshadePrepareUniforms, hillshadeUniforms } from './hillshade_program.js';
 import { lineGradientUniforms, linePatternUniforms, lineSDFUniforms, lineUniforms } from './line_program.js';

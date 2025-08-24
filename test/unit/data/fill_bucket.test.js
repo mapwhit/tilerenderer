@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
-import path from 'path';
 import Point from '@mapbox/point-geometry';
 import Protobuf from '@mapwhit/pbf';
 import { VectorTile } from '@mapwhit/vector-tile';

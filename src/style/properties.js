@@ -1,5 +1,5 @@
-import assert from 'assert';
 import { interpolate, normalizePropertyExpression } from '@mapwhit/style-expressions';
+import assert from 'assert';
 import { clone } from '../util/object.js';
 import { easeCubicInOut } from '../util/util.js';
 import EvaluationParameters from './evaluation_parameters.js';

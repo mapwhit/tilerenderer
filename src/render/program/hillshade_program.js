@@ -1,5 +1,5 @@
-import assert from 'assert';
 import glMatrix from '@mapbox/gl-matrix';
+import assert from 'assert';
 import EXTENT from '../../data/extent.js';
 import Coordinate from '../../geo/coordinate.js';
 import { Uniform1f, Uniform1i, Uniform2f, UniformColor, UniformMatrix4f } from '../uniform_binding.js';

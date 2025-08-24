@@ -1,6 +1,6 @@
 import test from 'node:test';
+import Point from '@mapbox/point-geometry';
 import Coordinate from '../../../src/geo/coordinate.js';
-
 import {
   bezier,
   clamp,
@@ -10,8 +10,6 @@ import {
   isCounterClockwise,
   wrap
 } from '../../../src/util/util.js';
-
-import Point from '@mapbox/point-geometry';
 
 test('util', async t => {
   t.assert.equal(easeCubicInOut(0), 0, 'easeCubicInOut=0');

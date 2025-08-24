@@ -74,7 +74,7 @@ function registerRTLTextPlugin(loadedPlugin) {
 
 globalThis.registerRTLTextPlugin ??= registerRTLTextPlugin;
 
-async function loadScript(url) {
+function loadScript(url) {
   const { promise, resolve, reject } = Promise.withResolvers();
   const s = dynload(url);
   s.onload = () => resolve();
