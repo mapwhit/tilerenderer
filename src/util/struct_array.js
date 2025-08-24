@@ -60,39 +60,8 @@ export class StructArray {
   // The following properties are defined on the prototype.
 
   constructor() {
-    this.isTransferred = false;
     this.capacity = -1;
     this.resize(0);
-  }
-
-  /**
-   * Serialize a StructArray instance.  Serializes both the raw data and the
-   * metadata needed to reconstruct the StructArray base class during
-   * deserialization.
-   */
-  static serialize(array, transferables) {
-    assert(!array.isTransferred);
-
-    array._trim();
-
-    if (transferables) {
-      array.isTransferred = true;
-      transferables.push(array.arrayBuffer);
-    }
-
-    return {
-      length: array.length,
-      arrayBuffer: array.arrayBuffer
-    };
-  }
-
-  static deserialize(input) {
-    const structArray = Object.create(this.prototype);
-    structArray.arrayBuffer = input.arrayBuffer;
-    structArray.length = input.length;
-    structArray.capacity = input.arrayBuffer.byteLength / structArray.bytesPerElement;
-    structArray._refreshViews();
-    return structArray;
   }
 
   /**
@@ -120,7 +89,6 @@ export class StructArray {
    * @param {number} n The new size of the array.
    */
   resize(n) {
-    assert(!this.isTransferred);
     this.reserve(n);
     this.length = n;
   }
