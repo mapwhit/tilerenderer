@@ -26,7 +26,6 @@ class CircleBucket {
     this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
-    this.layerIds = this.layers.map(layer => layer.id);
     this.index = options.index;
     this.hasPattern = false;
 
