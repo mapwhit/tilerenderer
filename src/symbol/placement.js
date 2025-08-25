@@ -96,7 +96,7 @@ export class Placement {
   placeLayerTile(styleLayer, tile, showCollisionBoxes, seenCrossTileIDs) {
     const symbolBucket = tile.getBucket(styleLayer);
     const bucketFeatureIndex = tile.latestFeatureIndex;
-    if (!symbolBucket || !bucketFeatureIndex || styleLayer.id !== symbolBucket.layerIds[0]) {
+    if (!symbolBucket || !bucketFeatureIndex || styleLayer.id !== symbolBucket.layers[0].id) {
       return;
     }
 
@@ -401,7 +401,7 @@ export class Placement {
 
     for (const tile of tiles) {
       const symbolBucket = tile.getBucket(styleLayer);
-      if (symbolBucket && tile.latestFeatureIndex && styleLayer.id === symbolBucket.layerIds[0]) {
+      if (symbolBucket && tile.latestFeatureIndex && styleLayer.id === symbolBucket.layers[0].id) {
         this.updateBucketOpacities(symbolBucket, seenCrossTileIDs, tile.collisionBoxArray);
       }
     }

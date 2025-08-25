@@ -22,7 +22,7 @@ function makeTile(tileID, symbolInstances) {
       },
       length: symbolInstances.length
     },
-    layerIds: ['test']
+    layers: [{ id: 'test' }]
   };
   return {
     tileID,

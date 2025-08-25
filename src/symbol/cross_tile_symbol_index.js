@@ -238,7 +238,7 @@ class CrossTileSymbolIndex {
 
     for (const tile of tiles) {
       const symbolBucket = tile.getBucket(styleLayer);
-      if (!symbolBucket || styleLayer.id !== symbolBucket.layerIds[0]) {
+      if (!symbolBucket || styleLayer.id !== symbolBucket.layers[0].id) {
         continue;
       }
 
