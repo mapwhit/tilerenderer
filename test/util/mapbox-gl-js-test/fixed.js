@@ -5,12 +5,16 @@ export default {
 };
 
 function fixedNum(n, precision) {
-  if (precision === undefined) precision = 10;
+  if (precision === undefined) {
+    precision = 10;
+  }
   return Number.parseFloat(n.toFixed(precision), 10);
 }
 
 function fixedLngLat(l, precision) {
-  if (precision === undefined) precision = 9;
+  if (precision === undefined) {
+    precision = 9;
+  }
   return {
     lng: fixedNum(l.lng, precision),
     lat: fixedNum(l.lat, precision)
@@ -18,7 +22,9 @@ function fixedLngLat(l, precision) {
 }
 
 function fixedCoord(coord, precision) {
-  if (precision === undefined) precision = 10;
+  if (precision === undefined) {
+    precision = 10;
+  }
   return {
     column: fixedNum(coord.column, precision),
     row: fixedNum(coord.row, precision),

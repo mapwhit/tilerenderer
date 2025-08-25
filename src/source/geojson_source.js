@@ -76,8 +76,12 @@ class GeoJSONSource extends Evented {
     this.data = options.data;
     this._options = Object.assign({}, options);
 
-    if (options.maxzoom !== undefined) this.maxzoom = options.maxzoom;
-    if (options.type) this.type = options.type;
+    if (options.maxzoom !== undefined) {
+      this.maxzoom = options.maxzoom;
+    }
+    if (options.type) {
+      this.type = options.type;
+    }
 
     const scale = EXTENT / this.tileSize;
 

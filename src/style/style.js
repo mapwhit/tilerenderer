@@ -1,6 +1,5 @@
-import assert from 'assert';
-
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import assert from 'assert';
 import GlyphManager from '../render/glyph_manager.js';
 import ImageManager from '../render/image_manager.js';
 import LineAtlas from '../render/line_atlas.js';
@@ -11,7 +10,7 @@ import { getType as getSourceType, setType as setSourceType } from '../source/so
 import SourceCache from '../source/source_cache.js';
 import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
 import browser from '../util/browser.js';
-import { clone, deepEqual, filterObject, mapObject } from '../util/object.js';
+import { clone, deepEqual } from '../util/object.js';
 import createStyleLayer from './create_style_layer.js';
 import Light from './light.js';
 import loadSprite from './load_sprite.js';
@@ -246,13 +245,23 @@ class Style extends Evented {
   }
 
   loaded() {
-    if (!this._loaded) return false;
+    if (!this._loaded) {
+      return false;
+    }
 
-    if (Object.keys(this._updatedSources).length) return false;
+    if (Object.keys(this._updatedSources).length) {
+      return false;
+    }
 
-    for (const id in this._sources) if (!this._sources[id].loaded()) return false;
+    for (const id in this._sources) {
+      if (!this._sources[id].loaded()) {
+        return false;
+      }
+    }
 
-    if (!this.imageManager.isLoaded()) return false;
+    if (!this.imageManager.isLoaded()) {
+      return false;
+    }
 
     return true;
   }
@@ -428,7 +437,9 @@ class Style extends Evented {
     sourceCache.setEventedParent(null);
     sourceCache.clearTiles();
 
-    if (sourceCache.onRemove) sourceCache.onRemove(this.map);
+    if (sourceCache.onRemove) {
+      sourceCache.onRemove(this.map);
+    }
     this._changed = true;
   }
 
@@ -664,7 +675,9 @@ class Style extends Evented {
       return;
     }
 
-    if (deepEqual(layer.getLayoutProperty(name), value)) return;
+    if (deepEqual(layer.getLayoutProperty(name), value)) {
+      return;
+    }
 
     layer.setLayoutProperty(name, value);
     const layerObject = this.layers.find(({ id }) => id === layerId);
@@ -695,7 +708,9 @@ class Style extends Evented {
       return;
     }
 
-    if (deepEqual(layer.getPaintProperty(name), value)) return;
+    if (deepEqual(layer.getPaintProperty(name), value)) {
+      return;
+    }
 
     const layerObject = this.layers.find(({ id }) => id === layerId);
     layerObject.paint ??= {};
@@ -853,7 +868,9 @@ class Style extends Evented {
         // add all 3D features that are in or above the current layer
         for (let i = features3D.length - 1; i >= 0; i--) {
           const topmost3D = features3D[i].feature;
-          if (layerIndex.get(topmost3D.layer.id) < l) break;
+          if (layerIndex.get(topmost3D.layer.id) < l) {
+            break;
+          }
           features.push(topmost3D);
           features3D.pop();
         }
@@ -889,7 +906,9 @@ class Style extends Evented {
 
     const sourceResults = [];
     for (const id in this._sources) {
-      if (params.layers && !includedSources[id]) continue;
+      if (params.layers && !includedSources[id]) {
+        continue;
+      }
       sourceResults.push(
         queryRenderedFeatures(this._sources[id], this._layers, queryGeometry.viewport, params, transform)
       );
@@ -932,7 +951,9 @@ class Style extends Evented {
         break;
       }
     }
-    if (!_update) return;
+    if (!_update) {
+      return;
+    }
 
     const parameters = {
       now: browser.now(),
@@ -990,7 +1011,9 @@ class Style extends Evented {
     const layerTiles = {};
 
     for (const layer of this._layers.values()) {
-      if (layer.type !== 'symbol') continue;
+      if (layer.type !== 'symbol') {
+        continue;
+      }
 
       if (!layerTiles[layer.source]) {
         const sourceCache = this._sources[layer.source];
@@ -1055,7 +1078,9 @@ class Style extends Evented {
 
     if (placementCommitted || symbolBucketsChanged) {
       for (const layer of this._layers.values()) {
-        if (layer.type !== 'symbol') continue;
+        if (layer.type !== 'symbol') {
+          continue;
+        }
         this.placement.updateLayerOpacities(layer, layerTiles[layer.source]);
       }
     }

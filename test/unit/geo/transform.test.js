@@ -4,6 +4,7 @@ import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';
 import fixed from '../../util/mapbox-gl-js-test/fixed.js';
+
 const fixedLngLat = fixed.LngLat;
 const fixedCoord = fixed.Coord;
 
@@ -43,8 +44,10 @@ test('transform', async t => {
 
   await t.test('does not throw on bad center', t => {
     const transform = new Transform();
-    transform.resize(500, 500);
-    transform.center = { lng: 50, lat: -90 };
+    t.assert.doesNotThrow(() => {
+      transform.resize(500, 500);
+      transform.center = { lng: 50, lat: -90 };
+    });
   });
 
   await t.test('setLocationAt', t => {

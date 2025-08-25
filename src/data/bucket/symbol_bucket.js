@@ -96,7 +96,9 @@ class SymbolBuffers {
   }
 
   destroy() {
-    if (!this.layoutVertexBuffer) return;
+    if (!this.layoutVertexBuffer) {
+      return;
+    }
     this.layoutVertexBuffer.destroy();
     this.indexBuffer.destroy();
     this.programConfigurations.destroy();
@@ -126,7 +128,9 @@ class CollisionBuffers {
   }
 
   destroy() {
-    if (!this.layoutVertexBuffer) return;
+    if (!this.layoutVertexBuffer) {
+      return;
+    }
     this.layoutVertexBuffer.destroy();
     this.indexBuffer.destroy();
     this.segments.destroy();
@@ -321,7 +325,9 @@ class SymbolBucket {
   }
 
   update(states, vtLayer, imagePositions) {
-    if (!this.stateDependentLayers.length) return;
+    if (!this.stateDependentLayers.length) {
+      return;
+    }
     this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
       imagePositions,
       globalState: this.globalState
@@ -565,14 +571,20 @@ class SymbolBucket {
   }
 
   sortFeatures(angle) {
-    if (!this.sortFeaturesByY) return;
+    if (!this.sortFeaturesByY) {
+      return;
+    }
 
-    if (this.sortedAngle === angle) return;
+    if (this.sortedAngle === angle) {
+      return;
+    }
     this.sortedAngle = angle;
 
     // The current approach to sorting doesn't sort across segments so don't try.
     // Sorting within segments separately seemed not to be worth the complexity.
-    if (this.text.segments.get().length > 1 || this.icon.segments.get().length > 1) return;
+    if (this.text.segments.get().length > 1 || this.icon.segments.get().length > 1) {
+      return;
+    }
 
     // If the symbols are allowed to overlap sort them by their vertical screen position.
     // The index array buffer is rewritten to reference the (unchanged) vertices in the
@@ -623,8 +635,12 @@ class SymbolBucket {
       }
     }
 
-    if (this.text.indexBuffer) this.text.indexBuffer.updateData(this.text.indexArray);
-    if (this.icon.indexBuffer) this.icon.indexBuffer.updateData(this.icon.indexArray);
+    if (this.text.indexBuffer) {
+      this.text.indexBuffer.updateData(this.text.indexArray);
+    }
+    if (this.icon.indexBuffer) {
+      this.icon.indexBuffer.updateData(this.icon.indexArray);
+    }
   }
 }
 

@@ -1634,7 +1634,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be removed/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be removed/);
           done();
         });
         style.removeLayer('background');
@@ -1700,7 +1700,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be moved/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be moved/);
           done();
         });
         style.moveLayer('background');
@@ -2091,7 +2091,7 @@ test('Style', async t => {
 
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot be filtered/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot be filtered/);
           done();
         });
         style.setFilter('non-existant', ['==', 'id', 1]);
@@ -2143,7 +2143,7 @@ test('Style', async t => {
       style = createStyle();
       style.on('style.load', () => {
         style.on('error', ({ error }) => {
-          t.assert.match(error.message, /does not exist in the map\'s style and cannot have zoom extent/);
+          t.assert.match(error.message, /does not exist in the map's style and cannot have zoom extent/);
           done();
         });
         style.setLayerZoomRange('non-existant', 5, 12);
@@ -2295,7 +2295,9 @@ test('Style', async t => {
       await t.test('checks type of `layers` option', (t, done) => {
         let errors = 0;
         t.mock.method(style, 'fire', event => {
-          if (event.error?.message.includes('parameters.layers must be an Array.')) errors++;
+          if (event.error?.message.includes('parameters.layers must be an Array.')) {
+            errors++;
+          }
         });
         style.queryRenderedFeatures([{ column: 1, row: 1, zoom: 1 }], { layers: 'string' }, transform);
         t.assert.equal(errors, 1);
@@ -2345,8 +2347,9 @@ test('Style', async t => {
       await t.test('ignores layer included in params if it does not exist on the style', (t, done) => {
         let errors = 0;
         t.mock.method(style, 'fire', event => {
-          if (event.error?.message.includes("does not exist in the map's style and cannot be queried for features."))
+          if (event.error?.message.includes("does not exist in the map's style and cannot be queried for features.")) {
             errors++;
+          }
         });
         const results = style.queryRenderedFeatures([{ column: 1, row: 1, zoom: 1 }], { layers: ['merp'] }, transform);
         t.assert.equal(errors, 0);

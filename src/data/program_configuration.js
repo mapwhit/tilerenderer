@@ -96,8 +96,12 @@ class CrossFadedConstantBinder {
 
   setUniforms(context, uniform, globals, currentValue, uniformName) {
     const pos = this.patternPositions;
-    if (uniformName === 'u_pattern_to' && pos.patternTo) uniform.set(pos.patternTo);
-    if (uniformName === 'u_pattern_from' && pos.patternFrom) uniform.set(pos.patternFrom);
+    if (uniformName === 'u_pattern_to' && pos.patternTo) {
+      uniform.set(pos.patternTo);
+    }
+    if (uniformName === 'u_pattern_from' && pos.patternFrom) {
+      uniform.set(pos.patternFrom);
+    }
   }
 
   getBinding(context, location) {
@@ -350,7 +354,9 @@ class CrossFadedCompositeBinder {
       const imageMid = imagePositions[mid];
       const imageMax = imagePositions[max];
 
-      if (!imageMin || !imageMid || !imageMax) return;
+      if (!imageMin || !imageMid || !imageMax) {
+        return;
+      }
 
       for (let i = start; i < length; i++) {
         zoomInArray.emplaceBack(
@@ -393,7 +399,9 @@ class CrossFadedCompositeBinder {
       const imageMid = imagePositions[mid];
       const imageMax = imagePositions[max];
 
-      if (!imageMin || !imageMid || !imageMax) return;
+      if (!imageMin || !imageMid || !imageMax) {
+        return;
+      }
       for (let i = start; i < end; i++) {
         zoomInArray.emplace(
           i,
@@ -438,8 +446,12 @@ class CrossFadedCompositeBinder {
   }
 
   destroy() {
-    if (this.zoomOutPaintVertexBuffer) this.zoomOutPaintVertexBuffer.destroy();
-    if (this.zoomInPaintVertexBuffer) this.zoomInPaintVertexBuffer.destroy();
+    if (this.zoomOutPaintVertexBuffer) {
+      this.zoomOutPaintVertexBuffer.destroy();
+    }
+    if (this.zoomInPaintVertexBuffer) {
+      this.zoomInPaintVertexBuffer.destroy();
+    }
   }
 
   setUniforms(context, uniform) {
@@ -486,7 +498,9 @@ export default class ProgramConfiguration {
     const keys = [];
 
     for (const property in layer._paint._values) {
-      if (!filterProperties(property)) continue;
+      if (!filterProperties(property)) {
+        continue;
+      }
       const value = layer._paint.get(property);
       if (
         !(value instanceof PossiblyEvaluatedPropertyValue) ||
@@ -574,7 +588,9 @@ export default class ProgramConfiguration {
     let dirty = false;
     for (const id in featureStates) {
       const posArray = this._idMap[id];
-      if (!posArray) continue;
+      if (!posArray) {
+        continue;
+      }
 
       const featureState = featureStates[id];
       for (const pos of posArray) {
@@ -582,7 +598,9 @@ export default class ProgramConfiguration {
 
         for (const property in this.binders) {
           const binder = this.binders[property];
-          if (binder instanceof ConstantBinder || binder instanceof CrossFadedConstantBinder) continue;
+          if (binder instanceof ConstantBinder || binder instanceof CrossFadedConstantBinder) {
+            continue;
+          }
           if (binder.expression.isStateDependent === true) {
             //AHM: Remove after https://github.com/mapbox/mapbox-gl-js/issues/6255
             const value = layer._paint.get(property);
@@ -639,7 +657,9 @@ export default class ProgramConfiguration {
       if (binder instanceof CrossFadedCompositeBinder) {
         const patternVertexBuffer =
           crossfade.fromScale === 2 ? binder.zoomInPaintVertexBuffer : binder.zoomOutPaintVertexBuffer;
-        if (patternVertexBuffer) buffers.push(patternVertexBuffer);
+        if (patternVertexBuffer) {
+          buffers.push(patternVertexBuffer);
+        }
       } else if (
         (binder instanceof SourceExpressionBinder || binder instanceof CompositeExpressionBinder) &&
         binder.paintVertexBuffer
@@ -706,7 +726,9 @@ export class ProgramConfigurationSet {
   }
 
   upload(context) {
-    if (!this.needsUpload) return;
+    if (!this.needsUpload) {
+      return;
+    }
     for (const layerId in this.programConfigurations) {
       this.programConfigurations[layerId].upload(context);
     }

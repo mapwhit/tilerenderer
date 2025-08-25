@@ -1,9 +1,13 @@
 export default createKey;
 
 function stringify(obj) {
-  if (obj == null) return 'null';
+  if (obj == null) {
+    return 'null';
+  }
   const type = typeof obj;
-  if (type === 'number' || type === 'boolean' || type === 'string') return obj;
+  if (type === 'number' || type === 'boolean' || type === 'string') {
+    return obj;
+  }
 
   if (Array.isArray(obj)) {
     return '[' + obj.map(val => stringify(val)).join(',') + ']';

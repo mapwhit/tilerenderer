@@ -10,11 +10,17 @@ class TileBounds {
 
   contains({ x, y, z }) {
     const minX = Math.floor(lngX(this.bounds.getWest(), z));
-    if (x < minX) return false;
+    if (x < minX) {
+      return false;
+    }
     const maxX = Math.ceil(lngX(this.bounds.getEast(), z));
-    if (x >= maxX) return false;
+    if (x >= maxX) {
+      return false;
+    }
     const minY = Math.floor(latY(this.bounds.getNorth(), z));
-    if (y < minY) return false;
+    if (y < minY) {
+      return false;
+    }
     const maxY = Math.ceil(latY(this.bounds.getSouth(), z));
     return y < maxY;
   }
@@ -22,7 +28,9 @@ class TileBounds {
 
 function validateBounds(bounds) {
   // make sure the bounds property contains valid longitude and latitudes
-  if (!Array.isArray(bounds) || bounds.length !== 4) return [-180, -90, 180, 90];
+  if (!Array.isArray(bounds) || bounds.length !== 4) {
+    return [-180, -90, 180, 90];
+  }
   return [Math.max(-180, bounds[0]), Math.max(-90, bounds[1]), Math.min(180, bounds[2]), Math.min(90, bounds[3])];
 }
 

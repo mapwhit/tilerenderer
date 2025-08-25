@@ -2,7 +2,6 @@ import { Evented } from '@mapwhit/events';
 import { supportsPropertyExpression } from '@mapwhit/style-expressions';
 import featureFilter from '../style-spec/feature_filter/index.js';
 import createKey from '../util/key.js';
-import { filterObject } from '../util/object.js';
 import { Layout, PossiblyEvaluatedPropertyValue, Transitionable } from './properties.js';
 
 const keyProperties = ['type', 'minzoom', 'maxzoom', 'filter', 'layout'];
@@ -187,8 +186,12 @@ class StyleLayer extends Evented {
   }
 
   isHidden(zoom) {
-    if (this.minzoom && zoom < this.minzoom) return true;
-    if (this.maxzoom && zoom >= this.maxzoom) return true;
+    if (this.minzoom && zoom < this.minzoom) {
+      return true;
+    }
+    if (this.maxzoom && zoom >= this.maxzoom) {
+      return true;
+    }
     return this.visibility === 'none';
   }
 

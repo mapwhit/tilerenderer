@@ -62,9 +62,13 @@ function _convertFilter(filter, expectedTypes) {
     return filter;
   }
 
-  if (!filter) return true;
+  if (!filter) {
+    return true;
+  }
   const op = filter[0];
-  if (filter.length <= 1) return op !== 'any';
+  if (filter.length <= 1) {
+    return op !== 'any';
+  }
 
   let converted;
 
@@ -113,8 +117,12 @@ function runtimeTypeChecks(expectedTypes) {
     const get = property === '$id' ? ['id'] : ['get', property];
     conditions.push(['==', ['typeof', get], expectedTypes[property]]);
   }
-  if (conditions.length === 0) return true;
-  if (conditions.length === 1) return conditions[0];
+  if (conditions.length === 0) {
+    return true;
+  }
+  if (conditions.length === 1) {
+    return conditions[0];
+  }
   return ['all'].concat(conditions);
 }
 
@@ -153,7 +161,9 @@ function convertComparisonOp(property, value, op, expectedTypes) {
 }
 
 function convertInOp(property, values, negate = false) {
-  if (values.length === 0) return negate;
+  if (values.length === 0) {
+    return negate;
+  }
 
   let get;
   if (property === '$type') {

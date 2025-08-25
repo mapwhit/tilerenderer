@@ -15,7 +15,9 @@ export default checkMaxAngle;
  */
 function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
   // horizontal labels always pass
-  if (anchor.segment === undefined) return true;
+  if (anchor.segment === undefined) {
+    return true;
+  }
 
   let p = anchor;
   let index = anchor.segment + 1;
@@ -26,7 +28,9 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
     index--;
 
     // there isn't enough room for the label after the beginning of the line
-    if (index < 0) return false;
+    if (index < 0) {
+      return false;
+    }
 
     anchorDistance -= line[index].dist(p);
     p = line[index];
@@ -46,7 +50,9 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
     const next = line[index + 1];
 
     // there isn't enough room for the label before the end of the line
-    if (!next) return false;
+    if (!next) {
+      return false;
+    }
 
     let angleDelta = prev.angleTo(current) - current.angleTo(next);
     // restrict angle to -pi..pi range
@@ -64,7 +70,9 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
     }
 
     // the sum of angles within the window area exceeds the maximum allowed value. check fails.
-    if (recentAngleDelta > maxAngle) return false;
+    if (recentAngleDelta > maxAngle) {
+      return false;
+    }
 
     index++;
     anchorDistance += current.dist(next);

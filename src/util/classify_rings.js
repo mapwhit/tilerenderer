@@ -3,7 +3,9 @@ import { calculateSignedArea } from './util.js';
 
 // classifies an array of rings into polygons with outer rings and holes
 export default function classifyRings(rings, maxRings) {
-  if (rings.length <= 1) return [rings];
+  if (rings.length <= 1) {
+    return [rings];
+  }
 
   const polygons = [];
   let polygon;
@@ -11,11 +13,15 @@ export default function classifyRings(rings, maxRings) {
 
   for (const ring of rings) {
     const area = calculateSignedArea(ring);
-    if (area === 0) continue;
+    if (area === 0) {
+      continue;
+    }
 
     ring.area = Math.abs(area);
 
-    if (ccw === undefined) ccw = area < 0;
+    if (ccw === undefined) {
+      ccw = area < 0;
+    }
 
     if (ccw === area < 0) {
       append(polygon);

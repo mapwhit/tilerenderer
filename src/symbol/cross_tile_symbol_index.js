@@ -1,4 +1,3 @@
-import { SymbolInstanceArray } from '../data/array_types.js';
 import EXTENT from '../data/extent.js';
 
 /*
@@ -239,7 +238,9 @@ class CrossTileSymbolIndex {
 
     for (const tile of tiles) {
       const symbolBucket = tile.getBucket(styleLayer);
-      if (!symbolBucket || styleLayer.id !== symbolBucket.layerIds[0]) continue;
+      if (!symbolBucket || styleLayer.id !== symbolBucket.layerIds[0]) {
+        continue;
+      }
 
       if (!symbolBucket.bucketInstanceId) {
         symbolBucket.bucketInstanceId = ++this.maxBucketInstanceId;

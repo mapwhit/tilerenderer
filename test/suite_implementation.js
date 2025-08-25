@@ -60,8 +60,12 @@ export default async function (style, options, _callback) {
     return now;
   };
 
-  if (options.debug) map.showTileBoundaries = true;
-  if (options.showOverdrawInspector) map.showOverdrawInspector = true;
+  if (options.debug) {
+    map.showTileBoundaries = true;
+  }
+  if (options.showOverdrawInspector) {
+    map.showOverdrawInspector = true;
+  }
 
   const gl = map.painter.context.gl;
 

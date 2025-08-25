@@ -260,7 +260,9 @@ export function placeFirstAndLastGlyph(
     projectionCache,
     returnTileDistance
   );
-  if (!firstPlacedGlyph) return null;
+  if (!firstPlacedGlyph) {
+    return null;
+  }
 
   const lastPlacedGlyph = placeGlyphAlongLine(
     fontScale * lastGlyphOffset,
@@ -277,7 +279,9 @@ export function placeFirstAndLastGlyph(
     projectionCache,
     returnTileDistance
   );
-  if (!lastPlacedGlyph) return null;
+  if (!lastPlacedGlyph) {
+    return null;
+  }
 
   return { first: firstPlacedGlyph, last: lastPlacedGlyph };
 }
@@ -419,7 +423,9 @@ function placeGlyphsAlongLine(
       projectionCache,
       false
     );
-    if (!singleGlyph) return { notEnoughRoom: true };
+    if (!singleGlyph) {
+      return { notEnoughRoom: true };
+    }
 
     placedGlyphs = [singleGlyph];
   }
@@ -477,7 +483,9 @@ function placeGlyphAlongLine(
     angle = Math.PI;
   }
 
-  if (dir < 0) angle += Math.PI;
+  if (dir < 0) {
+    angle += Math.PI;
+  }
 
   let currentIndex = dir > 0 ? lineStartIndex + anchorSegment : lineStartIndex + anchorSegment + 1;
 
@@ -492,7 +500,9 @@ function placeGlyphAlongLine(
     currentIndex += dir;
 
     // offset does not fit on the projected line
-    if (currentIndex < lineStartIndex || currentIndex >= lineEndIndex) return null;
+    if (currentIndex < lineStartIndex || currentIndex >= lineEndIndex) {
+      return null;
+    }
 
     prev = current;
 

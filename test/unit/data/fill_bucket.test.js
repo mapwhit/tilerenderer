@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
-import path from 'path';
 import Point from '@mapbox/point-geometry';
 import Protobuf from '@mapwhit/pbf';
 import { VectorTile } from '@mapwhit/vector-tile';
@@ -27,16 +27,18 @@ function createPolygon(numPoints) {
 }
 
 test('FillBucket', t => {
-  const layer = new FillStyleLayer({ id: 'test', type: 'fill', layout: {} });
-  layer.recalculate({ zoom: 0, zoomHistory: {} });
+  t.assert.doesNotThrow(() => {
+    const layer = new FillStyleLayer({ id: 'test', type: 'fill', layout: {} });
+    layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  const bucket = new FillBucket({ layers: [layer] });
+    const bucket = new FillBucket({ layers: [layer] });
 
-  bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10)]]);
+    bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10)]]);
 
-  bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10), new Point(10, 20)]]);
+    bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10), new Point(10, 20)]]);
 
-  bucket.addFeature(feature, feature.loadGeometry());
+    bucket.addFeature(feature, feature.loadGeometry());
+  });
 });
 
 test('FillBucket segmentation', t => {

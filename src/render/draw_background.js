@@ -8,18 +8,24 @@ function drawBackground(painter, sourceCache, layer) {
   const color = layer._paint.get('background-color');
   const opacity = layer._paint.get('background-opacity');
 
-  if (opacity === 0) return;
+  if (opacity === 0) {
+    return;
+  }
 
   const context = painter.context;
   const gl = context.gl;
   const transform = painter.transform;
   const tileSize = transform.tileSize;
   const image = layer._paint.get('background-pattern');
-  if (painter.isPatternMissing(image)) return;
+  if (painter.isPatternMissing(image)) {
+    return;
+  }
 
   const pass =
     !image && color.a === 1 && opacity === 1 && painter.opaquePassEnabledForLayer() ? 'opaque' : 'translucent';
-  if (painter.renderPass !== pass) return;
+  if (painter.renderPass !== pass) {
+    return;
+  }
 
   const stencilMode = StencilMode.disabled;
   const depthMode = painter.depthModeForSublayer(0, pass === 'opaque' ? DepthMode.ReadWrite : DepthMode.ReadOnly);

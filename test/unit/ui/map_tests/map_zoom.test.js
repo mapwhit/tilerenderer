@@ -25,7 +25,7 @@ test('map zoom', async t => {
     t.assert.equal(map.getMinZoom(), 10, 'returns custom value');
   });
 
-  await t.test('ignore minZooms over maxZoom', async t => {
+  await t.test('ignore minZooms over maxZoom', t => {
     const map = createMap({ zoom: 2, maxZoom: 5 });
     t.assert.throws(() => {
       map.setMinZoom(6);
@@ -55,7 +55,7 @@ test('map zoom', async t => {
     t.assert.equal(map.getMaxZoom(), 10, 'returns custom value');
   });
 
-  await t.test('ignore maxZooms over minZoom', async t => {
+  await t.test('ignore maxZooms over minZoom', t => {
     const map = createMap({ minZoom: 5 });
     t.assert.throws(() => {
       map.setMaxZoom(4);
@@ -64,13 +64,13 @@ test('map zoom', async t => {
     t.assert.equal(map.getZoom(), 5);
   });
 
-  await t.test('throw on maxZoom smaller than minZoom at init', async t => {
+  await t.test('throw on maxZoom smaller than minZoom at init', t => {
     t.assert.throws(() => {
       createMap({ minZoom: 10, maxZoom: 5 });
     }, new Error('maxZoom must be greater than minZoom'));
   });
 
-  await t.test('throw on maxZoom smaller than minZoom at init with falsey maxZoom', async t => {
+  await t.test('throw on maxZoom smaller than minZoom at init with falsey maxZoom', t => {
     t.assert.throws(() => {
       createMap({ minZoom: 1, maxZoom: 0 });
     }, new Error('maxZoom must be greater than minZoom'));

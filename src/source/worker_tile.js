@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { CollisionBoxArray } from '../data/array_types.js';
 import FillBucket from '../data/bucket/fill_bucket.js';
 import FillExtrusionBucket from '../data/bucket/fill_extrusion_bucket.js';
@@ -11,7 +10,6 @@ import EvaluationParameters from '../style/evaluation_parameters.js';
 import { performSymbolLayout } from '../symbol/symbol_layout.js';
 import dictionaryCoder from '../util/dictionary_coder.js';
 import { mapObject } from '../util/object.js';
-import warn from '../util/warn.js';
 import { OverscaledTileID } from './tile_id.js';
 export default makeWorkerTile;
 
@@ -19,7 +17,7 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   const tileID = createTileID(params);
 
   const overscaling = tileID.overscaleFactor();
-  const { uid, zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
+  const { zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
 
   const collisionBoxArray = new CollisionBoxArray();
   const sourceLayerCoder = dictionaryCoder(Object.keys(vectorTile.layers));
@@ -52,9 +50,15 @@ async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
     for (const layers of sourceLayerFamilies.values()) {
       const layer = layers[0];
 
-      if (layer.minzoom && zoom < Math.floor(layer.minzoom)) continue;
-      if (layer.maxzoom && zoom >= layer.maxzoom) continue;
-      if (layer.visibility === 'none') continue;
+      if (layer.minzoom && zoom < Math.floor(layer.minzoom)) {
+        continue;
+      }
+      if (layer.maxzoom && zoom >= layer.maxzoom) {
+        continue;
+      }
+      if (layer.visibility === 'none') {
+        continue;
+      }
 
       recalculateLayers(layers, zoom, globalState);
 

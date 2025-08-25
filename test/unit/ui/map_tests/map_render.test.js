@@ -22,7 +22,9 @@ test('map render', async t => {
     let timer;
     const map = createMap({ style: style });
     map.on('render', () => {
-      if (timer) clearTimeout(timer);
+      if (timer) {
+        clearTimeout(timer);
+      }
       timer = setTimeout(() => {
         map.off('render');
         map.on('render', t.fail);

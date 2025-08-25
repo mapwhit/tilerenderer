@@ -80,7 +80,9 @@ function computeTileMasks(rootTile, ref, childArray, lowerBound, mask) {
   for (let i = 0; i < childArray.length; i++) {
     const childTile = childArray[i];
     // childTile is from a larger wrap than the rootTile so it cannot be a child tile
-    if (lowerBound.isLessThan(childTile.tileID)) break;
+    if (lowerBound.isLessThan(childTile.tileID)) {
+      break;
+    }
     // The current tile is masked out, so we don't need to add them to the mask set.
     if (ref.key === childTile.tileID.key) {
       return;

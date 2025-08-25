@@ -116,32 +116,34 @@ test('StyleLayer.setPaintProperty', async t => {
   });
 
   await t.test('can transition fill-outline-color from undefined to a value #3657', t => {
-    const layer = createStyleLayer({
-      id: 'building',
-      type: 'fill',
-      source: 'streets',
-      paint: {
-        'fill-color': '#00f'
-      }
+    t.assert.doesNotThrow(() => {
+      const layer = createStyleLayer({
+        id: 'building',
+        type: 'fill',
+        source: 'streets',
+        paint: {
+          'fill-color': '#00f'
+        }
+      });
+
+      // setup: set and then unset fill-outline-color so that, when we then try
+      // to re-set it, StyleTransition#calculate() attempts interpolation
+      layer.setPaintProperty('fill-outline-color', '#f00');
+      layer.updateTransitions({});
+      layer.recalculate({ zoom: 0, zoomHistory: {} });
+
+      layer.setPaintProperty('fill-outline-color', undefined);
+      layer.updateTransitions({});
+      layer.recalculate({ zoom: 0, zoomHistory: {} });
+
+      // re-set fill-outline-color and get its value, triggering the attempt
+      // to interpolate between undefined and #f00
+      layer.setPaintProperty('fill-outline-color', '#f00');
+      layer.updateTransitions({});
+      layer.recalculate({ zoom: 0, zoomHistory: {} });
+
+      layer._paint.get('fill-outline-color');
     });
-
-    // setup: set and then unset fill-outline-color so that, when we then try
-    // to re-set it, StyleTransition#calculate() attempts interpolation
-    layer.setPaintProperty('fill-outline-color', '#f00');
-    layer.updateTransitions({});
-    layer.recalculate({ zoom: 0, zoomHistory: {} });
-
-    layer.setPaintProperty('fill-outline-color', undefined);
-    layer.updateTransitions({});
-    layer.recalculate({ zoom: 0, zoomHistory: {} });
-
-    // re-set fill-outline-color and get its value, triggering the attempt
-    // to interpolate between undefined and #f00
-    layer.setPaintProperty('fill-outline-color', '#f00');
-    layer.updateTransitions({});
-    layer.recalculate({ zoom: 0, zoomHistory: {} });
-
-    layer._paint.get('fill-outline-color');
   });
 
   await t.test('sets null property value', t => {

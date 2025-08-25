@@ -34,7 +34,9 @@ class Feature {
       geometry: this.geometry
     };
     for (const i in this) {
-      if (i === '_geometry' || i === '_vectorTileFeature') continue;
+      if (i === '_geometry' || i === '_vectorTileFeature') {
+        continue;
+      }
       json[i] = this[i];
     }
     return json;

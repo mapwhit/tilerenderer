@@ -27,7 +27,9 @@ function MockSourceType(id, sourceOptions, eventedParent) {
     }
     async loadTile() {}
     onAdd() {
-      if (sourceOptions.noLoad) return;
+      if (sourceOptions.noLoad) {
+        return;
+      }
       if (sourceOptions.error) {
         this.fire(new ErrorEvent(sourceOptions.error));
       } else {
@@ -816,7 +818,7 @@ test('SourceCache._updateRetainedTiles', async t => {
       }
     });
 
-    const addTileSpy = t.mock.method(sourceCache, '_addTile');
+    t.mock.method(sourceCache, '_addTile');
     const getTileSpy = t.mock.method(sourceCache, 'getTile');
 
     const idealTiles = [new OverscaledTileID(1, 0, 1, 1, 1), new OverscaledTileID(1, 0, 1, 0, 1)];

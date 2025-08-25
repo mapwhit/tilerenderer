@@ -1,6 +1,5 @@
 import test from 'node:test';
 import Map from '../../../../src/ui/map.js';
-import browser from '../../../../src/util/browser.js';
 import DOM from '../../../../src/util/dom.js';
 import { initWindow } from '../../../util/util.js';
 

@@ -14,7 +14,9 @@ class GlyphAtlas {
 
       for (const id in glyphs) {
         const src = glyphs[+id];
-        if (!src || src.bitmap.width === 0 || src.bitmap.height === 0) continue;
+        if (!src || src.bitmap.width === 0 || src.bitmap.height === 0) {
+          continue;
+        }
 
         const bin = {
           x: 0,
@@ -35,7 +37,9 @@ class GlyphAtlas {
 
       for (const id in glyphs) {
         const src = glyphs[+id];
-        if (!src || src.bitmap.width === 0 || src.bitmap.height === 0) continue;
+        if (!src || src.bitmap.width === 0 || src.bitmap.height === 0) {
+          continue;
+        }
         const bin = positions[stack][id].rect;
         AlphaImage.copy(src.bitmap, image, { x: 0, y: 0 }, { x: bin.x + padding, y: bin.y + padding }, src.bitmap);
       }

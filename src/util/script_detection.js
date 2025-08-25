@@ -2,59 +2,117 @@ import isChar from './is_char_in_unicode_block.js';
 
 export function allowsIdeographicBreaking(chars) {
   for (const char of chars) {
-    if (!charAllowsIdeographicBreaking(char.charCodeAt(0))) return false;
+    if (!charAllowsIdeographicBreaking(char.charCodeAt(0))) {
+      return false;
+    }
   }
   return true;
 }
 
 export function allowsVerticalWritingMode(chars) {
   for (const char of chars) {
-    if (charHasUprightVerticalOrientation(char.charCodeAt(0))) return true;
+    if (charHasUprightVerticalOrientation(char.charCodeAt(0))) {
+      return true;
+    }
   }
   return false;
 }
 
 export function allowsLetterSpacing(chars) {
   for (const char of chars) {
-    if (!charAllowsLetterSpacing(char.charCodeAt(0))) return false;
+    if (!charAllowsLetterSpacing(char.charCodeAt(0))) {
+      return false;
+    }
   }
   return true;
 }
 
 export function charAllowsLetterSpacing(char) {
-  if (isChar['Arabic'](char)) return false;
-  if (isChar['Arabic Supplement'](char)) return false;
-  if (isChar['Arabic Extended-A'](char)) return false;
-  if (isChar['Arabic Presentation Forms-A'](char)) return false;
-  if (isChar['Arabic Presentation Forms-B'](char)) return false;
+  if (isChar['Arabic'](char)) {
+    return false;
+  }
+  if (isChar['Arabic Supplement'](char)) {
+    return false;
+  }
+  if (isChar['Arabic Extended-A'](char)) {
+    return false;
+  }
+  if (isChar['Arabic Presentation Forms-A'](char)) {
+    return false;
+  }
+  if (isChar['Arabic Presentation Forms-B'](char)) {
+    return false;
+  }
 
   return true;
 }
 
 export function charAllowsIdeographicBreaking(char) {
   // Return early for characters outside all ideographic ranges.
-  if (char < 0x2e80) return false;
+  if (char < 0x2e80) {
+    return false;
+  }
 
-  if (isChar['Bopomofo Extended'](char)) return true;
-  if (isChar['Bopomofo'](char)) return true;
-  if (isChar['CJK Compatibility Forms'](char)) return true;
-  if (isChar['CJK Compatibility Ideographs'](char)) return true;
-  if (isChar['CJK Compatibility'](char)) return true;
-  if (isChar['CJK Radicals Supplement'](char)) return true;
-  if (isChar['CJK Strokes'](char)) return true;
-  if (isChar['CJK Symbols and Punctuation'](char)) return true;
-  if (isChar['CJK Unified Ideographs Extension A'](char)) return true;
-  if (isChar['CJK Unified Ideographs'](char)) return true;
-  if (isChar['Enclosed CJK Letters and Months'](char)) return true;
-  if (isChar['Halfwidth and Fullwidth Forms'](char)) return true;
-  if (isChar['Hiragana'](char)) return true;
-  if (isChar['Ideographic Description Characters'](char)) return true;
-  if (isChar['Kangxi Radicals'](char)) return true;
-  if (isChar['Katakana Phonetic Extensions'](char)) return true;
-  if (isChar['Katakana'](char)) return true;
-  if (isChar['Vertical Forms'](char)) return true;
-  if (isChar['Yi Radicals'](char)) return true;
-  if (isChar['Yi Syllables'](char)) return true;
+  if (isChar['Bopomofo Extended'](char)) {
+    return true;
+  }
+  if (isChar['Bopomofo'](char)) {
+    return true;
+  }
+  if (isChar['CJK Compatibility Forms'](char)) {
+    return true;
+  }
+  if (isChar['CJK Compatibility Ideographs'](char)) {
+    return true;
+  }
+  if (isChar['CJK Compatibility'](char)) {
+    return true;
+  }
+  if (isChar['CJK Radicals Supplement'](char)) {
+    return true;
+  }
+  if (isChar['CJK Strokes'](char)) {
+    return true;
+  }
+  if (isChar['CJK Symbols and Punctuation'](char)) {
+    return true;
+  }
+  if (isChar['CJK Unified Ideographs Extension A'](char)) {
+    return true;
+  }
+  if (isChar['CJK Unified Ideographs'](char)) {
+    return true;
+  }
+  if (isChar['Enclosed CJK Letters and Months'](char)) {
+    return true;
+  }
+  if (isChar['Halfwidth and Fullwidth Forms'](char)) {
+    return true;
+  }
+  if (isChar['Hiragana'](char)) {
+    return true;
+  }
+  if (isChar['Ideographic Description Characters'](char)) {
+    return true;
+  }
+  if (isChar['Kangxi Radicals'](char)) {
+    return true;
+  }
+  if (isChar['Katakana Phonetic Extensions'](char)) {
+    return true;
+  }
+  if (isChar['Katakana'](char)) {
+    return true;
+  }
+  if (isChar['Vertical Forms'](char)) {
+    return true;
+  }
+  if (isChar['Yi Radicals'](char)) {
+    return true;
+  }
+  if (isChar['Yi Syllables'](char)) {
+    return true;
+  }
 
   return false;
 }
@@ -89,19 +147,33 @@ export function charHasUprightVerticalOrientation(char) {
 
   // Return early for characters outside all ranges whose characters remain
   // upright in vertical writing mode.
-  if (char < 0x1100) return false;
+  if (char < 0x1100) {
+    return false;
+  }
 
-  if (isChar['Bopomofo Extended'](char)) return true;
-  if (isChar['Bopomofo'](char)) return true;
+  if (isChar['Bopomofo Extended'](char)) {
+    return true;
+  }
+  if (isChar['Bopomofo'](char)) {
+    return true;
+  }
   if (isChar['CJK Compatibility Forms'](char)) {
     if (!((char >= 0xfe49 /* dashed overline */ && char <= 0xfe4f) /* wavy low line */)) {
       return true;
     }
   }
-  if (isChar['CJK Compatibility Ideographs'](char)) return true;
-  if (isChar['CJK Compatibility'](char)) return true;
-  if (isChar['CJK Radicals Supplement'](char)) return true;
-  if (isChar['CJK Strokes'](char)) return true;
+  if (isChar['CJK Compatibility Ideographs'](char)) {
+    return true;
+  }
+  if (isChar['CJK Compatibility'](char)) {
+    return true;
+  }
+  if (isChar['CJK Radicals Supplement'](char)) {
+    return true;
+  }
+  if (isChar['CJK Strokes'](char)) {
+    return true;
+  }
   if (isChar['CJK Symbols and Punctuation'](char)) {
     if (
       !((char >= 0x3008 /* left angle bracket */ && char <= 0x3011) /* right black lenticular bracket */) &&
@@ -111,19 +183,45 @@ export function charHasUprightVerticalOrientation(char) {
       return true;
     }
   }
-  if (isChar['CJK Unified Ideographs Extension A'](char)) return true;
-  if (isChar['CJK Unified Ideographs'](char)) return true;
-  if (isChar['Enclosed CJK Letters and Months'](char)) return true;
-  if (isChar['Hangul Compatibility Jamo'](char)) return true;
-  if (isChar['Hangul Jamo Extended-A'](char)) return true;
-  if (isChar['Hangul Jamo Extended-B'](char)) return true;
-  if (isChar['Hangul Jamo'](char)) return true;
-  if (isChar['Hangul Syllables'](char)) return true;
-  if (isChar['Hiragana'](char)) return true;
-  if (isChar['Ideographic Description Characters'](char)) return true;
-  if (isChar['Kanbun'](char)) return true;
-  if (isChar['Kangxi Radicals'](char)) return true;
-  if (isChar['Katakana Phonetic Extensions'](char)) return true;
+  if (isChar['CJK Unified Ideographs Extension A'](char)) {
+    return true;
+  }
+  if (isChar['CJK Unified Ideographs'](char)) {
+    return true;
+  }
+  if (isChar['Enclosed CJK Letters and Months'](char)) {
+    return true;
+  }
+  if (isChar['Hangul Compatibility Jamo'](char)) {
+    return true;
+  }
+  if (isChar['Hangul Jamo Extended-A'](char)) {
+    return true;
+  }
+  if (isChar['Hangul Jamo Extended-B'](char)) {
+    return true;
+  }
+  if (isChar['Hangul Jamo'](char)) {
+    return true;
+  }
+  if (isChar['Hangul Syllables'](char)) {
+    return true;
+  }
+  if (isChar['Hiragana'](char)) {
+    return true;
+  }
+  if (isChar['Ideographic Description Characters'](char)) {
+    return true;
+  }
+  if (isChar['Kanbun'](char)) {
+    return true;
+  }
+  if (isChar['Kangxi Radicals'](char)) {
+    return true;
+  }
+  if (isChar['Katakana Phonetic Extensions'](char)) {
+    return true;
+  }
   if (isChar['Katakana'](char)) {
     if (char !== 0x30fc /* katakana-hiragana prolonged sound mark */) {
       return true;
@@ -153,12 +251,24 @@ export function charHasUprightVerticalOrientation(char) {
       return true;
     }
   }
-  if (isChar['Unified Canadian Aboriginal Syllabics'](char)) return true;
-  if (isChar['Unified Canadian Aboriginal Syllabics Extended'](char)) return true;
-  if (isChar['Vertical Forms'](char)) return true;
-  if (isChar['Yijing Hexagram Symbols'](char)) return true;
-  if (isChar['Yi Syllables'](char)) return true;
-  if (isChar['Yi Radicals'](char)) return true;
+  if (isChar['Unified Canadian Aboriginal Syllabics'](char)) {
+    return true;
+  }
+  if (isChar['Unified Canadian Aboriginal Syllabics Extended'](char)) {
+    return true;
+  }
+  if (isChar['Vertical Forms'](char)) {
+    return true;
+  }
+  if (isChar['Yijing Hexagram Symbols'](char)) {
+    return true;
+  }
+  if (isChar['Yi Syllables'](char)) {
+    return true;
+  }
+  if (isChar['Yi Radicals'](char)) {
+    return true;
+  }
 
   return false;
 }
@@ -209,8 +319,12 @@ export function charHasNeutralVerticalOrientation(char) {
       return true;
     }
   }
-  if (isChar['Letterlike Symbols'](char)) return true;
-  if (isChar['Number Forms'](char)) return true;
+  if (isChar['Letterlike Symbols'](char)) {
+    return true;
+  }
+  if (isChar['Number Forms'](char)) {
+    return true;
+  }
   if (isChar['Miscellaneous Technical'](char)) {
     if (
       (char >= 0x2300 /* diameter sign */ && char <= 0x2307) /* wavy line */ ||
@@ -226,10 +340,18 @@ export function charHasNeutralVerticalOrientation(char) {
       return true;
     }
   }
-  if (isChar['Control Pictures'](char) && char !== 0x2423 /* open box */) return true;
-  if (isChar['Optical Character Recognition'](char)) return true;
-  if (isChar['Enclosed Alphanumerics'](char)) return true;
-  if (isChar['Geometric Shapes'](char)) return true;
+  if (isChar['Control Pictures'](char) && char !== 0x2423 /* open box */) {
+    return true;
+  }
+  if (isChar['Optical Character Recognition'](char)) {
+    return true;
+  }
+  if (isChar['Enclosed Alphanumerics'](char)) {
+    return true;
+  }
+  if (isChar['Geometric Shapes'](char)) {
+    return true;
+  }
   if (isChar['Miscellaneous Symbols'](char)) {
     if (!((char >= 0x261a /* black left pointing index */ && char <= 0x261f) /* white down pointing index */)) {
       return true;
@@ -244,12 +366,24 @@ export function charHasNeutralVerticalOrientation(char) {
       return true;
     }
   }
-  if (isChar['CJK Symbols and Punctuation'](char)) return true;
-  if (isChar['Katakana'](char)) return true;
-  if (isChar['Private Use Area'](char)) return true;
-  if (isChar['CJK Compatibility Forms'](char)) return true;
-  if (isChar['Small Form Variants'](char)) return true;
-  if (isChar['Halfwidth and Fullwidth Forms'](char)) return true;
+  if (isChar['CJK Symbols and Punctuation'](char)) {
+    return true;
+  }
+  if (isChar['Katakana'](char)) {
+    return true;
+  }
+  if (isChar['Private Use Area'](char)) {
+    return true;
+  }
+  if (isChar['CJK Compatibility Forms'](char)) {
+    return true;
+  }
+  if (isChar['Small Form Variants'](char)) {
+    return true;
+  }
+  if (isChar['Halfwidth and Fullwidth Forms'](char)) {
+    return true;
+  }
 
   if (
     char === 0x221e /* infinity */ ||

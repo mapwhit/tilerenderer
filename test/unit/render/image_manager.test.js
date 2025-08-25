@@ -4,7 +4,7 @@ import ImageManager from '../../../src/render/image_manager.js';
 test('ImageManager', async t => {
   let imageManager;
 
-  t.beforeEach(t => {
+  t.beforeEach(() => {
     imageManager = new ImageManager();
   });
 

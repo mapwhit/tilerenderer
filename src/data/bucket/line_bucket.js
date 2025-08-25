@@ -93,8 +93,9 @@ class LineBucket {
     for (const { feature, index, sourceLayerIndex } of features) {
       if (
         !this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
-      )
+      ) {
         continue;
+      }
 
       const geometry = loadGeometry(feature);
 
@@ -122,7 +123,9 @@ class LineBucket {
   }
 
   update(states, vtLayer, imagePositions) {
-    if (!this.stateDependentLayers.length) return;
+    if (!this.stateDependentLayers.length) {
+      return;
+    }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
       imagePositions,
       globalState: this.globalState
@@ -154,7 +157,9 @@ class LineBucket {
   }
 
   destroy() {
-    if (!this.layoutVertexBuffer) return;
+    if (!this.layoutVertexBuffer) {
+      return;
+    }
     this.layoutVertexBuffer.destroy();
     this.indexBuffer.destroy();
     this.programConfigurations.destroy();
@@ -200,13 +205,17 @@ class LineBucket {
     }
 
     // Ignore invalid geometry.
-    if (len < (isPolygon ? 3 : 2)) return;
+    if (len < (isPolygon ? 3 : 2)) {
+      return;
+    }
 
     if (lineDistances) {
       lineDistances.tileTotal = calculateFullDistance(vertices, first, len);
     }
 
-    if (join === 'bevel') miterLimit = 1.05;
+    if (join === 'bevel') {
+      miterLimit = 1.05;
+    }
 
     const sharpCornerOffset = SHARP_CORNER_OFFSET * (EXTENT / (512 * this.overscaling));
 
@@ -244,10 +253,16 @@ class LineBucket {
             vertices[i + 1]; // just the next vertex
 
       // if two consecutive vertices exist, skip the current one
-      if (nextVertex && vertices[i].equals(nextVertex)) continue;
+      if (nextVertex && vertices[i].equals(nextVertex)) {
+        continue;
+      }
 
-      if (nextNormal) prevNormal = nextNormal;
-      if (currentVertex) prevVertex = currentVertex;
+      if (nextNormal) {
+        prevNormal = nextNormal;
+      }
+      if (currentVertex) {
+        prevVertex = currentVertex;
+      }
 
       currentVertex = vertices[i];
 
@@ -322,15 +337,21 @@ class LineBucket {
       if (currentJoin === 'bevel') {
         // The maximum extrude length is 128 / 63 = 2 times the width of the line
         // so if miterLength >= 2 we need to draw a different type of bevel here.
-        if (miterLength > 2) currentJoin = 'flipbevel';
+        if (miterLength > 2) {
+          currentJoin = 'flipbevel';
+        }
 
         // If the miterLength is really small and the line bevel wouldn't be visible,
         // just draw a miter join to save a triangle.
-        if (miterLength < miterLimit) currentJoin = 'miter';
+        if (miterLength < miterLimit) {
+          currentJoin = 'miter';
+        }
       }
 
       // Calculate how far along the line the currentVertex is
-      if (prevVertex) this.distance += currentVertex.dist(prevVertex);
+      if (prevVertex) {
+        this.distance += currentVertex.dist(prevVertex);
+      }
 
       if (currentJoin === 'miter') {
         joinNormal._mult(miterLength);
@@ -528,7 +549,9 @@ class LineBucket {
     }
 
     extrude = normal.clone();
-    if (endLeft) extrude._sub(normal.perp()._mult(endLeft));
+    if (endLeft) {
+      extrude._sub(normal.perp()._mult(endLeft));
+    }
     addLineVertex(layoutVertexArray, currentVertex, extrude, round, false, endLeft, distance);
     this.e3 = segment.vertexLength++;
     if (this.e1 >= 0 && this.e2 >= 0) {
@@ -539,7 +562,9 @@ class LineBucket {
     this.e2 = this.e3;
 
     extrude = normal.mult(-1);
-    if (endRight) extrude._sub(normal.perp()._mult(endRight));
+    if (endRight) {
+      extrude._sub(normal.perp()._mult(endRight));
+    }
     addLineVertex(layoutVertexArray, currentVertex, extrude, round, true, -endRight, distance);
     this.e3 = segment.vertexLength++;
     if (this.e1 >= 0 && this.e2 >= 0) {
@@ -574,7 +599,9 @@ class LineBucket {
     const layoutVertexArray = this.layoutVertexArray;
     const indexArray = this.indexArray;
 
-    if (distancesForScaling) distance = scaleDistance(distance, distancesForScaling);
+    if (distancesForScaling) {
+      distance = scaleDistance(distance, distancesForScaling);
+    }
 
     addLineVertex(layoutVertexArray, currentVertex, extrude, false, lineTurnsLeft, 0, distance);
     this.e3 = segment.vertexLength++;

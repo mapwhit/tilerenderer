@@ -2,8 +2,6 @@ import { deepEqual } from '../util/object.js';
 import ColorMode from './color_mode.js';
 import Framebuffer from './framebuffer.js';
 import IndexBuffer from './index_buffer.js';
-import VertexBuffer from './vertex_buffer.js';
-
 import {
   ActiveTextureUnit,
   BindElementBuffer,
@@ -35,6 +33,7 @@ import {
   StencilTest,
   Viewport
 } from './value.js';
+import VertexBuffer from './vertex_buffer.js';
 
 class Context {
   constructor(gl) {

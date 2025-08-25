@@ -11,7 +11,7 @@ import clipLine from './clip_line.js';
 import CollisionFeature from './collision_feature.js';
 import { getAnchors, getCenterAnchor } from './get_anchors.js';
 import { getGlyphQuads, getIconQuads } from './quads.js';
-import { WritingMode, shapeIcon, shapeText } from './shaping.js';
+import { shapeIcon, shapeText, WritingMode } from './shaping.js';
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
 // `icon-size` at up to three:
@@ -476,8 +476,9 @@ function addSymbol(
   const iconBoxStartIndex = iconCollisionFeature ? iconCollisionFeature.boxStartIndex : bucket.collisionBoxArray.length;
   const iconBoxEndIndex = iconCollisionFeature ? iconCollisionFeature.boxEndIndex : bucket.collisionBoxArray.length;
 
-  if (bucket.glyphOffsetArray.length >= SymbolBucket.MAX_GLYPHS)
+  if (bucket.glyphOffsetArray.length >= SymbolBucket.MAX_GLYPHS) {
     warn.once('Too many glyphs being rendered in a tile. See https://github.com/mapbox/mapbox-gl-js/issues/2907');
+  }
 
   bucket.symbolInstances.emplaceBack(
     anchor.x,

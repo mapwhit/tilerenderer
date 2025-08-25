@@ -93,9 +93,13 @@ function compare(a, b) {
 }
 
 function convertFilter(filter) {
-  if (!filter || filter.length === 0) return true;
+  if (!filter || filter.length === 0) {
+    return true;
+  }
   const [op, ...args] = filter;
-  if (filter.length <= 1) return op !== 'any';
+  if (filter.length <= 1) {
+    return op !== 'any';
+  }
   switch (op) {
     case '!=':
       return convertNegation(convertComparisonOp('==', ...args));
@@ -156,7 +160,9 @@ function convertInOp([property, ...values]) {
 }
 
 function isUniformLarge(values) {
-  if (values.length < 200) return false;
+  if (values.length < 200) {
+    return false;
+  }
   const type = typeof values[0];
   return values.every(v => typeof v === type);
 }

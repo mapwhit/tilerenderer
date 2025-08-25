@@ -49,7 +49,9 @@ class CircleBucket {
   }
 
   update(states, vtLayer, imagePositions) {
-    if (!this.stateDependentLayers.length) return;
+    if (!this.stateDependentLayers.length) {
+      return;
+    }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
       imagePositions,
       globalState: this.globalState
@@ -74,7 +76,9 @@ class CircleBucket {
   }
 
   destroy() {
-    if (!this.layoutVertexBuffer) return;
+    if (!this.layoutVertexBuffer) {
+      return;
+    }
     this.layoutVertexBuffer.destroy();
     this.indexBuffer.destroy();
     this.programConfigurations.destroy();
@@ -88,7 +92,9 @@ class CircleBucket {
         const y = point.y;
 
         // Do not include points that are outside the tile boundaries.
-        if (x < 0 || x >= EXTENT || y < 0 || y >= EXTENT) continue;
+        if (x < 0 || x >= EXTENT || y < 0 || y >= EXTENT) {
+          continue;
+        }
 
         // this geometry will be of the Point type, and we'll derive
         // two triangles from it.

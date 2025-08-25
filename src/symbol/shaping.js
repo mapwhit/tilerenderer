@@ -162,7 +162,9 @@ export function shapeText(
 
   shapeLines(shaping, glyphs, lines, lineHeight, textAnchor, textJustify, writingMode, spacing, verticalHeight);
 
-  if (!positionedGlyphs.length) return false;
+  if (!positionedGlyphs.length) {
+    return false;
+  }
 
   shaping.text = shaping.text.toString();
   return shaping;
@@ -204,7 +206,9 @@ function determineAverageLineWidth(logicalInput, spacing, maxWidth, glyphMap) {
     const section = logicalInput.getSection(index);
     const positions = glyphMap[section.fontStack];
     const glyph = positions?.[logicalInput.getCharCode(index)];
-    if (!glyph) continue;
+    if (!glyph) {
+      continue;
+    }
     totalWidth += glyph.metrics.advance * section.scale + spacing;
   }
 
@@ -277,9 +281,13 @@ function leastBadBreaks(lastLineBreak) {
 }
 
 function determineLineBreaks(logicalInput, spacing, maxWidth, glyphMap) {
-  if (!maxWidth) return [];
+  if (!maxWidth) {
+    return [];
+  }
 
-  if (!logicalInput) return [];
+  if (!logicalInput) {
+    return [];
+  }
 
   const potentialLineBreaks = [];
   const targetWidth = determineAverageLineWidth(logicalInput, spacing, maxWidth, glyphMap);
@@ -292,7 +300,9 @@ function determineLineBreaks(logicalInput, spacing, maxWidth, glyphMap) {
     const positions = glyphMap[section.fontStack];
     const glyph = positions?.[codePoint];
 
-    if (glyph && !whitespace[codePoint]) currentX += glyph.metrics.advance * section.scale + spacing;
+    if (glyph && !whitespace[codePoint]) {
+      currentX += glyph.metrics.advance * section.scale + spacing;
+    }
 
     // Ideographic characters, spaces, and word-breaking punctuation that often appear without
     // surrounding spaces.
@@ -389,7 +399,9 @@ function shapeLines(
       const positions = glyphMap[section.fontStack];
       const glyph = positions?.[codePoint];
 
-      if (!glyph) continue;
+      if (!glyph) {
+        continue;
+      }
 
       if (!charHasUprightVerticalOrientation(codePoint) || writingMode === WritingMode.horizontal) {
         positionedGlyphs.push({
@@ -440,7 +452,9 @@ function shapeLines(
 
 // justify right = 1, left = 0, center = 0.5
 function justifyLine(positionedGlyphs, glyphMap, start, end, justify) {
-  if (!justify) return;
+  if (!justify) {
+    return;
+  }
 
   const lastPositionedGlyph = positionedGlyphs[end];
   const positions = glyphMap[lastPositionedGlyph.fontStack];

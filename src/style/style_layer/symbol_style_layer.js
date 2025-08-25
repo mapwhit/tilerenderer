@@ -1,5 +1,5 @@
-import assert from 'assert';
 import { isExpression } from '@mapwhit/style-expressions';
+import assert from 'assert';
 import SymbolBucket from '../../data/bucket/symbol_bucket.js';
 import resolveTokens from '../../util/token.js';
 import StyleLayer from '../style_layer.js';

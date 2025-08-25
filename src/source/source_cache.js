@@ -34,14 +34,20 @@ class SourceCache extends Evented {
     this.id = id;
 
     this.on('data', e => {
-      if (e.dataType !== 'source') return;
-      if (e.sourceDataType === 'metadata') this.#sourceLoaded = true;
+      if (e.dataType !== 'source') {
+        return;
+      }
+      if (e.sourceDataType === 'metadata') {
+        this.#sourceLoaded = true;
+      }
 
       // for sources with mutable data, this event fires when the underlying data
       // to a source is changed. (i.e. GeoJSONSource#setData and ImageSource#serCoordinates)
       if (this.#sourceLoaded && !this.#paused && e.sourceDataType === 'content') {
         this.reload();
-        if (this.transform) this.update(this.transform);
+        if (this.transform) {
+          this.update(this.transform);
+        }
       }
     });
 
@@ -73,12 +79,18 @@ class SourceCache extends Evented {
    * an additional API call is received.
    */
   loaded() {
-    if (this.#sourceErrored) return true;
+    if (this.#sourceErrored) {
+      return true;
+    }
 
-    if (!this.#sourceLoaded) return false;
+    if (!this.#sourceLoaded) {
+      return false;
+    }
 
     for (const tile of this._tiles.values()) {
-      if (tile.state !== 'loaded' && tile.state !== 'errored') return false;
+      if (tile.state !== 'loaded' && tile.state !== 'errored') {
+        return false;
+      }
     }
     return true;
   }
@@ -92,12 +104,18 @@ class SourceCache extends Evented {
   }
 
   resume() {
-    if (!this.#paused) return;
+    if (!this.#paused) {
+      return;
+    }
     const shouldReload = this.#shouldReloadOnResume;
     this.#paused = false;
     this.#shouldReloadOnResume = false;
-    if (shouldReload) this.reload();
-    if (this.transform) this.update(this.transform);
+    if (shouldReload) {
+      this.reload();
+    }
+    if (this.transform) {
+      this.update(this.transform);
+    }
   }
 
   _loadTile(tile) {
@@ -170,7 +188,9 @@ class SourceCache extends Evented {
     this._cache.reset();
 
     this._tiles.forEach(tile => {
-      if (tile.state !== 'errored') this._reloadTile(tile, 'reloading');
+      if (tile.state !== 'errored') {
+        this._reloadTile(tile, 'reloading');
+      }
     });
   }
 
@@ -191,15 +211,23 @@ class SourceCache extends Evented {
   _tileLoadError(tile, err) {
     tile.state = 'errored';
     // ignore do nothing strategy
-    if (err.doNothing) return;
-    if (err.status !== 404) this._source.fire(new ErrorEvent(err, { tile }));
+    if (err.doNothing) {
+      return;
+    }
+    if (err.status !== 404) {
+      this._source.fire(new ErrorEvent(err, { tile }));
+    }
     // continue to try loading parent/children tiles if a tile doesn't exist (404)
-    else this.update(this.transform);
+    else {
+      this.update(this.transform);
+    }
   }
 
   _tileLoaded(tile, err) {
     tile.timeAdded = browser.now();
-    if (this.getSource().type === 'raster-dem' && tile.dem) this._backfillDEM(tile);
+    if (this.getSource().type === 'raster-dem' && tile.dem) {
+      this._backfillDEM(tile);
+    }
     this._state.initializeTileState(tile, this.map ? this.map.painter : null);
 
     this._source.fire(new Event('data', { dataType: 'source', tile: tile, coord: tile.tileID }));
@@ -226,7 +254,9 @@ class SourceCache extends Evented {
       const dy = borderTile.tileID.canonical.y - tile.tileID.canonical.y;
       const dim = 2 ** tile.tileID.canonical.z;
       const borderId = borderTile.tileID.key;
-      if (dx === 0 && dy === 0) return;
+      if (dx === 0 && dy === 0) {
+        return;
+      }
 
       if (Math.abs(dy) > 1) {
         return;
@@ -239,9 +269,13 @@ class SourceCache extends Evented {
           dx -= dim;
         }
       }
-      if (!borderTile.dem || !tile.dem) return;
+      if (!borderTile.dem || !tile.dem) {
+        return;
+      }
       tile.dem.backfillBorder(borderTile.dem, dx, dy);
-      if (tile.neighboringTiles?.[borderId]) tile.neighboringTiles[borderId].backfilled = true;
+      if (tile.neighboringTiles?.[borderId]) {
+        tile.neighboringTiles[borderId].backfilled = true;
+      }
     }
   }
   /**
@@ -277,8 +311,9 @@ class SourceCache extends Evented {
         !tile.hasData() ||
         tile.tileID.overscaledZ <= zoom ||
         tile.tileID.overscaledZ > maxCoveringZoom
-      )
+      ) {
         continue;
+      }
 
       // loop through parents and retain the topmost loaded one if found
       let topmostLoadedID = tile.tileID;
@@ -311,7 +346,9 @@ class SourceCache extends Evented {
   findLoadedParent(tileID, minCoveringZoom) {
     for (let z = tileID.overscaledZ - 1; z >= minCoveringZoom; z--) {
       const parent = tileID.scaledTo(z);
-      if (!parent) return;
+      if (!parent) {
+        return;
+      }
       const tile = this._tiles.get(parent.key);
       if (tile?.hasData()) {
         return tile;
@@ -434,7 +471,9 @@ class SourceCache extends Evented {
       const fadingTiles = new Set();
       for (const [id, tileID] of retain) {
         const tile = this._tiles.get(id);
-        if (!tile || (tile.fadeEndTime && tile.fadeEndTime <= browser.now())) continue;
+        if (!tile || (tile.fadeEndTime && tile.fadeEndTime <= browser.now())) {
+          continue;
+        }
 
         // if the tile is loaded but still fading in, find parents to cross-fade with it
         const parentTile = this.findLoadedParent(tileID, minCoveringZoom);
@@ -466,7 +505,9 @@ class SourceCache extends Evented {
 
     // Remove the tiles we don't need anymore.
     for (const [id, tile] of this._tiles) {
-      if (retain.has(id)) continue;
+      if (retain.has(id)) {
+        continue;
+      }
       if (tile.hasSymbolBuckets && !tile.holdingForFade()) {
         tile.setHoldDuration(this.map._fadeDuration);
       } else if (!tile.hasSymbolBuckets || tile.symbolFadeFinished()) {
@@ -496,7 +537,9 @@ class SourceCache extends Evented {
       // retain the tile even if it's not loaded because it's an ideal tile.
       retain.set(tileID.key, tileID);
 
-      if (tile.hasData()) continue;
+      if (tile.hasData()) {
+        continue;
+      }
 
       if (zoom < this._source.maxzoom) {
         // save missing tiles that potentially have loaded children
@@ -510,7 +553,9 @@ class SourceCache extends Evented {
     for (const tileID of idealTileIDs) {
       let tile = this._tiles.get(tileID.key);
 
-      if (tile.hasData()) continue;
+      if (tile.hasData()) {
+        continue;
+      }
 
       // The tile we require is not yet loaded or does not exist;
       // Attempt to find children that fully cover it.
@@ -532,8 +577,9 @@ class SourceCache extends Evented {
           retain.has(children[1].key) &&
           retain.has(children[2].key) &&
           retain.has(children[3].key)
-        )
+        ) {
           continue; // tile is covered by children
+        }
       }
 
       // We couldn't find child tiles that entirely cover the ideal tile; look for parents now.
@@ -547,7 +593,9 @@ class SourceCache extends Evented {
         const parentId = tileID.scaledTo(overscaledZ);
 
         // Break parent tile ascent if this route has been previously checked by another child.
-        if (checked.has(parentId.key)) break;
+        if (checked.has(parentId.key)) {
+          break;
+        }
         checked.add(parentId.key);
 
         tile = this.getTile(parentId);
@@ -559,7 +607,9 @@ class SourceCache extends Evented {
           // Save the current values, since they're the parent of the next iteration
           // of the parent tile ascent loop.
           parentWasRequested = tile.wasRequested();
-          if (tile.hasData()) break;
+          if (tile.hasData()) {
+            break;
+          }
         }
       }
     }
@@ -573,7 +623,9 @@ class SourceCache extends Evented {
    */
   _addTile(tileID) {
     let tile = this._tiles.get(tileID.key);
-    if (tile) return tile;
+    if (tile) {
+      return tile;
+    }
 
     tile = this._cache.getAndRemove(tileID);
     if (tile) {
@@ -590,13 +642,11 @@ class SourceCache extends Evented {
         err => this._tileLoadError(tile, err)
       );
     }
-
-    // Impossible, but silence flow.
-    if (!tile) return null;
-
     tile.uses++;
     this._tiles.set(tileID.key, tile);
-    if (!cached) this._source.fire(new Event('dataloading', { tile: tile, coord: tile.tileID, dataType: 'source' }));
+    if (!cached) {
+      this._source.fire(new Event('dataloading', { tile: tile, coord: tile.tileID, dataType: 'source' }));
+    }
 
     return tile;
   }
@@ -607,12 +657,16 @@ class SourceCache extends Evented {
    */
   _removeTile(id) {
     const tile = this._tiles.get(id);
-    if (!tile) return;
+    if (!tile) {
+      return;
+    }
 
     tile.uses--;
     this._tiles.delete(id);
 
-    if (tile.uses > 0) return;
+    if (tile.uses > 0) {
+      return;
+    }
 
     if (tile.hasData()) {
       this._cache.add(tile);
@@ -630,7 +684,9 @@ class SourceCache extends Evented {
     this.#shouldReloadOnResume = false;
     this.#paused = false;
 
-    for (const id of this._tiles.keys()) this._removeTile(id);
+    for (const id of this._tiles.keys()) {
+      this._removeTile(id);
+    }
 
     this._cache.reset();
   }
@@ -645,7 +701,9 @@ class SourceCache extends Evented {
     const tileResults = [];
 
     const transform = this.transform;
-    if (!transform) return tileResults;
+    if (!transform) {
+      return tileResults;
+    }
 
     const cameraPointQueryGeometry = has3DLayer
       ? transform.getCameraQueryGeometry(pointQueryGeometry)

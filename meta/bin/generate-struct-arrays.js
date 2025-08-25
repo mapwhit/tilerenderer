@@ -81,7 +81,7 @@ function createStructArrayLayoutType({ members, size, alignment }) {
 
   // combine consecutive 'members' with same underlying type, summing their
   // component counts
-  if (!alignment || alignment === 1)
+  if (!alignment || alignment === 1) {
     members = members.reduce((memo, member) => {
       if (memo.length > 0 && memo[memo.length - 1].type === member.type) {
         const last = memo[memo.length - 1];
@@ -89,6 +89,7 @@ function createStructArrayLayoutType({ members, size, alignment }) {
       }
       return memo.concat(member);
     }, []);
+  }
 
   const key = `${members.map(m => `${m.components}${typeAbbreviations[m.type]}`).join('')}${size}`;
   const className = `StructArrayLayout${key}`;

@@ -266,7 +266,9 @@ class GridIndex {
     for (let x = cx1; x <= cx2; x++) {
       for (let y = cy1; y <= cy2; y++) {
         const cellIndex = xCellCount * y + x;
-        if (fn.call(this, x1, y1, x2, y2, cellIndex, ...args)) return;
+        if (fn.call(this, x1, y1, x2, y2, cellIndex, ...args)) {
+          return;
+        }
       }
     }
 

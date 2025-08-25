@@ -18,7 +18,7 @@ test('map resize', async t => {
     done();
   });
 
-  await t.test('fires movestart, move, resize, and moveend events', async t => {
+  await t.test('fires movestart, move, resize, and moveend events', t => {
     const map = createMap();
     const events = [];
 

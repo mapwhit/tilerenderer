@@ -58,7 +58,9 @@ class Transform {
     return this._minZoom;
   }
   set minZoom(zoom) {
-    if (this._minZoom === zoom) return;
+    if (this._minZoom === zoom) {
+      return;
+    }
     this._minZoom = zoom;
     this.zoom = Math.max(this.zoom, zoom);
   }
@@ -67,7 +69,9 @@ class Transform {
     return this._maxZoom;
   }
   set maxZoom(zoom) {
-    if (this._maxZoom === zoom) return;
+    if (this._maxZoom === zoom) {
+      return;
+    }
     this._maxZoom = zoom;
     this.zoom = Math.min(this.zoom, zoom);
   }
@@ -102,7 +106,9 @@ class Transform {
   }
   set bearing(bearing) {
     const b = (-wrap(bearing, -180, 180) * Math.PI) / 180;
-    if (this.angle === b) return;
+    if (this.angle === b) {
+      return;
+    }
     this._unmodified = false;
     this.angle = b;
     this._calcMatrices();
@@ -117,7 +123,9 @@ class Transform {
   }
   set pitch(pitch) {
     const p = (clamp(pitch, 0, 60) / 180) * Math.PI;
-    if (this._pitch === p) return;
+    if (this._pitch === p) {
+      return;
+    }
     this._unmodified = false;
     this._pitch = p;
     this._calcMatrices();
@@ -128,7 +136,9 @@ class Transform {
   }
   set fov(fov) {
     fov = Math.max(0.01, Math.min(60, fov));
-    if (this._fov === fov) return;
+    if (this._fov === fov) {
+      return;
+    }
     this._unmodified = false;
     this._fov = (fov / 180) * Math.PI;
     this._calcMatrices();
@@ -139,7 +149,9 @@ class Transform {
   }
   set zoom(zoom) {
     const z = Math.min(Math.max(zoom, this.minZoom), this.maxZoom);
-    if (this._zoom === z) return;
+    if (this._zoom === z) {
+      return;
+    }
     this._unmodified = false;
     this._zoom = z;
     this.scale = this.zoomScale(z);
@@ -153,7 +165,9 @@ class Transform {
     return this._center;
   }
   set center(center) {
-    if (center.lat === this._center.lat && center.lng === this._center.lng) return;
+    if (center.lat === this._center.lat && center.lng === this._center.lng) {
+      return;
+    }
     this._unmodified = false;
     this._center = center;
     this._constrain();
@@ -193,7 +207,9 @@ class Transform {
       const extraWorldCopy = 1;
 
       for (let w = w0 - extraWorldCopy; w <= w1 + extraWorldCopy; w++) {
-        if (w === 0) continue;
+        if (w === 0) {
+          continue;
+        }
         result.push(new UnwrappedTileID(w, tileID));
       }
     }
@@ -216,8 +232,12 @@ class Transform {
     let z = this.coveringZoomLevel(options);
     const actualZ = z;
 
-    if (options.minzoom !== undefined && z < options.minzoom) return [];
-    if (options.maxzoom !== undefined && z > options.maxzoom) z = options.maxzoom;
+    if (options.minzoom !== undefined && z < options.minzoom) {
+      return [];
+    }
+    if (options.maxzoom !== undefined && z > options.maxzoom) {
+      z = options.maxzoom;
+    }
 
     const centerCoord = this.pointCoordinate(this.centerPoint, z);
     const centerPoint = new Point(centerCoord.column - 0.5, centerCoord.row - 0.5);
@@ -347,7 +367,9 @@ class Transform {
   }
 
   pointCoordinate(p, zoom) {
-    if (zoom === undefined) zoom = this.tileZoom;
+    if (zoom === undefined) {
+      zoom = this.tileZoom;
+    }
 
     const targetZ = 0;
     // since we don't know the correct projected z value for the point,
@@ -415,7 +437,9 @@ class Transform {
   }
 
   _constrain() {
-    if (!this.center || !this.width || !this.height || this._constraining) return;
+    if (!this.center || !this.width || !this.height || this._constraining) {
+      return;
+    }
 
     this._constraining = true;
 
@@ -459,16 +483,24 @@ class Transform {
       const y = this.y;
       const h2 = size.y / 2;
 
-      if (y - h2 < minY) y2 = minY + h2;
-      if (y + h2 > maxY) y2 = maxY - h2;
+      if (y - h2 < minY) {
+        y2 = minY + h2;
+      }
+      if (y + h2 > maxY) {
+        y2 = maxY - h2;
+      }
     }
 
     if (this.lngRange) {
       const x = this.x;
       const w2 = size.x / 2;
 
-      if (x - w2 < minX) x2 = minX + w2;
-      if (x + w2 > maxX) x2 = maxX - w2;
+      if (x - w2 < minX) {
+        x2 = minX + w2;
+      }
+      if (x + w2 > maxX) {
+        x2 = maxX - w2;
+      }
     }
 
     // pan the map if the screen goes off the range
@@ -481,7 +513,9 @@ class Transform {
   }
 
   _calcMatrices() {
-    if (!this.height) return;
+    if (!this.height) {
+      return;
+    }
 
     this.cameraToCenterDistance = (0.5 / Math.tan(this._fov / 2)) * this.height;
 
@@ -543,7 +577,9 @@ class Transform {
 
     // inverse matrix for conversion from screen coordinaes to location
     m = mat4.invert(new Float64Array(16), this.pixelMatrix);
-    if (!m) throw new Error('failed to invert matrix');
+    if (!m) {
+      throw new Error('failed to invert matrix');
+    }
     this.pixelMatrixInverse = m;
 
     this._posMatrixCache = {};
@@ -552,7 +588,9 @@ class Transform {
 
   maxPitchScaleFactor() {
     // calcMatrices hasn't run yet
-    if (!this.pixelMatrixInverse) return 1;
+    if (!this.pixelMatrixInverse) {
+      return 1;
+    }
 
     const coord = this.pointCoordinate(new Point(0, 0)).zoomTo(this.zoom);
     const p = [coord.column * this.tileSize, coord.row * this.tileSize, 0, 1];

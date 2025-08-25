@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import { readFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import colors from 'chalk';
-import { readFile } from 'fs/promises';
 
 export default function () {
   // /test/integration

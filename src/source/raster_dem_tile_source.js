@@ -54,12 +54,16 @@ export default class RasterDEMTileSource extends RasterTileSource {
   }
 
   unloadTile(tile) {
-    if (tile.demTexture) this.map.painter.saveTileTexture(tile.demTexture);
+    if (tile.demTexture) {
+      this.map.painter.saveTileTexture(tile.demTexture);
+    }
     if (tile.fbo) {
       tile.fbo.destroy();
       delete tile.fbo;
     }
-    if (tile.dem) delete tile.dem;
+    if (tile.dem) {
+      delete tile.dem;
+    }
     delete tile.neighboringTiles;
 
     tile.state = 'unloaded';

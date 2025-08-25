@@ -27,13 +27,21 @@ function readFontstack(tag, glyphs, pbf) {
 }
 
 function readGlyph(tag, glyph, pbf) {
-  if (tag === 1) glyph.id = pbf.readVarint();
-  else if (tag === 2) glyph.bitmap = pbf.readBytes();
-  else if (tag === 3) glyph.width = pbf.readVarint();
-  else if (tag === 4) glyph.height = pbf.readVarint();
-  else if (tag === 5) glyph.left = pbf.readSVarint();
-  else if (tag === 6) glyph.top = pbf.readSVarint();
-  else if (tag === 7) glyph.advance = pbf.readVarint();
+  if (tag === 1) {
+    glyph.id = pbf.readVarint();
+  } else if (tag === 2) {
+    glyph.bitmap = pbf.readBytes();
+  } else if (tag === 3) {
+    glyph.width = pbf.readVarint();
+  } else if (tag === 4) {
+    glyph.height = pbf.readVarint();
+  } else if (tag === 5) {
+    glyph.left = pbf.readSVarint();
+  } else if (tag === 6) {
+    glyph.top = pbf.readSVarint();
+  } else if (tag === 7) {
+    glyph.advance = pbf.readVarint();
+  }
 }
 
 export default function parseGlyph(data) {

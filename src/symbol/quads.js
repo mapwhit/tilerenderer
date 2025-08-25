@@ -106,10 +106,14 @@ export function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positi
     const positionedGlyph = positionedGlyphs[k];
     const glyphPositions = positions[positionedGlyph.fontStack];
     const glyph = glyphPositions?.[positionedGlyph.glyph];
-    if (!glyph) continue;
+    if (!glyph) {
+      continue;
+    }
 
     const rect = glyph.rect;
-    if (!rect) continue;
+    if (!rect) {
+      continue;
+    }
 
     // The rects have an addditional buffer that is not included in their size.
     const glyphPadding = 1.0;

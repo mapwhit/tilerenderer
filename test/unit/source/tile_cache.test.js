@@ -7,7 +7,6 @@ const idB = new OverscaledTileID(10, 0, 10, 0, 2);
 const idC = new OverscaledTileID(10, 0, 10, 0, 3);
 const idD = new OverscaledTileID(10, 0, 10, 0, 4);
 const tileA = { tileID: idA };
-const tileA2 = { tileID: idA };
 const tileB = { tileID: idB };
 const tileC = { tileID: idC };
 const tileD = { tileID: idD };

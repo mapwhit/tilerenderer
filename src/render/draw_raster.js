@@ -8,8 +8,12 @@ import { rasterUniformValues } from './program/raster_program.js';
 export default drawRaster;
 
 function drawRaster(painter, sourceCache, layer, coords) {
-  if (painter.renderPass !== 'translucent') return;
-  if (layer._paint.get('raster-opacity') === 0) return;
+  if (painter.renderPass !== 'translucent') {
+    return;
+  }
+  if (layer._paint.get('raster-opacity') === 0) {
+    return;
+  }
 
   const context = painter.context;
   const gl = context.gl;
@@ -129,7 +133,9 @@ function getFadeValues(tile, parentTile, sourceCache, layer, transform) {
     // once they're old enough to pass the crossfading threshold
     // (fadeDuration), unset the `refreshedUponExpiration` flag so we don't
     // incorrectly fail to crossfade them when zooming
-    if (tile.refreshedUponExpiration && sinceTile >= 1) tile.refreshedUponExpiration = false;
+    if (tile.refreshedUponExpiration && sinceTile >= 1) {
+      tile.refreshedUponExpiration = false;
+    }
 
     if (parentTile) {
       return {

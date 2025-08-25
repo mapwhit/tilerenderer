@@ -1,8 +1,5 @@
 import test from 'node:test';
-import Map from '../../../../src/ui/map.js';
-import DOM from '../../../../src/util/dom.js';
 import { createMap, initWindow } from '../../../util/util.js';
-import _window from '../../../util/window.js';
 
 test('Map._requestRenderFrame', async t => {
   initWindow(t);

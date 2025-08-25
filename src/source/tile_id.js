@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { getTileBBox } from '@mapbox/whoots-js';
 import Coordinate from '../geo/coordinate.js';
 
 export class CanonicalTileID {
@@ -89,16 +88,30 @@ export class OverscaledTileID {
   }
 
   isLessThan(rhs) {
-    if (this.wrap < rhs.wrap) return true;
-    if (this.wrap > rhs.wrap) return false;
+    if (this.wrap < rhs.wrap) {
+      return true;
+    }
+    if (this.wrap > rhs.wrap) {
+      return false;
+    }
 
-    if (this.overscaledZ < rhs.overscaledZ) return true;
-    if (this.overscaledZ > rhs.overscaledZ) return false;
+    if (this.overscaledZ < rhs.overscaledZ) {
+      return true;
+    }
+    if (this.overscaledZ > rhs.overscaledZ) {
+      return false;
+    }
 
-    if (this.canonical.x < rhs.canonical.x) return true;
-    if (this.canonical.x > rhs.canonical.x) return false;
+    if (this.canonical.x < rhs.canonical.x) {
+      return true;
+    }
+    if (this.canonical.x > rhs.canonical.x) {
+      return false;
+    }
 
-    if (this.canonical.y < rhs.canonical.y) return true;
+    if (this.canonical.y < rhs.canonical.y) {
+      return true;
+    }
     return false;
   }
 
@@ -133,7 +146,9 @@ export class OverscaledTileID {
 
 export function calculateKey(wrap, z, x, y) {
   wrap *= 2;
-  if (wrap < 0) wrap = wrap * -1 - 1;
+  if (wrap < 0) {
+    wrap = wrap * -1 - 1;
+  }
   const dim = 1 << z;
   return (dim * dim * wrap + dim * y + x) * 32 + z;
 }

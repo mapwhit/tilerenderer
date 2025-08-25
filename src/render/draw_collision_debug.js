@@ -13,9 +13,13 @@ function drawCollisionDebugGeometry(painter, sourceCache, layer, coords, drawCir
     const coord = coords[i];
     const tile = sourceCache.getTile(coord);
     const bucket = tile.getBucket(layer);
-    if (!bucket) continue;
+    if (!bucket) {
+      continue;
+    }
     const buffers = drawCircles ? bucket.collisionCircle : bucket.collisionBox;
-    if (!buffers) continue;
+    if (!buffers) {
+      continue;
+    }
 
     program.draw(
       context,

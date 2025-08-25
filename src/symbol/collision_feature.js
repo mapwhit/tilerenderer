@@ -174,8 +174,12 @@ class CollisionFeature {
       let boxDistanceToAnchor = labelStartDistance + boxOffset;
 
       // make the distance between pitch padding boxes bigger
-      if (boxOffset < 0) boxDistanceToAnchor += boxOffset;
-      if (boxOffset > labelLength) boxDistanceToAnchor += boxOffset - labelLength;
+      if (boxOffset < 0) {
+        boxDistanceToAnchor += boxOffset;
+      }
+      if (boxOffset > labelLength) {
+        boxDistanceToAnchor += boxOffset - labelLength;
+      }
 
       if (boxDistanceToAnchor < anchorDistance) {
         // The line doesn't extend far enough back for this box, skip it

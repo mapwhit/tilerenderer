@@ -407,7 +407,9 @@ function createTextVertices(text, left, baseline, scale) {
 
   for (i = 0, len = text.length; i < len; i++) {
     glyph = simplexFont[text[i]];
-    if (!glyph) continue;
+    if (!glyph) {
+      continue;
+    }
     prev = null;
 
     for (j = 0, len2 = glyph[1].length; j < len2; j += 2) {

@@ -1,7 +1,9 @@
 import test from 'node:test';
 import LngLat from '../../../../src/geo/lng_lat.js';
 import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
+
 const fixedCoord = fixed.Coord;
+
 import { createMap, initWindow } from '../../../util/util.js';
 
 test('queryRenderedFeatures', async t => {
