@@ -5,4 +5,4 @@ function ParsingError(error) {
   this.line = match ? Number.parseInt(match[1], 10) : 0;
 }
 
-module.exports = ParsingError;
+export default ParsingError;

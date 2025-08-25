@@ -1,22 +1,19 @@
-const { fillExtrusionUniforms, fillExtrusionPatternUniforms } = require('./fill_extrusion_program');
-const {
-  fillUniforms,
-  fillPatternUniforms,
-  fillOutlineUniforms,
-  fillOutlinePatternUniforms
-} = require('./fill_program');
-const { circleUniforms } = require('./circle_program');
-const { collisionUniforms } = require('./collision_program');
-const { debugUniforms } = require('./debug_program');
-const { clippingMaskUniforms } = require('./clipping_mask_program');
-const { heatmapUniforms, heatmapTextureUniforms } = require('./heatmap_program');
-const { hillshadeUniforms, hillshadePrepareUniforms } = require('./hillshade_program');
-const { lineUniforms, lineGradientUniforms, linePatternUniforms, lineSDFUniforms } = require('./line_program');
-const { rasterUniforms } = require('./raster_program');
-const { symbolIconUniforms, symbolSDFUniforms } = require('./symbol_program');
-const { backgroundUniforms, backgroundPatternUniforms } = require('./background_program');
+import { fillExtrusionPatternUniforms, fillExtrusionUniforms } from './fill_extrusion_program.js';
 
-const programUniforms = {
+import { fillOutlinePatternUniforms, fillOutlineUniforms, fillPatternUniforms, fillUniforms } from './fill_program.js';
+
+import { backgroundPatternUniforms, backgroundUniforms } from './background_program.js';
+import { circleUniforms } from './circle_program.js';
+import { clippingMaskUniforms } from './clipping_mask_program.js';
+import { collisionUniforms } from './collision_program.js';
+import { debugUniforms } from './debug_program.js';
+import { heatmapTextureUniforms, heatmapUniforms } from './heatmap_program.js';
+import { hillshadePrepareUniforms, hillshadeUniforms } from './hillshade_program.js';
+import { lineGradientUniforms, linePatternUniforms, lineSDFUniforms, lineUniforms } from './line_program.js';
+import { rasterUniforms } from './raster_program.js';
+import { symbolIconUniforms, symbolSDFUniforms } from './symbol_program.js';
+
+export const programUniforms = {
   fillExtrusion: fillExtrusionUniforms,
   fillExtrusionPattern: fillExtrusionPatternUniforms,
   fill: fillUniforms,
@@ -42,5 +39,3 @@ const programUniforms = {
   background: backgroundUniforms,
   backgroundPattern: backgroundPatternUniforms
 };
-
-module.exports = { programUniforms };

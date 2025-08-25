@@ -1,7 +1,8 @@
-const test = require('node:test');
-const VertexBuffer = require('../../../src/gl/vertex_buffer');
-const { StructArrayLayout3i6 } = require('../../../src/data/array_types');
-const Context = require('../../../src/gl/context');
+import test from 'node:test';
+import gl from 'gl';
+import { StructArrayLayout3i6 } from '../../../src/data/array_types.js';
+import Context from '../../../src/gl/context.js';
+import VertexBuffer from '../../../src/gl/vertex_buffer.js';
 
 test('VertexBuffer', async t => {
   class TestArray extends StructArrayLayout3i6 {}
@@ -11,7 +12,7 @@ test('VertexBuffer', async t => {
   ];
 
   await t.test('constructs itself', t => {
-    const context = new Context(require('gl')(10, 10));
+    const context = new Context(gl(10, 10));
     const array = new TestArray();
     array.emplaceBack(1, 1, 1);
     array.emplaceBack(1, 1, 1);
@@ -28,7 +29,7 @@ test('VertexBuffer', async t => {
   });
 
   await t.test('enableAttributes', t => {
-    const context = new Context(require('gl')(10, 10));
+    const context = new Context(gl(10, 10));
     const array = new TestArray();
     const buffer = new VertexBuffer(context, array, attributes);
     const enableVertexAttribArray = t.mock.method(context.gl, 'enableVertexAttribArray', () => {});
@@ -38,7 +39,7 @@ test('VertexBuffer', async t => {
   });
 
   await t.test('setVertexAttribPointers', t => {
-    const context = new Context(require('gl')(10, 10));
+    const context = new Context(gl(10, 10));
     const array = new TestArray();
     const buffer = new VertexBuffer(context, array, attributes);
     const vertexAttribPointer = t.mock.method(context.gl, 'vertexAttribPointer', () => {});

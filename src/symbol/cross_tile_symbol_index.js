@@ -1,6 +1,5 @@
-const EXTENT = require('../data/extent');
-
-const { SymbolInstanceArray } = require('../data/array_types');
+import { SymbolInstanceArray } from '../data/array_types.js';
+import EXTENT from '../data/extent.js';
 
 /*
     The CrossTileSymbolIndex generally works on the assumption that
@@ -269,4 +268,4 @@ class CrossTileSymbolIndex {
   }
 }
 
-module.exports = CrossTileSymbolIndex;
+export default CrossTileSymbolIndex;

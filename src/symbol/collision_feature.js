@@ -1,4 +1,4 @@
-const { default: Point } = require('@mapbox/point-geometry');
+import Point from '@mapbox/point-geometry';
 
 /**
  * A CollisionFeature represents the area of the tile covered by a single label.
@@ -227,4 +227,4 @@ class CollisionFeature {
   }
 }
 
-module.exports = CollisionFeature;
+export default CollisionFeature;

@@ -1,4 +1,4 @@
-module.exports = createKey;
+export default createKey;
 
 function stringify(obj) {
   if (obj == null) return 'null';

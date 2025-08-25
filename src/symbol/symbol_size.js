@@ -1,14 +1,11 @@
-const { normalizePropertyExpression } = require('@mapwhit/style-expressions');
-
-const interpolate = require('../util/interpolate');
-const { clamp } = require('../util/util');
-const EvaluationParameters = require('../style/evaluation_parameters');
-
-module.exports = { getSizeData, evaluateSizeForFeature, evaluateSizeForZoom };
+import { normalizePropertyExpression } from '@mapwhit/style-expressions';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import interpolate from '../util/interpolate.js';
+import { clamp } from '../util/util.js';
 
 // For {text,icon}-size, get the bucket-level data that will be needed by
 // the painter to set symbol-size-related uniforms
-function getSizeData(tileZoom, value) {
+export function getSizeData(tileZoom, value) {
   const { expression } = value;
   if (expression.kind === 'constant') {
     return {
@@ -60,7 +57,7 @@ function getSizeData(tileZoom, value) {
   };
 }
 
-function evaluateSizeForFeature(sizeData, partiallyEvaluatedSize, symbol) {
+export function evaluateSizeForFeature(sizeData, partiallyEvaluatedSize, symbol) {
   const part = partiallyEvaluatedSize;
   if (sizeData.functionType === 'source') {
     return symbol.lowerSize / 10;
@@ -71,7 +68,7 @@ function evaluateSizeForFeature(sizeData, partiallyEvaluatedSize, symbol) {
   return part.uSize;
 }
 
-function evaluateSizeForZoom(sizeData, currentZoom, property) {
+export function evaluateSizeForZoom(sizeData, currentZoom, property) {
   if (sizeData.functionType === 'constant') {
     return {
       uSizeT: 0,

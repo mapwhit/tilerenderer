@@ -1,6 +1,6 @@
-const test = require('node:test');
-const VectorTileWorkerSource = require('../../../src/source/vector_tile_worker_source');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
+import test from 'node:test';
+import VectorTileWorkerSource from '../../../src/source/vector_tile_worker_source.js';
+import StyleLayerIndex from '../../../src/style/style_layer_index.js';
 
 test('VectorTileWorkerSource.constructor', t => {
   const resources = {};

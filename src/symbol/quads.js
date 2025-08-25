@@ -1,6 +1,5 @@
-const { default: Point } = require('@mapbox/point-geometry');
-
-const { GLYPH_PBF_BORDER } = require('../style/parse_glyph_pbf');
+import Point from '@mapbox/point-geometry';
+import { GLYPH_PBF_BORDER } from '../style/parse_glyph_pbf.js';
 
 /**
  * A textured quad for rendering a single icon or glyph.
@@ -20,7 +19,7 @@ const { GLYPH_PBF_BORDER } = require('../style/parse_glyph_pbf');
  * Create the quads used for rendering an icon.
  * @private
  */
-function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature) {
+export function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature) {
   const image = shapedIcon.image;
   const layout = layer._layout;
 
@@ -92,7 +91,7 @@ function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, feature)
  * Create the quads used for rendering a text label.
  * @private
  */
-function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
+export function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
   const oneEm = 24;
   const textRotate = (layer._layout.get('text-rotate').evaluate(feature, {}) * Math.PI) / 180;
   const textOffset = layer._layout
@@ -167,8 +166,3 @@ function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
 
   return quads;
 }
-
-module.exports = {
-  getIconQuads,
-  getGlyphQuads
-};

@@ -1,12 +1,6 @@
-const { default: Point } = require('@mapbox/point-geometry');
+import Point from '@mapbox/point-geometry';
 
-module.exports = {
-  getMaximumPaintValue,
-  translateDistance,
-  translate
-};
-
-function getMaximumPaintValue(property, layer, bucket) {
+export function getMaximumPaintValue(property, layer, bucket) {
   const value = layer._paint.get(property).value;
   if (value.kind === 'constant') {
     return value.value;
@@ -15,11 +9,11 @@ function getMaximumPaintValue(property, layer, bucket) {
   return binders[property].maxValue;
 }
 
-function translateDistance(translate) {
+export function translateDistance(translate) {
   return Math.sqrt(translate[0] * translate[0] + translate[1] * translate[1]);
 }
 
-function translate(queryGeometry, translate, translateAnchor, bearing, pixelsToTileUnits) {
+export function translate(queryGeometry, translate, translateAnchor, bearing, pixelsToTileUnits) {
   if (!translate[0] && !translate[1]) {
     return queryGeometry;
   }

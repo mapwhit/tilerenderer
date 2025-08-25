@@ -1,6 +1,6 @@
-const { VectorTile } = require('@mapwhit/vector-tile');
-const Protobuf = require('@mapwhit/pbf');
-const makeWorkerTile = require('./worker_tile');
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
+import makeWorkerTile from './worker_tile.js';
 
 /**
  * The {@link WorkerSource} implementation that supports {@link VectorTileSource}.
@@ -55,4 +55,4 @@ class VectorTileWorkerSource {
   }
 }
 
-module.exports = VectorTileWorkerSource;
+export default VectorTileWorkerSource;

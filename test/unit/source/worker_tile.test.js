@@ -1,9 +1,9 @@
-const test = require('node:test');
-const makeWorkerTile = require('../../../src/source/worker_tile');
-const Wrapper = require('../../../src/source/geojson_wrapper');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
-const { create: createLayers } = require('../../util/layers');
+import test from 'node:test';
+import Wrapper from '../../../src/source/geojson_wrapper.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import makeWorkerTile from '../../../src/source/worker_tile.js';
+import StyleLayerIndex from '../../../src/style/style_layer_index.js';
+import { create as createLayers } from '../../util/layers.js';
 
 const tileID = new OverscaledTileID(1, 0, 1, 1, 1);
 const params = {

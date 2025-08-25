@@ -1,7 +1,7 @@
-const test = require('node:test');
-const createStyleLayer = require('../../../src/style/create_style_layer');
-const FillStyleLayer = require('../../../src/style/style_layer/fill_style_layer');
-const { Color } = require('@mapwhit/style-expressions');
+import test from 'node:test';
+import { Color } from '@mapwhit/style-expressions';
+import createStyleLayer from '../../../src/style/create_style_layer.js';
+import FillStyleLayer from '../../../src/style/style_layer/fill_style_layer.js';
 
 test('StyleLayer', async t => {
   await t.test('instantiates the correct subclass', t => {

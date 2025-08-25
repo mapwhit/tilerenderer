@@ -1,18 +1,17 @@
-const Anchor = require('./anchor');
-
-const { getAnchors, getCenterAnchor } = require('./get_anchors');
-const clipLine = require('./clip_line');
-const { shapeText, shapeIcon, WritingMode } = require('./shaping');
-const { getGlyphQuads, getIconQuads } = require('./quads');
-const CollisionFeature = require('./collision_feature');
-const warn = require('../util/warn');
-const { allowsVerticalWritingMode, allowsLetterSpacing } = require('../util/script_detection');
-const findPoleOfInaccessibility = require('../util/find_pole_of_inaccessibility');
-const classifyRings = require('../util/classify_rings');
-const EXTENT = require('../data/extent');
-const SymbolBucket = require('../data/bucket/symbol_bucket');
-const EvaluationParameters = require('../style/evaluation_parameters');
-const murmur3 = require('murmurhash-js');
+import murmur3 from 'murmurhash-js';
+import SymbolBucket from '../data/bucket/symbol_bucket.js';
+import EXTENT from '../data/extent.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import classifyRings from '../util/classify_rings.js';
+import findPoleOfInaccessibility from '../util/find_pole_of_inaccessibility.js';
+import { allowsLetterSpacing, allowsVerticalWritingMode } from '../util/script_detection.js';
+import warn from '../util/warn.js';
+import Anchor from './anchor.js';
+import clipLine from './clip_line.js';
+import CollisionFeature from './collision_feature.js';
+import { getAnchors, getCenterAnchor } from './get_anchors.js';
+import { getGlyphQuads, getIconQuads } from './quads.js';
+import { WritingMode, shapeIcon, shapeText } from './shaping.js';
 
 // The symbol layout process needs `text-size` evaluated at up to five different zoom levels, and
 // `icon-size` at up to three:
@@ -29,7 +28,7 @@ const murmur3 = require('murmurhash-js');
 // (1) and (2) are stored in `bucket.layers[0]._layout`. The remainder are below.
 //
 
-function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePositions, showCollisionBoxes) {
+export function performSymbolLayout(bucket, glyphMap, glyphPositions, imageMap, imagePositions, showCollisionBoxes) {
   bucket.createArrays();
 
   const tileSize = 512 * bucket.overscaling;
@@ -515,7 +514,3 @@ function anchorIsTooClose(bucket, text, repeatDistance, anchor) {
   compareText[text].push(anchor);
   return false;
 }
-
-module.exports = {
-  performSymbolLayout
-};

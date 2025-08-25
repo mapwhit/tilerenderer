@@ -1,6 +1,6 @@
-const test = require('node:test');
-const { default: Point } = require('@mapbox/point-geometry');
-const { getAnchors, getCenterAnchor } = require('../../../src/symbol/get_anchors');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import { getAnchors, getCenterAnchor } from '../../../src/symbol/get_anchors.js';
 
 const TILE_EXTENT = 4096;
 

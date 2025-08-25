@@ -1,8 +1,8 @@
-const test = require('node:test');
-const { mapObject } = require('../../../src/util/object');
-const createStyleLayer = require('../../../src/style/create_style_layer');
-const StyleLayerIndex = require('../../../src/style/style_layer_index');
-const { create: createLayers } = require('../../util/layers');
+import test from 'node:test';
+import createStyleLayer from '../../../src/style/create_style_layer.js';
+import StyleLayerIndex from '../../../src/style/style_layer_index.js';
+import { mapObject } from '../../../src/util/object.js';
+import { create as createLayers } from '../../util/layers.js';
 
 test('StyleLayerIndex.replace', t => {
   const index = new StyleLayerIndex(

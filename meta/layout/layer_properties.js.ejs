@@ -9,12 +9,12 @@
 -%>
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const {
+import {
   Properties,
 <% for (const klass of klasses) { -%>
   <%= klass %>,
 <% } -%>
-} = require('../properties');
+} from '../properties.js';
 
 <% if (layoutProperties.length) { -%>
 const layout = new Properties({
@@ -29,4 +29,4 @@ const paint = new Properties({
 <% } -%>
 });
 
-module.exports = { paint<% if (layoutProperties.length) { %>, layout<% } %> };
+export default { paint<% if (layoutProperties.length) { %>, layout<% } %> };

@@ -1,16 +1,16 @@
-const test = require('node:test');
-const fs = require('fs');
-const path = require('path');
-const Protobuf = require('@mapwhit/pbf');
-const { VectorTile } = require('@mapwhit/vector-tile');
-const { default: Point } = require('@mapbox/point-geometry');
-const segment = require('../../../src/data/segment');
-const FillBucket = require('../../../src/data/bucket/fill_bucket');
-const FillStyleLayer = require('../../../src/style/style_layer/fill_style_layer');
+import fs from 'fs';
+import test from 'node:test';
+import path from 'path';
+import Point from '@mapbox/point-geometry';
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
+import FillBucket from '../../../src/data/bucket/fill_bucket.js';
+import segment from '../../../src/data/segment.js';
+import FillStyleLayer from '../../../src/style/style_layer/fill_style_layer.js';
 
 // Load a fill feature from fixture tile.
 const vt = new VectorTile(
-  new Protobuf(fs.readFileSync(path.join(__dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
 );
 const feature = vt.layers.water.feature(0);
 

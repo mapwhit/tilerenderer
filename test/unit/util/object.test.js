@@ -1,13 +1,6 @@
-const test = require('node:test').test;
-const {
-  arraysIntersect,
-  bindAll,
-  clone,
-  deepEqual,
-  filterObject,
-  mapObject,
-  pick
-} = require('../../../src/util/object');
+import { test } from 'node:test';
+
+import { arraysIntersect, bindAll, clone, deepEqual, filterObject, mapObject, pick } from '../../../src/util/object.js';
 
 test('object', async t => {
   t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c']), { a: 1, c: 3 }, 'pick');

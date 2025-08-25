@@ -1,6 +1,6 @@
-const test = require('node:test');
-const { default: Point } = require('@mapbox/point-geometry');
-const { getIntersectionDistance } = require('../../../../src/style/style_layer/fill_extrusion_style_layer');
+import test from 'node:test';
+import Point from '@mapbox/point-geometry';
+import { getIntersectionDistance } from '../../../../src/style/style_layer/fill_extrusion_style_layer.js';
 
 test('getIntersectionDistance', async t => {
   const queryPoint = [new Point(100, 100)];

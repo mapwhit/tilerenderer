@@ -1,10 +1,9 @@
-const Texture = require('./texture');
-const StencilMode = require('../gl/stencil_mode');
-const DepthMode = require('../gl/depth_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { hillshadeUniformValues, hillshadeUniformPrepareValues } = require('./program/hillshade_program');
-
-module.exports = drawHillshade;
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { hillshadeUniformPrepareValues, hillshadeUniformValues } from './program/hillshade_program.js';
+import Texture from './texture.js';
+export default drawHillshade;
 
 function drawHillshade(painter, sourceCache, layer, tileIDs) {
   if (painter.renderPass !== 'offscreen' && painter.renderPass !== 'translucent') return;

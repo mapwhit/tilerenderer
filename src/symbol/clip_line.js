@@ -1,6 +1,5 @@
-const { default: Point } = require('@mapbox/point-geometry');
-
-module.exports = clipLine;
+import Point from '@mapbox/point-geometry';
+export default clipLine;
 
 /**
  * Returns the part of a multiline that intersects with the provided rectangular box.

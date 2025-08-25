@@ -1,9 +1,8 @@
-const DepthMode = require('../gl/depth_mode');
-const StencilMode = require('../gl/stencil_mode');
-const CullFaceMode = require('../gl/cull_face_mode');
-const { collisionUniformValues } = require('./program/collision_program');
-
-module.exports = drawCollisionDebug;
+import CullFaceMode from '../gl/cull_face_mode.js';
+import DepthMode from '../gl/depth_mode.js';
+import StencilMode from '../gl/stencil_mode.js';
+import { collisionUniformValues } from './program/collision_program.js';
+export default drawCollisionDebug;
 
 function drawCollisionDebugGeometry(painter, sourceCache, layer, coords, drawCircles) {
   const context = painter.context;

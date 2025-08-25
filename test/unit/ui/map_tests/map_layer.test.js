@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { createMap, createStyle, initWindow } = require('../../../util/util');
+import test from 'node:test';
+import { createMap, createStyle, initWindow } from '../../../util/util.js';
 
 test('map layers', async t => {
   initWindow(t);

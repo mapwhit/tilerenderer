@@ -1,6 +1,5 @@
-const warn = require('../util/warn');
-
-const EXTENT = require('./extent');
+import warn from '../util/warn.js';
+import EXTENT from './extent.js';
 
 // These bounds define the minimum and maximum supported coordinate values.
 // While visible coordinates are within [0, EXTENT], tiles may theoretically
@@ -21,7 +20,7 @@ const bounds = createBounds(16);
  * @param {VectorTileFeature} feature
  * @private
  */
-module.exports = function loadGeometry(feature) {
+export default function loadGeometry(feature) {
   const scale = EXTENT / feature.extent;
   const geometry = feature.loadGeometry();
   for (let r = 0; r < geometry.length; r++) {
@@ -39,4 +38,4 @@ module.exports = function loadGeometry(feature) {
     }
   }
   return geometry;
-};
+}

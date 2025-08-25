@@ -1,6 +1,6 @@
 // This file is generated. Edit layer-properties.js.ejs, then run `make generate-style-code`.
 
-const { Properties, DataConstantProperty } = require('../properties');
+import { DataConstantProperty, Properties } from '../properties.js';
 
 const paint = new Properties({
   'hillshade-illumination-direction': new DataConstantProperty({
@@ -40,4 +40,4 @@ const paint = new Properties({
   })
 });
 
-module.exports = { paint };
+export default { paint };

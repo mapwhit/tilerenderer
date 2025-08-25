@@ -1,21 +1,19 @@
-const FeatureIndex = require('../data/feature_index');
-
-const { performSymbolLayout } = require('../symbol/symbol_layout');
-const { CollisionBoxArray } = require('../data/array_types');
-const dictionaryCoder = require('../util/dictionary_coder');
-const SymbolBucket = require('../data/bucket/symbol_bucket');
-const LineBucket = require('../data/bucket/line_bucket');
-const FillBucket = require('../data/bucket/fill_bucket');
-const FillExtrusionBucket = require('../data/bucket/fill_extrusion_bucket');
-const { mapObject } = require('../util/object');
-const warn = require('../util/warn');
-const assert = require('assert');
-const ImageAtlas = require('../render/image_atlas');
-const GlyphAtlas = require('../render/glyph_atlas');
-const EvaluationParameters = require('../style/evaluation_parameters');
-const { OverscaledTileID } = require('./tile_id');
-
-module.exports = makeWorkerTile;
+import assert from 'assert';
+import { CollisionBoxArray } from '../data/array_types.js';
+import FillBucket from '../data/bucket/fill_bucket.js';
+import FillExtrusionBucket from '../data/bucket/fill_extrusion_bucket.js';
+import LineBucket from '../data/bucket/line_bucket.js';
+import SymbolBucket from '../data/bucket/symbol_bucket.js';
+import FeatureIndex from '../data/feature_index.js';
+import GlyphAtlas from '../render/glyph_atlas.js';
+import ImageAtlas from '../render/image_atlas.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import { performSymbolLayout } from '../symbol/symbol_layout.js';
+import dictionaryCoder from '../util/dictionary_coder.js';
+import { mapObject } from '../util/object.js';
+import warn from '../util/warn.js';
+import { OverscaledTileID } from './tile_id.js';
+export default makeWorkerTile;
 
 async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
   const tileID = createTileID(params);

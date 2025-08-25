@@ -1,5 +1,5 @@
-const test = require('node:test');
-const taskQueue = require('../../../src/util/task_queue');
+import test from 'node:test';
+import taskQueue from '../../../src/util/task_queue.js';
 
 test('TaskQueue', async t => {
   await t.test('Calls callbacks, in order', t => {

@@ -1,8 +1,9 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const VectorTileSource = require('../../../src/source/vector_tile_source');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
-const { Evented } = require('@mapwhit/events');
+import test from 'node:test';
+import { Evented } from '@mapwhit/events';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import VectorTileSource from '../../../src/source/vector_tile_source.js';
+import sourceFixture from '../../fixtures/source.json' with { type: 'json' };
+import _window from '../../util/window.js';
 
 function createSource(options) {
   options.tiles ??= loadTile;
@@ -52,7 +53,7 @@ test('VectorTileSource', async t => {
   });
 
   await t.test('fires event with metadata property', (t, done) => {
-    const source = createSource(require('../../fixtures/source'));
+    const source = createSource(sourceFixture);
     source.on('data', e => {
       if (e.sourceDataType === 'content') {
         done();
@@ -66,7 +67,7 @@ test('VectorTileSource', async t => {
     evented.on('dataloading', () => {
       dataloadingFired = true;
     });
-    const source = createSource(Object.assign({ eventedParent: evented }, require('../../fixtures/source')));
+    const source = createSource(Object.assign({ eventedParent: evented }, sourceFixture));
     source.on('data', e => {
       if (e.sourceDataType === 'metadata') {
         if (!dataloadingFired) {

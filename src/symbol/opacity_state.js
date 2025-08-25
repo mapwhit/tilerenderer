@@ -14,4 +14,4 @@ class OpacityState {
   }
 }
 
-module.exports = OpacityState;
+export default OpacityState;

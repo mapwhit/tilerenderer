@@ -19,4 +19,4 @@ class CullFaceMode {
 CullFaceMode.disabled = new CullFaceMode(false, BACK, CCW);
 CullFaceMode.backCCW = new CullFaceMode(true, BACK, CCW);
 
-module.exports = CullFaceMode;
+export default CullFaceMode;

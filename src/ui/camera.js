@@ -1,12 +1,12 @@
-const { deepEqual } = require('../util/object');
-const { clamp, wrap, ease: defaultEasing } = require('../util/util');
-const warn = require('../util/warn');
-const interpolate = require('../util/interpolate');
-const browser = require('../util/browser');
-const LngLat = require('../geo/lng_lat');
-const LngLatBounds = require('../geo/lng_lat_bounds');
-const { default: Point } = require('@mapbox/point-geometry');
-const { Event, Evented } = require('@mapwhit/events');
+import Point from '@mapbox/point-geometry';
+import { Event, Evented } from '@mapwhit/events';
+import LngLat from '../geo/lng_lat.js';
+import LngLatBounds from '../geo/lng_lat_bounds.js';
+import browser from '../util/browser.js';
+import interpolate from '../util/interpolate.js';
+import { deepEqual } from '../util/object.js';
+import { clamp, ease as defaultEasing, wrap } from '../util/util.js';
+import warn from '../util/warn.js';
 
 /**
  * Options common to {@link Map#jumpTo}, {@link Map#easeTo}, and {@link Map#flyTo}, controlling the desired location,
@@ -948,4 +948,4 @@ class Camera extends Evented {
   }
 }
 
-module.exports = Camera;
+export default Camera;

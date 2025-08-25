@@ -1,8 +1,8 @@
-const assert = require('assert');
-const browser = require('../../util/browser');
-const pixelsToTileUnits = require('../../source/pixels_to_tile_units');
+import assert from 'assert';
+import pixelsToTileUnits from '../../source/pixels_to_tile_units.js';
+import browser from '../../util/browser.js';
 
-function patternUniformValues(crossfade, painter, tile) {
+export function patternUniformValues(crossfade, painter, tile) {
   const tileRatio = 1 / pixelsToTileUnits(tile, 1, painter.transform.tileZoom);
 
   const numTiles = 2 ** tile.tileID.overscaledZ;
@@ -23,7 +23,7 @@ function patternUniformValues(crossfade, painter, tile) {
   };
 }
 
-function bgPatternUniformValues(image, crossfade, painter, tile) {
+export function bgPatternUniformValues(image, crossfade, painter, tile) {
   const imagePosA = painter.imageManager.getPattern(image.from);
   const imagePosB = painter.imageManager.getPattern(image.to);
   assert(imagePosA && imagePosB);
@@ -53,5 +53,3 @@ function bgPatternUniformValues(image, crossfade, painter, tile) {
     u_pixel_coord_lower: [pixelX & 0xffff, pixelY & 0xffff]
   };
 }
-
-module.exports = { bgPatternUniformValues, patternUniformValues };

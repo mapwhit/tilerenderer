@@ -1,7 +1,7 @@
-const { AlphaImage } = require('../util/image');
+import Protobuf from '@mapwhit/pbf';
+import { AlphaImage } from '../util/image.js';
 
-const Protobuf = require('@mapwhit/pbf');
-const border = 3;
+export const GLYPH_PBF_BORDER = 3;
 
 function readFontstacks(tag, glyphs, pbf) {
   if (tag === 1) {
@@ -16,8 +16,8 @@ function readFontstack(tag, glyphs, pbf) {
       id,
       bitmap: new AlphaImage(
         {
-          width: width + 2 * border,
-          height: height + 2 * border
+          width: width + 2 * GLYPH_PBF_BORDER,
+          height: height + 2 * GLYPH_PBF_BORDER
         },
         bitmap
       ),
@@ -36,10 +36,6 @@ function readGlyph(tag, glyph, pbf) {
   else if (tag === 7) glyph.advance = pbf.readVarint();
 }
 
-function parseGlyph(data) {
+export default function parseGlyph(data) {
   return new Protobuf(data).readFields(readFontstacks, []);
 }
-
-parseGlyph.GLYPH_PBF_BORDER = border;
-
-module.exports = parseGlyph;

@@ -1,7 +1,7 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const DEMData = require('../../../src/data/dem_data');
-const { RGBAImage } = require('../../../src/util/image');
+import test from 'node:test';
+import DEMData from '../../../src/data/dem_data.js';
+import { RGBAImage } from '../../../src/util/image.js';
+import _window from '../../util/window.js';
 
 function createMockImage(height, width) {
   const pixels = new Uint8Array(height * width * 4);

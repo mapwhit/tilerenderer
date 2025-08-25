@@ -1,9 +1,9 @@
-const { RGBAImage } = require('../util/image');
-const { default: potpack } = require('potpack');
+import potpack from 'potpack';
+import { RGBAImage } from '../util/image.js';
 
 const padding = 1;
 
-class ImagePosition {
+export class ImagePosition {
   constructor(paddedRect, { pixelRatio }) {
     this.paddedRect = paddedRect;
     this.pixelRatio = pixelRatio;
@@ -26,7 +26,7 @@ class ImagePosition {
   }
 }
 
-class ImageAtlas {
+export default class ImageAtlas {
   constructor(icons, patterns) {
     const iconPositions = {};
     const patternPositions = {};
@@ -85,6 +85,3 @@ class ImageAtlas {
     this.patternPositions = patternPositions;
   }
 }
-
-ImageAtlas.ImagePosition = ImagePosition;
-module.exports = ImageAtlas;

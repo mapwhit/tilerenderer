@@ -1,6 +1,5 @@
-const StyleLayer = require('../style_layer');
-
-const properties = require('./background_style_layer_properties');
+import StyleLayer from '../style_layer.js';
+import properties from './background_style_layer_properties.js';
 
 class BackgroundStyleLayer extends StyleLayer {
   constructor(layer) {
@@ -8,4 +7,4 @@ class BackgroundStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = BackgroundStyleLayer;
+export default BackgroundStyleLayer;

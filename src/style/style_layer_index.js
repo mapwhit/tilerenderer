@@ -1,4 +1,4 @@
-const groupBySource = require('../util/group_layers');
+import groupBySource from '../util/group_layers.js';
 
 class StyleLayerIndex {
   #layers = new Map();
@@ -27,4 +27,4 @@ class StyleLayerIndex {
   }
 }
 
-module.exports = StyleLayerIndex;
+export default StyleLayerIndex;

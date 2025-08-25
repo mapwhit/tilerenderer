@@ -1,17 +1,11 @@
-const { charHasUprightVerticalOrientation, charAllowsIdeographicBreaking } = require('../util/script_detection');
-const verticalizePunctuation = require('../util/verticalize_punctuation');
-const { plugin: rtlTextPlugin } = require('../source/rtl_text_plugin');
+import { plugin as rtlTextPlugin } from '../source/rtl_text_plugin.js';
+import { charAllowsIdeographicBreaking, charHasUprightVerticalOrientation } from '../util/script_detection.js';
+import verticalizePunctuation from '../util/verticalize_punctuation.js';
 
-const WritingMode = {
+export const WritingMode = {
   horizontal: 1,
   vertical: 2,
   horizontalOnly: 3
-};
-
-module.exports = {
-  shapeText,
-  shapeIcon,
-  WritingMode
 };
 
 class TaggedString {
@@ -98,7 +92,7 @@ function breakLines(input, lineBreakPoints) {
   return lines;
 }
 
-function shapeText(
+export function shapeText(
   text,
   glyphs,
   defaultFontStack,
@@ -471,7 +465,7 @@ function align(positionedGlyphs, justify, horizontalAlign, verticalAlign, maxLin
   }
 }
 
-function shapeIcon(image, iconOffset, iconAnchor) {
+export function shapeIcon(image, iconOffset, iconAnchor) {
   const { horizontalAlign, verticalAlign } = getAnchorAlignment(iconAnchor);
   const dx = iconOffset[0];
   const dy = iconOffset[1];

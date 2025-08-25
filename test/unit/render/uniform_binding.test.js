@@ -1,5 +1,5 @@
-const test = require('node:test');
-const { Uniform1i, Uniform1f, Uniform2f, Uniform3f, Uniform4f } = require('../../../src/render/uniform_binding');
+import test from 'node:test';
+import { Uniform1f, Uniform1i, Uniform2f, Uniform3f, Uniform4f } from '../../../src/render/uniform_binding.js';
 
 test('Uniform1i', { plan: 4 }, t => {
   // test counts ensure we don't call the gl.uniform* setters more than expected

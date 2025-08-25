@@ -1,7 +1,7 @@
-const test = require('node:test');
-const _window = require('../../util/window');
-const RasterTileSource = require('../../../src/source/raster_tile_source');
-const { OverscaledTileID } = require('../../../src/source/tile_id');
+import test from 'node:test';
+import RasterTileSource from '../../../src/source/raster_tile_source.js';
+import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import _window from '../../util/window.js';
 
 function createSource(options) {
   options.tiles ??= loadTile;

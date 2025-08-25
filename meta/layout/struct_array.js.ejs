@@ -28,7 +28,7 @@ for (const member of members) {
 
 if (includeStructAccessors) {
 -%>
-class <%=StructTypeClass%> extends Struct {
+export class <%=StructTypeClass%> extends Struct {
 <%
 for (const {name, member, component} of components) {
   const elementOffset = `this._pos${member.size.toFixed(0)}`;
@@ -63,7 +63,7 @@ if (hasAnchorPoint) {
 /**
  * @private
  */
-class <%=StructArrayClass%> extends <%=StructArrayLayoutClass%> {
+export class <%=StructArrayClass%> extends <%=StructArrayLayoutClass%> {
 <%
 if (StructArrayClass === 'GlyphOffsetArray' || StructArrayClass === 'SymbolLineVertexArray') {
   // component getters

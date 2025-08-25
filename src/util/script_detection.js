@@ -1,40 +1,27 @@
-const isChar = require('./is_char_in_unicode_block');
+import isChar from './is_char_in_unicode_block.js';
 
-module.exports = {
-  allowsIdeographicBreaking,
-  allowsVerticalWritingMode,
-  allowsLetterSpacing,
-  charAllowsLetterSpacing,
-  charAllowsIdeographicBreaking,
-  charHasUprightVerticalOrientation,
-  charHasNeutralVerticalOrientation,
-  charHasRotatedVerticalOrientation,
-  charInSupportedScript,
-  isStringInSupportedScript
-};
-
-function allowsIdeographicBreaking(chars) {
+export function allowsIdeographicBreaking(chars) {
   for (const char of chars) {
     if (!charAllowsIdeographicBreaking(char.charCodeAt(0))) return false;
   }
   return true;
 }
 
-function allowsVerticalWritingMode(chars) {
+export function allowsVerticalWritingMode(chars) {
   for (const char of chars) {
     if (charHasUprightVerticalOrientation(char.charCodeAt(0))) return true;
   }
   return false;
 }
 
-function allowsLetterSpacing(chars) {
+export function allowsLetterSpacing(chars) {
   for (const char of chars) {
     if (!charAllowsLetterSpacing(char.charCodeAt(0))) return false;
   }
   return true;
 }
 
-function charAllowsLetterSpacing(char) {
+export function charAllowsLetterSpacing(char) {
   if (isChar['Arabic'](char)) return false;
   if (isChar['Arabic Supplement'](char)) return false;
   if (isChar['Arabic Extended-A'](char)) return false;
@@ -44,7 +31,7 @@ function charAllowsLetterSpacing(char) {
   return true;
 }
 
-function charAllowsIdeographicBreaking(char) {
+export function charAllowsIdeographicBreaking(char) {
   // Return early for characters outside all ideographic ranges.
   if (char < 0x2e80) return false;
 
@@ -92,7 +79,7 @@ function charAllowsIdeographicBreaking(char) {
  * “neutral” character to be drawn upright as well.
  * @private
  */
-function charHasUprightVerticalOrientation(char) {
+export function charHasUprightVerticalOrientation(char) {
   if (
     char === 0x02ea /* modifier letter yin departing tone mark */ ||
     char === 0x02eb /* modifier letter yang departing tone mark */
@@ -188,7 +175,7 @@ function charHasUprightVerticalOrientation(char) {
  * adjacent character is drawn upright or rotated.
  * @private
  */
-function charHasNeutralVerticalOrientation(char) {
+export function charHasNeutralVerticalOrientation(char) {
   if (isChar['Latin-1 Supplement'](char)) {
     if (
       char === 0x00a7 /* section sign */ ||
@@ -290,11 +277,11 @@ function charHasNeutralVerticalOrientation(char) {
  * character causes an adjacent “neutral” character to be drawn rotated as well.
  * @private
  */
-function charHasRotatedVerticalOrientation(char) {
+export function charHasRotatedVerticalOrientation(char) {
   return !(charHasUprightVerticalOrientation(char) || charHasNeutralVerticalOrientation(char));
 }
 
-function charInSupportedScript(char, canRenderRTL) {
+export function charInSupportedScript(char, canRenderRTL) {
   // This is a rough heuristic: whether we "can render" a script
   // actually depends on the properties of the font being used
   // and whether differences from the ideal rendering are considered
@@ -327,7 +314,7 @@ function charInSupportedScript(char, canRenderRTL) {
   return true;
 }
 
-function isStringInSupportedScript(chars, canRenderRTL) {
+export function isStringInSupportedScript(chars, canRenderRTL) {
   for (const char of chars) {
     if (!charInSupportedScript(char.charCodeAt(0), canRenderRTL)) {
       return false;

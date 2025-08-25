@@ -1,6 +1,5 @@
-const { OverscaledTileID } = require('../source/tile_id');
-
-module.exports = tileCover;
+import { OverscaledTileID } from '../source/tile_id.js';
+export default tileCover;
 
 function tileCover(z, bounds, actualZ, renderWorldCopies) {
   if (renderWorldCopies === undefined) {

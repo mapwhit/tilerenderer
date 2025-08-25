@@ -1,6 +1,5 @@
-const assert = require('assert');
-
-module.exports = dictionaryCoder;
+import assert from 'assert';
+export default dictionaryCoder;
 
 function dictionaryCoder(strings) {
   const numberToString = strings.sort();

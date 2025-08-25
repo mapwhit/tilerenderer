@@ -1,8 +1,8 @@
-const rewind = require('@mapwhit/geojson-rewind');
-const GeoJSONWrapper = require('./geojson_wrapper');
-const { default: Supercluster } = require('supercluster');
-const { default: geojsonvt } = require('geojson-vt');
-const VectorTileWorkerSource = require('./vector_tile_worker_source');
+import rewind from '@mapwhit/geojson-rewind';
+import geojsonvt from 'geojson-vt';
+import Supercluster from 'supercluster';
+import GeoJSONWrapper from './geojson_wrapper.js';
+import VectorTileWorkerSource from './vector_tile_worker_source.js';
 
 /**
  * The {@link WorkerSource} implementation that supports {@link GeoJSONSource}.
@@ -78,4 +78,4 @@ function loadJSON(data) {
   }
 }
 
-module.exports = GeoJSONWorkerSource;
+export default GeoJSONWorkerSource;

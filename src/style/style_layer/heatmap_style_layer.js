@@ -1,8 +1,7 @@
-const StyleLayer = require('../style_layer');
-
-const HeatmapBucket = require('../../data/bucket/heatmap_bucket');
-const properties = require('./heatmap_style_layer_properties');
-const renderColorRamp = require('../../util/color_ramp');
+import HeatmapBucket from '../../data/bucket/heatmap_bucket.js';
+import renderColorRamp from '../../util/color_ramp.js';
+import StyleLayer from '../style_layer.js';
+import properties from './heatmap_style_layer_properties.js';
 
 class HeatmapStyleLayer extends StyleLayer {
   createBucket(options) {
@@ -48,4 +47,4 @@ class HeatmapStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = HeatmapStyleLayer;
+export default HeatmapStyleLayer;

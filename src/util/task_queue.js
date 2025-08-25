@@ -1,8 +1,6 @@
-const assert = require('assert');
+import assert from 'assert';
 
-module.exports = taskQueue;
-
-function taskQueue(thisArg) {
+export default function taskQueue(thisArg) {
   const queues = {
     running: [],
     later: []

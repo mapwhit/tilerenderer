@@ -1,4 +1,4 @@
-const warn = require('../util/warn');
+import warn from '../util/warn.js';
 
 /**
  * A LineAtlas lets us reuse rendered dashed lines
@@ -136,4 +136,4 @@ class LineAtlas {
   }
 }
 
-module.exports = LineAtlas;
+export default LineAtlas;

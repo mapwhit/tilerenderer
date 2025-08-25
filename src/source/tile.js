@@ -1,17 +1,17 @@
-const { deepEqual } = require('../util/object');
-const uniqueId = require('../util/unique_id');
-const { updateBuckets } = require('../data/bucket');
-const GeoJSONFeature = require('../util/vectortile_to_geojson');
-const featureFilter = require('../style-spec/feature_filter');
-const SymbolBucket = require('../data/bucket/symbol_bucket');
-const { RasterBoundsArray, CollisionBoxArray } = require('../data/array_types');
-const rasterBoundsAttributes = require('../data/raster_bounds_attributes');
-const EXTENT = require('../data/extent');
-const Texture = require('../render/texture');
-const SegmentVector = require('../data/segment');
-const { TriangleIndexArray } = require('../data/index_array_type');
-const browser = require('../util/browser');
-const EvaluationParameters = require('../style/evaluation_parameters');
+import { CollisionBoxArray, RasterBoundsArray } from '../data/array_types.js';
+import { updateBuckets } from '../data/bucket.js';
+import SymbolBucket from '../data/bucket/symbol_bucket.js';
+import EXTENT from '../data/extent.js';
+import { TriangleIndexArray } from '../data/index_array_type.js';
+import rasterBoundsAttributes from '../data/raster_bounds_attributes.js';
+import SegmentVector from '../data/segment.js';
+import Texture from '../render/texture.js';
+import featureFilter from '../style-spec/feature_filter/index.js';
+import EvaluationParameters from '../style/evaluation_parameters.js';
+import browser from '../util/browser.js';
+import { deepEqual } from '../util/object.js';
+import uniqueId from '../util/unique_id.js';
+import GeoJSONFeature from '../util/vectortile_to_geojson.js';
 
 /**
  * A tile object is the combination of a Coordinate, which defines
@@ -316,4 +316,4 @@ class Tile {
   }
 }
 
-module.exports = Tile;
+export default Tile;

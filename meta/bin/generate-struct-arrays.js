@@ -6,11 +6,11 @@
  *    - Particular, named StructArray subclasses, when fancy struct accessors are needed (e.g. CollisionBoxArray)
  */
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
 
-const ejs = require('ejs');
-const { createLayout, viewTypes } = require('../../src/util/struct_array');
+import path from 'node:path';
+import ejs from 'ejs';
+import { createLayout, viewTypes } from '../../src/util/struct_array.js';
 
 const structArrayLayoutJs = ejs.compile(fs.readFileSync(resolve('../layout/struct_array_layout.js.ejs'), 'utf8'), {
   strict: true
@@ -31,7 +31,6 @@ const typeAbbreviations = {
 
 const arraysWithStructAccessors = [];
 const arrayTypeEntries = new Set();
-const extras = [];
 const layoutCache = {};
 
 function normalizeMembers(members, usedTypes) {
@@ -71,7 +70,7 @@ function createStructArrayType(name, layout, includeStructAccessors = false) {
       includeStructAccessors
     });
   } else {
-    arrayTypeEntries.add(`${arrayClass}: ${layoutClass}`);
+    arrayTypeEntries.add(`${layoutClass} as ${arrayClass}`);
   }
   return arrayClass;
 }
@@ -117,17 +116,17 @@ function camelize(str) {
 
 global.camelize = camelize;
 
-const posAttributes = require('../../src/data/pos_attributes');
-const rasterBoundsAttributes = require('../../src/data/raster_bounds_attributes');
+import posAttributes from '../../src/data/pos_attributes.js';
+import rasterBoundsAttributes from '../../src/data/raster_bounds_attributes.js';
 
 createStructArrayType('pos', posAttributes);
 createStructArrayType('raster_bounds', rasterBoundsAttributes);
 
-const circleAttributes = require('../../src/data/bucket/circle_attributes');
-const fillAttributes = require('../../src/data/bucket/fill_attributes');
-const fillExtrusionAttributes = require('../../src/data/bucket/fill_extrusion_attributes');
-const lineAttributes = require('../../src/data/bucket/line_attributes');
-const patternAttributes = require('../../src/data/bucket/pattern_attributes');
+import circleAttributes from '../../src/data/bucket/circle_attributes.js';
+import fillAttributes from '../../src/data/bucket/fill_attributes.js';
+import fillExtrusionAttributes from '../../src/data/bucket/fill_extrusion_attributes.js';
+import lineAttributes from '../../src/data/bucket/line_attributes.js';
+import patternAttributes from '../../src/data/bucket/pattern_attributes.js';
 
 // layout vertex arrays
 const layoutAttributes = {
@@ -143,46 +142,44 @@ for (const name in layoutAttributes) {
 }
 
 // symbol layer specific arrays
-const {
-  symbolLayoutAttributes,
-  dynamicLayoutAttributes,
-  placementOpacityAttributes,
+import {
   collisionBox,
   collisionBoxLayout,
   collisionCircleLayout,
   collisionVertexAttributes,
-  placement,
-  symbolInstance,
+  dynamicLayoutAttributes,
   glyphOffset,
-  lineVertex
-} = require('../../src/data/bucket/symbol_attributes');
+  lineVertex,
+  placement,
+  placementOpacityAttributes,
+  symbolInstance,
+  symbolLayoutAttributes
+} from '../../src/data/bucket/symbol_attributes.js';
 
 createStructArrayType('symbol_layout', symbolLayoutAttributes);
 createStructArrayType('symbol_dynamic_layout', dynamicLayoutAttributes);
 createStructArrayType('symbol_opacity', placementOpacityAttributes);
-extras.push(createStructArrayType('collision_box', collisionBox, true));
+createStructArrayType('collision_box', collisionBox, true);
 createStructArrayType('collision_box_layout', collisionBoxLayout);
 createStructArrayType('collision_circle_layout', collisionCircleLayout);
 createStructArrayType('collision_vertex', collisionVertexAttributes);
-extras.push(createStructArrayType('placed_symbol', placement, true));
-extras.push(createStructArrayType('symbol_instance', symbolInstance, true));
-extras.push(createStructArrayType('glyph_offset', glyphOffset, true));
-extras.push(createStructArrayType('symbol_line_vertex', lineVertex, true));
+createStructArrayType('placed_symbol', placement, true);
+createStructArrayType('symbol_instance', symbolInstance, true);
+createStructArrayType('glyph_offset', glyphOffset, true);
+createStructArrayType('symbol_line_vertex', lineVertex, true);
 
 // feature index array
-extras.push(
-  createStructArrayType(
-    'feature_index',
-    createLayout([
-      // the index of the feature in the original vectortile
-      { type: 'Uint32', name: 'featureIndex' },
-      // the source layer the feature appears in
-      { type: 'Uint16', name: 'sourceLayerIndex' },
-      // the bucket the feature appears in
-      { type: 'Uint16', name: 'bucketIndex' }
-    ]),
-    true
-  )
+createStructArrayType(
+  'feature_index',
+  createLayout([
+    // the index of the feature in the original vectortile
+    { type: 'Uint32', name: 'featureIndex' },
+    // the source layer the feature appears in
+    { type: 'Uint16', name: 'sourceLayerIndex' },
+    // the bucket the feature appears in
+    { type: 'Uint16', name: 'bucketIndex' }
+  ]),
+  true
 );
 
 // triangle index array
@@ -244,20 +241,18 @@ fs.writeFileSync(
   resolve('../../src/data/array_types.js'),
   `// This file is generated. Edit the template at meta/bin/generate-struct-arrays.js.ejs and instead.
 
-const assert = require('assert');
-const { Struct, StructArray } = require('../util/struct_array');
+import assert from 'assert';
+
+import { Struct, StructArray } from '../util/struct_array.js';
 
 ${layouts.map(structArrayLayoutJs).join('\n')}
 ${arraysWithStructAccessors.map(structArrayJs).join('\n')}
-module.exports = {
-  ${layouts.map(layout => layout.className).join(',\n  ')},
-  ${[...arrayTypeEntries].join(',\n  ')},
-
-  ${extras.sort().join(',\n  ')}
+export {
+  ${[...arrayTypeEntries].join(',\n  ')}
 };
 `
 );
 
 function resolve(file) {
-  return path.resolve(__dirname, file);
+  return path.resolve(import.meta.dirname, file);
 }

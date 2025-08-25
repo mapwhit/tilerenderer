@@ -1,6 +1,6 @@
-const { Color } = require('@mapwhit/style-expressions');
+import { Color } from '@mapwhit/style-expressions';
 
-class ClearColor {
+export class ClearColor {
   constructor(context) {
     this.context = context;
     this.current = Color.transparent;
@@ -19,7 +19,7 @@ class ClearColor {
   }
 }
 
-class ClearDepth {
+export class ClearDepth {
   constructor(context) {
     this.context = context;
     this.current = 1;
@@ -37,7 +37,7 @@ class ClearDepth {
   }
 }
 
-class ClearStencil {
+export class ClearStencil {
   constructor(context) {
     this.context = context;
     this.current = 0;
@@ -55,7 +55,7 @@ class ClearStencil {
   }
 }
 
-class ColorMask {
+export class ColorMask {
   constructor(context) {
     this.context = context;
     this.current = [true, true, true, true];
@@ -74,7 +74,7 @@ class ColorMask {
   }
 }
 
-class DepthMask {
+export class DepthMask {
   constructor(context) {
     this.context = context;
     this.current = true;
@@ -92,7 +92,7 @@ class DepthMask {
   }
 }
 
-class StencilMask {
+export class StencilMask {
   constructor(context) {
     this.context = context;
     this.current = 0xff;
@@ -110,7 +110,7 @@ class StencilMask {
   }
 }
 
-class StencilFunc {
+export class StencilFunc {
   constructor(context) {
     this.context = context;
     this.current = {
@@ -133,7 +133,7 @@ class StencilFunc {
   }
 }
 
-class StencilOp {
+export class StencilOp {
   constructor(context) {
     this.context = context;
     const gl = this.context.gl;
@@ -153,7 +153,7 @@ class StencilOp {
   }
 }
 
-class StencilTest {
+export class StencilTest {
   constructor(context) {
     this.context = context;
     this.current = false;
@@ -176,7 +176,7 @@ class StencilTest {
   }
 }
 
-class DepthRange {
+export class DepthRange {
   constructor(context) {
     this.context = context;
     this.current = [0, 1];
@@ -195,7 +195,7 @@ class DepthRange {
   }
 }
 
-class DepthTest {
+export class DepthTest {
   constructor(context) {
     this.context = context;
     this.current = false;
@@ -218,7 +218,7 @@ class DepthTest {
   }
 }
 
-class DepthFunc {
+export class DepthFunc {
   constructor(context) {
     this.context = context;
     this.current = context.gl.LESS;
@@ -236,7 +236,7 @@ class DepthFunc {
   }
 }
 
-class Blend {
+export class Blend {
   constructor(context) {
     this.context = context;
     this.current = false;
@@ -259,7 +259,7 @@ class Blend {
   }
 }
 
-class BlendFunc {
+export class BlendFunc {
   constructor(context) {
     this.context = context;
     const gl = this.context.gl;
@@ -279,7 +279,7 @@ class BlendFunc {
   }
 }
 
-class BlendColor {
+export class BlendColor {
   constructor(context) {
     this.context = context;
     this.current = Color.transparent;
@@ -298,7 +298,7 @@ class BlendColor {
   }
 }
 
-class CullFace {
+export class CullFace {
   constructor(context) {
     this.context = context;
     this.default = false;
@@ -328,7 +328,7 @@ class CullFace {
   }
 }
 
-class CullFaceSide {
+export class CullFaceSide {
   constructor(context) {
     this.context = context;
     const gl = this.context.gl;
@@ -355,7 +355,7 @@ class CullFaceSide {
   }
 }
 
-class FrontFace {
+export class FrontFace {
   constructor(context) {
     this.context = context;
     const gl = this.context.gl;
@@ -382,7 +382,7 @@ class FrontFace {
   }
 }
 
-class Program {
+export class Program {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -400,7 +400,7 @@ class Program {
   }
 }
 
-class ActiveTextureUnit {
+export class ActiveTextureUnit {
   constructor(context) {
     this.context = context;
     this.current = context.gl.TEXTURE0;
@@ -418,7 +418,7 @@ class ActiveTextureUnit {
   }
 }
 
-class Viewport {
+export class Viewport {
   constructor(context) {
     this.context = context;
     const gl = this.context.gl;
@@ -438,7 +438,7 @@ class Viewport {
   }
 }
 
-class BindFramebuffer {
+export class BindFramebuffer {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -457,7 +457,7 @@ class BindFramebuffer {
   }
 }
 
-class BindRenderbuffer {
+export class BindRenderbuffer {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -476,7 +476,7 @@ class BindRenderbuffer {
   }
 }
 
-class BindTexture {
+export class BindTexture {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -495,7 +495,7 @@ class BindTexture {
   }
 }
 
-class BindVertexBuffer {
+export class BindVertexBuffer {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -514,7 +514,7 @@ class BindVertexBuffer {
   }
 }
 
-class BindElementBuffer {
+export class BindElementBuffer {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -532,7 +532,7 @@ class BindElementBuffer {
   }
 }
 
-class BindVertexArrayOES {
+export class BindVertexArrayOES {
   constructor(context) {
     this.context = context;
     this.current = null;
@@ -550,7 +550,7 @@ class BindVertexArrayOES {
   }
 }
 
-class PixelStoreUnpack {
+export class PixelStoreUnpack {
   constructor(context) {
     this.context = context;
     this.current = 4;
@@ -569,7 +569,7 @@ class PixelStoreUnpack {
   }
 }
 
-class PixelStoreUnpackPremultiplyAlpha {
+export class PixelStoreUnpackPremultiplyAlpha {
   constructor(context) {
     this.context = context;
     this.current = false;
@@ -592,7 +592,7 @@ class PixelStoreUnpackPremultiplyAlpha {
  * Framebuffer values
  * @private
  */
-class FramebufferValue {
+export class FramebufferValue {
   constructor(context, parent) {
     this.context = context;
     this.current = null;
@@ -604,7 +604,7 @@ class FramebufferValue {
   }
 }
 
-class ColorAttachment extends FramebufferValue {
+export class ColorAttachment extends FramebufferValue {
   constructor(context, parent) {
     super(context, parent);
     this.dirty = false;
@@ -627,7 +627,7 @@ class ColorAttachment extends FramebufferValue {
   }
 }
 
-class DepthAttachment extends FramebufferValue {
+export class DepthAttachment extends FramebufferValue {
   set(v) {
     if (this.current !== v) {
       const gl = this.context.gl;
@@ -639,38 +639,3 @@ class DepthAttachment extends FramebufferValue {
     }
   }
 }
-
-module.exports = {
-  ClearColor,
-  ClearDepth,
-  ClearStencil,
-  ColorMask,
-  DepthMask,
-  StencilMask,
-  StencilFunc,
-  StencilOp,
-  StencilTest,
-  DepthRange,
-  DepthTest,
-  DepthFunc,
-  Blend,
-  BlendFunc,
-  BlendColor,
-  CullFace,
-  CullFaceSide,
-  FrontFace,
-  Program,
-  ActiveTextureUnit,
-  Viewport,
-  BindFramebuffer,
-  BindRenderbuffer,
-  BindTexture,
-  BindVertexBuffer,
-  BindElementBuffer,
-  BindVertexArrayOES,
-  PixelStoreUnpack,
-  PixelStoreUnpackPremultiplyAlpha,
-  FramebufferValue,
-  ColorAttachment,
-  DepthAttachment
-};

@@ -1,6 +1,5 @@
-const StyleLayer = require('../style_layer');
-
-const properties = require('./raster_style_layer_properties');
+import StyleLayer from '../style_layer.js';
+import properties from './raster_style_layer_properties.js';
 
 class RasterStyleLayer extends StyleLayer {
   constructor(layer) {
@@ -8,4 +7,4 @@ class RasterStyleLayer extends StyleLayer {
   }
 }
 
-module.exports = RasterStyleLayer;
+export default RasterStyleLayer;
