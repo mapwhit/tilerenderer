@@ -23,10 +23,8 @@ const bounds = createBounds(16);
 export default function loadGeometry(feature) {
   const scale = EXTENT / feature.extent;
   const geometry = feature.loadGeometry();
-  for (let r = 0; r < geometry.length; r++) {
-    const ring = geometry[r];
-    for (let p = 0; p < ring.length; p++) {
-      const point = ring[p];
+  for (const ring of geometry) {
+    for (const point of ring) {
       // round here because mapbox-gl-native uses integers to represent
       // points and we need to do the same to avoid renering differences.
       point.x = Math.round(point.x * scale);
