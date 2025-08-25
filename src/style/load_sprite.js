@@ -3,7 +3,8 @@ import { RGBAImage } from '../util/image.js';
 import loadImage from '../util/loader/image.js';
 export default loadSprite;
 
-async function loadSprite(sprite) {
+async function loadSprite(loadingSprite) {
+  const sprite = await loadingSprite;
   const image = await loadImage(sprite.image);
   const { json } = sprite;
   if (json && image) {

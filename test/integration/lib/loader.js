@@ -79,7 +79,7 @@ export default function () {
     if (style.sprite) {
       style.sprite = localizeMapboxSpriteURL(style.sprite);
       style.sprite = localizeURL(style.sprite);
-      style.sprite = await loadSprite(style.sprite, style.metadata?.test?.pixelRatio);
+      style.sprite = loadSprite(style.sprite, style.metadata?.test?.pixelRatio);
     }
   }
 
