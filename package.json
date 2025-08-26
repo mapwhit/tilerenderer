@@ -19,6 +19,7 @@
     "@mapbox/whoots-js": "^3.0.0",
     "@mapwhit/events": "^0.0.1",
     "@mapwhit/geojson-rewind": "^2.0.0",
+    "@mapwhit/geometry": "^1.0.0",
     "@mapwhit/pbf": "^1.0.0",
     "@mapwhit/style-expressions": "^1.1.0",
     "@mapwhit/vector-tile": "^2.0.1",
@@ -31,8 +32,7 @@
     "murmurhash-js": "^1.0.0",
     "potpack": "^2.1.0",
     "quickselect": "^3.0.0",
-    "supercluster": "^8.0.1",
-    "tinyqueue": "^3.0.0"
+    "supercluster": "^8.0.1"
   },
   "browser": {
     "assert": "@pirxpilot/nanoassert",

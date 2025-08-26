@@ -1,5 +1,5 @@
+import { calculateSignedArea } from '@mapwhit/geometry';
 import quickselect from 'quickselect';
-import { calculateSignedArea } from './util.js';
 
 // classifies an array of rings into polygons with outer rings and holes
 export default function classifyRings(rings, maxRings) {

@@ -1,9 +1,9 @@
+import { findPoleOfInaccessibility } from '@mapwhit/geometry';
 import murmur3 from 'murmurhash-js';
 import SymbolBucket from '../data/bucket/symbol_bucket.js';
 import EXTENT from '../data/extent.js';
 import EvaluationParameters from '../style/evaluation_parameters.js';
 import classifyRings from '../util/classify_rings.js';
-import findPoleOfInaccessibility from '../util/find_pole_of_inaccessibility.js';
 import { allowsLetterSpacing, allowsVerticalWritingMode } from '../util/script_detection.js';
 import warn from '../util/warn.js';
 import Anchor from './anchor.js';

@@ -1,15 +1,6 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
 import Coordinate from '../../../src/geo/coordinate.js';
-import {
-  bezier,
-  clamp,
-  easeCubicInOut,
-  getCoordinatesCenter,
-  isClosedPolygon,
-  isCounterClockwise,
-  wrap
-} from '../../../src/util/util.js';
+import { bezier, clamp, easeCubicInOut, getCoordinatesCenter, wrap } from '../../../src/util/util.js';
 
 test('util', async t => {
   t.assert.equal(easeCubicInOut(0), 0, 'easeCubicInOut=0');
@@ -44,43 +35,5 @@ test('util', async t => {
     t.assert.equal(curve(0), 0);
     t.assert.equal(curve(1), 1);
     t.assert.equal(curve(0.5), 0.8230854638965502);
-  });
-
-  await t.test('isCounterClockwise ', async t => {
-    await t.test('counter clockwise', t => {
-      const a = new Point(0, 0);
-      const b = new Point(1, 0);
-      const c = new Point(1, 1);
-
-      t.assert.equal(isCounterClockwise(a, b, c), true);
-    });
-
-    await t.test('clockwise', t => {
-      const a = new Point(0, 0);
-      const b = new Point(1, 0);
-      const c = new Point(1, 1);
-
-      t.assert.equal(isCounterClockwise(c, b, a), false);
-    });
-  });
-
-  await t.test('isClosedPolygon', async t => {
-    await t.test('not enough points', t => {
-      const polygon = [new Point(0, 0), new Point(1, 0), new Point(0, 1)];
-
-      t.assert.equal(isClosedPolygon(polygon), false);
-    });
-
-    await t.test('not equal first + last point', t => {
-      const polygon = [new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1)];
-
-      t.assert.equal(isClosedPolygon(polygon), false);
-    });
-
-    await t.test('closed polygon', t => {
-      const polygon = [new Point(0, 0), new Point(1, 0), new Point(1, 1), new Point(0, 1), new Point(0, 0)];
-
-      t.assert.equal(isClosedPolygon(polygon), true);
-    });
   });
 });
