@@ -76,7 +76,15 @@ class FillExtrusionBucket {
       }
 
       if (this.hasPattern) {
-        this.features.push(addPatternDependencies('fill-extrusion', this.layers, patternFeature, this.zoom, options));
+        this.features.push(
+          addPatternDependencies(
+            'fill-extrusion',
+            this.layers,
+            patternFeature,
+            { zoom: this.zoom, globalState: this.globalState },
+            options
+          )
+        );
       } else {
         this.addFeature(patternFeature, geometry, index, {});
       }
