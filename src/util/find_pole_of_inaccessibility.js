@@ -1,4 +1,3 @@
-import Point from '@mapbox/point-geometry';
 import Queue from 'tinyqueue';
 import { distToSegmentSquared } from './intersection_tests.js';
 
@@ -8,66 +7,60 @@ import { distToSegmentSquared } from './intersection_tests.js';
  *
  * @param polygonRings first item in array is the outer ring followed optionally by the list of holes, should be an element of the result of util/classify_rings
  * @param precision Specified in input coordinate units. If 0 returns after first run, if > 0 repeatedly narrows the search space until the radius of the area searched for the best pole is less than precision
- * @param debug Print some statistics to the console during execution
  * @returns Pole of Inaccessibiliy.
  * @private
  */
-export default function (polygonRings, precision = 1, debug = false) {
+export default function (polygonRings, precision = 1) {
   // find the bounding box of the outer ring
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let maxY = Number.NEGATIVE_INFINITY;
   const outerRing = polygonRings[0];
-  for (let i = 0; i < outerRing.length; i++) {
-    const p = outerRing[i];
-    if (!i || p.x < minX) {
-      minX = p.x;
+  for (const { x, y } of outerRing) {
+    if (x < minX) {
+      minX = x;
+    } else if (x > maxX) {
+      maxX = x;
     }
-    if (!i || p.y < minY) {
-      minY = p.y;
-    }
-    if (!i || p.x > maxX) {
-      maxX = p.x;
-    }
-    if (!i || p.y > maxY) {
-      maxY = p.y;
+    if (y < minY) {
+      minY = y;
+    } else if (y > maxY) {
+      maxY = y;
     }
   }
 
   const width = maxX - minX;
   const height = maxY - minY;
   const cellSize = Math.min(width, height);
-  let h = cellSize / 2;
-
-  // a priority queue of cells in order of their "potential" (max distance to polygon)
-  const cellQueue = new Queue(undefined, compareMax);
-
   if (cellSize === 0) {
-    return new Point(minX, minY);
+    return { x: minX, y: minY };
   }
 
+  const h = cellSize / 2;
   // cover polygon with initial cells
+  const cells = [];
   for (let x = minX; x < maxX; x += cellSize) {
+    const xh = x + h;
     for (let y = minY; y < maxY; y += cellSize) {
-      cellQueue.push(new Cell(x + h, y + h, h, polygonRings));
+      cells.push(new Cell(xh, y + h, h, polygonRings));
     }
   }
 
+  // a priority queue of cells in order of their "potential" (max distance to polygon)
+  const cellQueue = new Queue(cells, compareMax);
+
   // take centroid as the first best guess
   let bestCell = getCentroidCell(polygonRings);
-  let numProbes = cellQueue.length;
 
-  while (cellQueue.length) {
+  while (cellQueue.length > 0) {
     // pick the most promising cell from the queue
     const cell = cellQueue.pop();
 
     // update the best cell if we found a better one
-    if (cell.d > bestCell.d || !bestCell.d) {
+    if (cell.d > bestCell.d || bestCell.d === 0) {
       bestCell = cell;
-      if (debug) {
-        console.log('found best %d after %d probes', Math.round(1e4 * cell.d) / 1e4, numProbes);
-      }
+      //  debug('found best %d after %d probes', Math.round(1e4 * cell.d) / 1e4, numProbes);
     }
 
     // do not drill down further if there's no chance of a better solution
@@ -76,18 +69,14 @@ export default function (polygonRings, precision = 1, debug = false) {
     }
 
     // split the cell into four cells
-    h = cell.h / 2;
+    const h = cell.h / 2;
     cellQueue.push(new Cell(cell.p.x - h, cell.p.y - h, h, polygonRings));
     cellQueue.push(new Cell(cell.p.x + h, cell.p.y - h, h, polygonRings));
     cellQueue.push(new Cell(cell.p.x - h, cell.p.y + h, h, polygonRings));
     cellQueue.push(new Cell(cell.p.x + h, cell.p.y + h, h, polygonRings));
-    numProbes += 4;
   }
 
-  if (debug) {
-    console.log(`num probes: ${numProbes}`);
-    console.log(`best distance: ${bestCell.d}`);
-  }
+  // debug(`num probes: ${numProbes}`, `best distance: ${bestCell.d}`);
 
   return bestCell.p;
 }
@@ -96,11 +85,13 @@ function compareMax(a, b) {
   return b.max - a.max;
 }
 
-function Cell(x, y, h, polygon) {
-  this.p = new Point(x, y);
-  this.h = h; // half the cell size
-  this.d = pointToPolygonDist(this.p, polygon); // distance from cell center to polygon
-  this.max = this.d + this.h * Math.SQRT2; // max distance to polygon within a cell
+class Cell {
+  constructor(x, y, h, polygon) {
+    this.p = { x, y };
+    this.h = h; // half the cell size
+    this.d = pointToPolygonDist(this.p, polygon); // distance from cell center to polygon
+    this.max = this.d + this.h * Math.SQRT2; // max distance to polygon within a cell
+  }
 }
 
 // signed distance from point to polygon outline (negative if point is outside)
@@ -108,22 +99,25 @@ function pointToPolygonDist(p, polygon) {
   let inside = false;
   let minDistSq = Number.POSITIVE_INFINITY;
 
-  for (let k = 0; k < polygon.length; k++) {
-    const ring = polygon[k];
-
+  const { x, y } = p;
+  for (const ring of polygon) {
     for (let i = 0, len = ring.length, j = len - 1; i < len; j = i++) {
       const a = ring[i];
       const b = ring[j];
 
-      if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) {
+      if (a.y > y !== b.y > y && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) {
         inside = !inside;
       }
 
-      minDistSq = Math.min(minDistSq, distToSegmentSquared(p, a, b));
+      const distSq = distToSegmentSquared(p, a, b);
+      if (distSq < minDistSq) {
+        minDistSq = distSq;
+      }
     }
   }
 
-  return (inside ? 1 : -1) * Math.sqrt(minDistSq);
+  const minDist = Math.sqrt(minDistSq);
+  return inside ? minDist : -minDist;
 }
 
 // get polygon centroid
