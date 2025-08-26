@@ -6,8 +6,6 @@ import colors from 'chalk';
 export default function () {
   // /test/integration
   const integrationPath = path.join(import.meta.dirname, '..');
-  // mapbox-gl-styles -> /test/integration/node_modules/mapbox-gl-styles
-  const mapboxGLStylesPath = path.join(path.dirname(new URL(import.meta.resolve('mapbox-gl-styles')).pathname), '..');
   // mvt-fixtures -> /test/integration/node_modules/@mapbox/mvt-fixtures
   const mapboxMVTFixturesPath = path.join(
     path.dirname(new URL(import.meta.resolve('@mapbox/mvt-fixtures')).pathname),
@@ -39,7 +37,7 @@ export default function () {
       source.url = localizeMapboxTilesetURL(source.url);
       source.url = localizeURL(source.url);
       if (source.url.endsWith('.png')) {
-        source.url = await load(getDirectory(source.url), source.url);
+        source.url = await load(integrationPath, source.url);
       } else {
         Object.assign(source, loadJSON(source.url));
         delete source.url;
@@ -128,15 +126,11 @@ export default function () {
     return arrayBuffer;
   }
 
-  function getDirectory(relativePath) {
-    return relativePath.startsWith('mapbox-gl-styles') ? mapboxGLStylesPath : integrationPath;
-  }
-
   function loadJSON(url) {
     let json;
     try {
       const relativePath = url.replace(/^local:\/\//, '');
-      const directory = getDirectory(relativePath);
+      const directory = integrationPath;
       json = readFileSync(path.join(directory, relativePath));
     } catch (error) {
       console.log(colors.blue(`* ${error}`));

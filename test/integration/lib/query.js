@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import diff from 'diff';
+import * as diff from 'diff';
 import { PNG } from 'pngjs';
 import harness from './harness.js';
 
