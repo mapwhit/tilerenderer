@@ -19,16 +19,16 @@ export function hasPattern(type, layers, options) {
   return hasPattern;
 }
 
-export function addPatternDependencies(type, layers, patternFeature, zoom, options) {
+export function addPatternDependencies(type, layers, patternFeature, { zoom, globalState }, options) {
   const patterns = options.patternDependencies;
   for (const layer of layers) {
     const patternProperty = layer._paint.get(`${type}-pattern`);
 
     const patternPropertyValue = patternProperty.value;
     if (patternPropertyValue.kind !== 'constant') {
-      const min = patternPropertyValue.evaluate({ zoom: zoom - 1 }, patternFeature, {});
-      const mid = patternPropertyValue.evaluate({ zoom: zoom }, patternFeature, {});
-      const max = patternPropertyValue.evaluate({ zoom: zoom + 1 }, patternFeature, {});
+      const min = patternPropertyValue.evaluate({ zoom: zoom - 1, globalState }, patternFeature, {});
+      const mid = patternPropertyValue.evaluate({ zoom: zoom, globalState }, patternFeature, {});
+      const max = patternPropertyValue.evaluate({ zoom: zoom + 1, globalState }, patternFeature, {});
       // add to patternDependencies
       patterns[min] = true;
       patterns[mid] = true;
