@@ -1,4 +1,20 @@
 
+1.1.0 / 2025-08-26
+==================
+
+ * transition to ESM format
+ * upgrade dependencies for integration tests
+ * upgrade `@mapwhit/geojson-rewind` to 2.0.0
+ * pass global state object when evaluating pattern
+ * render tests to reproduce the issue of pattern properties ignoring changes
+ * fix #8273: Layer#setPaintProperty returns true for CrossFadedDataDriv… (#8289)
+ * simplify load geometry
+ * remove `layerIds` from buckets
+ * optimize symbol bucket, line bucket, fill extrusion bucket, optimize fill bucket
+ * remove support for serialization of Struct arrays
+ * treat sprite as promise to wait for
+ * upgrade biome and enforce `useBlockStatement`, `useAwait`, `noUnusedVariables` lint rules
+
 1.0.0 / 2025-08-23
 ==================
 
