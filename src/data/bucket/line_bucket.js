@@ -75,7 +75,6 @@ class LineBucket {
     this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
-    this.layerIds = this.layers.map(layer => layer.id);
     this.index = options.index;
     this.features = [];
     this.hasPattern = false;
@@ -195,12 +194,14 @@ class LineBucket {
     const isPolygon = vectorTileFeatureTypes[feature.type] === 'Polygon';
 
     // If the line has duplicate vertices at the ends, adjust start/length to remove them.
+    const firstVertex = vertices[0];
+    const lastVertex = vertices[vertices.length - 1];
     let len = vertices.length;
-    while (len >= 2 && vertices[len - 1].equals(vertices[len - 2])) {
+    while (len >= 2 && lastVertex.equals(vertices[len - 2])) {
       len--;
     }
     let first = 0;
-    while (first < len - 1 && vertices[first].equals(vertices[first + 1])) {
+    while (first < len - 1 && firstVertex.equals(vertices[first + 1])) {
       first++;
     }
 
@@ -219,8 +220,6 @@ class LineBucket {
 
     const sharpCornerOffset = SHARP_CORNER_OFFSET * (EXTENT / (512 * this.overscaling));
 
-    const firstVertex = vertices[first];
-
     // we could be more precise, but it would only save a negligible amount of space
     const segment = this.segments.prepareSegment(len * 10, this.layoutVertexArray, this.indexArray);
 
@@ -231,11 +230,8 @@ class LineBucket {
     let startOfLine = true;
     let currentVertex;
     let prevVertex;
-    let nextVertex;
     let prevNormal;
     let nextNormal;
-    let offsetA;
-    let offsetB;
 
     // the last three vertices added
     this.e1 = this.e2 = this.e3 = -1;
@@ -246,7 +242,7 @@ class LineBucket {
     }
 
     for (let i = first; i < len; i++) {
-      nextVertex =
+      const nextVertex =
         isPolygon && i === len - 1
           ? vertices[first + 1]
           : // if the line is closed, we treat the last vertex like the first
@@ -353,146 +349,163 @@ class LineBucket {
         this.distance += currentVertex.dist(prevVertex);
       }
 
-      if (currentJoin === 'miter') {
-        joinNormal._mult(miterLength);
-        this.addCurrentVertex(currentVertex, this.distance, joinNormal, 0, 0, false, segment, lineDistances);
-      } else if (currentJoin === 'flipbevel') {
-        // miter is too big, flip the direction to make a beveled join
+      switch (currentJoin) {
+        case 'miter':
+          joinNormal._mult(miterLength);
+          this.addCurrentVertex(currentVertex, this.distance, joinNormal, 0, 0, false, segment, lineDistances);
+          break;
 
-        if (miterLength > 100) {
-          // Almost parallel lines
-          joinNormal = nextNormal.clone().mult(-1);
-        } else {
-          const direction = prevNormal.x * nextNormal.y - prevNormal.y * nextNormal.x > 0 ? -1 : 1;
-          const bevelLength = (miterLength * prevNormal.add(nextNormal).mag()) / prevNormal.sub(nextNormal).mag();
-          joinNormal._perp()._mult(bevelLength * direction);
-        }
-        this.addCurrentVertex(currentVertex, this.distance, joinNormal, 0, 0, false, segment, lineDistances);
-        this.addCurrentVertex(currentVertex, this.distance, joinNormal.mult(-1), 0, 0, false, segment, lineDistances);
-      } else if (currentJoin === 'bevel' || currentJoin === 'fakeround') {
-        const lineTurnsLeft = prevNormal.x * nextNormal.y - prevNormal.y * nextNormal.x > 0;
-        const offset = -Math.sqrt(miterLength * miterLength - 1);
-        if (lineTurnsLeft) {
-          offsetB = 0;
-          offsetA = offset;
-        } else {
-          offsetA = 0;
-          offsetB = offset;
-        }
+        case 'flipbevel':
+          // miter is too big, flip the direction to make a beveled join
 
-        // Close previous segment with a bevel
-        if (!startOfLine) {
-          this.addCurrentVertex(
-            currentVertex,
-            this.distance,
-            prevNormal,
-            offsetA,
-            offsetB,
-            false,
-            segment,
-            lineDistances
-          );
-        }
+          if (miterLength > 100) {
+            // Almost parallel lines
+            joinNormal = nextNormal.clone().mult(-1);
+          } else {
+            const direction = prevNormal.x * nextNormal.y - prevNormal.y * nextNormal.x > 0 ? -1 : 1;
+            const bevelLength = (miterLength * prevNormal.add(nextNormal).mag()) / prevNormal.sub(nextNormal).mag();
+            joinNormal._perp()._mult(bevelLength * direction);
+          }
+          this.addCurrentVertex(currentVertex, this.distance, joinNormal, 0, 0, false, segment, lineDistances);
+          this.addCurrentVertex(currentVertex, this.distance, joinNormal.mult(-1), 0, 0, false, segment, lineDistances);
+          break;
 
-        if (currentJoin === 'fakeround') {
-          // The join angle is sharp enough that a round join would be visible.
-          // Bevel joins fill the gap between segments with a single pie slice triangle.
-          // Create a round join by adding multiple pie slices. The join isn't actually round, but
-          // it looks like it is at the sizes we render lines at.
+        case 'bevel':
+        case 'fakeround': {
+          const lineTurnsLeft = prevNormal.x * nextNormal.y - prevNormal.y * nextNormal.x > 0;
+          const offset = -Math.sqrt(miterLength * miterLength - 1);
+          let offsetA;
+          let offsetB;
 
-          // Add more triangles for sharper angles.
-          // This math is just a good enough approximation. It isn't "correct".
-          const n = Math.floor((0.5 - (cosHalfAngle - 0.5)) * 8);
-          let approxFractionalJoinNormal;
+          if (lineTurnsLeft) {
+            offsetB = 0;
+            offsetA = offset;
+          } else {
+            offsetA = 0;
+            offsetB = offset;
+          }
 
-          for (let m = 0; m < n; m++) {
-            approxFractionalJoinNormal = nextNormal
-              .mult((m + 1) / (n + 1))
-              ._add(prevNormal)
-              ._unit();
-            this.addPieSliceVertex(
+          // Close previous segment with a bevel
+          if (!startOfLine) {
+            this.addCurrentVertex(
               currentVertex,
               this.distance,
-              approxFractionalJoinNormal,
-              lineTurnsLeft,
+              prevNormal,
+              offsetA,
+              offsetB,
+              false,
               segment,
               lineDistances
             );
           }
 
-          this.addPieSliceVertex(currentVertex, this.distance, joinNormal, lineTurnsLeft, segment, lineDistances);
+          if (currentJoin === 'fakeround') {
+            // The join angle is sharp enough that a round join would be visible.
+            // Bevel joins fill the gap between segments with a single pie slice triangle.
+            // Create a round join by adding multiple pie slices. The join isn't actually round, but
+            // it looks like it is at the sizes we render lines at.
 
-          for (let k = n - 1; k >= 0; k--) {
-            approxFractionalJoinNormal = prevNormal
-              .mult((k + 1) / (n + 1))
-              ._add(nextNormal)
-              ._unit();
-            this.addPieSliceVertex(
+            // Add more triangles for sharper angles.
+            // This math is just a good enough approximation. It isn't "correct".
+            const n = Math.floor((0.5 - (cosHalfAngle - 0.5)) * 8);
+            let approxFractionalJoinNormal;
+
+            for (let m = 0; m < n; m++) {
+              approxFractionalJoinNormal = nextNormal
+                .mult((m + 1) / (n + 1))
+                ._add(prevNormal)
+                ._unit();
+              this.addPieSliceVertex(
+                currentVertex,
+                this.distance,
+                approxFractionalJoinNormal,
+                lineTurnsLeft,
+                segment,
+                lineDistances
+              );
+            }
+
+            this.addPieSliceVertex(currentVertex, this.distance, joinNormal, lineTurnsLeft, segment, lineDistances);
+
+            for (let k = n - 1; k >= 0; k--) {
+              approxFractionalJoinNormal = prevNormal
+                .mult((k + 1) / (n + 1))
+                ._add(nextNormal)
+                ._unit();
+              this.addPieSliceVertex(
+                currentVertex,
+                this.distance,
+                approxFractionalJoinNormal,
+                lineTurnsLeft,
+                segment,
+                lineDistances
+              );
+            }
+          }
+
+          // Start next segment
+          if (nextVertex) {
+            this.addCurrentVertex(
               currentVertex,
               this.distance,
-              approxFractionalJoinNormal,
-              lineTurnsLeft,
+              nextNormal,
+              -offsetA,
+              -offsetB,
+              false,
               segment,
               lineDistances
             );
           }
+          break;
         }
 
-        // Start next segment
-        if (nextVertex) {
-          this.addCurrentVertex(
-            currentVertex,
-            this.distance,
-            nextNormal,
-            -offsetA,
-            -offsetB,
-            false,
-            segment,
-            lineDistances
-          );
-        }
-      } else if (currentJoin === 'butt') {
-        if (!startOfLine) {
-          // Close previous segment with a butt
-          this.addCurrentVertex(currentVertex, this.distance, prevNormal, 0, 0, false, segment, lineDistances);
-        }
+        case 'butt':
+          if (!startOfLine) {
+            // Close previous segment with a butt
+            this.addCurrentVertex(currentVertex, this.distance, prevNormal, 0, 0, false, segment, lineDistances);
+          }
 
-        // Start next segment with a butt
-        if (nextVertex) {
-          this.addCurrentVertex(currentVertex, this.distance, nextNormal, 0, 0, false, segment, lineDistances);
-        }
-      } else if (currentJoin === 'square') {
-        if (!startOfLine) {
-          // Close previous segment with a square cap
-          this.addCurrentVertex(currentVertex, this.distance, prevNormal, 1, 1, false, segment, lineDistances);
+          // Start next segment with a butt
+          if (nextVertex) {
+            this.addCurrentVertex(currentVertex, this.distance, nextNormal, 0, 0, false, segment, lineDistances);
+          }
+          break;
 
-          // The segment is done. Unset vertices to disconnect segments.
-          this.e1 = this.e2 = -1;
-        }
+        case 'square':
+          if (!startOfLine) {
+            // Close previous segment with a square cap
+            this.addCurrentVertex(currentVertex, this.distance, prevNormal, 1, 1, false, segment, lineDistances);
 
-        // Start next segment
-        if (nextVertex) {
-          this.addCurrentVertex(currentVertex, this.distance, nextNormal, -1, -1, false, segment, lineDistances);
-        }
-      } else if (currentJoin === 'round') {
-        if (!startOfLine) {
-          // Close previous segment with butt
-          this.addCurrentVertex(currentVertex, this.distance, prevNormal, 0, 0, false, segment, lineDistances);
+            // The segment is done. Unset vertices to disconnect segments.
+            this.e1 = this.e2 = -1;
+          }
 
-          // Add round cap or linejoin at end of segment
-          this.addCurrentVertex(currentVertex, this.distance, prevNormal, 1, 1, true, segment, lineDistances);
+          // Start next segment
+          if (nextVertex) {
+            this.addCurrentVertex(currentVertex, this.distance, nextNormal, -1, -1, false, segment, lineDistances);
+          }
+          break;
 
-          // The segment is done. Unset vertices to disconnect segments.
-          this.e1 = this.e2 = -1;
-        }
+        case 'round':
+          if (!startOfLine) {
+            // Close previous segment with butt
+            this.addCurrentVertex(currentVertex, this.distance, prevNormal, 0, 0, false, segment, lineDistances);
 
-        // Start next segment with a butt
-        if (nextVertex) {
-          // Add round cap before first segment
-          this.addCurrentVertex(currentVertex, this.distance, nextNormal, -1, -1, true, segment, lineDistances);
+            // Add round cap or linejoin at end of segment
+            this.addCurrentVertex(currentVertex, this.distance, prevNormal, 1, 1, true, segment, lineDistances);
 
-          this.addCurrentVertex(currentVertex, this.distance, nextNormal, 0, 0, false, segment, lineDistances);
-        }
+            // The segment is done. Unset vertices to disconnect segments.
+            this.e1 = this.e2 = -1;
+          }
+
+          // Start next segment with a butt
+          if (nextVertex) {
+            // Add round cap before first segment
+            this.addCurrentVertex(currentVertex, this.distance, nextNormal, -1, -1, true, segment, lineDistances);
+
+            this.addCurrentVertex(currentVertex, this.distance, nextNormal, 0, 0, false, segment, lineDistances);
+          }
+          break;
       }
 
       if (isSharpCorner && i < len - 1) {
@@ -646,13 +659,12 @@ function scaleDistance(tileDistance, stats) {
  * @private
  */
 function calculateFullDistance(vertices, first, len) {
-  let currentVertex;
-  let nextVertex;
   let total = 0;
-  for (let i = first; i < len - 1; i++) {
-    currentVertex = vertices[i];
-    nextVertex = vertices[i + 1];
-    total += currentVertex.dist(nextVertex);
+  let prev = vertices[first];
+  for (let i = first + 1; i < len; i++) {
+    const next = vertices[i];
+    total += prev.dist(next);
+    prev = next;
   }
   return total;
 }

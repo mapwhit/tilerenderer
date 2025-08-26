@@ -39,7 +39,7 @@ export function updateBuckets(buckets, style) {
     }
     updatedAlready.add(id);
 
-    const layers = bucket.layerIds.map(id => style.getLayer(id)).filter(Boolean);
+    const layers = bucket.layers.map(({ id }) => style.getLayer(id)).filter(Boolean);
 
     if (layers.length === 0) {
       bucket.destroy();

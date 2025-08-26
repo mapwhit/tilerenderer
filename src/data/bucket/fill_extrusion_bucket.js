@@ -40,7 +40,6 @@ class FillExtrusionBucket {
     this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
-    this.layerIds = this.layers.map(layer => layer.id);
     this.index = options.index;
     this.hasPattern = false;
 
@@ -215,12 +214,10 @@ class FillExtrusionBucket {
         }
 
         for (let i = 0; i < ring.length; i++) {
-          const p = ring[i];
+          const { x, y } = ring[i];
 
-          addVertex(this.layoutVertexArray, p.x, p.y, 0, 0, 1, 1, 0);
-
-          flattened.push(p.x);
-          flattened.push(p.y);
+          addVertex(this.layoutVertexArray, x, y, 0, 0, 1, 1, 0);
+          flattened.push(x, y);
         }
       }
 
@@ -254,10 +251,18 @@ function isBoundaryEdge(p1, p2) {
 }
 
 function isEntirelyOutside(ring) {
-  return (
-    ring.every(p => p.x < 0) ||
-    ring.every(p => p.x > EXTENT) ||
-    ring.every(p => p.y < 0) ||
-    ring.every(p => p.y > EXTENT)
-  );
+  let left = true;
+  let right = true;
+  let top = true;
+  let bottom = true;
+  for (const { x, y } of ring) {
+    left &&= x < 0;
+    right &&= x > EXTENT;
+    top &&= y < 0;
+    bottom &&= y > EXTENT;
+    if (!(left || right || top || bottom)) {
+      return false;
+    }
+  }
+  return true;
 }
