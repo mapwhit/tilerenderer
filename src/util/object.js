@@ -76,21 +76,6 @@ export function deepEqual(a, b) {
 }
 
 /**
- * Deeply clones two objects.
- *
- * @private
- */
-export function clone(input) {
-  if (Array.isArray(input)) {
-    return input.map(clone);
-  }
-  if (typeof input === 'object' && input) {
-    return mapObject(input, clone);
-  }
-  return input;
-}
-
-/**
  * Check if two arrays have at least one common element.
  *
  * @private

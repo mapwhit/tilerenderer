@@ -1,6 +1,5 @@
 import { interpolate, normalizePropertyExpression } from '@mapwhit/style-expressions';
 import assert from 'assert';
-import { clone } from '../util/object.js';
 import { easeCubicInOut } from '../util/util.js';
 import EvaluationParameters from './evaluation_parameters.js';
 
@@ -138,7 +137,7 @@ export class Transitionable {
   }
 
   getValue(name) {
-    return clone(this._values[name].value.value);
+    return structuredClone(this._values[name].value.value);
   }
 
   setValue(name, value) {
@@ -149,19 +148,19 @@ export class Transitionable {
     // to the default: the transition might still be non-default.
     this._values[name].value = new PropertyValue(
       this._values[name].property,
-      value === null ? undefined : clone(value)
+      value === null ? undefined : structuredClone(value)
     );
   }
 
   getTransition(name) {
-    return clone(this._values[name].transition);
+    return structuredClone(this._values[name].transition);
   }
 
   setTransition(name, value) {
     if (!this._values.hasOwnProperty(name)) {
       this._values[name] = new TransitionablePropertyValue(this._values[name].property);
     }
-    this._values[name].transition = clone(value) || undefined;
+    this._values[name].transition = structuredClone(value) || undefined;
   }
 
   serialize() {
@@ -314,11 +313,14 @@ export class Layout {
   }
 
   getValue(name) {
-    return clone(this._values[name].value);
+    return structuredClone(this._values[name].value);
   }
 
   setValue(name, value) {
-    this._values[name] = new PropertyValue(this._values[name].property, value === null ? undefined : clone(value));
+    this._values[name] = new PropertyValue(
+      this._values[name].property,
+      value === null ? undefined : structuredClone(value)
+    );
   }
 
   serialize() {
