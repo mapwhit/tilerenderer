@@ -13,72 +13,93 @@ import { mapObject } from '../util/object.js';
 import { OverscaledTileID } from './tile_id.js';
 export default makeWorkerTile;
 
-async function makeWorkerTile(params, vectorTile, layerIndex, resources) {
-  const tileID = createTileID(params);
+async function makeWorkerTile(params, { layers }, layerIndex, resources) {
+  const options = initializeBucketsOptions(params);
 
-  const overscaling = tileID.overscaleFactor();
-  const { zoom, pixelRatio, source, showCollisionBoxes, globalState, justReloaded, painter } = params;
-
-  const collisionBoxArray = new CollisionBoxArray();
-  const sourceLayerCoder = dictionaryCoder(Object.keys(vectorTile.layers));
-
-  const featureIndex = new FeatureIndex(tileID);
-  featureIndex.bucketLayerIDs = [];
-
-  const uniqueBuckets = new Map();
-
-  const options = {
-    featureIndex,
-    iconDependencies: {},
-    patternDependencies: {},
-    glyphDependencies: {}
-  };
-
+  const { source } = params;
+  const sourceLayerCoder = dictionaryCoder(Object.keys(layers));
   const layerFamilies = layerIndex.familiesBySource.get(source) ?? new Map();
   for (const [sourceLayerId, sourceLayerFamilies] of layerFamilies) {
-    const sourceLayer = vectorTile.layers[sourceLayerId];
+    const sourceLayer = layers[sourceLayerId];
     if (!sourceLayer) {
       continue;
     }
-
     const sourceLayerIndex = sourceLayerCoder.encode(sourceLayerId);
     const features = new Array(sourceLayer.length);
     for (let index = 0; index < sourceLayer.length; index++) {
       features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex };
     }
 
-    for (const layers of sourceLayerFamilies.values()) {
-      const layer = layers[0];
-
-      if (layer.minzoom && zoom < Math.floor(layer.minzoom)) {
-        continue;
-      }
-      if (layer.maxzoom && zoom >= layer.maxzoom) {
-        continue;
-      }
-      if (layer.visibility === 'none') {
-        continue;
-      }
-
-      recalculateLayers(layers, zoom, globalState);
-
-      const bucket = layer.createBucket({
-        index: featureIndex.bucketLayerIDs.length,
-        layers,
-        zoom,
-        pixelRatio,
-        overscaling,
-        collisionBoxArray,
-        sourceLayerIndex,
-        sourceID: source,
-        globalState
-      });
-      uniqueBuckets.set(layer.id, bucket);
-      bucket.populate(features, options);
-      featureIndex.bucketLayerIDs.push(layers.map(l => l.id));
-    }
+    makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, features, params, options);
   }
 
+  return await finalizeBuckets(params, options, resources);
+}
+
+export async function makeSingleSourceLayerWorkerTile(params, features, sourceLayerFamilies, resources) {
+  const options = initializeBucketsOptions(params);
+
+  makeBucketsForSourceLayer(sourceLayerFamilies, 0, features, params, options);
+
+  return await finalizeBuckets(params, options, resources);
+}
+
+function initializeBucketsOptions(params) {
+  const tileID = createTileID(params);
+
+  const featureIndex = new FeatureIndex(tileID);
+  featureIndex.bucketLayerIDs = [];
+
+  return {
+    collisionBoxArray: new CollisionBoxArray(),
+    featureIndex,
+    glyphDependencies: {},
+    iconDependencies: {},
+    overscaling: tileID.overscaleFactor(),
+    patternDependencies: {},
+    uniqueBuckets: new Map()
+  };
+}
+
+function makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, features, params, options) {
+  const { zoom, pixelRatio, source, globalState } = params;
+  const { featureIndex, overscaling, collisionBoxArray, uniqueBuckets } = options;
+
+  for (const layers of sourceLayerFamilies.values()) {
+    const layer = layers[0];
+
+    if (layer.minzoom && zoom < Math.floor(layer.minzoom)) {
+      continue;
+    }
+    if (layer.maxzoom && zoom >= layer.maxzoom) {
+      continue;
+    }
+    if (layer.visibility === 'none') {
+      continue;
+    }
+
+    recalculateLayers(layers, zoom, globalState);
+
+    const bucket = layer.createBucket({
+      index: featureIndex.bucketLayerIDs.length,
+      layers,
+      zoom,
+      pixelRatio,
+      overscaling,
+      collisionBoxArray,
+      sourceLayerIndex,
+      sourceID: source,
+      globalState
+    });
+    uniqueBuckets.set(layer.id, bucket);
+    bucket.populate(features, options);
+    featureIndex.bucketLayerIDs.push(layers.map(l => l.id));
+  }
+}
+
+async function finalizeBuckets(params, options, resources) {
+  const { zoom, showCollisionBoxes, globalState, justReloaded, painter } = params;
+  const { collisionBoxArray, featureIndex, uniqueBuckets } = options;
   const buckets = new Map();
   const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(options, resources);
   let hasSymbolBuckets = false;
