@@ -1,11 +1,8 @@
 import { test } from 'node:test';
 
-import { arraysIntersect, bindAll, clone, deepEqual, mapObject, pick } from '../../../src/util/object.js';
+import { arraysIntersect, bindAll, clone, deepEqual, mapObject } from '../../../src/util/object.js';
 
 test('object', async t => {
-  t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c']), { a: 1, c: 3 }, 'pick');
-  t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c', 'd']), { a: 1, c: 3 }, 'pick');
-
   await t.test('bindAll', (t, done) => {
     function MyClass() {
       bindAll(['ontimer'], this);

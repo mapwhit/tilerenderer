@@ -1,23 +1,4 @@
 /**
- * Given an object and a number of properties as strings, return version
- * of that object with only those properties.
- *
- * @param src the object
- * @param properties an array of property names chosen
- * to appear on the resulting object.
- * @returns object with limited properties.
- * @example
- * var foo = { name: 'Charlie', age: 10 };
- * var justName = pick(foo, ['name']);
- * // justName = { name: 'Charlie' }
- * @private
- */
-export function pick(src, properties) {
-  const entries = properties.filter(p => p in src).map(p => [p, src[p]]);
-  return Object.fromEntries(entries);
-}
-
-/**
  * Given an array of member function names as strings, replace all of them
  * with bound versions that will always refer to `context` as `this`. This
  * is useful for classes where otherwise event bindings would reassign
