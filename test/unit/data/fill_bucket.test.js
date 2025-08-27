@@ -5,7 +5,9 @@ import Point from '@mapbox/point-geometry';
 import Protobuf from '@mapwhit/pbf';
 import { VectorTile } from '@mapwhit/vector-tile';
 import FillBucket from '../../../src/data/bucket/fill_bucket.js';
+import FeatureIndex from '../../../src/data/feature_index.js';
 import segment from '../../../src/data/segment.js';
+import Wrapper from '../../../src/source/geojson_wrapper.js';
 import FillStyleLayer from '../../../src/style/style_layer/fill_style_layer.js';
 
 // Load a fill feature from fixture tile.
@@ -88,5 +90,36 @@ test('FillBucket segmentation', t => {
     vertexLength: 128,
     primitiveOffset: 134,
     primitiveLength: 126
+  });
+});
+
+test('FillBucket fill-pattern with global-state', t => {
+  const globalState = { pattern: 'test-pattern' };
+  const layer = new FillStyleLayer({
+    id: 'test',
+    type: 'fill',
+    paint: { 'fill-pattern': ['coalesce', ['get', 'pattern'], ['global-state', 'pattern']] }
+  });
+  layer.recalculate({ zoom: 0, globalState });
+
+  const bucket = new FillBucket({ layers: [layer], globalState });
+
+  const wrapper = new Wrapper([
+    {
+      type: 3,
+      geometry: [createPolygon(10)],
+      tags: {}
+    }
+  ]);
+  const features = new Array(wrapper.length);
+  for (let i = 0; i < wrapper.length; i++) {
+    features[i] = { feature: wrapper.feature(i) };
+  }
+
+  bucket.populate(features, { patternDependencies: {}, featureIndex: new FeatureIndex() });
+
+  t.assert.equal(bucket.features.length, 1);
+  t.assert.deepEqual(bucket.features[0].patterns, {
+    test: { min: 'test-pattern', mid: 'test-pattern', max: 'test-pattern' }
   });
 });
