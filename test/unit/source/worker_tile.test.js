@@ -1,4 +1,8 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
+import Protobuf from '@mapwhit/pbf';
+import { VectorTile } from '@mapwhit/vector-tile';
 import Wrapper from '../../../src/source/geojson_wrapper.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import makeWorkerTile from '../../../src/source/worker_tile.js';
@@ -147,4 +151,29 @@ test('WorkerTile.parse skips layers without a corresponding source layer', async
 
   const result = await makeWorkerTile(params, { layers: {} }, layerIndex, {});
   t.assert.equal(result.buckets.size, 0);
+});
+
+test('WorkerTile.parse vector tile', async t => {
+  const layerIndex = new StyleLayerIndex(
+    createLayers([
+      {
+        id: 'test',
+        source: 'source',
+        'source-layer': 'road',
+        type: 'line',
+        layout: {
+          'line-join': 'bevel'
+        }
+      }
+    ])
+  );
+
+  // Load a line feature from fixture tile.
+  const vt = new VectorTile(
+    new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
+  );
+
+  const result = await makeWorkerTile(params, vt, layerIndex, {});
+  t.assert.ok(result.buckets.values().next().value);
+  t.assert.equal(result.buckets.values().next().value.layers[0]._layout._values['line-join'].value.value, 'bevel');
 });
