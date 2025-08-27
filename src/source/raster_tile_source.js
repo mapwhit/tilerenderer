@@ -1,7 +1,6 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import Texture from '../render/texture.js';
 import loadImage from '../util/loader/image.js';
-import { pick } from '../util/object.js';
 import loadTileJSON from './load_tilejson.js';
 import TileBounds from './tile_bounds.js';
 
@@ -15,12 +14,12 @@ class RasterTileSource extends Evented {
     this.minzoom = 0;
     this.maxzoom = 22;
     this.roundZoom = true;
-    this.scheme = 'xyz';
-    this.tileSize = 512;
     this._loaded = false;
 
-    this._options = Object.assign({}, options);
-    Object.assign(this, pick(options, ['url', 'scheme', 'tileSize']));
+    this._options = { ...options };
+    this.url = options.url;
+    this.scheme = options.scheme ?? 'xyz';
+    this.tileSize = options.tileSize ?? 512;
   }
 
   async load() {

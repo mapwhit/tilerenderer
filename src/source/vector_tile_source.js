@@ -1,6 +1,5 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 import browser from '../util/browser.js';
-import { pick } from '../util/object.js';
 import loadTileJSON from './load_tilejson.js';
 import TileBounds from './tile_bounds.js';
 import VectorTileWorkerSource from './vector_tile_worker_source.js';
@@ -15,14 +14,14 @@ class VectorTileSource extends Evented {
     this.type = 'vector';
     this.minzoom = 0;
     this.maxzoom = 22;
-    this.scheme = 'xyz';
-    this.tileSize = 512;
     this.reparseOverscaled = true;
     this.isTileClipped = true;
     this._showTileBoundaries = showTileBoundaries;
 
-    Object.assign(this, pick(options, ['url', 'scheme', 'tileSize']));
-    this._options = Object.assign({ type: 'vector' }, options);
+    this._options = { type: 'vector', ...options };
+    this.url = options.url;
+    this.scheme = options.scheme ?? 'xyz';
+    this.tileSize = options.tileSize ?? 512;
 
     if (this.tileSize !== 512) {
       throw new Error('vector tile sources must have a tileSize of 512');
