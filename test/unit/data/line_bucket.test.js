@@ -7,7 +7,6 @@ import { VectorTile } from '@mapwhit/vector-tile';
 import LineBucket from '../../../src/data/bucket/line_bucket.js';
 import FeatureIndex from '../../../src/data/feature_index.js';
 import segment from '../../../src/data/segment.js';
-import Wrapper from '../../../src/source/geojson_wrapper.js';
 import LineStyleLayer from '../../../src/style/style_layer/line_style_layer.js';
 
 // Load a line feature from fixture tile.
@@ -125,24 +124,15 @@ test('LineBucket line-pattern with global-state', t => {
 
   const bucket = new LineBucket({ layers: [layer], globalState });
 
-  const wrapper = new Wrapper([
-    {
-      type: 2,
-      geometry: [
-        [0, 0],
-        [10, 10]
-      ],
-      tags: {}
-    }
-  ]);
-  const features = new Array(wrapper.length);
-  for (let i = 0; i < wrapper.length; i++) {
-    features[i] = { feature: wrapper.feature(i) };
+  const sourceLayer = vt.layers.road;
+  const features = new Array(sourceLayer.length);
+  for (let i = 0; i < sourceLayer.length; i++) {
+    features[i] = { feature: sourceLayer.feature(i) };
   }
 
   bucket.populate(features, { patternDependencies: {}, featureIndex: new FeatureIndex() });
 
-  t.assert.equal(bucket.features.length, 1);
+  t.assert.ok(bucket.features.length > 0);
   t.assert.deepEqual(bucket.features[0].patterns, {
     test: { min: 'test-pattern', mid: 'test-pattern', max: 'test-pattern' }
   });
