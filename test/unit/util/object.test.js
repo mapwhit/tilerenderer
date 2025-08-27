@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 
-import { arraysIntersect, bindAll, clone, deepEqual, filterObject, mapObject, pick } from '../../../src/util/object.js';
+import { arraysIntersect, bindAll, clone, deepEqual, mapObject, pick } from '../../../src/util/object.js';
 
 test('object', async t => {
   t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c']), { a: 1, c: 3 }, 'pick');
@@ -40,33 +40,6 @@ test('object', async t => {
         that
       ),
       { map: 'BOX' }
-    );
-  });
-
-  await t.test('filter', t => {
-    t.assert.deepEqual(
-      filterObject({}, () => {
-        t.assert.fail();
-      }),
-      {}
-    );
-    const that = {};
-    filterObject(
-      { map: 'box' },
-      function (value, key, object) {
-        t.assert.equal(value, 'box');
-        t.assert.equal(key, 'map');
-        t.assert.deepEqual(object, { map: 'box' });
-        t.assert.equal(this, that);
-        return true;
-      },
-      that
-    );
-    t.assert.deepEqual(
-      filterObject({ map: 'box', box: 'map' }, value => {
-        return value === 'box';
-      }),
-      { map: 'box' }
     );
   });
 

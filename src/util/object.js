@@ -60,17 +60,6 @@ export function mapObject(input, iterator, context) {
 }
 
 /**
- * Create an object by filtering out values of an existing object.
- *
- * @private
- */
-export function filterObject(input, iterator, context) {
-  context ??= this;
-  const entries = Object.entries(input).filter(([k, v]) => iterator.call(context, v, k, input));
-  return Object.fromEntries(entries);
-}
-
-/**
  * Deeply compares two object literals.
  *
  * @private
