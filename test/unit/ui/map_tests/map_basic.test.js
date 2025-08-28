@@ -2,7 +2,7 @@ import test from 'node:test';
 import Tile from '../../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../../src/source/tile_id.js';
 import Map from '../../../../src/ui/map.js';
-import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
+import fixed from '../../../util/fixed.js';
 import { createMap, createStyle, createStyleSource, initWindow } from '../../../util/util.js';
 
 const fixedLngLat = fixed.LngLat;

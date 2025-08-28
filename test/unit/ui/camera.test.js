@@ -4,7 +4,7 @@ import Camera from '../../../src/ui/camera.js';
 import browser from '../../../src/util/browser.js';
 import taskQueue from '../../../src/util/task_queue.js';
 import { assertEqualWithPrecision } from '../../util/assert.js';
-import fixed from '../../util/mapbox-gl-js-test/fixed.js';
+import fixed from '../../util/fixed.js';
 
 const fixedLngLat = fixed.LngLat;
 const fixedNum = fixed.Num;
