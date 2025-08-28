@@ -3,7 +3,7 @@ import Point from '@mapbox/point-geometry';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';
-import fixed from '../../util/mapbox-gl-js-test/fixed.js';
+import fixed from '../../util/fixed.js';
 
 const fixedLngLat = fixed.LngLat;
 const fixedCoord = fixed.Coord;
