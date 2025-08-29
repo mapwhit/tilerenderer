@@ -41,14 +41,34 @@ test('Map', async t => {
       });
     });
 
-    await t.test('Map.isStyleLoaded', (t, done) => {
-      const style = createStyle();
-      const map = createMap({ style: style });
+    await t.test('Map.isStyleLoaded', async t => {
+      await t.test('Map.isStyleLoaded', (t, done) => {
+        const style = createStyle();
+        const map = createMap({ style });
 
-      t.assert.equal(map.isStyleLoaded(), false, 'false before style has loaded');
-      map.on('load', () => {
-        t.assert.equal(map.isStyleLoaded(), true, 'true when style is loaded');
-        done();
+        t.assert.equal(map.isStyleLoaded(), false, 'false before style has loaded');
+        map.on('load', () => {
+          t.assert.equal(map.isStyleLoaded(), true, 'true when style is loaded');
+          done();
+        });
+      });
+
+      await t.test('unresponsive source', (t, done) => {
+        const style = createStyle();
+        style.layers.push({ id: 'id', type: 'line', source: 'bad' });
+        style.sources.bad = {
+          type: 'vector',
+          tiles: async () => new Promise(() => {})
+        };
+        style.sprite = new Promise(resolve => setTimeout(() => resolve({ json: {}, image: { byteLength: 0 } }), 200));
+        const map = createMap({ style });
+
+        t.assert.equal(map.isStyleLoaded(), false, 'false before style has loaded');
+        map.on('data', () => {
+          if (map.isStyleLoaded()) {
+            done();
+          }
+        });
       });
     });
 

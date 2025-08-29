@@ -696,7 +696,7 @@ class Map extends Camera {
     if (!this.style) {
       return warn.once('There is no style added to the map.');
     }
-    return this.style.loaded();
+    return this.style.loaded(true);
   }
 
   /**
