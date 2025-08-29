@@ -75,10 +75,14 @@ class SourceCache extends Evented {
   }
 
   /**
-   * Return true if no tile data is pending, tiles will not change unless
+   * Return `true` if no tile data is pending, tiles will not change unless
    * an additional API call is received.
+   * If `ignoreTilesLoading` is set, return `true` even when tiles are pending,
+   * otherwise there is no way to check that source is ready after loading style.
+   * Without `ignoreTilesLoading` the state of style being loaded or not depends on
+   * the tiles being in the process of loading or not.
    */
-  loaded() {
+  loaded(ignoreTilesLoading) {
     if (this.#sourceErrored) {
       return true;
     }
@@ -87,6 +91,9 @@ class SourceCache extends Evented {
       return false;
     }
 
+    if (ignoreTilesLoading) {
+      return true;
+    }
     for (const tile of this._tiles.values()) {
       if (tile.state !== 'loaded' && tile.state !== 'errored') {
         return false;

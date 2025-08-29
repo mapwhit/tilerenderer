@@ -244,7 +244,12 @@ class Style extends Evented {
     }
   }
 
-  loaded() {
+  /**
+   * Returns `true` when style is loaded.
+   * @param {Boolean} ignoreTilesLoading set to `true` to check that style is loaded
+   * even when sources are loading tiles
+   */
+  loaded(ignoreTilesLoading) {
     if (!this._loaded) {
       return false;
     }
@@ -254,7 +259,7 @@ class Style extends Evented {
     }
 
     for (const id in this._sources) {
-      if (!this._sources[id].loaded()) {
+      if (!this._sources[id].loaded(ignoreTilesLoading)) {
         return false;
       }
     }
