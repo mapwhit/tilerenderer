@@ -1,4 +1,3 @@
-import Point from '@mapbox/point-geometry';
 import { ErrorEvent, Event } from '@mapwhit/events';
 import LngLat from '../geo/lng_lat.js';
 import LngLatBounds from '../geo/lng_lat_bounds.js';
@@ -287,10 +286,10 @@ class Map extends Camera {
    */
   getBounds() {
     return new LngLatBounds()
-      .extend(this.transform.pointLocation(new Point(0, 0)))
-      .extend(this.transform.pointLocation(new Point(this.transform.width, 0)))
-      .extend(this.transform.pointLocation(new Point(this.transform.width, this.transform.height)))
-      .extend(this.transform.pointLocation(new Point(0, this.transform.height)));
+      .extend(this.transform.pointLocation({ x: 0, y: 0 }))
+      .extend(this.transform.pointLocation({ x: this.transform.width, y: 0 }))
+      .extend(this.transform.pointLocation({ x: this.transform.width, y: this.transform.height }))
+      .extend(this.transform.pointLocation({ x: 0, y: this.transform.height }));
   }
 
   /**
@@ -453,7 +452,7 @@ class Map extends Camera {
    * @see [Show polygon information on click](https://www.mapbox.com/mapbox-gl-js/example/polygon-popup-on-click/)
    */
   unproject(point) {
-    return this.transform.pointLocation(Point.convert(point));
+    return this.transform.pointLocation(toPoint(point));
   }
 
   /**
@@ -577,33 +576,26 @@ class Map extends Camera {
     }
 
     return this.style.queryRenderedFeatures(this._makeQueryGeometry(geometry), options, this.transform) || [];
-
-    function isPointLike(input) {
-      return input instanceof Point || Array.isArray(input);
-    }
   }
 
-  _makeQueryGeometry(pointOrBox) {
-    if (pointOrBox === undefined) {
-      // bounds was omitted: use full viewport
-      pointOrBox = [Point.convert([0, 0]), Point.convert([this.transform.width, this.transform.height])];
-    }
-
+  _makeQueryGeometry(
+    pointOrBox = [
+      { x: 0, y: 0 },
+      { x: this.transform.width, y: this.transform.height }
+    ]
+  ) {
     let queryGeometry;
 
-    if (pointOrBox instanceof Point || typeof pointOrBox[0] === 'number') {
-      const point = Point.convert(pointOrBox);
-      queryGeometry = [point];
+    if (typeof pointOrBox.x === 'number' || typeof pointOrBox[0] === 'number') {
+      queryGeometry = [toPoint(pointOrBox)];
     } else {
-      const box = [Point.convert(pointOrBox[0]), Point.convert(pointOrBox[1])];
-      queryGeometry = [box[0], new Point(box[1].x, box[0].y), box[1], new Point(box[0].x, box[1].y), box[0]];
+      const box = [toPoint(pointOrBox[0]), toPoint(pointOrBox[1])];
+      queryGeometry = [box[0], { x: box[1].x, y: box[0].y }, box[1], { x: box[0].x, y: box[1].y }, box[0]];
     }
 
     return {
       viewport: queryGeometry,
-      worldCoordinate: queryGeometry.map(p => {
-        return this.transform.pointCoordinate(p);
-      })
+      worldCoordinate: queryGeometry.map(p => this.transform.pointCoordinate(p))
     };
   }
 
@@ -1556,6 +1548,14 @@ function removeNode(node) {
   if (node.parentNode) {
     node.parentNode.removeChild(node);
   }
+}
+
+function toPoint(p) {
+  return Array.isArray(p) ? { x: p[0], y: p[1] } : p;
+}
+
+function isPointLike(input) {
+  return Array.isArray(input) || (typeof input.x === 'number' && typeof input.y === 'number');
 }
 
 /**
