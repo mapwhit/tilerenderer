@@ -1,5 +1,5 @@
-import Point from '@mapbox/point-geometry';
 import { polygonIntersectsPolygon } from '@mapwhit/geometry';
+import { Point } from '@mapwhit/point-geometry';
 import * as projection from '../symbol/projection.js';
 import Grid from './grid_index.js';
 

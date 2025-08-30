@@ -1,5 +1,5 @@
-import Point from '@mapbox/point-geometry';
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import { Point } from '@mapwhit/point-geometry';
 import EXTENT from '../data/extent.js';
 import Coordinate from '../geo/coordinate.js';
 import browser from '../util/browser.js';

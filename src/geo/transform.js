@@ -1,5 +1,5 @@
 import glMatrix from '@mapbox/gl-matrix';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import EXTENT from '../data/extent.js';
 import { UnwrappedTileID } from '../source/tile_id.js';
 import interpolate from '../util/interpolate.js';

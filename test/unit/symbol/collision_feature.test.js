@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { CollisionBoxArray } from '../../../src/data/array_types.js';
 import Anchor from '../../../src/symbol/anchor.js';
 import CollisionFeature from '../../../src/symbol/collision_feature.js';

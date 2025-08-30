@@ -1,6 +1,6 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
+import { Point } from '@mapwhit/point-geometry';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { setType } from '../../../src/source/source.js';
