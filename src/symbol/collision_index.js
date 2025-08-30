@@ -288,10 +288,10 @@ class CollisionIndex {
       // distinction doesn't matter as much, and box geometry is easier
       // to work with.
       const bbox = [
-        new Point(feature.x1, feature.y1),
-        new Point(feature.x2, feature.y1),
-        new Point(feature.x2, feature.y2),
-        new Point(feature.x1, feature.y2)
+        { x: feature.x1, y: feature.y1 },
+        { x: feature.x2, y: feature.y1 },
+        { x: feature.x2, y: feature.y2 },
+        { x: feature.x1, y: feature.y2 }
       ];
       if (!polygonIntersectsPolygon(query, bbox)) {
         continue;
