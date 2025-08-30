@@ -1,49 +1,40 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
 import FillExtrusionBucket from '../../../src/data/bucket/fill_extrusion_bucket.js';
-import FeatureIndex from '../../../src/data/feature_index.js';
-import Wrapper from '../../../src/source/geojson_wrapper.js';
 import { FillExtrusionStyleLayer } from '../../../src/style/style_layer/fill_extrusion_style_layer.js';
+import { createPopulateOptions, getFeaturesFromLayer, loadVectorTile } from '../../util/tile.js';
 
-function createPolygon(numPoints) {
-  const points = [];
-  for (let i = 0; i < numPoints; i++) {
-    points.push(
-      new Point(
-        2048 + 256 * Math.cos((i / numPoints) * 2 * Math.PI, 2048 + 256 * Math.sin((i / numPoints) * 2 * Math.PI))
-      )
-    );
-  }
-  return points;
+function createFillExtrusionBucket({ id, layout, paint, globalState }) {
+  const layer = new FillExtrusionStyleLayer({
+    id,
+    type: 'fill-extrusion',
+    layout,
+    paint
+  });
+  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+
+  return new FillExtrusionBucket({ layers: [layer], globalState });
 }
 
-test('FillExtrusionBucket fill-pattern with global-state', t => {
-  const globalState = { pattern: 'test-pattern' };
-  const layer = new FillExtrusionStyleLayer({
-    id: 'test',
-    type: 'fill-extrusion',
-    paint: { 'fill-extrusion-pattern': ['coalesce', ['get', 'pattern'], ['global-state', 'pattern']] }
+test('FillExtrusionBucket', async t => {
+  let sourceLayer;
+  t.before(() => {
+    // Load fill extrusion features from fixture tile.
+    sourceLayer = loadVectorTile().layers.water;
   });
-  layer.recalculate({ zoom: 0, globalState });
 
-  const bucket = new FillExtrusionBucket({ layers: [layer], globalState });
+  await t.test('FillExtrusionBucket fill-pattern with global-state', t => {
+    const bucket = createFillExtrusionBucket({
+      id: 'test',
+      layout: {},
+      paint: { 'fill-extrusion-pattern': ['coalesce', ['get', 'pattern'], ['global-state', 'pattern']] },
+      globalState: { pattern: 'test-pattern' }
+    });
 
-  const wrapper = new Wrapper([
-    {
-      type: 3,
-      geometry: [createPolygon(10)],
-      tags: {}
-    }
-  ]);
-  const features = new Array(wrapper.length);
-  for (let i = 0; i < wrapper.length; i++) {
-    features[i] = { feature: wrapper.feature(i) };
-  }
+    bucket.populate(getFeaturesFromLayer(sourceLayer), createPopulateOptions());
 
-  bucket.populate(features, { patternDependencies: {}, featureIndex: new FeatureIndex() });
-
-  t.assert.equal(bucket.features.length, 1);
-  t.assert.deepEqual(bucket.features[0].patterns, {
-    test: { min: 'test-pattern', mid: 'test-pattern', max: 'test-pattern' }
+    t.assert.ok(bucket.features.length > 0);
+    t.assert.deepEqual(bucket.features[0].patterns, {
+      test: { min: 'test-pattern', mid: 'test-pattern', max: 'test-pattern' }
+    });
   });
 });

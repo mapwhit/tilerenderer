@@ -1,7 +1,7 @@
 import test from 'node:test';
 import { Event } from '@mapwhit/events';
 import Map from '../../../../src/ui/map.js';
-import fixed from '../../../util/mapbox-gl-js-test/fixed.js';
+import fixed from '../../../util/fixed.js';
 import { serialize } from '../../../util/serialize_style.js';
 
 const fixedNum = fixed.Num;

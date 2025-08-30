@@ -1,8 +1,4 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import test from 'node:test';
-import Protobuf from '@mapwhit/pbf';
-import * as vt from '@mapwhit/vector-tile';
 import gl from 'gl';
 import { CollisionBoxArray } from '../../../src/data/array_types.js';
 import FeatureIndex from '../../../src/data/feature_index.js';
@@ -10,6 +6,7 @@ import Context from '../../../src/gl/context.js';
 import GeoJSONWrapper from '../../../src/source/geojson_wrapper.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
+import { loadVectorTile } from '../../util/tile.js';
 import _window from '../../util/window.js';
 
 test('Tile', async t => {
@@ -87,7 +84,7 @@ test('Tile', async t => {
       tile.querySourceFeatures(result, {});
       t.assert.equal(result.length, 0);
 
-      tile.loadVectorData(createVectorData({ vectorTile: createVectorTile() }), createPainter());
+      tile.loadVectorData(createVectorData({ vectorTile: loadVectorTile() }), createPainter());
 
       result = [];
       tile.querySourceFeatures(result, { sourceLayer: 'does-not-exist' });
@@ -120,7 +117,7 @@ test('Tile', async t => {
       const tile = new Tile(new OverscaledTileID(1, 0, 1, 1, 1));
       tile.state = 'loaded';
 
-      tile.loadVectorData(createVectorData({ vectorTile: createVectorTile() }), createPainter());
+      tile.loadVectorData(createVectorData({ vectorTile: loadVectorTile() }), createPainter());
       tile.loadVectorData(createVectorData(), createPainter());
 
       const features = [];
@@ -209,12 +206,6 @@ test('Tile', async t => {
     });
   });
 });
-
-function createVectorTile() {
-  return new vt.VectorTile(
-    new Protobuf(fs.readFileSync(path.join(import.meta.dirname, '/../../fixtures/mbsv5-6-18-23.vector.pbf')))
-  );
-}
 
 function createVectorData(options) {
   const collisionBoxArray = new CollisionBoxArray();
