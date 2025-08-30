@@ -498,7 +498,7 @@ test('Style', async t => {
         })
       );
       style.on('style.load', () => {
-        style.update(1, 0);
+        style.update({ zoom: 1, fadeDuration: 0 });
         callback(style);
       });
       return style;
@@ -1780,7 +1780,7 @@ test('Style', async t => {
       tr.resize(512, 512);
 
       style.once('style.load', () => {
-        style.update(tr.zoom, 0);
+        style.update({ zoom: tr.zoom, fadeDuration: 0 });
         const sourceCache = style._sources['geojson'];
         const source = style.getSource('geojson');
 
@@ -2277,7 +2277,7 @@ test('Style', async t => {
       style._sources.mapbox.transform = transform;
       style._sources.other.transform = transform;
 
-      style.update(0);
+      style.update({ zoom: 0 });
       style._updateSources(transform);
 
       await t.test('returns feature type', (t, done) => {
