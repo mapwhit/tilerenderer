@@ -1,8 +1,8 @@
+import { polygonIntersectsBox } from '@mapwhit/geometry';
 import Grid from 'grid-index';
 import EvaluationParameters from '../style/evaluation_parameters.js';
 import featureFilter from '../style-spec/feature_filter/index.js';
 import dictionaryCoder from '../util/dictionary_coder.js';
-import { polygonIntersectsBox } from '../util/intersection_tests.js';
 import { arraysIntersect } from '../util/object.js';
 import GeoJSONFeature from '../util/vectortile_to_geojson.js';
 import { FeatureIndexArray } from './array_types.js';

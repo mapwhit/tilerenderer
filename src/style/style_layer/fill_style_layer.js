@@ -1,5 +1,5 @@
+import { polygonIntersectsMultiPolygon } from '@mapwhit/geometry';
 import FillBucket from '../../data/bucket/fill_bucket.js';
-import { polygonIntersectsMultiPolygon } from '../../util/intersection_tests.js';
 import { translate, translateDistance } from '../query_utils.js';
 import StyleLayer from '../style_layer.js';
 import properties from './fill_style_layer_properties.js';

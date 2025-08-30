@@ -1,6 +1,6 @@
 import Point from '@mapbox/point-geometry';
+import { polygonIntersectsPolygon } from '@mapwhit/geometry';
 import * as projection from '../symbol/projection.js';
-import * as intersectionTests from '../util/intersection_tests.js';
 import Grid from './grid_index.js';
 
 // When a symbol crosses the edge that causes it to be included in
@@ -293,7 +293,7 @@ class CollisionIndex {
         new Point(feature.x2, feature.y2),
         new Point(feature.x1, feature.y2)
       ];
-      if (!intersectionTests.polygonIntersectsPolygon(query, bbox)) {
+      if (!polygonIntersectsPolygon(query, bbox)) {
         continue;
       }
 

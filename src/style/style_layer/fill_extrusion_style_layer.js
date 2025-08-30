@@ -1,7 +1,7 @@
 import glMatrix from '@mapbox/gl-matrix';
 import Point from '@mapbox/point-geometry';
+import { polygonIntersectsMultiPolygon, polygonIntersectsPolygon } from '@mapwhit/geometry';
 import FillExtrusionBucket from '../../data/bucket/fill_extrusion_bucket.js';
-import { polygonIntersectsMultiPolygon, polygonIntersectsPolygon } from '../../util/intersection_tests.js';
 import { translate, translateDistance } from '../query_utils.js';
 import StyleLayer from '../style_layer.js';
 import properties from './fill_extrusion_style_layer_properties.js';
