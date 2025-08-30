@@ -269,6 +269,36 @@ test('Style', async t => {
         done();
       });
     });
+
+    await t.test('propagates global state object to layers', async t => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'layer-id',
+              type: 'symbol',
+              source: 'source-id',
+              layout: {
+                'text-size': ['global-state', 'size']
+              }
+            }
+          ]
+        })
+      );
+      await style.once('style.load');
+      // tests that reference to globalState is propagated to layers
+      // by changing globalState property and checking if the changed value
+      // was used when evaluating the layer
+      const globalState = style.getGlobalState();
+      globalState.size = 12;
+      const layer = style.getLayer('layer-id');
+      layer.recalculate({});
+      t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
+    });
   });
 
   await t.test('Style._remove', async t => {

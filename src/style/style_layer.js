@@ -15,6 +15,7 @@ const TRANSITION_SUFFIX = '-transition';
  */
 class StyleLayer extends Evented {
   #key;
+  #globalState = {}; // reference to global state
 
   constructor(layer, properties) {
     super();
@@ -203,6 +204,7 @@ class StyleLayer extends Evented {
   }
 
   recalculate(parameters) {
+    parameters.globalState = this.#globalState;
     if (parameters.getCrossfadeParameters) {
       this._crossfadeParameters = parameters.getCrossfadeParameters();
     }
@@ -211,6 +213,10 @@ class StyleLayer extends Evented {
     }
 
     this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
+  }
+
+  set globalState(globalState) {
+    this.#globalState = globalState;
   }
 
   get key() {
