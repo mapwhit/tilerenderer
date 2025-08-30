@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import FillBucket from '../../../src/data/bucket/fill_bucket.js';
 import segment from '../../../src/data/segment.js';
 import FillStyleLayer from '../../../src/style/style_layer/fill_style_layer.js';

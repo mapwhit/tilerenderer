@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import Anchor from '../../../src/symbol/anchor.js';
 import checkMaxAngle from '../../../src/symbol/check_max_angle.js';
 

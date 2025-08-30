@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import mergeLines from '../../../src/symbol/mergelines.js';
 
 function makeFeatures(lines) {

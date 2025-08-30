@@ -1,6 +1,6 @@
 import glMatrix from '@mapbox/gl-matrix';
-import Point from '@mapbox/point-geometry';
 import { polygonIntersectsBufferedPoint } from '@mapwhit/geometry';
+import { Point } from '@mapwhit/point-geometry';
 import CircleBucket from '../../data/bucket/circle_bucket.js';
 import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';
 import StyleLayer from '../style_layer.js';

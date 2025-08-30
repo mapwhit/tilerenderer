@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { getAnchors, getCenterAnchor } from '../../../src/symbol/get_anchors.js';
 
 const TILE_EXTENT = 4096;
