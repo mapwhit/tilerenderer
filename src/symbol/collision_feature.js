@@ -1,4 +1,4 @@
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 
 /**
  * A CollisionFeature represents the area of the tile covered by a single label.

@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { getIntersectionDistance } from '../../../../src/style/style_layer/fill_extrusion_style_layer.js';
 
 test('getIntersectionDistance', async t => {
