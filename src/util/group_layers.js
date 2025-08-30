@@ -15,7 +15,7 @@ function groupBySource(layers) {
 
   // Iterate through each layer and group them by source, source-layer, and layout properties
   for (const layer of layers) {
-    if (layer.visibility === 'none') {
+    if (layer.isHidden()) {
       continue;
     }
 

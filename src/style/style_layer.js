@@ -184,8 +184,8 @@ class StyleLayer extends Evented {
     // No-op; can be overridden by derived classes.
   }
 
-  isHidden(zoom) {
-    if (this.minzoom && zoom < this.minzoom) {
+  isHidden(zoom = this.minzoom, minzoom = this.minzoom) {
+    if (minzoom && zoom < minzoom) {
       return true;
     }
     if (this.maxzoom && zoom >= this.maxzoom) {
