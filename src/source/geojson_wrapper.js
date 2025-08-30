@@ -1,4 +1,3 @@
-import { Point } from '@mapwhit/point-geometry';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EXTENT from '../data/extent.js';
 
@@ -79,5 +78,5 @@ class GeoJSONWrapper {
 export default GeoJSONWrapper;
 
 function makePoint(arr) {
-  return new Point(arr[0], arr[1]);
+  return { x: arr[0], y: arr[1] };
 }

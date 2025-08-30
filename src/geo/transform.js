@@ -194,10 +194,10 @@ class Transform {
   getVisibleUnwrappedCoordinates(tileID) {
     const result = [new UnwrappedTileID(0, tileID)];
     if (this._renderWorldCopies) {
-      const utl = this.pointCoordinate(new Point(0, 0), 0);
-      const utr = this.pointCoordinate(new Point(this.width, 0), 0);
-      const ubl = this.pointCoordinate(new Point(this.width, this.height), 0);
-      const ubr = this.pointCoordinate(new Point(0, this.height), 0);
+      const utl = this.pointCoordinate({ x: 0, y: 0 }, 0);
+      const utr = this.pointCoordinate({ x: this.width, y: 0 }, 0);
+      const ubl = this.pointCoordinate({ x: this.width, y: this.height }, 0);
+      const ubr = this.pointCoordinate({ x: 0, y: this.height }, 0);
       const w0 = Math.floor(Math.min(utl.column, utr.column, ubl.column, ubr.column));
       const w1 = Math.floor(Math.max(utl.column, utr.column, ubl.column, ubr.column));
 
@@ -242,10 +242,10 @@ class Transform {
     const centerCoord = this.pointCoordinate(this.centerPoint, z);
     const centerPoint = new Point(centerCoord.column - 0.5, centerCoord.row - 0.5);
     const cornerCoords = [
-      this.pointCoordinate(new Point(0, 0), z),
-      this.pointCoordinate(new Point(this.width, 0), z),
-      this.pointCoordinate(new Point(this.width, this.height), z),
-      this.pointCoordinate(new Point(0, this.height), z)
+      this.pointCoordinate({ x: 0, y: 0 }, z),
+      this.pointCoordinate({ x: this.width, y: 0 }, z),
+      this.pointCoordinate({ x: this.width, y: this.height }, z),
+      this.pointCoordinate({ x: 0, y: this.height }, z)
     ];
     return tileCover(z, cornerCoords, options.reparseOverscaled ? actualZ : z, this._renderWorldCopies).sort(
       (a, b) => centerPoint.dist(a.canonical) - centerPoint.dist(b.canonical)
@@ -472,7 +472,7 @@ class Transform {
     const s = Math.max(sx || 0, sy || 0);
 
     if (s) {
-      this.center = this.unproject(new Point(sx ? (maxX + minX) / 2 : this.x, sy ? (maxY + minY) / 2 : this.y));
+      this.center = this.unproject({ x: sx ? (maxX + minX) / 2 : this.x, y: sy ? (maxY + minY) / 2 : this.y });
       this.zoom += this.scaleZoom(s);
       this._unmodified = unmodified;
       this._constraining = false;
@@ -505,7 +505,7 @@ class Transform {
 
     // pan the map if the screen goes off the range
     if (x2 !== undefined || y2 !== undefined) {
-      this.center = this.unproject(new Point(x2 !== undefined ? x2 : this.x, y2 !== undefined ? y2 : this.y));
+      this.center = this.unproject({ x: x2 ?? this.x, y: y2 ?? this.y });
     }
 
     this._unmodified = unmodified;
@@ -592,7 +592,7 @@ class Transform {
       return 1;
     }
 
-    const coord = this.pointCoordinate(new Point(0, 0)).zoomTo(this.zoom);
+    const coord = this.pointCoordinate({ x: 0, y: 0 }).zoomTo(this.zoom);
     const p = [coord.column * this.tileSize, coord.row * this.tileSize, 0, 1];
     const topPoint = vec4.transformMat4(p, p, this.pixelMatrix);
     return topPoint[3] / this.cameraToCenterDistance;
@@ -612,7 +612,7 @@ class Transform {
   getCameraPoint() {
     const pitch = this._pitch;
     const yOffset = Math.tan(pitch) * (this.cameraToCenterDistance || 1);
-    return this.centerPoint.add(new Point(0, yOffset));
+    return this.centerPoint.add({ x: 0, y: yOffset });
   }
 
   /*
