@@ -1,5 +1,5 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';

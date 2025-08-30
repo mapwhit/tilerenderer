@@ -1,7 +1,7 @@
 import './util/polyfill.js';
 
-import { default as Point } from '@mapbox/point-geometry';
 import { Evented } from '@mapwhit/events';
+import { Point } from '@mapwhit/point-geometry';
 import packageJSON from '../package.json' with { type: 'json' };
 import { default as LngLat } from './geo/lng_lat.js';
 import { default as LngLatBounds } from './geo/lng_lat_bounds.js';
