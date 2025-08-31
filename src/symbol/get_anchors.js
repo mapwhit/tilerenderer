@@ -1,3 +1,4 @@
+import { angleTo, dist } from '@mapwhit/point-geometry';
 import Anchor from '../symbol/anchor.js';
 import interpolate from '../util/interpolate.js';
 import checkMaxAngle from './check_max_angle.js';
@@ -5,7 +6,7 @@ import checkMaxAngle from './check_max_angle.js';
 function getLineLength(line) {
   let lineLength = 0;
   for (let k = 0; k < line.length - 1; k++) {
-    lineLength += line[k].dist(line[k + 1]);
+    lineLength += dist(line[k], line[k + 1]);
   }
   return lineLength;
 }
@@ -32,7 +33,7 @@ export function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSiz
     const a = line[i];
     const b = line[i + 1];
 
-    const segmentDistance = a.dist(b);
+    const segmentDistance = dist(a, b);
 
     if (prevDistance + segmentDistance > centerDistance) {
       // The center is on this segment
@@ -40,7 +41,7 @@ export function getCenterAnchor(line, maxAngle, shapedText, shapedIcon, glyphSiz
       const x = interpolate(a.x, b.x, t);
       const y = interpolate(a.y, b.y, t);
 
-      const anchor = new Anchor(x, y, b.angleTo(a), i);
+      const anchor = new Anchor(x, y, angleTo(b, a), i);
       anchor._round();
       if (!angleWindowSize || checkMaxAngle(line, anchor, labelLength, angleWindowSize, maxAngle)) {
         return anchor;
@@ -117,8 +118,8 @@ function resample(
     const a = line[i];
     const b = line[i + 1];
 
-    const segmentDist = a.dist(b);
-    const angle = b.angleTo(a);
+    const segmentDist = dist(a, b);
+    const angle = angleTo(b, a);
 
     while (markedDistance + spacing < distance + segmentDist) {
       markedDistance += spacing;
