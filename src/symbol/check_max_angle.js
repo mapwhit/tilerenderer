@@ -1,4 +1,4 @@
-export default checkMaxAngle;
+import { angleTo, dist } from '@mapwhit/point-geometry';
 
 /**
  * Labels placed around really sharp angles aren't readable. Check if any
@@ -13,7 +13,7 @@ export default checkMaxAngle;
  * @returns {boolean} whether the label should be placed
  * @private
  */
-function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
+export default function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
   // horizontal labels always pass
   if (anchor.segment === undefined) {
     return true;
@@ -32,11 +32,11 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
       return false;
     }
 
-    anchorDistance -= line[index].dist(p);
+    anchorDistance -= dist(line[index], p);
     p = line[index];
   }
 
-  anchorDistance += line[index].dist(line[index + 1]);
+  anchorDistance += dist(line[index], line[index + 1]);
   index++;
 
   // store recent corners and their total angle difference
@@ -54,7 +54,7 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
       return false;
     }
 
-    let angleDelta = prev.angleTo(current) - current.angleTo(next);
+    let angleDelta = angleTo(prev, current) - angleTo(current, next);
     // restrict angle to -pi..pi range
     angleDelta = Math.abs(((angleDelta + 3 * Math.PI) % (Math.PI * 2)) - Math.PI);
 
@@ -75,7 +75,7 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
     }
 
     index++;
-    anchorDistance += current.dist(next);
+    anchorDistance += dist(current, next);
   }
 
   // no part of the line had an angle greater than the maximum allowed. check passes.
