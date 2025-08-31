@@ -1,4 +1,4 @@
-import { Point } from '@mapwhit/point-geometry';
+import { dist, Point, rotate as rotatePoint } from '@mapwhit/point-geometry';
 
 /**
  * A CollisionFeature represents the area of the tile covered by a single label.
@@ -67,17 +67,11 @@ class CollisionFeature {
         // See https://github.com/mapbox/mapbox-gl-js/issues/6075
         // Doesn't account for icon-text-fit
 
-        const tl = new Point(x1, y1);
-        const tr = new Point(x2, y1);
-        const bl = new Point(x1, y2);
-        const br = new Point(x2, y2);
-
         const rotateRadians = (rotate * Math.PI) / 180;
-
-        tl._rotate(rotateRadians);
-        tr._rotate(rotateRadians);
-        bl._rotate(rotateRadians);
-        br._rotate(rotateRadians);
+        const tl = rotatePoint({ x: x1, y: y1 }, rotateRadians);
+        const tr = rotatePoint({ x: x2, y: y1 }, rotateRadians);
+        const bl = rotatePoint({ x: x1, y: y2 }, rotateRadians);
+        const br = rotatePoint({ x: x2, y: y2 }, rotateRadians);
 
         // Collision features require an "on-axis" geometry,
         // so take the envelope of the rotated geometry
@@ -162,11 +156,11 @@ class CollisionFeature {
         index = 0;
         break;
       }
-      anchorDistance -= line[index].dist(p);
+      anchorDistance -= dist(line[index], p);
       p = line[index];
     } while (anchorDistance > paddingStartDistance);
 
-    let segmentLength = line[index].dist(line[index + 1]);
+    let segmentLength = dist(line[index], line[index + 1]);
 
     for (let i = -nPitchPaddingBoxes; i < nBoxes + nPitchPaddingBoxes; i++) {
       // the distance the box will be from the anchor
@@ -197,7 +191,7 @@ class CollisionFeature {
           return;
         }
 
-        segmentLength = line[index].dist(line[index + 1]);
+        segmentLength = dist(line[index], line[index + 1]);
       }
 
       // the distance the box will be from the beginning of the segment
@@ -205,7 +199,7 @@ class CollisionFeature {
 
       const p0 = line[index];
       const p1 = line[index + 1];
-      const boxAnchorPoint = p1.sub(p0)._unit()._mult(segmentBoxDistance)._add(p0)._round();
+      const boxAnchorPoint = Point.clone(p1)._sub(p0)._unit()._mult(segmentBoxDistance)._add(p0)._round();
 
       // If the box is within boxSize of the anchor, force the box to be used
       // (so even 0-width labels use at least one box)
