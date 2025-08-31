@@ -113,6 +113,8 @@ class Map extends Camera {
     const transform = new Transform(options.minZoom, options.maxZoom, options.renderWorldCopies);
     super(transform, options);
 
+    this._loadEventIgnoresTiles = options.loadEventIgnoresTiles;
+
     // use global loadImage implementation
     this.loadImage = loadImage;
 
@@ -1243,13 +1245,15 @@ class Map extends Camera {
    * or if there has been a change to the sources or style that
    * has not yet fully loaded.
    *
+   * @param {Boolean} ignoreTilesLoading set to `true` to check that style is loaded
+   * even if tiles are still loading
    * @returns {boolean} A Boolean indicating whether the map is fully loaded.
    */
-  loaded() {
+  loaded(ignoreTilesLoading) {
     if (this._styleDirty || this._sourcesDirty) {
       return false;
     }
-    if (!this.style || !this.style.loaded()) {
+    if (!this.style || !this.style.loaded(ignoreTilesLoading)) {
       return false;
     }
     return true;
@@ -1357,7 +1361,7 @@ class Map extends Camera {
 
     this.fire(new Event('render'));
 
-    if (this.loaded() && !this._loaded) {
+    if (this.loaded(this._loadEventIgnoresTiles) && !this._loaded) {
       this._loaded = true;
       this.fire(new Event('load'));
     }

@@ -68,6 +68,21 @@ test('Map', async t => {
           }
         });
       });
+
+      await t.test('expect "load" event despite unresponsive source', async t => {
+        const style = createStyle();
+        style.layers.push({ id: 'id', type: 'line', source: 'bad' });
+        style.sources.bad = {
+          type: 'vector',
+          tiles: async () => new Promise(() => {})
+        };
+        style.sprite = new Promise(resolve => setTimeout(() => resolve({ json: {}, image: { byteLength: 0 } }), 200));
+        const map = createMap({ style, loadEventIgnoresTiles: true });
+
+        t.assert.equal(map.isStyleLoaded(), false, 'false before style has loaded');
+        await map.once('load');
+        t.assert.equal(map.isStyleLoaded(), true, 'true when style is loaded');
+      });
     });
 
     await t.test('Map.areTilesLoaded', (t, done) => {
