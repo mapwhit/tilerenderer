@@ -18,7 +18,7 @@
     "@mapbox/whoots-js": "^3.0.0",
     "@mapwhit/events": "^1.0.0",
     "@mapwhit/geojson-rewind": "^2.0.0",
-    "@mapwhit/geometry": "^1.0.0",
+    "@mapwhit/geometry": "^1.1.0",
     "@mapwhit/pbf": "^1.0.0",
     "@mapwhit/point-geometry": "^1.0.2",
     "@mapwhit/style-expressions": "^1.2.0",
