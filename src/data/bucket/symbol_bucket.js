@@ -1,3 +1,4 @@
+import { dist } from '@mapwhit/point-geometry';
 import { Formatted } from '@mapwhit/style-expressions';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
@@ -263,13 +264,13 @@ export default class SymbolBucket {
       for (let i = anchor.segment + 1; i < line.length; i++) {
         vertices[i] = { x: line[i].x, y: line[i].y, tileUnitDistanceFromAnchor: sumForwardLength };
         if (i < line.length - 1) {
-          sumForwardLength += line[i + 1].dist(line[i]);
+          sumForwardLength += dist(line[i + 1], line[i]);
         }
       }
       for (let i = anchor.segment || 0; i >= 0; i--) {
         vertices[i] = { x: line[i].x, y: line[i].y, tileUnitDistanceFromAnchor: sumBackwardLength };
         if (i > 0) {
-          sumBackwardLength += line[i - 1].dist(line[i]);
+          sumBackwardLength += dist(line[i - 1], line[i]);
         }
       }
       for (let i = 0; i < line.length; i++) {
