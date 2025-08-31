@@ -4,6 +4,7 @@ import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import makeWorkerTile from '../../../src/source/worker_tile.js';
 import StyleLayerIndex from '../../../src/style/style_layer_index.js';
 import { create as createLayers } from '../../util/layers.js';
+import { loadVectorTile } from '../../util/tile.js';
 
 const tileID = new OverscaledTileID(1, 0, 1, 1, 1);
 const params = {
@@ -147,4 +148,27 @@ test('WorkerTile.parse skips layers without a corresponding source layer', async
 
   const result = await makeWorkerTile(params, { layers: {} }, layerIndex, {});
   t.assert.equal(result.buckets.size, 0);
+});
+
+test('WorkerTile.parse vector tile', async t => {
+  const layerIndex = new StyleLayerIndex(
+    createLayers([
+      {
+        id: 'test',
+        source: 'source',
+        'source-layer': 'road',
+        type: 'line',
+        layout: {
+          'line-join': 'bevel'
+        }
+      }
+    ])
+  );
+
+  // Load a line feature from fixture tile.
+  const vt = loadVectorTile();
+
+  const result = await makeWorkerTile(params, vt, layerIndex, {});
+  t.assert.ok(result.buckets.values().next().value);
+  t.assert.equal(result.buckets.values().next().value.layers[0]._layout._values['line-join'].value.value, 'bevel');
 });

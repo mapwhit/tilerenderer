@@ -57,7 +57,8 @@ test('GeoJSONSource.update', async t => {
         maxZoom: 10,
         tolerance: 4,
         buffer: 256,
-        lineMetrics: false
+        lineMetrics: false,
+        generateId: true
       });
       done();
 
@@ -70,7 +71,36 @@ test('GeoJSONSource.update', async t => {
         data: {},
         maxzoom: 10,
         tolerance: 0.25,
-        buffer: 16
+        buffer: 16,
+        generateId: true
+      },
+      null,
+      {}
+    ).load();
+  });
+
+  await t.test('forwards Supercluster options with worker request', (t, done) => {
+    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', params => {
+      t.assert.deepEqual(params.superclusterOptions, {
+        maxZoom: 12,
+        extent: 8192,
+        radius: 1600,
+        log: false,
+        generateId: true
+      });
+      done();
+
+      return Promise.resolve();
+    });
+
+    new GeoJSONSource(
+      'id',
+      {
+        data: {},
+        cluster: true,
+        clusterMaxZoom: 12,
+        clusterRadius: 100,
+        generateId: true
       },
       null,
       {}

@@ -2,13 +2,17 @@ import rewind from '@mapwhit/geojson-rewind';
 import geojsonvt from 'geojson-vt';
 import Supercluster from 'supercluster';
 import GeoJSONWrapper from './geojson_wrapper.js';
-import VectorTileWorkerSource from './vector_tile_worker_source.js';
+import { makeSingleSourceLayerWorkerTile as makeWorkerTile } from './worker_tile.js';
 
 /**
  * The {@link WorkerSource} implementation that supports {@link GeoJSONSource}.
  *
  */
-class GeoJSONWorkerSource extends VectorTileWorkerSource {
+class GeoJSONWorkerSource {
+  constructor(resources, layerIndex) {
+    this.resources = resources;
+    this.layerIndex = layerIndex;
+  }
   /**
    * Fetches (if appropriate), parses, and index geojson data into tiles. This
    * preparatory method must be called before {@link GeoJSONWorkerSource#loadTile}
@@ -22,7 +26,7 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
    * @param callback
    */
   loadData(params) {
-    const data = loadJSON(params.data);
+    const data = loadJSON(params);
     this._geoJSONIndex = null;
     this._createGeoJSONIndex = params.cluster
       ? () => {
@@ -51,17 +55,29 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
     return this._geoJSONIndex.getTile(z, x, y);
   }
 
-  loadVectorData({ tileID }) {
+  /**
+   * Implements {@link WorkerSource#loadTile}.
+   */
+  async loadTile(params) {
+    const { tileID, source } = params;
     const geoJSONTile = this.getTile(tileID);
     if (!geoJSONTile) {
       return; // nothing in the given tile
     }
+    const sourceLayer = new GeoJSONWrapper(geoJSONTile.features);
+    const layerFamilies = this.layerIndex.familiesBySource.get(source);
+    if (!layerFamilies) {
+      return;
+    }
+    const features = new Array(sourceLayer.length);
+    for (let index = 0; index < sourceLayer.length; index++) {
+      features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex: 0 };
+    }
 
-    const vectorTile = new GeoJSONWrapper(geoJSONTile.features);
+    const result = await makeWorkerTile(params, features, layerFamilies.get(sourceLayer.name), this.resources);
 
-    return {
-      vectorTile
-    };
+    result.vectorTile = sourceLayer;
+    return result;
   }
 }
 
@@ -70,11 +86,11 @@ class GeoJSONWorkerSource extends VectorTileWorkerSource {
  *
  * @param data Literal GeoJSON data. Must be provided.
  */
-function loadJSON(data) {
+function loadJSON({ data, source }) {
   try {
     return typeof data === 'string' ? JSON.parse(data) : data;
   } catch {
-    throw new Error('Input data is not a valid GeoJSON object.');
+    throw new Error(`Input data given to '${source}' is not a valid GeoJSON object.`);
   }
 }
 
