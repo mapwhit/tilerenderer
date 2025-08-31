@@ -1,5 +1,4 @@
-import { Point } from '@mapwhit/point-geometry';
-export default clipLine;
+import { equals, round } from '@mapwhit/point-geometry';
 
 /**
  * Returns the part of a multiline that intersects with the provided rectangular box.
@@ -10,9 +9,8 @@ export default clipLine;
  * @param x2 the right edge of the box
  * @param y2 the bottom edge of the box
  * @returns lines
- * @private
  */
-function clipLine(lines, x1, y1, x2, y2) {
+export default function clipLine(lines, x1, y1, x2, y2) {
   const clippedLines = [];
 
   for (let l = 0; l < lines.length; l++) {
@@ -27,39 +25,39 @@ function clipLine(lines, x1, y1, x2, y2) {
         continue;
       }
       if (p0.x < x1) {
-        p0 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
+        p0 = round({ x: x1, y: p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)) });
       } else if (p1.x < x1) {
-        p1 = new Point(x1, p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)))._round();
+        p1 = round({ x: x1, y: p0.y + (p1.y - p0.y) * ((x1 - p0.x) / (p1.x - p0.x)) });
       }
 
       if (p0.y < y1 && p1.y < y1) {
         continue;
       }
       if (p0.y < y1) {
-        p0 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
+        p0 = round({ x: p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y: y1 });
       } else if (p1.y < y1) {
-        p1 = new Point(p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y1)._round();
+        p1 = round({ x: p0.x + (p1.x - p0.x) * ((y1 - p0.y) / (p1.y - p0.y)), y: y1 });
       }
 
       if (p0.x >= x2 && p1.x >= x2) {
         continue;
       }
       if (p0.x >= x2) {
-        p0 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
+        p0 = round({ x: x2, y: p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)) });
       } else if (p1.x >= x2) {
-        p1 = new Point(x2, p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)))._round();
+        p1 = round({ x: x2, y: p0.y + (p1.y - p0.y) * ((x2 - p0.x) / (p1.x - p0.x)) });
       }
 
       if (p0.y >= y2 && p1.y >= y2) {
         continue;
       }
       if (p0.y >= y2) {
-        p0 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
+        p0 = round({ x: p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y: y2 });
       } else if (p1.y >= y2) {
-        p1 = new Point(p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y2)._round();
+        p1 = round({ x: p0.x + (p1.x - p0.x) * ((y2 - p0.y) / (p1.y - p0.y)), y: y2 });
       }
 
-      if (!clippedLine || !p0.equals(clippedLine[clippedLine.length - 1])) {
+      if (!clippedLine || !equals(p0, clippedLine[clippedLine.length - 1])) {
         clippedLine = [p0];
         clippedLines.push(clippedLine);
       }
