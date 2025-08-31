@@ -59,6 +59,8 @@ import EvaluationParameters from './evaluation_parameters.js';
  *  @private
  */
 export class PropertyValue {
+  #evaluate; // original evaluate function
+
   constructor(property, value) {
     this.property = property;
     this.value = value;
@@ -66,6 +68,7 @@ export class PropertyValue {
       value === undefined ? property.specification.default : value,
       property.specification
     );
+    this.#evaluate = this.expression.evaluate;
   }
 
   isDataDriven() {
@@ -78,6 +81,13 @@ export class PropertyValue {
 
   possiblyEvaluate(parameters) {
     return this.property.possiblyEvaluate(this, parameters);
+  }
+
+  set globalState(globalState) {
+    this.expression.evaluate = (globals, feature, featureState) => {
+      globals.globalState = globalState;
+      return this.#evaluate.call(this.expression, globals, feature, featureState);
+    };
   }
 }
 
@@ -307,6 +317,7 @@ export class Transitioning {
  * @private
  */
 export class Layout {
+  #globalState = {}; // reference to global state
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPropertyValues);
@@ -321,6 +332,7 @@ export class Layout {
       this._values[name].property,
       value === null ? undefined : structuredClone(value)
     );
+    this._values[name].globalState = this.#globalState;
   }
 
   serialize() {
@@ -340,6 +352,13 @@ export class Layout {
       result._values[property] = this._values[property].possiblyEvaluate(parameters);
     }
     return result;
+  }
+
+  set globalState(globalState) {
+    this.#globalState = globalState;
+    for (const value of Object.values(this._values)) {
+      value.globalState = globalState;
+    }
   }
 }
 

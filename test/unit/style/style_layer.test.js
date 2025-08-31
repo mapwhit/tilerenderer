@@ -287,3 +287,23 @@ test('StyleLayer.getPaintAffectingGlobalStateRefs', async t => {
     t.assert.deepEqual(layer.getPaintAffectingGlobalStateRefs(), expectMap);
   });
 });
+
+test('StyleLayer.globalState', async t => {
+  await t.test('uses layer global state when recalculating layout properties', t => {
+    const layer = createStyleLayer({
+      id: 'symbol',
+      type: 'symbol',
+      layout: {
+        'text-field': '{text}',
+        'text-size': ['global-state', 'textSize'],
+        'text-transform': ['global-state', 'textTransform']
+      }
+    });
+    layer.globalState = { textSize: 15, textTransform: 'uppercase' };
+
+    layer.recalculate({ zoom: 0, globalState: { textSize: 13, textTransform: 'lowercase' } });
+
+    t.assert.deepEqual(layer._layout.get('text-size').evaluate(), 15);
+    t.assert.deepEqual(layer._layout.get('text-transform').evaluate(), 'uppercase');
+  });
+});

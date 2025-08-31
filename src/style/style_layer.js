@@ -217,6 +217,9 @@ class StyleLayer extends Evented {
 
   set globalState(globalState) {
     this.#globalState = globalState;
+    if (this._unevaluatedLayout) {
+      this._unevaluatedLayout.globalState = globalState;
+    }
   }
 
   get key() {
