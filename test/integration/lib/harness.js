@@ -2,7 +2,6 @@ import { createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
-import { promisify } from 'node:util';
 import colors from 'chalk';
 import template from 'lodash.template';
 import shuffler from 'shuffle-seed';
@@ -11,8 +10,7 @@ export default harness;
 
 async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
-  const runTest = promisify(run);
-  const tests = await runSequence(sequence, runTest, options);
+  const tests = await runSequence(sequence, run, options);
 
   if (process.env.UPDATE) {
     console.log(`Updated ${tests.length} tests.`);
@@ -115,7 +113,7 @@ async function generateTestSequence(cwd, implementation, options) {
 
     await loaderInstance.localizeURLs(style);
 
-    style.metadata ??= style.metadata || {};
+    style.metadata ??= {};
     const test = (style.metadata.test = Object.assign(
       {
         id,
@@ -123,7 +121,7 @@ async function generateTestSequence(cwd, implementation, options) {
         width: 512,
         height: 512,
         pixelRatio: 1,
-        recycleMap: options.recycleMap || false,
+        recycleMap: options.recycleMap ?? false,
         allowed: 0.00015
       },
       style.metadata.test
