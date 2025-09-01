@@ -10,7 +10,7 @@ import { getType as getSourceType, setType as setSourceType } from '../source/so
 import SourceCache from '../source/source_cache.js';
 import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
 import browser from '../util/browser.js';
-import { clone, deepEqual } from '../util/object.js';
+import { deepEqual } from '../util/object.js';
 import createStyleLayer from './create_style_layer.js';
 import Light from './light.js';
 import loadSprite from './load_sprite.js';
@@ -520,7 +520,7 @@ class Style extends Evented {
 
     if (typeof layerObject.source === 'object') {
       this.addSource(id, layerObject.source);
-      layerObject = clone(layerObject);
+      layerObject = structuredClone(layerObject);
       layerObject = Object.assign(layerObject, { source: id });
     }
 
@@ -656,7 +656,7 @@ class Style extends Evented {
       return;
     }
 
-    layer.setFilter(clone(filter));
+    layer.setFilter(structuredClone(filter));
     this._updateLayer(layer);
   }
 
@@ -666,7 +666,7 @@ class Style extends Evented {
    * @returns {*} the layer's filter, if any
    */
   getFilter(layer) {
-    return clone(this.getLayer(layer).filter);
+    return structuredClone(this.getLayer(layer).filter);
   }
 
   setLayoutProperty(layerId, name, value) {

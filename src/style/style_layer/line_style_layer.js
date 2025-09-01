@@ -1,7 +1,7 @@
 import Point from '@mapbox/point-geometry';
+import { polygonIntersectsBufferedMultiLine } from '@mapwhit/geometry';
 import LineBucket from '../../data/bucket/line_bucket.js';
 import renderColorRamp from '../../util/color_ramp.js';
-import { polygonIntersectsBufferedMultiLine } from '../../util/intersection_tests.js';
 import EvaluationParameters from '../evaluation_parameters.js';
 import { DataDrivenProperty } from '../properties.js';
 import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';

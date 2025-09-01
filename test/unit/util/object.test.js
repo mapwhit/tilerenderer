@@ -1,11 +1,8 @@
 import { test } from 'node:test';
 
-import { arraysIntersect, bindAll, clone, deepEqual, filterObject, mapObject, pick } from '../../../src/util/object.js';
+import { arraysIntersect, bindAll, deepEqual, mapObject } from '../../../src/util/object.js';
 
 test('object', async t => {
-  t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c']), { a: 1, c: 3 }, 'pick');
-  t.assert.deepEqual(pick({ a: 1, b: 2, c: 3 }, ['a', 'c', 'd']), { a: 1, c: 3 }, 'pick');
-
   await t.test('bindAll', (t, done) => {
     function MyClass() {
       bindAll(['ontimer'], this);
@@ -43,33 +40,6 @@ test('object', async t => {
     );
   });
 
-  await t.test('filter', t => {
-    t.assert.deepEqual(
-      filterObject({}, () => {
-        t.assert.fail();
-      }),
-      {}
-    );
-    const that = {};
-    filterObject(
-      { map: 'box' },
-      function (value, key, object) {
-        t.assert.equal(value, 'box');
-        t.assert.equal(key, 'map');
-        t.assert.deepEqual(object, { map: 'box' });
-        t.assert.equal(this, that);
-        return true;
-      },
-      that
-    );
-    t.assert.deepEqual(
-      filterObject({ map: 'box', box: 'map' }, value => {
-        return value === 'box';
-      }),
-      { map: 'box' }
-    );
-  });
-
   await t.test('deepEqual', t => {
     const a = {
       foo: 'bar',
@@ -87,36 +57,6 @@ test('object', async t => {
     t.assert.ok(!deepEqual(a, null));
     t.assert.ok(!deepEqual(null, c));
     t.assert.ok(deepEqual(null, null));
-  });
-
-  await t.test('clone', async t => {
-    await t.test('array', t => {
-      const input = [false, 1, 'two'];
-      const output = clone(input);
-      t.assert.notEqual(input, output);
-      t.assert.deepEqual(input, output);
-    });
-
-    await t.test('object', t => {
-      const input = { a: false, b: 1, c: 'two' };
-      const output = clone(input);
-      t.assert.notEqual(input, output);
-      t.assert.deepEqual(input, output);
-    });
-
-    await t.test('deep object', t => {
-      const input = { object: { a: false, b: 1, c: 'two' } };
-      const output = clone(input);
-      t.assert.notEqual(input.object, output.object);
-      t.assert.deepEqual(input.object, output.object);
-    });
-
-    await t.test('deep array', t => {
-      const input = { array: [false, 1, 'two'] };
-      const output = clone(input);
-      t.assert.notEqual(input.array, output.array);
-      t.assert.deepEqual(input.array, output.array);
-    });
   });
 
   await t.test('arraysIntersect', async t => {

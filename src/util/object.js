@@ -1,23 +1,4 @@
 /**
- * Given an object and a number of properties as strings, return version
- * of that object with only those properties.
- *
- * @param src the object
- * @param properties an array of property names chosen
- * to appear on the resulting object.
- * @returns object with limited properties.
- * @example
- * var foo = { name: 'Charlie', age: 10 };
- * var justName = pick(foo, ['name']);
- * // justName = { name: 'Charlie' }
- * @private
- */
-export function pick(src, properties) {
-  const entries = properties.filter(p => p in src).map(p => [p, src[p]]);
-  return Object.fromEntries(entries);
-}
-
-/**
  * Given an array of member function names as strings, replace all of them
  * with bound versions that will always refer to `context` as `this`. This
  * is useful for classes where otherwise event bindings would reassign
@@ -60,17 +41,6 @@ export function mapObject(input, iterator, context) {
 }
 
 /**
- * Create an object by filtering out values of an existing object.
- *
- * @private
- */
-export function filterObject(input, iterator, context) {
-  context ??= this;
-  const entries = Object.entries(input).filter(([k, v]) => iterator.call(context, v, k, input));
-  return Object.fromEntries(entries);
-}
-
-/**
  * Deeply compares two object literals.
  *
  * @private
@@ -103,21 +73,6 @@ export function deepEqual(a, b) {
     return true;
   }
   return a === b;
-}
-
-/**
- * Deeply clones two objects.
- *
- * @private
- */
-export function clone(input) {
-  if (Array.isArray(input)) {
-    return input.map(clone);
-  }
-  if (typeof input === 'object' && input) {
-    return mapObject(input, clone);
-  }
-  return input;
 }
 
 /**
