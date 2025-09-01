@@ -1,4 +1,4 @@
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EXTENT from '../data/extent.js';
 

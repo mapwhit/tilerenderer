@@ -1,5 +1,5 @@
-import Point from '@mapbox/point-geometry';
 import { polygonIntersectsBufferedMultiLine } from '@mapwhit/geometry';
+import { Point } from '@mapwhit/point-geometry';
 import LineBucket from '../../data/bucket/line_bucket.js';
 import renderColorRamp from '../../util/color_ramp.js';
 import EvaluationParameters from '../evaluation_parameters.js';

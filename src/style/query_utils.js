@@ -1,4 +1,4 @@
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 
 export function getMaximumPaintValue(property, layer, bucket) {
   const value = layer._paint.get(property).value;
