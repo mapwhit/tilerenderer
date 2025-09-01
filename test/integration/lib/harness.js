@@ -2,7 +2,6 @@ import { createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
-import { promisify } from 'node:util';
 import colors from 'chalk';
 import template from 'lodash.template';
 import shuffler from 'shuffle-seed';
@@ -11,8 +10,7 @@ export default harness;
 
 async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
-  const runTest = promisify(run);
-  const tests = await runSequence(sequence, runTest, options);
+  const tests = await runSequence(sequence, run, options);
 
   if (process.env.UPDATE) {
     console.log(`Updated ${tests.length} tests.`);

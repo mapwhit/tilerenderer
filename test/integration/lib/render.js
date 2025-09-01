@@ -1,52 +1,53 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import harness from './harness.js';
 
-function compare(actualPath, expectedPaths, diffPath, callback) {
-  const actualImg = fs.createReadStream(actualPath).pipe(new PNG()).on('parsed', doneReading);
+function readPNG(filePath) {
+  return new Promise((resolve, reject) => {
+    const png = new PNG();
+    fs.createReadStream(filePath)
+      .pipe(png)
+      .on('parsed', () => resolve(png))
+      .on('error', reject);
+  });
+}
 
-  const expectedImgs = [];
-  for (const path of expectedPaths) {
-    expectedImgs.push(fs.createReadStream(path).pipe(new PNG()).on('parsed', doneReading));
+function writePNG(filePath, png) {
+  return pipeline(png.pack(), fs.createWriteStream(filePath));
+}
+
+async function compare(actualPath, expectedPaths, diffPath) {
+  const [actualImg, ...expectedImgs] = await Promise.all([readPNG(actualPath), ...expectedPaths.map(readPNG)]);
+
+  // if we have multiple expected images, we'll compare against each one and pick the one with
+  // the least amount of difference; this is useful for covering features that render differently
+  // depending on platform, i.e. heatmaps use half-float textures for improved rendering where supported
+
+  let minNumPixels = Number.POSITIVE_INFINITY;
+  let minDiff;
+  let minIndex;
+
+  for (let i = 0; i < expectedImgs.length; i++) {
+    const diff = new PNG({ width: actualImg.width, height: actualImg.height });
+    const numPixels = pixelmatch(actualImg.data, expectedImgs[i].data, diff.data, actualImg.width, actualImg.height, {
+      threshold: 0.13
+    });
+
+    if (numPixels < minNumPixels) {
+      minNumPixels = numPixels;
+      minDiff = diff;
+      minIndex = i;
+    }
   }
 
-  let read = 0;
-
-  function doneReading() {
-    if (++read < expectedPaths.length + 1) {
-      return;
-    }
-
-    // if we have multiple expected images, we'll compare against each one and pick the one with
-    // the least amount of difference; this is useful for covering features that render differently
-    // depending on platform, i.e. heatmaps use half-float textures for improved rendering where supported
-
-    let minNumPixels = Number.POSITIVE_INFINITY;
-    let minDiff;
-    let minIndex;
-
-    for (let i = 0; i < expectedImgs.length; i++) {
-      const diff = new PNG({ width: actualImg.width, height: actualImg.height });
-      const numPixels = pixelmatch(actualImg.data, expectedImgs[i].data, diff.data, actualImg.width, actualImg.height, {
-        threshold: 0.13
-      });
-
-      if (numPixels < minNumPixels) {
-        minNumPixels = numPixels;
-        minDiff = diff;
-        minIndex = i;
-      }
-    }
-
-    minDiff
-      .pack()
-      .pipe(fs.createWriteStream(diffPath))
-      .on('finish', () => {
-        callback(null, minNumPixels / (minDiff.width * minDiff.height), expectedPaths[minIndex]);
-      });
-  }
+  await writePNG(diffPath, minDiff);
+  return {
+    difference: minNumPixels / (minDiff.width * minDiff.height),
+    expected: expectedPaths[minIndex]
+  };
 }
 
 /**
@@ -84,76 +85,57 @@ export default function run(implementation, options, render) {
   options.seed ??= makeHash();
 
   const directory = path.join(import.meta.dirname, '../render/tests');
-  harness(directory, implementation, options, (style, params, done) => {
-    render(style, params, (err, data) => {
-      if (err) {
-        return done(err);
-      }
+  harness(directory, implementation, options, renderTest);
 
-      let stats;
-      const dir = path.join(directory, params.id);
-      try {
-        stats = fs.statSync(dir, fs.R_OK | fs.W_OK);
-        if (!stats.isDirectory()) {
-          throw new Error();
-        }
-      } catch {
-        fs.mkdirSync(dir);
-      }
+  async function renderTest(style, params) {
+    const { data } = await render(style, params);
 
-      const expected = path.join(dir, 'expected.png');
-      const actual = path.join(dir, 'actual.png');
-      const diff = path.join(dir, 'diff.png');
+    const dir = path.join(directory, params.id);
+    fs.mkdirSync(dir, { recursive: true });
 
-      const png = new PNG({
-        width: Math.floor(params.width * params.pixelRatio),
-        height: Math.floor(params.height * params.pixelRatio)
-      });
+    const expected = path.join(dir, 'expected.png');
+    const actual = path.join(dir, 'actual.png');
+    const diff = path.join(dir, 'diff.png');
 
-      // PNG data must be unassociated (not premultiplied)
-      for (let i = 0; i < data.length; i++) {
-        const a = data[i * 4 + 3] / 255;
-        if (a !== 0) {
-          data[i * 4 + 0] /= a;
-          data[i * 4 + 1] /= a;
-          data[i * 4 + 2] /= a;
-        }
-      }
-
-      png.data = data;
-
-      // there may be multiple expected images, covering different platforms
-      const expectedPaths = fs.globSync(path.join(dir, 'expected*.png'));
-
-      if (!process.env.UPDATE && expectedPaths.length === 0) {
-        throw new Error('No expected*.png files found; did you mean to run tests with UPDATE=true?');
-      }
-
-      if (process.env.UPDATE) {
-        png.pack().pipe(fs.createWriteStream(expected)).on('finish', done);
-      } else {
-        png
-          .pack()
-          .pipe(fs.createWriteStream(actual))
-          .on('finish', () => {
-            compare(actual, expectedPaths, diff, (err, difference, expected) => {
-              if (err) {
-                return done(err);
-              }
-
-              params.difference = difference;
-              params.ok = difference <= params.allowed;
-
-              params.actual = fs.readFileSync(actual).toString('base64');
-              params.expected = fs.readFileSync(expected).toString('base64');
-              params.diff = fs.readFileSync(diff).toString('base64');
-
-              done();
-            });
-          });
-      }
+    const png = new PNG({
+      width: Math.floor(params.width * params.pixelRatio),
+      height: Math.floor(params.height * params.pixelRatio)
     });
-  });
+
+    // PNG data must be unassociated (not premultiplied)
+    for (let i = 0; i < data.length; i++) {
+      const a = data[i * 4 + 3] / 255;
+      if (a !== 0) {
+        data[i * 4 + 0] /= a;
+        data[i * 4 + 1] /= a;
+        data[i * 4 + 2] /= a;
+      }
+    }
+
+    png.data = data;
+
+    // there may be multiple expected images, covering different platforms
+    const expectedPaths = fs.globSync(path.join(dir, 'expected*.png'));
+
+    if (!process.env.UPDATE && expectedPaths.length === 0) {
+      throw new Error('No expected*.png files found; did you mean to run tests with UPDATE=true?');
+    }
+
+    if (process.env.UPDATE) {
+      await writePNG(expected, png);
+    } else {
+      await writePNG(actual, png);
+
+      const { difference, expected } = await compare(actual, expectedPaths, diff);
+
+      params.difference = difference;
+      params.ok = difference <= params.allowed;
+
+      params.actual = fs.readFileSync(actual).toString('base64');
+      params.expected = fs.readFileSync(expected).toString('base64');
+      params.diff = fs.readFileSync(diff).toString('base64');
+    }
+  }
 }
 
 // https://stackoverflow.com/a/1349426/229714

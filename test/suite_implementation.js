@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import util from 'node:util';
+import { promisify } from 'node:util';
 import { PNG } from 'pngjs';
 import Map from '../src/ui/map.js';
 import browser from '../src/util/browser.js';
@@ -8,27 +8,15 @@ import config from '../src/util/config.js';
 
 const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
-export default async function (style, options, _callback) {
+export default async function (style, options) {
+  const rp = Promise.withResolvers();
+  rp.wasResolved = false;
   const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
     '../src/source/rtl_text_plugin.js'
   );
   clearRTLTextPlugin();
   setRTLTextPlugin(rtlText);
-  await util.promisify(registerForPluginAvailability)();
-
-  let wasCallbackCalled = false;
-
-  const timeout = setTimeout(() => {
-    callback(new Error('Test timed out'));
-  }, options.timeout || 20000);
-
-  function callback() {
-    if (!wasCallbackCalled) {
-      clearTimeout(timeout);
-      wasCallbackCalled = true;
-      _callback.apply(this, arguments);
-    }
-  }
+  await promisify(registerForPluginAvailability)();
 
   window.devicePixelRatio = options.pixelRatio;
 
@@ -69,7 +57,7 @@ export default async function (style, options, _callback) {
 
   const gl = map.painter.context.gl;
 
-  map.once('load', () => {
+  map.once('load', async () => {
     if (options.collisionDebug) {
       map.showCollisionBoxes = true;
       if (options.operations) {
@@ -78,81 +66,89 @@ export default async function (style, options, _callback) {
         options.operations = [['wait']];
       }
     }
-    applyOperations(map, options.operations, () => {
-      const viewport = gl.getParameter(gl.VIEWPORT);
-      const w = viewport[2];
-      const h = viewport[3];
+    await promisify(applyOperations)(map, options.operations);
+    const viewport = gl.getParameter(gl.VIEWPORT);
+    const w = viewport[2];
+    const h = viewport[3];
 
-      const pixels = new Uint8Array(w * h * 4);
-      gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    const pixels = new Uint8Array(w * h * 4);
+    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-      const data = Buffer.from(pixels);
+    const data = Buffer.from(pixels);
 
-      // Flip the scanlines.
-      const stride = w * 4;
-      const tmp = Buffer.alloc(stride);
-      for (let i = 0, j = h - 1; i < j; i++, j--) {
-        const start = i * stride;
-        const end = j * stride;
-        data.copy(tmp, 0, start, start + stride);
-        data.copy(data, start, end, end + stride);
-        tmp.copy(data, end);
-      }
+    // Flip the scanlines.
+    const stride = w * 4;
+    const tmp = Buffer.alloc(stride);
+    for (let i = 0, j = h - 1; i < j; i++, j--) {
+      const start = i * stride;
+      const end = j * stride;
+      data.copy(tmp, 0, start, start + stride);
+      data.copy(data, start, end, end + stride);
+      tmp.copy(data, end);
+    }
 
-      const results = options.queryGeometry
-        ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions || {})
-        : [];
+    const results = options.queryGeometry
+      ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions || {})
+      : [];
 
-      map.remove();
-      gl.getExtension('STACKGL_destroy_context').destroy();
-      delete map.painter.context.gl;
+    map.remove();
+    gl.getExtension('STACKGL_destroy_context').destroy();
+    delete map.painter.context.gl;
 
-      callback(
-        null,
-        data,
-        results.map(feature => {
-          feature = feature.toJSON();
-          delete feature.layer;
-          return feature;
-        })
-      );
+    rp.resolve({
+      data,
+      results: results.map(feature => {
+        feature = feature.toJSON();
+        delete feature.layer;
+        return feature;
+      })
     });
   });
 
+  return rp.promise;
+
   function applyOperations(map, operations, callback) {
-    const operation = operations?.[0];
     if (!operations || operations.length === 0) {
-      callback();
-    } else if (operation[0] === 'wait') {
-      if (operation.length > 1) {
-        now += operation[1];
-        map._render();
-        applyOperations(map, operations.slice(1), callback);
-      } else {
-        const wait = function () {
-          if (map.loaded()) {
-            applyOperations(map, operations.slice(1), callback);
-          } else {
-            map.once('render', wait);
+      return callback();
+    }
+    const [[operation, ...args], ...remainingOperations] = operations;
+    switch (operation) {
+      case 'wait':
+        if (args.length > 0) {
+          now += args[0];
+          map._render();
+          applyOperations(map, remainingOperations, callback);
+        } else {
+          wait();
+
+          function wait() {
+            if (map.loaded()) {
+              applyOperations(map, remainingOperations, callback);
+            } else {
+              map.once('render', wait);
+            }
           }
-        };
-        wait();
+        }
+        break;
+      case 'sleep':
+        // Prefer "wait", which renders until the map is loaded
+        // Use "sleep" when you need to test something that sidesteps the "loaded" logic
+        setTimeout(() => {
+          applyOperations(map, remainingOperations, callback);
+        }, args[0]);
+        break;
+      case 'addImage': {
+        const [image, filename, opts = {}] = args;
+        const { data, width, height } = PNG.sync.read(
+          fs.readFileSync(path.join(import.meta.dirname, './integration', filename))
+        );
+        map.addImage(image, { width, height, data: new Uint8Array(data) }, opts);
+        applyOperations(map, remainingOperations, callback);
+        break;
       }
-    } else if (operation[0] === 'sleep') {
-      // Prefer "wait", which renders until the map is loaded
-      // Use "sleep" when you need to test something that sidesteps the "loaded" logic
-      setTimeout(() => {
-        applyOperations(map, operations.slice(1), callback);
-      }, operation[1]);
-    } else if (operation[0] === 'addImage') {
-      const { data, width, height } = PNG.sync.read(
-        fs.readFileSync(path.join(import.meta.dirname, './integration', operation[2]))
-      );
-      map.addImage(operation[1], { width, height, data: new Uint8Array(data) }, operation[3] || {});
-      applyOperations(map, operations.slice(1), callback);
-    } else {
-      map[operation[0]].apply(map, operation.slice(1));
-      applyOperations(map, operations.slice(1), callback);
+      default:
+        map[operation].apply(map, args);
+        applyOperations(map, remainingOperations, callback);
     }
   }
 }
