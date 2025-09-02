@@ -8,9 +8,7 @@ import config from '../src/util/config.js';
 
 const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
-export default async function (style, options) {
-  const rp = Promise.withResolvers();
-  rp.wasResolved = false;
+export default async function suiteImplementation(style, options) {
   const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
     '../src/source/rtl_text_plugin.js'
   );
@@ -57,55 +55,52 @@ export default async function (style, options) {
 
   const gl = map.painter.context.gl;
 
-  map.once('load', async () => {
-    if (options.collisionDebug) {
-      map.showCollisionBoxes = true;
-      if (options.operations) {
-        options.operations.push(['wait']);
-      } else {
-        options.operations = [['wait']];
-      }
+  await map.once('load');
+  if (options.collisionDebug) {
+    map.showCollisionBoxes = true;
+    if (options.operations) {
+      options.operations.push(['wait']);
+    } else {
+      options.operations = [['wait']];
     }
-    await promisify(applyOperations)(map, options.operations);
-    const viewport = gl.getParameter(gl.VIEWPORT);
-    const w = viewport[2];
-    const h = viewport[3];
+  }
+  await promisify(applyOperations)(map, options.operations);
+  const viewport = gl.getParameter(gl.VIEWPORT);
+  const w = viewport[2];
+  const h = viewport[3];
 
-    const pixels = new Uint8Array(w * h * 4);
-    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  const pixels = new Uint8Array(w * h * 4);
+  gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    const data = Buffer.from(pixels);
+  const data = Buffer.from(pixels);
 
-    // Flip the scanlines.
-    const stride = w * 4;
-    const tmp = Buffer.alloc(stride);
-    for (let i = 0, j = h - 1; i < j; i++, j--) {
-      const start = i * stride;
-      const end = j * stride;
-      data.copy(tmp, 0, start, start + stride);
-      data.copy(data, start, end, end + stride);
-      tmp.copy(data, end);
-    }
+  // Flip the scanlines.
+  const stride = w * 4;
+  const tmp = Buffer.alloc(stride);
+  for (let i = 0, j = h - 1; i < j; i++, j--) {
+    const start = i * stride;
+    const end = j * stride;
+    data.copy(tmp, 0, start, start + stride);
+    data.copy(data, start, end, end + stride);
+    tmp.copy(data, end);
+  }
 
-    const results = options.queryGeometry
-      ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions || {})
-      : [];
-
-    map.remove();
-    gl.getExtension('STACKGL_destroy_context').destroy();
-    delete map.painter.context.gl;
-
-    rp.resolve({
-      data,
-      results: results.map(feature => {
-        feature = feature.toJSON();
-        delete feature.layer;
-        return feature;
+  const results = options.queryGeometry
+    ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions ?? {}).map(feature => {
+        const f = feature.toJSON();
+        delete f.layer;
+        return f;
       })
-    });
-  });
+    : [];
 
-  return rp.promise;
+  map.remove();
+  gl.getExtension('STACKGL_destroy_context').destroy();
+  delete map.painter.context.gl;
+
+  return {
+    data,
+    results
+  };
 
   function applyOperations(map, operations, callback) {
     if (!operations || operations.length === 0) {

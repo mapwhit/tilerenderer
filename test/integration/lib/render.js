@@ -1,23 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import harness from './harness.js';
-
-function readPNG(filePath) {
-  return new Promise((resolve, reject) => {
-    const png = new PNG();
-    fs.createReadStream(filePath)
-      .pipe(png)
-      .on('parsed', () => resolve(png))
-      .on('error', reject);
-  });
-}
-
-function writePNG(filePath, png) {
-  return pipeline(png.pack(), fs.createWriteStream(filePath));
-}
+import { readPNG, writePNG } from './png.js';
 
 async function compare(actualPath, expectedPaths, diffPath) {
   const [actualImg, ...expectedImgs] = await Promise.all([readPNG(actualPath), ...expectedPaths.map(readPNG)]);
@@ -70,85 +55,55 @@ async function compare(actualPath, expectedPaths, diffPath) {
  * If all the tests are successful, this function exits the process with exit code 0. Otherwise
  * it exits with 1. If an unexpected error occurs, it exits with -1.
  *
- * @param {string} implementation - identify the implementation under test; used to
- * deal with implementation-specific test exclusions and fudge-factors
- * @param {Object<string>} [ignores] - map of test names to disable. A key is the relative
- * path to a test directory, e.g. `"render/tests/background-color/default"`. A value is a string
- * that by convention links to an issue that explains why the test is currently disabled. By default,
- * disabled tests will be run, but not fail the test run if the result does not match the expected
- * result. If the value begins with "skip", the test will not be run at all -- use this for tests
- * that would crash the test harness entirely if they were run.
  * @param {renderFn} render - a function that performs the rendering
  * @returns {undefined} terminates the process when testing is complete
  */
-export default function run(implementation, options, render) {
-  options.seed ??= makeHash();
+export default async function renderTest(params, { data, directory }) {
+  const dir = path.join(directory, params.id);
+  fs.mkdirSync(dir, { recursive: true });
 
-  const directory = path.join(import.meta.dirname, '../render/tests');
-  harness(directory, implementation, options, renderTest);
+  const expected = path.join(dir, 'expected.png');
+  const actual = path.join(dir, 'actual.png');
+  const diff = path.join(dir, 'diff.png');
 
-  async function renderTest(style, params) {
-    const { data } = await render(style, params);
+  const png = new PNG({
+    width: Math.floor(params.width * params.pixelRatio),
+    height: Math.floor(params.height * params.pixelRatio)
+  });
 
-    const dir = path.join(directory, params.id);
-    fs.mkdirSync(dir, { recursive: true });
-
-    const expected = path.join(dir, 'expected.png');
-    const actual = path.join(dir, 'actual.png');
-    const diff = path.join(dir, 'diff.png');
-
-    const png = new PNG({
-      width: Math.floor(params.width * params.pixelRatio),
-      height: Math.floor(params.height * params.pixelRatio)
-    });
-
-    // PNG data must be unassociated (not premultiplied)
-    for (let i = 0; i < data.length; i++) {
-      const a = data[i * 4 + 3] / 255;
-      if (a !== 0) {
-        data[i * 4 + 0] /= a;
-        data[i * 4 + 1] /= a;
-        data[i * 4 + 2] /= a;
-      }
-    }
-
-    png.data = data;
-
-    // there may be multiple expected images, covering different platforms
-    const expectedPaths = fs.globSync(path.join(dir, 'expected*.png'));
-
-    if (!process.env.UPDATE && expectedPaths.length === 0) {
-      throw new Error('No expected*.png files found; did you mean to run tests with UPDATE=true?');
-    }
-
-    if (process.env.UPDATE) {
-      await writePNG(expected, png);
-    } else {
-      await writePNG(actual, png);
-
-      const { difference, expected } = await compare(actual, expectedPaths, diff);
-
-      params.difference = difference;
-      params.ok = difference <= params.allowed;
-
-      params.actual = fs.readFileSync(actual).toString('base64');
-      params.expected = fs.readFileSync(expected).toString('base64');
-      params.diff = fs.readFileSync(diff).toString('base64');
+  // PNG data must be unassociated (not premultiplied)
+  for (let i = 0; i < data.length; i++) {
+    const a = data[i * 4 + 3] / 255;
+    if (a !== 0) {
+      data[i * 4 + 0] /= a;
+      data[i * 4 + 1] /= a;
+      data[i * 4 + 2] /= a;
     }
   }
-}
 
-// https://stackoverflow.com/a/1349426/229714
-function makeHash() {
-  const array = [];
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  png.data = data;
 
-  for (let i = 0; i < 10; ++i) {
-    array.push(possible.charAt(Math.floor(Math.random() * possible.length)));
+  // there may be multiple expected images, covering different platforms
+  const expectedPaths = fs.globSync(path.join(dir, 'expected*.png'));
+
+  if (!process.env.UPDATE && expectedPaths.length === 0) {
+    throw new Error('No expected*.png files found; did you mean to run tests with UPDATE=true?');
   }
 
-  // join array elements without commas.
-  return array.join('');
+  if (process.env.UPDATE) {
+    await writePNG(expected, png);
+  } else {
+    await writePNG(actual, png);
+
+    const { difference, expected } = await compare(actual, expectedPaths, diff);
+
+    params.difference = difference;
+    params.ok = difference <= params.allowed;
+
+    params.actual = fs.readFileSync(actual).toString('base64');
+    params.expected = fs.readFileSync(expected).toString('base64');
+    params.diff = fs.readFileSync(diff).toString('base64');
+  }
 }
 
 /**
