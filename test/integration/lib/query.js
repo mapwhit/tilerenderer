@@ -1,10 +1,9 @@
-import { createWriteStream } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
 import * as diff from 'diff';
 import { PNG } from 'pngjs';
 import harness from './harness.js';
+import { writePNG } from './png.js';
 
 function deepEqual(a, b) {
   if (typeof a !== typeof b) {
@@ -123,8 +122,7 @@ export default function run(implementation, options, query) {
     });
 
     png.data = data;
-
-    await pipeline(png.pack(), createWriteStream(actualPNG));
+    await writePNG(actualPNG, png);
     params.actual = (await readFile(actualPNG)).toString('base64');
   });
 }
