@@ -113,7 +113,7 @@ async function generateTestSequence(cwd, implementation, options) {
 
     await loaderInstance.localizeURLs(style);
 
-    style.metadata ??= style.metadata || {};
+    style.metadata ??= {};
     const test = (style.metadata.test = Object.assign(
       {
         id,
@@ -121,7 +121,7 @@ async function generateTestSequence(cwd, implementation, options) {
         width: 512,
         height: 512,
         pixelRatio: 1,
-        recycleMap: options.recycleMap || false,
+        recycleMap: options.recycleMap ?? false,
         allowed: 0.00015
       },
       style.metadata.test
