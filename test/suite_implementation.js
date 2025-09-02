@@ -8,7 +8,7 @@ import config from '../src/util/config.js';
 
 const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
-export default async function (style, options) {
+export default async function suiteImplementation(style, options) {
   const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
     '../src/source/rtl_text_plugin.js'
   );
@@ -55,7 +55,7 @@ export default async function (style, options) {
 
   const gl = map.painter.context.gl;
 
-  await once(map, 'load');
+  await map.once('load');
   if (options.collisionDebug) {
     map.showCollisionBoxes = true;
     if (options.operations) {
@@ -146,8 +146,4 @@ export default async function (style, options) {
         applyOperations(map, remainingOperations, callback);
     }
   }
-}
-
-function once(map, event) {
-  return new Promise(resolve => map.once(event, resolve));
 }
