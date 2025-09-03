@@ -1,10 +1,10 @@
-import fs from 'node:fs';
 import path from 'node:path';
+import { setTimeout } from 'node:timers/promises';
 import { promisify } from 'node:util';
-import { PNG } from 'pngjs';
 import Map from '../src/ui/map.js';
 import browser from '../src/util/browser.js';
 import config from '../src/util/config.js';
+import { readPNG } from './integration/lib/png.js';
 
 const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
@@ -33,16 +33,16 @@ export default async function suiteImplementation(style, options) {
   config.REQUIRE_ACCESS_TOKEN = false;
 
   const map = new Map({
-    container: container,
-    style: style,
+    container,
+    style,
     classes: options.classes,
     interactive: false,
     attributionControl: false,
     preserveDrawingBuffer: true,
-    axonometric: options.axonometric || false,
-    skew: options.skew || [0, 0],
-    fadeDuration: options.fadeDuration || 0,
-    crossSourceCollisions: typeof options.crossSourceCollisions === 'undefined' ? true : options.crossSourceCollisions
+    axonometric: options.axonometric ?? false,
+    skew: options.skew ?? [0, 0],
+    fadeDuration: options.fadeDuration ?? 0,
+    crossSourceCollisions: options.crossSourceCollisions ?? true
   });
 
   // Configure the map to never stop the render loop
@@ -71,7 +71,7 @@ export default async function suiteImplementation(style, options) {
       options.operations = [['wait']];
     }
   }
-  await promisify(applyOperations)(map, options.operations);
+  await applyOperations(map, options.operations);
   const viewport = gl.getParameter(gl.VIEWPORT);
   const w = viewport[2];
   const h = viewport[3];
@@ -109,48 +109,47 @@ export default async function suiteImplementation(style, options) {
     results
   };
 
-  function applyOperations(map, operations, callback) {
-    if (!operations || operations.length === 0) {
-      return callback();
-    }
-    const [[operation, ...args], ...remainingOperations] = operations;
-    switch (operation) {
-      case 'wait':
-        if (args.length > 0) {
-          now += args[0];
-          map._render();
-          applyOperations(map, remainingOperations, callback);
-        } else {
-          wait();
-
-          function wait() {
-            if (map.loaded()) {
-              applyOperations(map, remainingOperations, callback);
-            } else {
-              map.once('render', wait);
+  async function applyOperations(map, operations = []) {
+    for (const [operation, ...args] of operations) {
+      switch (operation) {
+        case 'wait':
+          if (args.length > 0) {
+            now += args[0];
+            map._render();
+          } else {
+            while (!loaded(map)) {
+              await map.once('render');
             }
           }
+          break;
+        case 'sleep':
+          // Prefer "wait", which renders until the map is loaded
+          // Use "sleep" when you need to test something that sidesteps the "loaded" logic
+          await setTimeout(args[0]);
+          break;
+        case 'addImage': {
+          const [image, filename, opts = {}] = args;
+          const { data, width, height } = await readPNG(path.join(import.meta.dirname, './integration', filename));
+          map.addImage(image, { width, height, data: new Uint8Array(data) }, opts);
+          break;
         }
-        break;
-      case 'sleep':
-        // Prefer "wait", which renders until the map is loaded
-        // Use "sleep" when you need to test something that sidesteps the "loaded" logic
-        setTimeout(() => {
-          applyOperations(map, remainingOperations, callback);
-        }, args[0]);
-        break;
-      case 'addImage': {
-        const [image, filename, opts = {}] = args;
-        const { data, width, height } = PNG.sync.read(
-          fs.readFileSync(path.join(import.meta.dirname, './integration', filename))
-        );
-        map.addImage(image, { width, height, data: new Uint8Array(data) }, opts);
-        applyOperations(map, remainingOperations, callback);
-        break;
+        default:
+          map[operation].apply(map, args);
       }
-      default:
-        map[operation].apply(map, args);
-        applyOperations(map, remainingOperations, callback);
     }
+  }
+
+  // the difference between this function and `Map.loaded()` is that
+  // we don't check `_styleDirty` as it is always false when `render`
+  // event fires but can change right after - if we use `Map.loaded()`
+  // then we cannot wait for event `render` asynchronously
+  function loaded(map) {
+    if (map._sourcesDirty) {
+      return false;
+    }
+    if (!map.style || !map.style.loaded()) {
+      return false;
+    }
+    return true;
   }
 }
