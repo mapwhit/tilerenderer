@@ -17,7 +17,7 @@ class StyleLayer extends Evented {
   #key;
   #globalState; // reference to global state
 
-  constructor(layer, properties) {
+  constructor(layer, properties, globalState) {
     super();
 
     this.id = layer.id;
@@ -28,6 +28,7 @@ class StyleLayer extends Evented {
     this.visibility = 'visible';
     this.paint = {};
     this.layout = {};
+    this.#globalState = globalState;
 
     if (layer.type !== 'background') {
       this.source = layer.source;
@@ -39,10 +40,10 @@ class StyleLayer extends Evented {
     this._featureFilter ??= featureFilter.addGlobalStateRefs(() => true);
 
     if (properties.layout) {
-      this._unevaluatedLayout = new Layout(properties.layout);
+      this._unevaluatedLayout = new Layout(properties.layout, globalState);
     }
 
-    this._transitionablePaint = new Transitionable(properties.paint);
+    this._transitionablePaint = new Transitionable(properties.paint, globalState);
 
     for (const property in layer.paint) {
       this.setPaintProperty(property, layer.paint[property]);
@@ -215,13 +216,6 @@ class StyleLayer extends Evented {
     }
 
     this._paint = this._transitioningPaint.possiblyEvaluate(parameters);
-  }
-
-  set globalState(globalState) {
-    this.#globalState = globalState;
-    if (this._unevaluatedLayout) {
-      this._unevaluatedLayout.globalState = globalState;
-    }
   }
 
   get key() {

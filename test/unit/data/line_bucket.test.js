@@ -14,12 +14,15 @@ function createLine(numPoints) {
 }
 
 function createLineBucket({ id, layout, paint, globalState }) {
-  const layer = new LineStyleLayer({
-    id,
-    type: 'line',
-    layout,
-    paint
-  });
+  const layer = new LineStyleLayer(
+    {
+      id,
+      type: 'line',
+      layout,
+      paint
+    },
+    globalState
+  );
   layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
 
   return new LineBucket({ layers: [layer], globalState });

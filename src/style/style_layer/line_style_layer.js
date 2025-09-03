@@ -29,8 +29,8 @@ const lineFloorwidthProperty = new LineFloorwidthProperty(properties.paint.prope
 lineFloorwidthProperty.useIntegerZoom = true;
 
 class LineStyleLayer extends StyleLayer {
-  constructor(layer) {
-    super(layer, properties);
+  constructor(layer, globalState) {
+    super(layer, properties, globalState);
   }
 
   _handleSpecialPaintPropertyUpdate(name) {

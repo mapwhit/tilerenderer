@@ -77,16 +77,19 @@ test('WorkerTile.parse layer with layout property', async t => {
 
 test('WorkerTile.parse layer with layout property using global-state', async t => {
   const layerIndex = new StyleLayerIndex(
-    createLayers([
-      {
-        id: 'test',
-        source: 'source',
-        type: 'line',
-        layout: {
-          'line-join': ['global-state', 'test']
+    createLayers(
+      [
+        {
+          id: 'test',
+          source: 'source',
+          type: 'line',
+          layout: {
+            'line-join': ['global-state', 'test']
+          }
         }
-      }
-    ])
+      ],
+      { globalState: { test: 'bevel' } }
+    )
   );
 
   const result = await makeWorkerTile(
@@ -101,16 +104,19 @@ test('WorkerTile.parse layer with layout property using global-state', async t =
 
 test('WorkerTile.parse layer with paint property using global-state', async t => {
   const layerIndex = new StyleLayerIndex(
-    createLayers([
-      {
-        id: 'test',
-        source: 'source',
-        type: 'fill-extrusion',
-        paint: {
-          'fill-extrusion-height': ['global-state', 'test']
+    createLayers(
+      [
+        {
+          id: 'test',
+          source: 'source',
+          type: 'fill-extrusion',
+          paint: {
+            'fill-extrusion-height': ['global-state', 'test']
+          }
         }
-      }
-    ])
+      ],
+      { globalState: { test: 1 } }
+    )
   );
 
   const result = await makeWorkerTile({ ...params, globalState: { test: 1 } }, createLineWrapper(), layerIndex, {});
@@ -175,20 +181,23 @@ test('WorkerTile.parse vector tile', async t => {
 });
 
 test('WorkerTile.parse passes global-state to layers', async t => {
+  const globalState = {};
   const layerIndex = new StyleLayerIndex(
-    createLayers([
-      {
-        id: 'layer-id',
-        type: 'symbol',
-        source: 'source',
-        layout: {
-          'text-size': ['global-state', 'size']
+    createLayers(
+      [
+        {
+          id: 'layer-id',
+          type: 'symbol',
+          source: 'source',
+          layout: {
+            'text-size': ['global-state', 'size']
+          }
         }
-      }
-    ])
+      ],
+      { globalState }
+    )
   );
 
-  const globalState = {};
   await makeWorkerTile({ ...params, globalState }, createLineWrapper(), layerIndex, {});
   globalState.size = 12;
   const layers = Array.from(layerIndex.familiesBySource.get('source').get('_geojsonTileLayer').values());
@@ -199,17 +208,20 @@ test('WorkerTile.parse passes global-state to layers', async t => {
 
 test('uses global state from parameters if not set on layer when recalculating layout properties', async t => {
   const layerIndex = new StyleLayerIndex(
-    createLayers([
-      {
-        id: 'circle',
-        type: 'circle',
-        source: 'source',
-        paint: {
-          'circle-color': ['global-state', 'color'],
-          'circle-radius': ['global-state', 'radius']
+    createLayers(
+      [
+        {
+          id: 'circle',
+          type: 'circle',
+          source: 'source',
+          paint: {
+            'circle-color': ['global-state', 'color'],
+            'circle-radius': ['global-state', 'radius']
+          }
         }
-      }
-    ])
+      ],
+      { globalState: { radius: 15, color: '#FF0000' } }
+    )
   );
 
   await makeWorkerTile({ ...params }, createLineWrapper(), layerIndex, {});

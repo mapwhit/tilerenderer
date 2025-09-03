@@ -22,12 +22,15 @@ transform.cameraToCenterDistance = 100;
 const stacks = { Test: glyphs };
 
 function createSymbolBucket(globalState) {
-  const layer = new SymbolStyleLayer({
-    id: 'test',
-    type: 'symbol',
-    filter: featureFilter(),
-    layout: { 'text-font': ['Test'], 'text-field': 'abcde' }
-  });
+  const layer = new SymbolStyleLayer(
+    {
+      id: 'test',
+      type: 'symbol',
+      filter: featureFilter(),
+      layout: { 'text-font': ['Test'], 'text-field': 'abcde' }
+    },
+    globalState
+  );
   layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
 
   return new SymbolBucket({

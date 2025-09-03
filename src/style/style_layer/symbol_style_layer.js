@@ -6,8 +6,8 @@ import StyleLayer from '../style_layer.js';
 import properties from './symbol_style_layer_properties.js';
 
 class SymbolStyleLayer extends StyleLayer {
-  constructor(layer) {
-    super(layer, properties);
+  constructor(layer, globalState) {
+    super(layer, properties, globalState);
   }
 
   recalculate(parameters) {

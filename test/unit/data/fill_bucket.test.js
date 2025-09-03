@@ -18,7 +18,7 @@ function createPolygon(numPoints) {
 }
 
 function createFillBucket({ id, layout, paint, globalState }) {
-  const layer = new FillStyleLayer({ id, type: 'fill', layout, paint });
+  const layer = new FillStyleLayer({ id, type: 'fill', layout, paint }, globalState);
   layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
 
   return new FillBucket({ layers: [layer], globalState });
