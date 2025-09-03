@@ -117,7 +117,7 @@ export default async function suiteImplementation(style, options) {
             now += args[0];
             map._render();
           } else {
-            while (!map.loaded()) {
+            while (!loaded(map)) {
               await map.once('render');
             }
           }
@@ -137,5 +137,19 @@ export default async function suiteImplementation(style, options) {
           map[operation].apply(map, args);
       }
     }
+  }
+
+  // the difference between this function and `Map.loaded()` is that
+  // we don't check `_styleDirty` as it is always false when `render`
+  // event fires but can change right after - if we use `Map.loaded()`
+  // then we cannot wait for event `render` asynchronously
+  function loaded(map) {
+    if (map._sourcesDirty) {
+      return false;
+    }
+    if (!map.style || !map.style.loaded()) {
+      return false;
+    }
+    return true;
   }
 }
