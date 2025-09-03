@@ -33,16 +33,16 @@ export default async function suiteImplementation(style, options) {
   config.REQUIRE_ACCESS_TOKEN = false;
 
   const map = new Map({
-    container: container,
-    style: style,
+    container,
+    style,
     classes: options.classes,
     interactive: false,
     attributionControl: false,
     preserveDrawingBuffer: true,
-    axonometric: options.axonometric || false,
-    skew: options.skew || [0, 0],
-    fadeDuration: options.fadeDuration || 0,
-    crossSourceCollisions: typeof options.crossSourceCollisions === 'undefined' ? true : options.crossSourceCollisions
+    axonometric: options.axonometric ?? false,
+    skew: options.skew ?? [0, 0],
+    fadeDuration: options.fadeDuration ?? 0,
+    crossSourceCollisions: options.crossSourceCollisions ?? true
   });
 
   // Configure the map to never stop the render loop
