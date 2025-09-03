@@ -8,13 +8,20 @@ import config from '../src/util/config.js';
 
 const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
-export default async function suiteImplementation(style, options) {
+async function loadPlugin() {
   const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
     '../src/source/rtl_text_plugin.js'
   );
   clearRTLTextPlugin();
   setRTLTextPlugin(rtlText);
   await promisify(registerForPluginAvailability)();
+}
+
+let pluginloaded;
+
+export default async function suiteImplementation(style, options) {
+  pluginloaded ??= loadPlugin();
+  await pluginloaded;
 
   window.devicePixelRatio = options.pixelRatio;
 
