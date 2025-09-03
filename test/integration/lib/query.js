@@ -81,7 +81,6 @@ export default async function queryTest(params, { data, results, directory, impl
       .join('');
 
     params.difference = msg;
-    console.log(msg);
   }
 
   const width = params.width * params.pixelRatio;
