@@ -15,7 +15,7 @@ const TRANSITION_SUFFIX = '-transition';
  */
 class StyleLayer extends Evented {
   #key;
-  #globalState = {}; // reference to global state
+  #globalState; // reference to global state
 
   constructor(layer, properties) {
     super();
