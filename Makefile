@@ -86,7 +86,6 @@ format: | meta/node_modules
 test: test-unit prebuild
 
 test-integration: test-query test-render
-.NOTPARALLEL: test-query test-render
 
 TEST_REPORTER ?= dot
 
@@ -94,20 +93,23 @@ DEPENDENCIES_TEST = test/node_modules
 test-unit: dependencies $(DEPENDENCIES_TEST)
 	node --test --test-reporter=$(TEST_REPORTER) "test/unit/**/*.test.js"
 
-ifdef TEST_BAIL
-  TEST_INTG_OPTS += --test-bail
+ifdef TEST_FILTER
+  TEST_INTG_OPTS += --test-name-pattern=$(TEST_FILTER)
+endif
+ifdef TEST_REPORTER
+  TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
 endif
 
 test-render: dependencies dependencies-integration
-	node --test --test-reporter=$(TEST_REPORTER) test/render.test.js $(TEST_INTG_OPTS)
+	node --test $(TEST_INTG_OPTS) test/render.test.js
 
 test-render-slow: dependencies dependencies-integration
 	find test/integration/render/tests -name style.json -printf '%P\n' | \
 		sed -e 's|/style.json||' | \
-		xargs -L 200 node --test --test-reporter=$(TEST_REPORTER) --disable-warning=ExperimentalWarning test/render.test.js $(TEST_INTG_OPTS)
+		xargs -I TEST_NAME -L 1 -P 8 node --test --test-name-pattern=TEST_NAME $(TEST_INTG_OPTS) test/render.test.js
 
 test-query: dependencies dependencies-integration
-	node --test --test-reporter=$(TEST_REPORTER) test/query.test.js $(TEST_INTG_OPTS)
+	node --test $(TEST_INTG_OPTS) test/query.test.js
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)

@@ -42,8 +42,8 @@ async function generateTestSequence(cwd, implementation, options) {
   const { tests = [], ignores = {}, fixtureFilename = 'style.json' } = options;
 
   const files = fs.glob(`**/${fixtureFilename}`, { cwd });
-  const sequence = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
-  sequence.forEach(filterTest);
+  let sequence = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
+  sequence = sequence.filter(Boolean);
 
   if (!options.shuffle) {
     return sequence;
@@ -53,6 +53,10 @@ async function generateTestSequence(cwd, implementation, options) {
 
   async function fixtureToStyle(fixture) {
     const id = path.dirname(fixture);
+    if (tests.length > 0 && tests.includes(id)) {
+      return;
+    }
+
     const styleData = await fs.readFile(path.join(cwd, fixture), 'utf8');
     const style = JSON.parse(styleData);
 
@@ -80,17 +84,13 @@ async function generateTestSequence(cwd, implementation, options) {
       }
     }
 
+    markSkipped(style);
     return style;
   }
 
-  function filterTest(style) {
+  function markSkipped(style) {
     const { test } = style.metadata;
     const { id, ignored } = test;
-
-    if (tests.length !== 0 && !tests.some(t => id.indexOf(t) !== -1)) {
-      test.skip = true;
-      return false;
-    }
 
     if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && id.match(/^debug\//)) {
       test.skip = true;
