@@ -25,6 +25,16 @@ test('map events', async t => {
     }
   });
 
+  await t.test('no idle event during move', async t => {
+    const style = createStyle();
+    const map = createMap({ style, fadeDuration: 0 });
+    await map.once('idle');
+    map.zoomTo(0.5, { duration: 100 });
+    t.assert.ok(map.isMoving(), 'map starts moving immediately after zoomTo');
+    await map.once('idle');
+    t.assert.ok(!map.isMoving(), 'map stops moving before firing idle event');
+  });
+
   await t.test('error event', async t => {
     await t.test('logs errors to console when it has NO listeners', t => {
       const map = createMap();

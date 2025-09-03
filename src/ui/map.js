@@ -1389,6 +1389,8 @@ class Map extends Camera {
     // Style#_updateSources could have caused them to be set again.
     if (this._sourcesDirty || this._repaint || this._styleDirty || this._placementDirty) {
       this._rerender();
+    } else if (!this.isMoving() && this.loaded()) {
+      this.fire(new Event('idle'));
     }
 
     return this;

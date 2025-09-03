@@ -33,4 +33,15 @@ test('map render', async t => {
       }, 100);
     });
   });
+
+  await t.test('no render after idle event', (t, done) => {
+    const style = createStyle();
+    const map = createMap({ style });
+    map.on('idle', () => {
+      map.on('render', t.fail);
+      setTimeout(() => {
+        done();
+      }, 100);
+    });
+  });
 });

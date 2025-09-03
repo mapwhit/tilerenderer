@@ -17,13 +17,14 @@ test('GeoJSONSource.setData', async t => {
     t.assert.equal(source.setData({}), source);
   });
 
-  await t.test('fires "data" event', (t, done) => {
+  await t.test('fires "data" event', async () => {
     const source = createSource();
-    source.once('data', () => {
-      source.once('data', () => done());
-      source.setData({});
-    });
+    const loadPromise = source.once('data');
     source.load();
+    await loadPromise;
+    const setDataPromise = source.once('data');
+    source.setData({});
+    await setDataPromise;
   });
 
   await t.test('fires "dataloading" event', (t, done) => {
