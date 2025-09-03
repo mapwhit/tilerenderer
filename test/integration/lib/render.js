@@ -1,74 +1,18 @@
-import fs from 'node:fs';
+import { glob, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import { readPNG, writePNG } from './png.js';
 
-async function compare(actualPath, expectedPaths, diffPath) {
-  const [actualImg, ...expectedImgs] = await Promise.all([readPNG(actualPath), ...expectedPaths.map(readPNG)]);
-
-  // if we have multiple expected images, we'll compare against each one and pick the one with
-  // the least amount of difference; this is useful for covering features that render differently
-  // depending on platform, i.e. heatmaps use half-float textures for improved rendering where supported
-
-  let minNumPixels = Number.POSITIVE_INFINITY;
-  let minDiff;
-  let minIndex;
-
-  for (let i = 0; i < expectedImgs.length; i++) {
-    const diff = new PNG({ width: actualImg.width, height: actualImg.height });
-    const numPixels = pixelmatch(actualImg.data, expectedImgs[i].data, diff.data, actualImg.width, actualImg.height, {
-      threshold: 0.13
-    });
-
-    if (numPixels < minNumPixels) {
-      minNumPixels = numPixels;
-      minDiff = diff;
-      minIndex = i;
-    }
-  }
-
-  await writePNG(diffPath, minDiff);
-  return {
-    difference: minNumPixels / (minDiff.width * minDiff.height),
-    expected: expectedPaths[minIndex]
-  };
-}
-
 /**
- * Run the render test suite, compute differences to expected values (making exceptions based on
- * implementation vagaries), print results to standard output, write test artifacts to the
- * filesystem (optionally updating expected results), and exit the process with a success or
- * failure code.
- *
- * Caller must supply a `render` function that does the actual rendering and passes the raw image
- * result on to the `render` function's callback.
- *
- * A local server is launched that is capable of serving requests for the source, sprite,
- * font, and tile assets needed by the tests, and the URLs within the test styles are
- * rewritten to point to that server.
- *
- * As the tests run, results are printed to standard output, and test artifacts are written
- * to the filesystem. If the environment variable `UPDATE` is set, the expected artifacts are
- * updated in place based on the test rendering.
- *
- * If all the tests are successful, this function exits the process with exit code 0. Otherwise
- * it exits with 1. If an unexpected error occurs, it exits with -1.
- *
- * @param {renderFn} render - a function that performs the rendering
- * @returns {undefined} terminates the process when testing is complete
+ * Checks if rendered `data` matches any of the expected images in `expectedPaths`.
+ * @param {*} test
+ * @param {*} param
  */
-export default async function renderTest(params, { data, directory }) {
-  const dir = path.join(directory, params.id);
-  fs.mkdirSync(dir, { recursive: true });
-
-  const expected = path.join(dir, 'expected.png');
-  const actual = path.join(dir, 'actual.png');
-  const diff = path.join(dir, 'diff.png');
-
+export default async function renderTest(test, { data, directory }) {
   const png = new PNG({
-    width: Math.floor(params.width * params.pixelRatio),
-    height: Math.floor(params.height * params.pixelRatio)
+    width: Math.floor(test.width * test.pixelRatio),
+    height: Math.floor(test.height * test.pixelRatio)
   });
 
   // PNG data must be unassociated (not premultiplied)
@@ -83,44 +27,73 @@ export default async function renderTest(params, { data, directory }) {
 
   png.data = data;
 
+  const dir = path.join(directory, test.id);
+  await mkdir(dir, { recursive: true });
   // there may be multiple expected images, covering different platforms
-  const expectedPaths = fs.globSync(path.join(dir, 'expected*.png'));
-
+  const expectedPaths = await Array.fromAsync(glob(path.join(dir, 'expected*.png')));
   if (!process.env.UPDATE && expectedPaths.length === 0) {
     throw new Error('No expected*.png files found; did you mean to run tests with UPDATE=true?');
   }
 
   if (process.env.UPDATE) {
+    const expected = path.join(dir, 'expected.png');
     await writePNG(expected, png);
-  } else {
-    await writePNG(actual, png);
-
-    const { difference, expected } = await compare(actual, expectedPaths, diff);
-
-    params.difference = difference;
-    params.ok = difference <= params.allowed;
-
-    params.actual = fs.readFileSync(actual).toString('base64');
-    params.expected = fs.readFileSync(expected).toString('base64');
-    params.diff = fs.readFileSync(diff).toString('base64');
+    return;
   }
+
+  const actual = path.join(dir, 'actual.png');
+  const diff = path.join(dir, 'diff.png');
+  await writePNG(actual, png);
+
+  const { difference, expected } = await compare(actual, expectedPaths, diff);
+  test.difference = difference;
+  test.ok = difference <= test.allowed;
+
+  const buffers = await Promise.all([actual, expected, diff].map(f => readFile(f)));
+  const base64 = buffers.map(b => b.toString('base64'));
+  test.actual = base64[0];
+  test.expected = base64[1];
+  test.diff = base64[2];
 }
 
 /**
- * @callback renderFn
- * @param {Object} style - style to render
- * @param {Object} options
- * @param {number} options.width - render this wide
- * @param {number} options.height - render this high
- * @param {number} options.pixelRatio - render with this pixel ratio
- * @param {boolean} options.shuffle - shuffle tests sequence
- * @param {String} options.seed - Shuffle seed
- * @param {boolean} options.recycleMap - trigger map object recycling
- * @param {renderCallback} callback - callback to call with the results of rendering
+ * Compares actual image with expected images and returns the difference.
+ *
+ * If we have multiple expected images, we'll compare against each one and pick the one
+ * with the least amount of difference; this is useful for covering features that render
+ * differently depending on platform, i.e. heatmaps use half-float textures for improved
+ * rendering where supported
+ *
+ * @param {string} actualPath - Path to the actual image.
+ * @param {string} expectedPaths - Array of paths to expected images.
+ * @param {string} diffPath - Path to save the difference image.
+ * @returns {Promise<{difference: number, expected: string}>} - Object containing the difference and the expected image path.
  */
+async function compare(actualPath, expectedPaths, diffPath) {
+  const [actualImg, ...expectedImgs] = await Promise.all([readPNG(actualPath), ...expectedPaths.map(readPNG)]);
 
-/**
- * @callback renderCallback
- * @param {?Error} error
- * @param {Buffer} [result] - raw RGBA image data
- */
+  let minNumPixels = Number.POSITIVE_INFINITY;
+  let minDiff;
+  let expected;
+
+  const { width, height, data } = actualImg;
+  for (let i = 0; i < expectedImgs.length; i++) {
+    const expectedImg = expectedImgs[i];
+    const diff = new PNG({ width, height });
+    const numPixels = pixelmatch(data, expectedImg.data, diff.data, width, height, {
+      threshold: 0.13
+    });
+
+    if (numPixels < minNumPixels) {
+      minNumPixels = numPixels;
+      minDiff = diff;
+      expected = expectedPaths[i];
+    }
+  }
+
+  await writePNG(diffPath, minDiff);
+  return {
+    difference: minNumPixels / (minDiff.width * minDiff.height),
+    expected
+  };
+}
