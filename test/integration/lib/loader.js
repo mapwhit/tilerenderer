@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import colors from 'chalk';
 
 // /test/integration
 const integrationPath = path.join(import.meta.dirname, '..');
@@ -133,14 +132,14 @@ export default function () {
       const directory = integrationPath;
       json = readFileSync(path.join(directory, relativePath));
     } catch (error) {
-      console.log(colors.blue(`* ${error}`));
+      console.error(`* ${error}`);
       return;
     }
 
     try {
       json = JSON.parse(json);
     } catch (error) {
-      console.log(colors.blue(`* Error while parsing ${url}: ${error}`));
+      console.error(`* Error while parsing ${url}: ${error}`);
       return;
     }
     return json;

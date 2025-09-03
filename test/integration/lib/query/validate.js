@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as diff from 'diff';
 import { PNG } from 'pngjs';
-import { writePNG } from './png.js';
+import { writePNG } from '../png.js';
 
 function deepEqual(a, b) {
   if (typeof a !== typeof b) {
@@ -81,7 +81,6 @@ export default async function queryTest(params, { data, results, directory, impl
       .join('');
 
     params.difference = msg;
-    console.log(msg);
   }
 
   const width = params.width * params.pixelRatio;
