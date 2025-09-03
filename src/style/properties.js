@@ -59,8 +59,6 @@ import EvaluationParameters from './evaluation_parameters.js';
  *  @private
  */
 export class PropertyValue {
-  #evaluate; // original evaluate function
-
   constructor(property, value) {
     this.property = property;
     this.value = value;
@@ -68,7 +66,6 @@ export class PropertyValue {
       value === undefined ? property.specification.default : value,
       property.specification
     );
-    this.#evaluate = this.expression.evaluate;
   }
 
   isDataDriven() {
@@ -84,11 +81,7 @@ export class PropertyValue {
   }
 
   set globalState(globalState) {
-    this.expression.evaluate = (globals, feature, featureState) => {
-      // passing an empty object as evaluate() for `global-state` relies on it existing
-      globals.globalState ??= globalState ?? {};
-      return this.#evaluate.call(this.expression, globals, feature, featureState);
-    };
+    this.expression.globalState = globalState;
   }
 }
 
