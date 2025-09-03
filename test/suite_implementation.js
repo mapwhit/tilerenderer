@@ -20,8 +20,10 @@ async function loadPlugin() {
 let pluginloaded;
 
 export default async function suiteImplementation(style, options) {
-  pluginloaded ??= loadPlugin();
-  await pluginloaded;
+  if (options.loadRTLTextPlugin) {
+    pluginloaded ??= loadPlugin();
+    await pluginloaded;
+  }
 
   window.devicePixelRatio = options.pixelRatio;
 

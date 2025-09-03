@@ -20,7 +20,10 @@ const directory = path.resolve(import.meta.dirname, './integration/render/tests'
 harness(directory, implementation, options, render);
 
 async function render(style, params) {
-  const { data } = await suiteImplementation(style, params);
+  const { data } = await suiteImplementation(style, {
+    loadRTLTextPlugin: true,
+    ...params
+  });
 
   return renderTest(params, { data, directory, implementation });
 }
