@@ -3,21 +3,19 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import test from 'node:test';
-import colors from 'chalk';
 import template from 'lodash.template';
-import shuffler from 'shuffle-seed';
 import makeLoader from './loader.js';
 
 export default async function harness(cwd, implementation, options, run) {
   const sequence = await generateTestSequence(cwd, implementation, options);
-  const tests = await runSequence(sequence, run, options);
+  const tests = await runSequence(sequence, run);
 
   if (process.env.UPDATE) {
     console.log(`Updated ${tests.length} tests.`);
     process.exit(0);
   }
 
-  await writeResults(cwd, options, tests);
+  await writeResults(cwd, tests);
 }
 
 function runSequence(sequence, runTest) {
@@ -37,26 +35,17 @@ function runSequence(sequence, runTest) {
   return Promise.all(tasks);
 }
 
-async function generateTestSequence(cwd, implementation, options) {
+async function generateTestSequence(cwd, implementation, { ignores = {} }) {
   const loader = makeLoader();
-  const { tests = [], ignores = {}, fixtureFilename = 'style.json' } = options;
 
-  const files = fs.glob(`**/${fixtureFilename}`, { cwd });
+  const files = fs.glob('**/style.json', { cwd });
   let sequence = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
   sequence = sequence.filter(Boolean);
 
-  if (!options.shuffle) {
-    return sequence;
-  }
-  console.log(colors.white('* shuffle seed: ') + colors.bold(`${options.seed}`));
-  return shuffler.shuffle(sequence, options.seed);
+  return sequence;
 
   async function fixtureToStyle(fixture) {
     const id = path.dirname(fixture);
-    if (tests.length > 0 && tests.includes(id)) {
-      return;
-    }
-
     const styleData = await fs.readFile(path.join(cwd, fixture), 'utf8');
     const style = JSON.parse(styleData);
 
@@ -70,7 +59,7 @@ async function generateTestSequence(cwd, implementation, options) {
         width: 512,
         height: 512,
         pixelRatio: 1,
-        recycleMap: options.recycleMap ?? false,
+        recycleMap: false,
         allowed: 0.00015
       },
       style.metadata.test
@@ -106,8 +95,8 @@ async function generateTestSequence(cwd, implementation, options) {
   }
 }
 
-async function writeResults(cwd, options, tests) {
-  const p = path.join(cwd, options.recycleMap ? 'index-recycle-map.html' : 'index.html');
+async function writeResults(cwd, tests) {
+  const p = path.join(cwd, 'index.html');
   await pipeline(resuts(), createWriteStream(p));
 
   console.log(`Results at: ${p}`);
@@ -122,8 +111,8 @@ async function writeResults(cwd, options, tests) {
     const [header, footer] = resultsTemplate({
       unsuccessful,
       tests,
-      shuffle: options.shuffle,
-      seed: options.seed
+      shuffle: false,
+      seed: false
     }).split('<!-- results go here -->');
     yield header;
     for (const r of tests) {
