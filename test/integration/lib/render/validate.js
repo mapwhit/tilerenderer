@@ -2,7 +2,7 @@ import { glob, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import { readPNG, writePNG } from './png.js';
+import { readPNG, writePNG } from '../png.js';
 
 /**
  * Checks if rendered `data` matches any of the expected images in `expectedPaths`.

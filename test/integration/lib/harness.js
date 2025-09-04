@@ -79,7 +79,7 @@ async function writeResults(cwd, tests) {
 
   async function* resuts() {
     const resultsTemplate = await loadTemplate(import.meta.dirname, '..', 'results.html.tmpl');
-    const itemTemplate = await loadTemplate(cwd, 'tests', 'result_item.html.tmpl');
+    const itemTemplate = await loadTemplate(cwd, '..', 'result_item.html.tmpl');
     const unsuccessful = tests.filter(test => test.status === 'failed' || test.status === 'errored');
     const hasFailedTests = unsuccessful.length > 0;
     const [header, footer] = resultsTemplate({

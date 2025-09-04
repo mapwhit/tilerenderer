@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as diff from 'diff';
 import { PNG } from 'pngjs';
-import { writePNG } from './png.js';
+import { writePNG } from '../png.js';
 
 function deepEqual(a, b) {
   if (typeof a !== typeof b) {
