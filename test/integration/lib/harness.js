@@ -11,9 +11,15 @@ export default async function harness(cwd, implementation, runTest) {
   const tests = [];
   // iterate over files
   for await (const file of files) {
-    const style = await fixtureToStyle(cwd, implementation, file);
+    const id = path.dirname(file);
+    const styleData = await readFile(path.join(cwd, file), 'utf8');
+    const style = JSON.parse(styleData);
+
+    fixtureToStyle(style, id, implementation);
     const st = style.metadata.test;
-    await test(st.id, { skip: st.skip }, async t => {
+    await test(id, { skip: st.skip }, async t => {
+      await loader.localizeURLs(style);
+
       try {
         await runTest(style, st);
         t.assert.ok(st.ok, `${st.id} failed:\n${st.difference}`);
@@ -35,15 +41,9 @@ export default async function harness(cwd, implementation, runTest) {
 
 const loader = makeLoader();
 
-async function fixtureToStyle(cwd, implementation, fixture) {
-  const id = path.dirname(fixture);
-  const styleData = await readFile(path.join(cwd, fixture), 'utf8');
-  const style = JSON.parse(styleData);
-
-  await loader.localizeURLs(style);
-
+function fixtureToStyle(style, id, implementation) {
   style.metadata ??= {};
-  const test = (style.metadata.test = Object.assign(
+  style.metadata.test = Object.assign(
     {
       id,
       width: 512,
@@ -53,7 +53,8 @@ async function fixtureToStyle(cwd, implementation, fixture) {
       allowed: 0.00015
     },
     style.metadata.test
-  ));
+  );
+  const { test } = style.metadata;
 
   if ('diff' in test) {
     if (typeof test.diff === 'number') {
