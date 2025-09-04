@@ -1,5 +1,5 @@
 import { createWriteStream } from 'node:fs';
-import fs from 'node:fs/promises';
+import { glob, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import test from 'node:test';
@@ -38,7 +38,7 @@ function runSequence(sequence, runTest) {
 async function generateTestSequence(cwd, implementation, { ignores = {} }) {
   const loader = makeLoader();
 
-  const files = fs.glob('**/style.json', { cwd });
+  const files = glob('**/style.json', { cwd });
   let sequence = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
   sequence = sequence.filter(Boolean);
 
@@ -46,7 +46,7 @@ async function generateTestSequence(cwd, implementation, { ignores = {} }) {
 
   async function fixtureToStyle(fixture) {
     const id = path.dirname(fixture);
-    const styleData = await fs.readFile(path.join(cwd, fixture), 'utf8');
+    const styleData = await readFile(path.join(cwd, fixture), 'utf8');
     const style = JSON.parse(styleData);
 
     await loader.localizeURLs(style);
@@ -102,10 +102,8 @@ async function writeResults(cwd, tests) {
   console.log(`Results at: ${p}`);
 
   async function* resuts() {
-    const resultsTemplate = template(
-      await fs.readFile(path.join(import.meta.dirname, '..', 'results.html.tmpl'), 'utf8')
-    );
-    const itemTemplate = template(await fs.readFile(path.join(cwd, 'result_item.html.tmpl'), 'utf8'));
+    const resultsTemplate = await loadTemplate(import.meta.dirname, '..', 'results.html.tmpl');
+    const itemTemplate = await loadTemplate(cwd, 'tests', 'result_item.html.tmpl');
     const unsuccessful = tests.filter(test => test.status === 'failed' || test.status === 'errored');
     const hasFailedTests = unsuccessful.length > 0;
     const [header, footer] = resultsTemplate({
@@ -120,4 +118,10 @@ async function writeResults(cwd, tests) {
     }
     yield footer;
   }
+}
+
+async function loadTemplate(...paths) {
+  const filename = path.resolve(...paths);
+  const content = await readFile(filename, 'utf8');
+  return template(content);
 }

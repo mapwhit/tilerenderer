@@ -101,15 +101,10 @@ ifdef TEST_REPORTER
 endif
 
 test-render: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/render.test.js
-
-test-render-slow: dependencies dependencies-integration
-	find test/integration/render/tests -name style.json -printf '%P\n' | \
-		sed -e 's|/style.json||' | \
-		xargs -I TEST_NAME -L 1 -P 8 node --test --test-name-pattern=TEST_NAME $(TEST_INTG_OPTS) test/render.test.js
+	node --test $(TEST_INTG_OPTS) test/integration/render/render.test.js
 
 test-query: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/query.test.js
+	node --test $(TEST_INTG_OPTS) test/integration/query/query.test.js
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)

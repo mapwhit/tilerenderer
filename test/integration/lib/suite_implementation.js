@@ -1,16 +1,16 @@
 import path from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 import { promisify } from 'node:util';
-import Map from '../src/ui/map.js';
-import browser from '../src/util/browser.js';
-import config from '../src/util/config.js';
+import Map from '../../../src/ui/map.js';
+import browser from '../../../src/util/browser.js';
+import config from '../../../src/util/config.js';
 import { readPNG } from './integration/lib/png.js';
 
-const rtlText = import.meta.resolve('./node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
+const rtlText = import.meta.resolve('../node_modules/@mapbox/mapbox-gl-rtl-text/mapbox-gl-rtl-text.js');
 
 async function loadPlugin() {
   const { clearRTLTextPlugin, registerForPluginAvailability, setRTLTextPlugin } = await import(
-    '../src/source/rtl_text_plugin.js'
+    '../../../src/source/rtl_text_plugin.js'
   );
   clearRTLTextPlugin();
   setRTLTextPlugin(rtlText);

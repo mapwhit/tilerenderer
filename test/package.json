@@ -1,10 +1,8 @@
 {
   "devDependencies": {
-    "@mapbox/mapbox-gl-rtl-text": "^0.2.3",
     "canvas": "~3",
     "gl": "~8",
-    "jsdom": "~26",
-    "pngjs": "^7.0.0"
+    "jsdom": "~26"
   },
   "type": "module",
   "license": "BSD-3-Clause"
