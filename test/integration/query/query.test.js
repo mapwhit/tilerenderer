@@ -5,12 +5,10 @@ import suiteImplementation from '../lib/suite_implementation.js';
 
 globalThis.window ??= _window;
 
-const options = {};
-
 const implementation = 'js';
 
 const directory = import.meta.dirname;
-harness(directory, implementation, options, runTest);
+harness(directory, implementation, runTest);
 
 async function runTest(style, params) {
   const { data, results } = await suiteImplementation(style, params);

@@ -5,11 +5,9 @@ import suiteImplementation from '../lib/suite_implementation.js';
 
 globalThis.window ??= _window;
 
-const options = {};
-
 const implementation = 'js';
 const directory = import.meta.dirname;
-harness(directory, implementation, options, render);
+harness(directory, implementation, render);
 
 async function render(style, params) {
   const { data } = await suiteImplementation(style, {

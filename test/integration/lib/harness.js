@@ -6,20 +6,12 @@ import test from 'node:test';
 import template from 'lodash.template';
 import makeLoader from './loader.js';
 
-export default async function harness(cwd, implementation, options, run) {
-  const sequence = await generateTestSequence(cwd, implementation, options);
-  const tests = await runSequence(sequence, run);
-
-  if (process.env.UPDATE) {
-    console.log(`Updated ${tests.length} tests.`);
-    process.exit(0);
-  }
-
-  await writeResults(cwd, tests);
-}
-
-function runSequence(sequence, runTest) {
-  const tasks = sequence.map(async style => {
+export default async function harness(cwd, implementation, runTest) {
+  const files = glob('**/style.json', { cwd });
+  const tests = [];
+  // iterate over files
+  for await (const file of files) {
+    const style = await fixtureToStyle(cwd, implementation, file);
     const st = style.metadata.test;
     await test(st.id, { skip: st.skip }, async t => {
       try {
@@ -30,69 +22,52 @@ function runSequence(sequence, runTest) {
         throw error;
       }
     });
-    return st;
-  });
-  return Promise.all(tasks);
+    tests.push(st);
+  }
+
+  if (process.env.UPDATE) {
+    console.log(`Updated ${tests.length} tests.`);
+    process.exit(0);
+  }
+
+  await writeResults(cwd, tests);
 }
 
-async function generateTestSequence(cwd, implementation, { ignores = {} }) {
-  const loader = makeLoader();
+const loader = makeLoader();
 
-  const files = glob('**/style.json', { cwd });
-  let sequence = await Promise.all(await Array.fromAsync(files, fixtureToStyle));
-  sequence = sequence.filter(Boolean);
+async function fixtureToStyle(cwd, implementation, fixture) {
+  const id = path.dirname(fixture);
+  const styleData = await readFile(path.join(cwd, fixture), 'utf8');
+  const style = JSON.parse(styleData);
 
-  return sequence;
+  await loader.localizeURLs(style);
 
-  async function fixtureToStyle(fixture) {
-    const id = path.dirname(fixture);
-    const styleData = await readFile(path.join(cwd, fixture), 'utf8');
-    const style = JSON.parse(styleData);
+  style.metadata ??= {};
+  const test = (style.metadata.test = Object.assign(
+    {
+      id,
+      width: 512,
+      height: 512,
+      pixelRatio: 1,
+      recycleMap: false,
+      allowed: 0.00015
+    },
+    style.metadata.test
+  ));
 
-    await loader.localizeURLs(style);
-
-    style.metadata ??= {};
-    const test = (style.metadata.test = Object.assign(
-      {
-        id,
-        ignored: ignores[`${path.basename(cwd)}/${id}`],
-        width: 512,
-        height: 512,
-        pixelRatio: 1,
-        recycleMap: false,
-        allowed: 0.00015
-      },
-      style.metadata.test
-    ));
-
-    if ('diff' in test) {
-      if (typeof test.diff === 'number') {
-        test.allowed = test.diff;
-      } else if (implementation in test.diff) {
-        test.allowed = test.diff[implementation];
-      }
+  if ('diff' in test) {
+    if (typeof test.diff === 'number') {
+      test.allowed = test.diff;
+    } else if (implementation in test.diff) {
+      test.allowed = test.diff[implementation];
     }
-
-    markSkipped(style);
-    return style;
   }
 
-  function markSkipped(style) {
-    const { test } = style.metadata;
-    const { id, ignored } = test;
-
-    if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && id.match(/^debug\//)) {
-      test.skip = true;
-      return false;
-    }
-
-    if (/^skip/.test(ignored)) {
-      test.skip = true;
-      return false;
-    }
-
-    return true;
+  if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && test.id.match(/^debug\//)) {
+    test.skip = true;
   }
+
+  return style;
 }
 
 async function writeResults(cwd, tests) {
