@@ -303,7 +303,23 @@ test('StyleLayer.globalState', async t => {
 
     layer.recalculate({ zoom: 0, globalState: { textSize: 13, textTransform: 'lowercase' } });
 
-    t.assert.deepEqual(layer._layout.get('text-size').evaluate(), 15);
-    t.assert.deepEqual(layer._layout.get('text-transform').evaluate(), 'uppercase');
+    t.assert.equal(layer._layout.get('text-size').evaluate(), 15);
+    t.assert.equal(layer._layout.get('text-transform').evaluate(), 'uppercase');
+  });
+
+  await t.test('uses global state from parameters if not set on layer when recalculating layout properties', t => {
+    const layer = createStyleLayer({
+      id: 'circle',
+      type: 'circle',
+      paint: {
+        'circle-color': ['global-state', 'color'],
+        'circle-radius': ['global-state', 'radius']
+      }
+    });
+
+    layer.recalculate({ zoom: 0, globalState: { radius: 15, color: '#FF0000' } });
+
+    t.assert.deepEqual(layer._paint.get('circle-color').evaluate(), new Color(1, 0, 0, 1));
+    t.assert.equal(layer._paint.get('circle-radius').evaluate(), 15);
   });
 });
