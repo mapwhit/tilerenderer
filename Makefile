@@ -101,10 +101,10 @@ ifdef TEST_REPORTER
 endif
 
 test-render: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/integration/render/render.test.js
+	node --test $(TEST_INTG_OPTS) test/integration/render/tests/render.test.js
 
 test-query: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/integration/query/query.test.js
+	node --test $(TEST_INTG_OPTS) test/integration/query/tests/query.test.js
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
@@ -112,15 +112,14 @@ dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
 
 ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
-distclean: clean
+distclean: clean clean-test
 	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
 
 clean:
 	rm -fr build
 
 clean-test:
-	find test/integration/*/tests -mindepth 2 -type d -not -exec test -e "{}/style.json" \; -print
-	# | xargs -t rm -r
+	git clean -x -f test/integration/*/tests
 
 .PHONY: clean clean-test distclean
 

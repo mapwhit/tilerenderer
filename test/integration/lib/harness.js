@@ -5,31 +5,28 @@ import makeLoader from './loader.js';
 
 const loader = makeLoader();
 
-export default function harness(cwd, implementation, runTest) {
-  const testId = path.basename(cwd);
-  test(testId, async t => {
-    const files = glob('**/style.json', { cwd });
-    // iterate over files
-    for await (const file of files) {
-      const id = path.dirname(file);
+export default async function harness(cwd, implementation, runTest) {
+  const files = glob('**/style.json', { cwd });
+  // iterate over files
+  for await (const file of files) {
+    const id = path.dirname(file);
+    const skip = implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && test.id.match(/^debug\//);
+
+    test(id, { skip, concurrency: true }, async t => {
       const styleData = await readFile(path.join(cwd, file), 'utf8');
       const style = JSON.parse(styleData);
-
       fixtureToStyle(style, id, implementation);
       const st = style.metadata.test;
-      await t.test(id, { skip: st.skip }, async t => {
-        loader.localizeURLs(style);
-
-        try {
-          await runTest(style, st);
-          t.assert.ok(st.ok, `${st.id} failed:\n${st.difference}`);
-        } catch (error) {
-          st.error = error;
-          throw error;
-        }
-      });
-    }
-  });
+      try {
+        await loader.localizeURLs(style);
+        await runTest(style, st);
+        t.assert.ok(st.ok, `${st.id} failed:\n${st.difference}`);
+      } catch (error) {
+        st.error = error;
+        throw error;
+      }
+    });
+  }
 }
 
 function fixtureToStyle(style, id, implementation) {
@@ -53,10 +50,6 @@ function fixtureToStyle(style, id, implementation) {
     } else if (implementation in test.diff) {
       test.allowed = test.diff[implementation];
     }
-  }
-
-  if (implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && test.id.match(/^debug\//)) {
-    test.skip = true;
   }
 
   return style;
