@@ -228,6 +228,9 @@ class StyleLayer extends Evented {
     if (this._transitioningPaint) {
       this._transitioningPaint.globalState = globalState;
     }
+    if (this._featureFilter) {
+      this._featureFilter.globalState = globalState;
+    }
   }
 
   get key() {
