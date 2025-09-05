@@ -17,7 +17,7 @@ class StyleLayer extends Evented {
   #key;
   #globalState; // reference to global state
 
-  constructor(layer, properties) {
+  constructor(layer, properties, globalState) {
     super();
 
     this.id = layer.id;
@@ -28,6 +28,7 @@ class StyleLayer extends Evented {
     this.visibility = 'visible';
     this.paint = {};
     this.layout = {};
+    this.#globalState = globalState;
 
     if (layer.type !== 'background') {
       this.source = layer.source;

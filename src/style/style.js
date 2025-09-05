@@ -206,9 +206,8 @@ class Style extends Evented {
       if (layer.ref) {
         continue; // just ignore layers that reference other layers
       }
-      layer = createStyleLayer(layer);
+      layer = createStyleLayer(layer, this._globalState);
       layer.setEventedParent(this, { layer: { id: layer.id } });
-      layer.globalState = this._globalState;
       this._layers.set(layer.id, layer);
     }
 

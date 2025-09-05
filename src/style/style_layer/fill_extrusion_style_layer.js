@@ -9,8 +9,8 @@ import properties from './fill_extrusion_style_layer_properties.js';
 const { vec4 } = glMatrix;
 
 export class FillExtrusionStyleLayer extends StyleLayer {
-  constructor(layer) {
-    super(layer, properties);
+  constructor(layer, globalState) {
+    super(layer, properties, globalState);
   }
 
   createBucket(parameters) {
