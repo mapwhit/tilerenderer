@@ -76,9 +76,16 @@ export default function createFilter(filter) {
   if (compiled.result === 'error') {
     throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
   }
-  return addGlobalStateRefs(
-    (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
-    () => findGlobalStateRefs(compiled.value.expression)
+  return Object.assign(
+    addGlobalStateRefs(
+      (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
+      () => findGlobalStateRefs(compiled.value.expression)
+    ),
+    {
+      set globalState(globalState) {
+        compiled.value.globalState = globalState;
+      }
+    }
   );
 }
 
