@@ -110,6 +110,9 @@ class Tile {
    * @private
    */
   unloadVectorData() {
+    if (this.state === 'unloaded') {
+      return;
+    }
     for (const bucket of this.buckets.values()) {
       bucket.destroy();
     }
