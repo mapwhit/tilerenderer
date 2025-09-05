@@ -20,6 +20,6 @@ const subclasses = {
   raster
 };
 
-export default function createStyleLayer(layer) {
-  return new subclasses[layer.type](layer);
+export default function createStyleLayer(layer, globalState) {
+  return new subclasses[layer.type](layer, globalState);
 }

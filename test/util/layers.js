@@ -4,8 +4,7 @@ export function create(layerConfigs, { globalState } = {}) {
   if (layerConfigs) {
     const layers = new Map();
     for (const layerConfig of layerConfigs) {
-      const layer = createStyleLayer(layerConfig);
-      layer.globalState = globalState;
+      const layer = createStyleLayer(layerConfig, globalState);
       layers.set(layerConfig.id, layer);
     }
     return layers;

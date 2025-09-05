@@ -2,8 +2,8 @@ import StyleLayer from '../style_layer.js';
 import properties from './hillshade_style_layer_properties.js';
 
 class HillshadeStyleLayer extends StyleLayer {
-  constructor(layer) {
-    super(layer, properties);
+  constructor(layer, globalState) {
+    super(layer, properties, globalState);
   }
 
   hasOffscreenPass() {

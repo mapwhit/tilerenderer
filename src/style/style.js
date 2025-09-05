@@ -206,9 +206,8 @@ class Style extends Evented {
       if (layer.ref) {
         continue; // just ignore layers that reference other layers
       }
-      layer = createStyleLayer(layer);
+      layer = createStyleLayer(layer, this._globalState);
       layer.setEventedParent(this, { layer: { id: layer.id } });
-      layer.globalState = this._globalState;
       this._layers.set(layer.id, layer);
     }
 
@@ -526,12 +525,10 @@ class Style extends Evented {
       layerObject = Object.assign(layerObject, { source: id });
     }
 
-    const layer = createStyleLayer(layerObject);
+    const layer = createStyleLayer(layerObject, this._globalState);
     this._validateLayer(layer);
 
     layer.setEventedParent(this, { layer: { id: id } });
-
-    layer.globalState = this._globalState;
 
     this._insertLayer(id, layer, before);
 

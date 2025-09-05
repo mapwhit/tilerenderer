@@ -59,12 +59,13 @@ import EvaluationParameters from './evaluation_parameters.js';
  *  @private
  */
 export class PropertyValue {
-  constructor(property, value) {
+  constructor(property, value, globalState) {
     this.property = property;
     this.value = value;
     this.expression = normalizePropertyExpression(
       value === undefined ? property.specification.default : value,
-      property.specification
+      property.specification,
+      globalState
     );
   }
 
@@ -78,10 +79,6 @@ export class PropertyValue {
 
   possiblyEvaluate(parameters) {
     return this.property.possiblyEvaluate(this, parameters);
-  }
-
-  set globalState(globalState) {
-    this.expression.globalState = globalState;
   }
 }
 
@@ -100,9 +97,9 @@ export class PropertyValue {
  * @private
  */
 export class TransitionablePropertyValue {
-  constructor(property) {
+  constructor(property, globalState) {
     this.property = property;
-    this.value = new PropertyValue(property, undefined);
+    this.value = new PropertyValue(property, undefined, globalState);
   }
 
   transitioned(parameters, prior) {
@@ -117,10 +114,6 @@ export class TransitionablePropertyValue {
 
   untransitioned() {
     return new TransitioningPropertyValue(this.property, this.value, null, {}, 0);
-  }
-
-  set globalState(globalState) {
-    this.value.globalState = globalState;
   }
 }
 
@@ -140,9 +133,10 @@ export class TransitionablePropertyValue {
  */
 export class Transitionable {
   #globalState; // reference to global state
-  constructor(properties) {
+  constructor(properties, globalState) {
     this._properties = properties;
     this._values = Object.create(properties.defaultTransitionablePropertyValues);
+    this.#globalState = globalState;
   }
 
   getValue(name) {
@@ -151,15 +145,15 @@ export class Transitionable {
 
   setValue(name, value) {
     if (!this._values.hasOwnProperty(name)) {
-      this._values[name] = new TransitionablePropertyValue(this._values[name].property);
+      this._values[name] = new TransitionablePropertyValue(this._values[name].property, this.#globalState);
     }
     // Note that we do not _remove_ an own property in the case where a value is being reset
     // to the default: the transition might still be non-default.
     this._values[name].value = new PropertyValue(
       this._values[name].property,
-      value === null ? undefined : structuredClone(value)
+      value === null ? undefined : structuredClone(value),
+      this.#globalState
     );
-    this._values[name].globalState = this.#globalState;
   }
 
   getTransition(name) {
@@ -168,8 +162,7 @@ export class Transitionable {
 
   setTransition(name, value) {
     if (!this._values.hasOwnProperty(name)) {
-      this._values[name] = new TransitionablePropertyValue(this._values[name].property);
-      this._values[name].globalState = this.#globalState;
+      this._values[name] = new TransitionablePropertyValue(this._values[name].property, this.#globalState);
     }
     this._values[name].transition = structuredClone(value) || undefined;
   }
@@ -204,13 +197,6 @@ export class Transitionable {
       result._values[property] = this._values[property].untransitioned();
     }
     return result;
-  }
-
-  set globalState(globalState) {
-    this.#globalState = globalState;
-    for (const value of Object.values(this._values)) {
-      value.globalState = globalState;
-    }
   }
 }
 
@@ -326,9 +312,10 @@ export class Transitioning {
  */
 export class Layout {
   #globalState; // reference to global state
-  constructor(properties) {
+  constructor(properties, globalState) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPropertyValues);
+    this.#globalState = globalState;
   }
 
   getValue(name) {
@@ -338,9 +325,9 @@ export class Layout {
   setValue(name, value) {
     this._values[name] = new PropertyValue(
       this._values[name].property,
-      value === null ? undefined : structuredClone(value)
+      value === null ? undefined : structuredClone(value),
+      this.#globalState
     );
-    this._values[name].globalState = this.#globalState;
   }
 
   serialize() {
@@ -360,13 +347,6 @@ export class Layout {
       result._values[property] = this._values[property].possiblyEvaluate(parameters);
     }
     return result;
-  }
-
-  set globalState(globalState) {
-    this.#globalState = globalState;
-    for (const value of Object.values(this._values)) {
-      value.globalState = globalState;
-    }
   }
 }
 
