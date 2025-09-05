@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { Color } from '@mapwhit/style-expressions';
 import Wrapper from '../../../src/source/geojson_wrapper.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import makeWorkerTile from '../../../src/source/worker_tile.js';
@@ -194,4 +195,27 @@ test('WorkerTile.parse passes global-state to layers', async t => {
   const layer = layers[0][0];
   layer.recalculate({});
   t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
+});
+
+test('uses global state from parameters if not set on layer when recalculating layout properties', async t => {
+  const layerIndex = new StyleLayerIndex(
+    createLayers([
+      {
+        id: 'circle',
+        type: 'circle',
+        source: 'source',
+        paint: {
+          'circle-color': ['global-state', 'color'],
+          'circle-radius': ['global-state', 'radius']
+        }
+      }
+    ])
+  );
+
+  await makeWorkerTile({ ...params }, createLineWrapper(), layerIndex, {});
+  const layers = Array.from(layerIndex.familiesBySource.get('source').get('_geojsonTileLayer').values());
+  const layer = layers[0][0];
+  layer.recalculate({ zoom: 0, globalState: { radius: 15, color: '#FF0000' } });
+  t.assert.deepEqual(layer._paint.get('circle-color').evaluate({ zoom: 0 }), new Color(1, 0, 0, 1));
+  t.assert.equal(layer._paint.get('circle-radius').evaluate({ zoom: 0 }), 15);
 });

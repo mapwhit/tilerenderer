@@ -1,5 +1,6 @@
 import test from 'node:test';
 import { Event, Evented } from '@mapwhit/events';
+import { Color } from '@mapwhit/style-expressions';
 import Transform from '../../../src/geo/transform.js';
 import plugin from '../../../src/source/rtl_text_plugin.js';
 import SourceCache from '../../../src/source/source_cache.js';
@@ -298,6 +299,37 @@ test('Style', async t => {
       const layer = style.getLayer('layer-id');
       layer.recalculate({});
       t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
+    });
+
+    await t.test('propagates global state object to layers added after loading style', async t => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'source-id': createGeoJSONSource()
+          },
+          layers: []
+        })
+      );
+      await style.once('style.load');
+      style.addLayer({
+        id: 'layer-id',
+        type: 'circle',
+        source: 'source-id',
+        paint: {
+          'circle-color': ['global-state', 'color'],
+          'circle-radius': ['global-state', 'radius']
+        }
+      });
+      // tests that reference to globalState is propagated to layers
+      // by setting globalState property and checking if the new value
+      // was used when evaluating the layer
+      const globalState = { color: { default: 'red' }, radius: { default: 12 } };
+      style.setGlobalState(globalState);
+      const layer = style.getLayer('layer-id');
+      layer.recalculate({});
+      t.assert.deepEqual(layer._paint.get('circle-color').evaluate({ zoom: 0 }), new Color(1, 0, 0, 1));
+      t.assert.equal(layer._paint.get('circle-radius').evaluate({ zoom: 0 }), 12);
     });
   });
 
