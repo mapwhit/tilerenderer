@@ -12,7 +12,6 @@ export default class EvaluationParameters {
       this.fadeDuration = options.fadeDuration || 0;
       this.zoomHistory = options.zoomHistory || new ZoomHistory();
       this.transition = options.transition || {};
-      this.globalState = options.globalState;
     } else {
       this.now = 0;
       this.fadeDuration = 0;

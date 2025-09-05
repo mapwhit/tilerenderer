@@ -31,14 +31,13 @@ function createSymbolBucket(globalState) {
     },
     globalState
   );
-  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+  layer.recalculate({ zoom: 0, zoomHistory: {} });
 
   return new SymbolBucket({
     overscaling: 1,
     zoom: 0,
     collisionBoxArray,
-    layers: [layer],
-    globalState
+    layers: [layer]
   });
 }
 

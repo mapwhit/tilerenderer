@@ -13,9 +13,9 @@ function createFillExtrusionBucket({ id, layout, paint, globalState }) {
     },
     globalState
   );
-  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+  layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  return new FillExtrusionBucket({ layers: [layer], globalState });
+  return new FillExtrusionBucket({ layers: [layer] });
 }
 
 test('FillExtrusionBucket', async t => {
