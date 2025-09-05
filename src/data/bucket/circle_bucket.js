@@ -23,7 +23,6 @@ function addCircleVertex(layoutVertexArray, x, y, extrudeX, extrudeY) {
 class CircleBucket {
   constructor(options) {
     this.zoom = options.zoom;
-    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.index = options.index;
@@ -37,9 +36,7 @@ class CircleBucket {
 
   populate(features, options) {
     for (const { feature, index, sourceLayerIndex } of features) {
-      if (
-        this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
-      ) {
+      if (this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         const geometry = loadGeometry(feature);
         this.addFeature(feature, geometry, index);
         options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
@@ -52,8 +49,7 @@ class CircleBucket {
       return;
     }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 
@@ -121,8 +117,7 @@ class CircleBucket {
     }
 
     this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
-      imagePositions: {},
-      globalState: this.globalState
+      imagePositions: {}
     });
   }
 }
