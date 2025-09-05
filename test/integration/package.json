@@ -8,6 +8,10 @@
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0"
   },
+  "imports": {
+    "#render-run": "./lib/render/run.js",
+    "#query-run": "./lib/query/run.js"
+  },
   "type": "module",
   "license": "BSD-3-Clause"
 }

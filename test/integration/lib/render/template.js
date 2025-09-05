@@ -1,5 +1,5 @@
-// this file is linked into render/tests/* directories
+// this file is linked into query/tests/* directories
 
-import run from '../../../lib/render/run.js';
+import run from '#render-run';
 
 run(import.meta.dirname);

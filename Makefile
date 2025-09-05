@@ -93,21 +93,44 @@ DEPENDENCIES_TEST = test/node_modules
 test-unit: dependencies $(DEPENDENCIES_TEST)
 	node --test --test-reporter=$(TEST_REPORTER) "test/unit/**/*.test.js"
 
+RENDER_TESTS := "test/integration/render/tests/*/render.test.js"
+QUERY_TESTS := "test/integration/query/tests/*/query.test.js"
+
+TEST_INTG_OPTS += --test-concurrency=true
 ifdef TEST_FILTER
   TEST_INTG_OPTS += --test-name-pattern=$(TEST_FILTER)
+  # when filter is provided it is more efficient to run main test file
+  RENDER_TESTS := "test/integration/render/tests/render.test.js"
+  QUERY_TESTS := "test/integration/query/tests/query.test.js"
 endif
 ifdef TEST_REPORTER
   TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
 endif
 
-test-render: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/integration/render/tests/render.test.js
+test-render: dependencies dependencies-integration render-test-files
+	node --test $(TEST_INTG_OPTS) $(RENDER_TESTS)
 
-test-query: dependencies dependencies-integration
-	node --test $(TEST_INTG_OPTS) test/integration/query/tests/query.test.js
+test-query: dependencies dependencies-integration query-test-files
+	node --test $(TEST_INTG_OPTS) $(QUERY_TESTS)
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
+
+RENDER_TEST_FILES := $(shell find test/integration/render/tests -type d -maxdepth 1)
+render-test-files: $(patsubst %, %/render.test.js, $(RENDER_TEST_FILES))
+
+%/render.test.js: test/integration/lib/render/template.js
+	cp $^ $@
+
+.SECONDARY: render-test-files
+
+QUERY_TEST_FILES := $(shell find test/integration/query/tests -type d -maxdepth 1)
+query-test-files: $(patsubst %, %/query.test.js, $(QUERY_TEST_FILES))
+
+%/query.test.js: test/integration/lib/query/template.js
+	cp $^ $@
+
+.SECONDARY: query-test-files
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query
 
@@ -119,7 +142,7 @@ clean:
 	rm -fr build
 
 clean-test:
-	git clean -x -f test/integration/*/tests
+	git clean --quiet -X -f test/integration/*/tests
 
 .PHONY: clean clean-test distclean
 
