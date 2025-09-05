@@ -178,6 +178,7 @@ class StyleLayer extends Evented {
   _untransitioned(name) {
     if (this._transitioningPaint) {
       this._transitioningPaint._values[name] = this._transitionablePaint._values[name].untransitioned();
+      this._transitioningPaint._values[name].globalState = this.#globalState;
     }
   }
 
@@ -197,6 +198,7 @@ class StyleLayer extends Evented {
 
   updateTransitions(parameters) {
     this._transitioningPaint = this._transitionablePaint.transitioned(parameters, this._transitioningPaint);
+    this._transitioningPaint.globalState = this.#globalState;
   }
 
   hasTransition() {
@@ -219,6 +221,12 @@ class StyleLayer extends Evented {
     this.#globalState = globalState;
     if (this._unevaluatedLayout) {
       this._unevaluatedLayout.globalState = globalState;
+    }
+    if (this._transitionablePaint) {
+      this._transitionablePaint.globalState = globalState;
+    }
+    if (this._transitioningPaint) {
+      this._transitioningPaint.globalState = globalState;
     }
   }
 
