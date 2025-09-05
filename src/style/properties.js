@@ -118,6 +118,10 @@ export class TransitionablePropertyValue {
   untransitioned() {
     return new TransitioningPropertyValue(this.property, this.value, null, {}, 0);
   }
+
+  set globalState(globalState) {
+    this.value.globalState = globalState;
+  }
 }
 
 /**
@@ -135,6 +139,7 @@ export class TransitionablePropertyValue {
  * @private
  */
 export class Transitionable {
+  #globalState; // reference to global state
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultTransitionablePropertyValues);
@@ -154,6 +159,7 @@ export class Transitionable {
       this._values[name].property,
       value === null ? undefined : structuredClone(value)
     );
+    this._values[name].globalState = this.#globalState;
   }
 
   getTransition(name) {
@@ -163,6 +169,7 @@ export class Transitionable {
   setTransition(name, value) {
     if (!this._values.hasOwnProperty(name)) {
       this._values[name] = new TransitionablePropertyValue(this._values[name].property);
+      this._values[name].globalState = this.#globalState;
     }
     this._values[name].transition = structuredClone(value) || undefined;
   }
@@ -197,6 +204,13 @@ export class Transitionable {
       result._values[property] = this._values[property].untransitioned();
     }
     return result;
+  }
+
+  set globalState(globalState) {
+    this.#globalState = globalState;
+    for (const value of Object.values(this._values)) {
+      value.globalState = globalState;
+    }
   }
 }
 
