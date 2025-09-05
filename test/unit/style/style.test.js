@@ -291,10 +291,10 @@ test('Style', async t => {
       );
       await style.once('style.load');
       // tests that reference to globalState is propagated to layers
-      // by changing globalState property and checking if the changed value
+      // by setting globalState property and checking if the new value
       // was used when evaluating the layer
-      const globalState = style.getGlobalState();
-      globalState.size = 12;
+      const globalState = { size: { default: 12 } };
+      style.setGlobalState(globalState);
       const layer = style.getLayer('layer-id');
       layer.recalculate({});
       t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
