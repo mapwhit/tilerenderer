@@ -269,6 +269,36 @@ test('Style', async t => {
         done();
       });
     });
+
+    await t.test('propagates global state object to layers', async t => {
+      style = new Style(new StubMap());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            'source-id': createGeoJSONSource()
+          },
+          layers: [
+            {
+              id: 'layer-id',
+              type: 'symbol',
+              source: 'source-id',
+              layout: {
+                'text-size': ['global-state', 'size']
+              }
+            }
+          ]
+        })
+      );
+      await style.once('style.load');
+      // tests that reference to globalState is propagated to layers
+      // by changing globalState property and checking if the changed value
+      // was used when evaluating the layer
+      const globalState = style.getGlobalState();
+      globalState.size = 12;
+      const layer = style.getLayer('layer-id');
+      layer.recalculate({});
+      t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
+    });
   });
 
   await t.test('Style._remove', async t => {
@@ -500,7 +530,7 @@ test('Style', async t => {
         })
       );
       style.on('style.load', () => {
-        style.update(1, 0);
+        style.update({ zoom: 1, fadeDuration: 0 });
         callback(style);
       });
       return style;
@@ -1782,7 +1812,7 @@ test('Style', async t => {
       tr.resize(512, 512);
 
       style.once('style.load', () => {
-        style.update(tr.zoom, 0);
+        style.update({ zoom: tr.zoom, fadeDuration: 0 });
         const sourceCache = style._sources['geojson'];
         const source = style.getSource('geojson');
 
@@ -2279,7 +2309,7 @@ test('Style', async t => {
       style._sources.mapbox.transform = transform;
       style._sources.other.transform = transform;
 
-      style.update(0);
+      style.update({ zoom: 0 });
       style._updateSources(transform);
 
       await t.test('returns feature type', (t, done) => {

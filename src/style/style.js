@@ -199,12 +199,16 @@ class Style extends Evented {
     const layers = this.stylesheet.layers;
 
     this._layers.clear();
+
+    this.setGlobalState(this.stylesheet.state ?? null);
+
     for (let layer of layers) {
       if (layer.ref) {
         continue; // just ignore layers that reference other layers
       }
       layer = createStyleLayer(layer);
       layer.setEventedParent(this, { layer: { id: layer.id } });
+      layer.globalState = this._globalState;
       this._layers.set(layer.id, layer);
     }
 
@@ -212,8 +216,6 @@ class Style extends Evented {
 
     this.light = this.stylesheet.light;
     this._light = new Light(this.light);
-
-    this.setGlobalState(this.stylesheet.state ?? null);
 
     this.fire(new Event('data', { dataType: 'style' }));
     this.fire(new Event('style.load'));

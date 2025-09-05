@@ -172,3 +172,26 @@ test('WorkerTile.parse vector tile', async t => {
   t.assert.ok(result.buckets.values().next().value);
   t.assert.equal(result.buckets.values().next().value.layers[0]._layout._values['line-join'].value.value, 'bevel');
 });
+
+test('WorkerTile.parse passes global-state to layers', async t => {
+  const layerIndex = new StyleLayerIndex(
+    createLayers([
+      {
+        id: 'layer-id',
+        type: 'symbol',
+        source: 'source',
+        layout: {
+          'text-size': ['global-state', 'size']
+        }
+      }
+    ])
+  );
+
+  const globalState = {};
+  await makeWorkerTile({ ...params, globalState }, createLineWrapper(), layerIndex, {});
+  globalState.size = 12;
+  const layers = Array.from(layerIndex.familiesBySource.get('source').get('_geojsonTileLayer').values());
+  const layer = layers[0][0];
+  layer.recalculate({});
+  t.assert.equal(layer._layout.get('text-size').evaluate({ zoom: 0 }), 12);
+});

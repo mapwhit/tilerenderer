@@ -175,8 +175,9 @@ function createTileID({ tileID }) {
 
 function recalculateLayers(layers, zoom, globalState) {
   // Layers are shared and may have been used by a WorkerTile with a different zoom.
-  const parameters = new EvaluationParameters(zoom, { globalState });
+  const parameters = new EvaluationParameters(zoom);
   for (const layer of layers) {
+    layer.globalState = globalState;
     layer.recalculate(parameters);
   }
 }
