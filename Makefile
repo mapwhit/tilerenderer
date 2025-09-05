@@ -132,7 +132,14 @@ query-test-files: $(patsubst %, %/query.test.js, $(QUERY_TEST_FILES))
 
 .SECONDARY: query-test-files
 
-.PHONY: dependencies-integration test test-integration test-unit test-render test-query
+test-coverage: dependencies dependencies-integration render-test-files query-test-files
+	node --test --experimental-test-coverage \
+		--test-concurrency=true \
+		"test/unit/**/*.test.js" \
+		"test/integration/render/tests/*/render.test.js" \
+		"test/integration/query/tests/*/query.test.js"
+
+.PHONY: dependencies-integration test test-integration test-unit test-render test-query test-coverage
 
 ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 distclean: clean clean-test
