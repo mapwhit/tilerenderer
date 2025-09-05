@@ -317,7 +317,7 @@ export class Transitioning {
  * @private
  */
 export class Layout {
-  #globalState = {}; // reference to global state
+  #globalState; // reference to global state
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPropertyValues);
