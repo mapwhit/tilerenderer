@@ -28,14 +28,14 @@ function createSymbolBucket(globalState) {
     filter: featureFilter(),
     layout: { 'text-font': ['Test'], 'text-field': 'abcde' }
   });
-  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+  layer.globalState = globalState;
+  layer.recalculate({ zoom: 0, zoomHistory: {} });
 
   return new SymbolBucket({
     overscaling: 1,
     zoom: 0,
     collisionBoxArray,
-    layers: [layer],
-    globalState
+    layers: [layer]
   });
 }
 

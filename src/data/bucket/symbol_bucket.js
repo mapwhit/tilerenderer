@@ -81,7 +81,6 @@ export default class SymbolBucket {
   constructor(options) {
     this.collisionBoxArray = options.collisionBoxArray;
     this.zoom = options.zoom;
-    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.index = options.index;
@@ -151,7 +150,7 @@ export default class SymbolBucket {
 
     const icons = options.iconDependencies;
     const stacks = options.glyphDependencies;
-    const globalProperties = new EvaluationParameters(this.zoom, { globalState: this.globalState });
+    const globalProperties = new EvaluationParameters(this.zoom);
 
     for (const { feature, index, sourceLayerIndex } of features) {
       if (!layer._featureFilter(globalProperties, feature)) {
@@ -223,12 +222,10 @@ export default class SymbolBucket {
       return;
     }
     this.text.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
     this.icon.programConfigurations.updatePaintArrays(states, vtLayer, this.layers, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 
@@ -343,8 +340,7 @@ export default class SymbolBucket {
     );
 
     arrays.programConfigurations.populatePaintArrays(arrays.layoutVertexArray.length, feature, feature.index, {
-      imagePositions: {},
-      globalState: this.globalState
+      imagePositions: {}
     });
   }
 

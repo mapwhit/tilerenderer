@@ -20,9 +20,10 @@ function createLineBucket({ id, layout, paint, globalState }) {
     layout,
     paint
   });
-  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+  layer.globalState = globalState;
+  layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  return new LineBucket({ layers: [layer], globalState });
+  return new LineBucket({ layers: [layer] });
 }
 
 test('LineBucket', async t => {

@@ -37,7 +37,6 @@ function addVertex(vertexArray, x, y, nx, ny, nz, t, e) {
 class FillExtrusionBucket {
   constructor(options) {
     this.zoom = options.zoom;
-    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.index = options.index;
@@ -54,9 +53,7 @@ class FillExtrusionBucket {
     this.hasPattern = hasPattern('fill-extrusion', this.layers, options);
 
     for (const { feature, index, sourceLayerIndex } of features) {
-      if (
-        !this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
-      ) {
+      if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         continue;
       }
 
@@ -77,13 +74,7 @@ class FillExtrusionBucket {
 
       if (this.hasPattern) {
         this.features.push(
-          addPatternDependencies(
-            'fill-extrusion',
-            this.layers,
-            patternFeature,
-            { zoom: this.zoom, globalState: this.globalState },
-            options
-          )
+          addPatternDependencies('fill-extrusion', this.layers, patternFeature, { zoom: this.zoom }, options)
         );
       } else {
         this.addFeature(patternFeature, geometry, index, {});
@@ -105,8 +96,7 @@ class FillExtrusionBucket {
       return;
     }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 
@@ -246,8 +236,7 @@ class FillExtrusionBucket {
     }
 
     this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 }

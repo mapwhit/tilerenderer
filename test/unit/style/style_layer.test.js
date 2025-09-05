@@ -301,7 +301,7 @@ test('StyleLayer.globalState', async t => {
     });
     layer.globalState = { textSize: 15, textTransform: 'uppercase' };
 
-    layer.recalculate({ zoom: 0, globalState: { textSize: 13, textTransform: 'lowercase' } });
+    layer.recalculate({ zoom: 0 });
 
     t.assert.equal(layer._layout.get('text-size').evaluate(), 15);
     t.assert.equal(layer._layout.get('text-transform').evaluate(), 'uppercase');

@@ -62,7 +62,7 @@ function initializeBucketsOptions(params) {
 }
 
 function makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, features, params, options) {
-  const { zoom, pixelRatio, source, globalState } = params;
+  const { zoom, pixelRatio, source } = params;
   const { featureIndex, overscaling, collisionBoxArray, uniqueBuckets } = options;
 
   for (const layers of sourceLayerFamilies.values()) {
@@ -78,7 +78,7 @@ function makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, featur
       continue;
     }
 
-    recalculateLayers(layers, zoom, globalState);
+    recalculateLayers(layers, zoom);
 
     const bucket = layer.createBucket({
       index: featureIndex.bucketLayerIDs.length,
@@ -88,8 +88,7 @@ function makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, featur
       overscaling,
       collisionBoxArray,
       sourceLayerIndex,
-      sourceID: source,
-      globalState
+      sourceID: source
     });
     uniqueBuckets.set(layer.id, bucket);
     bucket.populate(features, options);
@@ -98,7 +97,7 @@ function makeBucketsForSourceLayer(sourceLayerFamilies, sourceLayerIndex, featur
 }
 
 async function finalizeBuckets(params, options, resources) {
-  const { zoom, showCollisionBoxes, globalState, justReloaded, painter } = params;
+  const { zoom, showCollisionBoxes, justReloaded, painter } = params;
   const { collisionBoxArray, featureIndex, uniqueBuckets } = options;
   const buckets = new Map();
   const { glyphAtlas, imageAtlas, glyphMap, iconMap } = await makeAtlasses(options, resources);
@@ -107,7 +106,7 @@ async function finalizeBuckets(params, options, resources) {
   for (const bucket of uniqueBuckets.values()) {
     if (bucket instanceof SymbolBucket) {
       hasSymbolBuckets = true;
-      recalculateLayers(bucket.layers, zoom, globalState);
+      recalculateLayers(bucket.layers, zoom);
       performSymbolLayout(
         bucket,
         glyphMap,
@@ -123,7 +122,7 @@ async function finalizeBuckets(params, options, resources) {
       bucket.hasPattern &&
       (bucket instanceof LineBucket || bucket instanceof FillBucket || bucket instanceof FillExtrusionBucket)
     ) {
-      recalculateLayers(bucket.layers, zoom, globalState);
+      recalculateLayers(bucket.layers, zoom);
       bucket.addFeatures(options, imageAtlas.patternPositions);
     }
     if (bucket.isEmpty()) {
@@ -173,11 +172,10 @@ function createTileID({ tileID }) {
   return new OverscaledTileID(overscaledZ, wrap, z, x, y);
 }
 
-function recalculateLayers(layers, zoom, globalState) {
+function recalculateLayers(layers, zoom) {
   // Layers are shared and may have been used by a WorkerTile with a different zoom.
   const parameters = new EvaluationParameters(zoom);
   for (const layer of layers) {
-    layer.globalState = globalState;
     layer.recalculate(parameters);
   }
 }
