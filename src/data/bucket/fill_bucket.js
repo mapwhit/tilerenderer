@@ -16,7 +16,6 @@ const layoutAttributes = layout.members;
 class FillBucket {
   constructor(options) {
     this.zoom = options.zoom;
-    this.globalState = options.globalState;
     this.overscaling = options.overscaling;
     this.layers = options.layers;
     this.index = options.index;
@@ -35,9 +34,7 @@ class FillBucket {
     this.hasPattern = hasPattern('fill', this.layers, options);
 
     for (const { feature, index, sourceLayerIndex } of features) {
-      if (
-        !this.layers[0]._featureFilter(new EvaluationParameters(this.zoom, { globalState: this.globalState }), feature)
-      ) {
+      if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         continue;
       }
 
@@ -57,15 +54,7 @@ class FillBucket {
       }
 
       if (this.hasPattern) {
-        this.features.push(
-          addPatternDependencies(
-            'fill',
-            this.layers,
-            patternFeature,
-            { zoom: this.zoom, globalState: this.globalState },
-            options
-          )
-        );
+        this.features.push(addPatternDependencies('fill', this.layers, patternFeature, { zoom: this.zoom }, options));
       } else {
         this.addFeature(patternFeature, geometry, index, {});
       }
@@ -79,8 +68,7 @@ class FillBucket {
       return;
     }
     this.programConfigurations.updatePaintArrays(states, vtLayer, this.stateDependentLayers, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 
@@ -178,8 +166,7 @@ class FillBucket {
     }
 
     this.programConfigurations.populatePaintArrays(this.layoutVertexArray.length, feature, index, {
-      imagePositions,
-      globalState: this.globalState
+      imagePositions
     });
   }
 }

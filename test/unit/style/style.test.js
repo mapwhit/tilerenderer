@@ -698,9 +698,7 @@ test('Style', async t => {
           t.mock.method(style._sources['circle-source-id'], 'reload');
 
           style.setGlobalState({ circleColor: { default: 'red' } });
-          style.update({
-            globalState: style.getGlobalState()
-          });
+          style.update({});
 
           t.assert.ok(style._sources['circle-source-id'].resume.mock.callCount() > 0);
           t.assert.ok(style._sources['circle-source-id'].reload.mock.callCount() > 0);
@@ -770,9 +768,7 @@ test('Style', async t => {
         t.mock.method(style._sources['circle-source-id'], 'reload');
 
         style.setGlobalState({ showCircles: { default: true } });
-        style.update({
-          globalState: style.getGlobalState()
-        });
+        style.update({});
 
         t.assert.equal(style._sources['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style._sources['circle-source-id'].reload.mock.callCount(), 0);
@@ -806,9 +802,7 @@ test('Style', async t => {
         t.mock.method(style._sources['circle-source-id'], 'reload');
 
         style.setGlobalState({ circleColor: { default: 'red' } });
-        style.update({
-          globalState: style.getGlobalState()
-        });
+        style.update({});
 
         t.assert.equal(style._sources['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style._sources['circle-source-id'].reload.mock.callCount(), 0);
@@ -845,9 +839,7 @@ test('Style', async t => {
           t.mock.method(style._sources['circle-source-id'], 'reload');
 
           style.setGlobalState({ circleColor: { default: 'red' } });
-          style.update({
-            globalState: style.getGlobalState()
-          });
+          style.update({});
 
           t.assert.equal(style._sources['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style._sources['circle-source-id'].reload.mock.callCount(), 0);
@@ -892,9 +884,7 @@ test('Style', async t => {
           t.mock.method(style._sources['line-source-id'], 'reload');
 
           style.setGlobalState({ lineColor: { default: 'red' } });
-          style.update({
-            globalState: style.getGlobalState()
-          });
+          style.update({});
 
           t.assert.equal(style._sources['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style._sources['line-source-id'].reload.mock.callCount(), 0);
@@ -1033,9 +1023,7 @@ test('Style', async t => {
         t.mock.method(style._sources['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
-        style.update({
-          globalState: style.getGlobalState()
-        });
+        style.update({});
 
         t.assert.ok(style._sources['circle-source-id'].resume.mock.callCount() > 0);
         t.assert.ok(style._sources['circle-source-id'].reload.mock.callCount() > 0);
@@ -1136,9 +1124,7 @@ test('Style', async t => {
         t.mock.method(style._sources['circle'], 'reload');
 
         style.setGlobalStateProperty('showCircle', true);
-        style.update({
-          globalState: style.getGlobalState()
-        });
+        style.update({});
 
         t.assert.equal(style._sources['circle'].resume.mock.callCount(), 0);
         t.assert.equal(style._sources['circle'].reload.mock.callCount(), 0);
@@ -1171,9 +1157,7 @@ test('Style', async t => {
         t.mock.method(style._sources['circle-source-id'], 'reload');
 
         style.setGlobalStateProperty('circleColor', 'red');
-        style.update({
-          globalState: style.getGlobalState()
-        });
+        style.update({});
 
         t.assert.equal(style._sources['circle-source-id'].resume.mock.callCount(), 0);
         t.assert.equal(style._sources['circle-source-id'].reload.mock.callCount(), 0);
@@ -1210,9 +1194,7 @@ test('Style', async t => {
           t.mock.method(style._sources['circle-source-id'], 'reload');
 
           style.setGlobalStateProperty('circleColor', 'red');
-          style.update({
-            globalState: style.getGlobalState()
-          });
+          style.update({});
 
           t.assert.equal(style._sources['circle-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style._sources['circle-source-id'].reload.mock.callCount(), 0);
@@ -1257,9 +1239,7 @@ test('Style', async t => {
           t.mock.method(style._sources['line-source-id'], 'reload');
 
           style.setGlobalStateProperty('lineColor', 'red');
-          style.update({
-            globalState: style.getGlobalState()
-          });
+          style.update({});
 
           t.assert.equal(style._sources['line-source-id'].resume.mock.callCount(), 0);
           t.assert.equal(style._sources['line-source-id'].reload.mock.callCount(), 0);

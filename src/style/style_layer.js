@@ -206,7 +206,6 @@ class StyleLayer extends Evented {
   }
 
   recalculate(parameters) {
-    parameters.globalState = this.#globalState;
     if (parameters.getCrossfadeParameters) {
       this._crossfadeParameters = parameters.getCrossfadeParameters();
     }
