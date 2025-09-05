@@ -531,6 +531,8 @@ class Style extends Evented {
 
     layer.setEventedParent(this, { layer: { id: id } });
 
+    layer.globalState = this._globalState;
+
     this._insertLayer(id, layer, before);
 
     if (this._removedLayers.has(id) && layer.source) {
