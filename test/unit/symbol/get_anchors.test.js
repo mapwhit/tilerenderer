@@ -1,5 +1,4 @@
 import test from 'node:test';
-import { Point } from '@mapwhit/point-geometry';
 import { getAnchors, getCenterAnchor } from '../../../src/symbol/get_anchors.js';
 
 const TILE_EXTENT = 4096;
@@ -7,12 +6,12 @@ const TILE_EXTENT = 4096;
 test('getAnchors', async t => {
   const nonContinuedLine = [];
   for (let i = 1; i < 11; i++) {
-    nonContinuedLine.push(new Point(1, i));
+    nonContinuedLine.push({ x: 1, y: i });
   }
 
   const continuedLine = [];
   for (let j = 0; j < 10; j++) {
-    continuedLine.push(new Point(1, j));
+    continuedLine.push({ x: 1, y: j });
   }
 
   const smallSpacing = 2;
@@ -149,25 +148,40 @@ test('getAnchors', async t => {
   });
 
   await t.test('use middle point as a fallback position for short non-continued lines', t => {
-    const line = [new Point(1, 1), new Point(1, 3.1)];
+    const line = [
+      { x: 1, y: 1 },
+      { x: 1, y: 3.1 }
+    ];
     const anchors = getAnchors(line, 2, Math.PI, shapedText, shapedIcon, glyphSize, 1, 1, TILE_EXTENT);
     t.assert.deepEqual(anchors, [{ x: 1, y: 2, angle: 1.5707963267948966, segment: 0 }]);
   });
 
   await t.test('getCenterAnchor', t => {
-    const line = [new Point(1, 1), new Point(1, 3.1), new Point(3, 6), new Point(4, 7)];
+    const line = [
+      { x: 1, y: 1 },
+      { x: 1, y: 3.1 },
+      { x: 3, y: 6 },
+      { x: 4, y: 7 }
+    ];
     const anchor = getCenterAnchor(line, Math.PI, shapedText, shapedIcon, glyphSize, 1);
     t.assert.deepEqual(anchor, { x: 2, y: 4, angle: 0.9670469933974603, segment: 1 });
   });
 
   await t.test('getCenterAnchor with center outside tile bounds', t => {
-    const line = [new Point(-10, -10), new Point(5, 5)];
+    const line = [
+      { x: -10, y: -10 },
+      { x: 5, y: 5 }
+    ];
     const anchor = getCenterAnchor(line, 2, Math.PI, shapedText, shapedIcon, glyphSize, 1);
     t.assert.deepEqual(anchor, { x: -2, y: -2, angle: 0.7853981633974483, segment: 0 });
   });
 
   await t.test('getCenterAnchor failing maxAngle test', t => {
-    const line = [new Point(1, 1), new Point(1, 3), new Point(3, 3)];
+    const line = [
+      { x: 1, y: 1 },
+      { x: 1, y: 3 },
+      { x: 3, y: 3 }
+    ];
     const anchor = getCenterAnchor(line, Math.PI / 4, shapedText, shapedIcon, glyphSize, 1);
     t.assert.ok(!anchor);
   });

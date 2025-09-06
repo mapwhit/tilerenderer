@@ -1,4 +1,4 @@
-import { Point } from '@mapwhit/point-geometry';
+import { dist, equals, Point } from '@mapwhit/point-geometry';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import { LineLayoutArray } from '../array_types.js';
@@ -67,21 +67,18 @@ function addLineVertex(layoutVertexBuffer, point, extrude, round, up, dir, lines
   );
 }
 
-/**
- * @private
- */
-class LineBucket {
-  constructor(options) {
-    this.zoom = options.zoom;
-    this.overscaling = options.overscaling;
-    this.layers = options.layers;
-    this.index = options.index;
+export default class LineBucket {
+  constructor({ zoom, overscaling, layers, index }) {
+    this.zoom = zoom;
+    this.overscaling = overscaling;
+    this.layers = layers;
+    this.index = index;
     this.features = [];
     this.hasPattern = false;
 
     this.layoutVertexArray = new LineLayoutArray();
     this.indexArray = new TriangleIndexArray();
-    this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, options.layers, options.zoom);
+    this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, layers, zoom);
     this.segments = new SegmentVector();
   }
 
@@ -175,24 +172,11 @@ class LineBucket {
   }
 
   addLine(vertices, feature, join, cap, miterLimit, roundLimit, index, imagePositions) {
-    let lineDistances = null;
-    if (
-      !!feature.properties &&
-      feature.properties.hasOwnProperty('mapbox_clip_start') &&
-      feature.properties.hasOwnProperty('mapbox_clip_end')
-    ) {
-      lineDistances = {
-        start: feature.properties.mapbox_clip_start,
-        end: feature.properties.mapbox_clip_end,
-        tileTotal: undefined
-      };
-    }
-
     const isPolygon = vectorTileFeatureTypes[feature.type] === 'Polygon';
 
     // If the line has duplicate vertices at the ends, adjust start/length to remove them.
-    const firstVertex = vertices[0];
-    const lastVertex = vertices[vertices.length - 1];
+    const firstVertex = Point.clone(vertices[0]);
+    const lastVertex = Point.clone(vertices[vertices.length - 1]);
     let len = vertices.length;
     while (len >= 2 && lastVertex.equals(vertices[len - 2])) {
       len--;
@@ -207,8 +191,16 @@ class LineBucket {
       return;
     }
 
-    if (lineDistances) {
-      lineDistances.tileTotal = calculateFullDistance(vertices, first, len);
+    let lineDistances = null;
+    if (
+      feature.properties?.hasOwnProperty('mapbox_clip_start') &&
+      feature.properties?.hasOwnProperty('mapbox_clip_end')
+    ) {
+      lineDistances = {
+        start: feature.properties.mapbox_clip_start,
+        end: feature.properties.mapbox_clip_end,
+        tileTotal: calculateFullDistance(vertices, first, len)
+      };
     }
 
     if (join === 'bevel') {
@@ -239,15 +231,18 @@ class LineBucket {
     }
 
     for (let i = first; i < len; i++) {
-      const nextVertex =
+      let nextVertex =
         isPolygon && i === len - 1
           ? vertices[first + 1]
           : // if the line is closed, we treat the last vertex like the first
             vertices[i + 1]; // just the next vertex
 
       // if two consecutive vertices exist, skip the current one
-      if (nextVertex && vertices[i].equals(nextVertex)) {
+      if (nextVertex && equals(vertices[i], nextVertex)) {
         continue;
+      }
+      if (nextVertex) {
+        nextVertex = Point.clone(nextVertex);
       }
 
       if (nextNormal) {
@@ -297,15 +292,15 @@ class LineBucket {
       const isSharpCorner = cosHalfAngle < COS_HALF_SHARP_CORNER && prevVertex && nextVertex;
 
       if (isSharpCorner && i > first) {
-        const prevSegmentLength = currentVertex.dist(prevVertex);
+        const prevSegmentLength = dist(currentVertex, prevVertex);
         if (prevSegmentLength > 2 * sharpCornerOffset) {
-          const newPrevVertex = currentVertex.sub(
-            currentVertex
-              .sub(prevVertex)
+          const newPrevVertex = Point.clone(currentVertex)._sub(
+            Point.clone(currentVertex)
+              ._sub(prevVertex)
               ._mult(sharpCornerOffset / prevSegmentLength)
               ._round()
           );
-          this.distance += newPrevVertex.dist(prevVertex);
+          this.distance += dist(newPrevVertex, prevVertex);
           this.addCurrentVertex(newPrevVertex, this.distance, prevNormal.mult(1), 0, 0, false, segment, lineDistances);
           prevVertex = newPrevVertex;
         }
@@ -343,7 +338,7 @@ class LineBucket {
 
       // Calculate how far along the line the currentVertex is
       if (prevVertex) {
-        this.distance += currentVertex.dist(prevVertex);
+        this.distance += dist(currentVertex, prevVertex);
       }
 
       switch (currentJoin) {
@@ -506,15 +501,15 @@ class LineBucket {
       }
 
       if (isSharpCorner && i < len - 1) {
-        const nextSegmentLength = currentVertex.dist(nextVertex);
+        const nextSegmentLength = dist(currentVertex, nextVertex);
         if (nextSegmentLength > 2 * sharpCornerOffset) {
-          const newCurrentVertex = currentVertex.add(
-            nextVertex
-              .sub(currentVertex)
+          const newCurrentVertex = Point.clone(currentVertex)._add(
+            Point.clone(nextVertex)
+              ._sub(currentVertex)
               ._mult(sharpCornerOffset / nextSegmentLength)
               ._round()
           );
-          this.distance += newCurrentVertex.dist(currentVertex);
+          this.distance += dist(newCurrentVertex, currentVertex);
           this.addCurrentVertex(
             newCurrentVertex,
             this.distance,
@@ -659,10 +654,8 @@ function calculateFullDistance(vertices, first, len) {
   let prev = vertices[first];
   for (let i = first + 1; i < len; i++) {
     const next = vertices[i];
-    total += prev.dist(next);
+    total += dist(prev, next);
     prev = next;
   }
   return total;
 }
-
-export default LineBucket;

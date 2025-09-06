@@ -162,8 +162,8 @@ class SourceCache extends Evented {
       if (zDiff !== 0) {
         return zDiff;
       }
-      const rotatedA = new Point(a.canonical.x, a.canonical.y).rotate(angle);
-      const rotatedB = new Point(b.canonical.x, b.canonical.y).rotate(angle);
+      const rotatedA = Point.clone(a.canonical)._rotate(angle);
+      const rotatedB = Point.clone(b.canonical)._rotate(angle);
       return rotatedB.y - rotatedA.y || rotatedB.x - rotatedA.x;
     }
   }
