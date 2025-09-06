@@ -35,7 +35,7 @@ function addVertex(vertexArray, x, y, nx, ny, nz, t, e) {
   );
 }
 
-class FillExtrusionBucket {
+export default class FillExtrusionBucket {
   constructor(options) {
     this.zoom = options.zoom;
     this.overscaling = options.overscaling;
@@ -240,13 +240,11 @@ class FillExtrusionBucket {
   }
 }
 
-export default FillExtrusionBucket;
-
-function isBoundaryEdge(p1, p2) {
+export function isBoundaryEdge(p1, p2) {
   return (p1.x === p2.x && (p1.x < 0 || p1.x > EXTENT)) || (p1.y === p2.y && (p1.y < 0 || p1.y > EXTENT));
 }
 
-function isEntirelyOutside(ring) {
+export function isEntirelyOutside(ring) {
   let left = true;
   let right = true;
   let top = true;
