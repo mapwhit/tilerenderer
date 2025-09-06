@@ -1,17 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import colors from 'chalk';
+
+// /test/integration
+const integrationPath = path.join(import.meta.dirname, '..');
+// mvt-fixtures -> /test/integration/node_modules/@mapbox/mvt-fixtures
+const mapboxMVTFixturesPath = path.join(
+  path.dirname(new URL(import.meta.resolve('@mapbox/mvt-fixtures')).pathname),
+  '..'
+);
 
 export default function () {
-  // /test/integration
-  const integrationPath = path.join(import.meta.dirname, '..');
-  // mvt-fixtures -> /test/integration/node_modules/@mapbox/mvt-fixtures
-  const mapboxMVTFixturesPath = path.join(
-    path.dirname(new URL(import.meta.resolve('@mapbox/mvt-fixtures')).pathname),
-    '..'
-  );
-
   function localizeURL(url) {
     return url.replace(/^local:\/\//, '');
   }
@@ -133,14 +132,14 @@ export default function () {
       const directory = integrationPath;
       json = readFileSync(path.join(directory, relativePath));
     } catch (error) {
-      console.log(colors.blue(`* ${error}`));
+      console.error(`* ${error}`);
       return;
     }
 
     try {
       json = JSON.parse(json);
     } catch (error) {
-      console.log(colors.blue(`* Error while parsing ${url}: ${error}`));
+      console.error(`* Error while parsing ${url}: ${error}`);
       return;
     }
     return json;
@@ -150,26 +149,28 @@ export default function () {
     localizeURLs: async function (style) {
       await localizeStyleURLs(style);
       if (style.metadata?.test?.operations) {
-        style.metadata.test.operations.forEach(op => {
-          if (op[0] === 'addSource') {
-            localizeSourceURLs(op[2]);
-          } else if (op[0] === 'setStyle') {
-            if (typeof op[1] === 'object') {
-              localizeStyleURLs(op[1]);
-              return;
+        await Promise.all(
+          style.metadata.test.operations.map(async op => {
+            if (op[0] === 'addSource') {
+              await localizeSourceURLs(op[2]);
+            } else if (op[0] === 'setStyle') {
+              if (typeof op[1] === 'object') {
+                await localizeStyleURLs(op[1]);
+                return;
+              }
+
+              const styleJSON = loadJSON(op[1]);
+              if (!styleJSON) {
+                return;
+              }
+
+              await localizeStyleURLs(styleJSON);
+
+              op[1] = styleJSON;
+              op[2] = { diff: false };
             }
-
-            const styleJSON = loadJSON(op[1]);
-            if (!styleJSON) {
-              return;
-            }
-
-            localizeStyleURLs(styleJSON);
-
-            op[1] = styleJSON;
-            op[2] = { diff: false };
-          }
-        });
+          })
+        );
       }
     },
     loadJSON

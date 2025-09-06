@@ -6,3 +6,5 @@ test/integration/**/actual.json
 test/integration/**/actual.png
 test/integration/**/diff.png
 test/integration/**/index*.html
+
+test/integration/*/tests/*/**/*.test.js

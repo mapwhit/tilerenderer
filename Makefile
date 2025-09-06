@@ -86,7 +86,6 @@ format: | meta/node_modules
 test: test-unit prebuild
 
 test-integration: test-query test-render
-.NOTPARALLEL: test-query test-render
 
 TEST_REPORTER ?= dot
 
@@ -94,38 +93,63 @@ DEPENDENCIES_TEST = test/node_modules
 test-unit: dependencies $(DEPENDENCIES_TEST)
 	node --test --test-reporter=$(TEST_REPORTER) "test/unit/**/*.test.js"
 
-TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
+RENDER_TESTS := "test/integration/render/tests/*/render.test.js"
+QUERY_TESTS := "test/integration/query/tests/*/query.test.js"
 
-ifdef TEST_BAIL
-  TEST_INTG_OPTS += --test-bail
+TEST_INTG_OPTS += --test-concurrency=true
+ifdef TEST_FILTER
+  TEST_INTG_OPTS += --test-name-pattern=$(TEST_FILTER)
+  # when filter is provided it is more efficient to run main test file
+  RENDER_TESTS := "test/integration/render/tests/render.test.js"
+  QUERY_TESTS := "test/integration/query/tests/query.test.js"
+endif
+ifdef TEST_REPORTER
+  TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
 endif
 
-test-render: dependencies dependencies-integration
-	node test/render.test.js $(TEST_INTG_OPTS)
+test-render: dependencies dependencies-integration render-test-files
+	node --test $(TEST_INTG_OPTS) $(RENDER_TESTS)
 
-test-render-slow: dependencies dependencies-integration
-	find test/integration/render/tests -name style.json -printf '%P\n' | \
-		sed -e 's|/style.json||' | \
-		xargs -L 200 node --disable-warning=ExperimentalWarning test/render.test.js $(TEST_INTG_OPTS)
-
-test-query: dependencies dependencies-integration
-	node test/query.test.js $(TEST_INTG_OPTS)
+test-query: dependencies dependencies-integration query-test-files
+	node --test $(TEST_INTG_OPTS) $(QUERY_TESTS)
 
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
-.PHONY: dependencies-integration test test-integration test-unit test-render test-query
+RENDER_TEST_FILES := $(shell find test/integration/render/tests -type d -maxdepth 1)
+render-test-files: $(patsubst %, %/render.test.js, $(RENDER_TEST_FILES))
+
+%/render.test.js: test/integration/lib/render/template.js
+	cp $^ $@
+
+.SECONDARY: render-test-files
+
+QUERY_TEST_FILES := $(shell find test/integration/query/tests -type d -maxdepth 1)
+query-test-files: $(patsubst %, %/query.test.js, $(QUERY_TEST_FILES))
+
+%/query.test.js: test/integration/lib/query/template.js
+	cp $^ $@
+
+.SECONDARY: query-test-files
+
+test-coverage: dependencies dependencies-integration render-test-files query-test-files
+	node --test --experimental-test-coverage \
+		--test-concurrency=true \
+		"test/unit/**/*.test.js" \
+		"test/integration/render/tests/*/render.test.js" \
+		"test/integration/query/tests/*/query.test.js"
+
+.PHONY: dependencies-integration test test-integration test-unit test-render test-query test-coverage
 
 ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
-distclean: clean
+distclean: clean clean-test
 	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
 
 clean:
 	rm -fr build
 
 clean-test:
-	find test/integration/*/tests -mindepth 2 -type d -not -exec test -e "{}/style.json" \; -print
-	# | xargs -t rm -r
+	git clean --quiet -X -f test/integration/*/tests
 
 .PHONY: clean clean-test distclean
 
