@@ -2,4 +2,4 @@
 
 import run from '#query-run';
 
-run(import.meta.dirname);
+run(import.meta.dirname, { prefix: true });
