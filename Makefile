@@ -116,19 +116,19 @@ test-query: dependencies dependencies-integration query-test-files
 DEPENDENCIES_INTEGRATION = test/integration/node_modules
 dependencies-integration: | $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 
-RENDER_TEST_FILES := $(shell find test/integration/render/tests -type d -maxdepth 1)
+RENDER_TEST_FILES := $(shell find test/integration/render/tests -mindepth 1 -maxdepth 1 -type d)
 render-test-files: $(patsubst %, %/render.test.js, $(RENDER_TEST_FILES))
 
 %/render.test.js: test/integration/lib/render/template.js
-	cp $^ $@
+	@cp $^ $@
 
 .SECONDARY: render-test-files
 
-QUERY_TEST_FILES := $(shell find test/integration/query/tests -type d -maxdepth 1)
+QUERY_TEST_FILES := $(shell find test/integration/query/tests -mindepth 1 -maxdepth 1 -type d)
 query-test-files: $(patsubst %, %/query.test.js, $(QUERY_TEST_FILES))
 
 %/query.test.js: test/integration/lib/query/template.js
-	cp $^ $@
+	@cp $^ $@
 
 .SECONDARY: query-test-files
 
