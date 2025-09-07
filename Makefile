@@ -100,8 +100,8 @@ TEST_INTG_OPTS += --test-concurrency=true
 ifdef TEST_FILTER
   TEST_INTG_OPTS += --test-name-pattern=$(TEST_FILTER)
   # when filter is provided it is more efficient to run main test file
-  RENDER_TESTS := "test/integration/render/tests/render.test.js"
-  QUERY_TESTS := "test/integration/query/tests/query.test.js"
+  RENDER_TESTS := "test/integration/render/tests/render-all.test.js"
+  QUERY_TESTS := "test/integration/query/tests/query-all.test.js"
 endif
 ifdef TEST_REPORTER
   TEST_INTG_OPTS += --test-reporter=$(TEST_REPORTER)
