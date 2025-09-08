@@ -1,6 +1,5 @@
 import test from 'node:test';
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
-import { Point } from '@mapwhit/point-geometry';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { setType } from '../../../src/source/source.js';
@@ -1209,7 +1208,17 @@ test('SourceCache.tilesIn', async t => {
     const sourceCache = createSourceCache({ noLoad: true });
     sourceCache.transform = tr;
     sourceCache.onAdd();
-    t.assert.deepEqual(sourceCache.tilesIn([new Point(0, 0), new Point(512, 256)], 10, tr), []);
+    t.assert.deepEqual(
+      sourceCache.tilesIn(
+        [
+          { x: 0, y: 0 },
+          { x: 512, y: 256 }
+        ],
+        10,
+        tr
+      ),
+      []
+    );
   });
 
   function round(queryGeometry) {
@@ -1243,7 +1252,14 @@ test('SourceCache.tilesIn', async t => {
         ]);
 
         transform._calcMatrices();
-        const tiles = sourceCache.tilesIn([new Point(0, 0), new Point(512, 256)], 1, transform);
+        const tiles = sourceCache.tilesIn(
+          [
+            { x: 0, y: 0 },
+            { x: 512, y: 256 }
+          ],
+          1,
+          transform
+        );
 
         tiles.sort((a, b) => {
           return a.tile.tileID.canonical.x - b.tile.tileID.canonical.x;
@@ -1302,7 +1318,14 @@ test('SourceCache.tilesIn', async t => {
           new OverscaledTileID(2, 0, 2, 0, 0).key
         ]);
 
-        const tiles = sourceCache.tilesIn([new Point(0, 0), new Point(1024, 512)], 1, transform);
+        const tiles = sourceCache.tilesIn(
+          [
+            { x: 0, y: 0 },
+            { x: 1024, y: 512 }
+          ],
+          1,
+          transform
+        );
 
         tiles.sort((a, b) => {
           return a.tile.tileID.canonical.x - b.tile.tileID.canonical.x;
