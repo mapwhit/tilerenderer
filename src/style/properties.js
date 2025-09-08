@@ -85,7 +85,8 @@ export class PropertyValue {
 
   set globalState(globalState) {
     this.expression.evaluate = (globals, feature, featureState) => {
-      globals.globalState = globalState;
+      // passing an empty object as evaluate() for `global-state` relies on it existing
+      globals.globalState ??= globalState ?? {};
       return this.#evaluate.call(this.expression, globals, feature, featureState);
     };
   }
@@ -317,7 +318,7 @@ export class Transitioning {
  * @private
  */
 export class Layout {
-  #globalState = {}; // reference to global state
+  #globalState; // reference to global state
   constructor(properties) {
     this._properties = properties;
     this._values = Object.create(properties.defaultPropertyValues);
