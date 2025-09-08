@@ -1326,8 +1326,7 @@ class Map extends Camera {
         now,
         fadeDuration: this._fadeDuration,
         zoomHistory: this.style.zoomHistory,
-        transition: this.style.getTransition(),
-        globalState: this.style.getGlobalState()
+        transition: this.style.getTransition()
       });
 
       const factor = parameters.crossFadingFactor();

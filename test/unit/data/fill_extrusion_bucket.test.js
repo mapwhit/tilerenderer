@@ -4,15 +4,18 @@ import { FillExtrusionStyleLayer } from '../../../src/style/style_layer/fill_ext
 import { createPopulateOptions, getFeaturesFromLayer, loadVectorTile } from '../../util/tile.js';
 
 function createFillExtrusionBucket({ id, layout, paint, globalState }) {
-  const layer = new FillExtrusionStyleLayer({
-    id,
-    type: 'fill-extrusion',
-    layout,
-    paint
-  });
-  layer.recalculate({ zoom: 0, zoomHistory: {}, globalState });
+  const layer = new FillExtrusionStyleLayer(
+    {
+      id,
+      type: 'fill-extrusion',
+      layout,
+      paint
+    },
+    globalState
+  );
+  layer.recalculate({ zoom: 0, zoomHistory: {} });
 
-  return new FillExtrusionBucket({ layers: [layer], globalState });
+  return new FillExtrusionBucket({ layers: [layer] });
 }
 
 test('FillExtrusionBucket', async t => {

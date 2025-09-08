@@ -63,7 +63,7 @@ const filterSpec = {
  * @param {Array} filter mapbox gl filter
  * @returns {Function} filter-evaluating function
  */
-export default function createFilter(filter) {
+export default function createFilter(filter, globalState) {
   if (filter === null || filter === undefined) {
     return addGlobalStateRefs(() => true);
   }
@@ -72,13 +72,15 @@ export default function createFilter(filter) {
     filter = convertFilter(filter);
   }
 
-  const compiled = createExpression(filter, filterSpec);
+  const compiled = createExpression(filter, filterSpec, globalState);
   if (compiled.result === 'error') {
     throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
   }
-  return addGlobalStateRefs(
-    (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
-    () => findGlobalStateRefs(compiled.value.expression)
+  return Object.assign(
+    addGlobalStateRefs(
+      (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
+      () => findGlobalStateRefs(compiled.value.expression)
+    )
   );
 }
 
