@@ -141,6 +141,11 @@ test-coverage: dependencies dependencies-integration render-test-files query-tes
 
 .PHONY: dependencies-integration test test-integration test-unit test-render test-query test-coverage
 
+update-test-fixtures: export UPDATE=1
+update-test-fixtures: test-integration format
+
+.PHONY: update-test-fixtures
+
 ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 distclean: clean clean-test
 	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
