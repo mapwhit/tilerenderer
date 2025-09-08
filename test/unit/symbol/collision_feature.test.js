@@ -1,5 +1,4 @@
 import test from 'node:test';
-import { Point } from '@mapwhit/point-geometry';
 import { CollisionBoxArray } from '../../../src/data/array_types.js';
 import Anchor from '../../../src/symbol/anchor.js';
 import CollisionFeature from '../../../src/symbol/collision_feature.js';
@@ -15,7 +14,7 @@ test('CollisionFeature', async t => {
   };
 
   await t.test('point label', t => {
-    const point = new Point(500, 0);
+    const point = { x: 500, y: 0 };
     const anchor = new Anchor(point.x, point.y, 0, undefined);
 
     const cf = new CollisionFeature(collisionBoxArray, [point], anchor, 0, 0, 0, shapedText, 1, 0, false, 1);
@@ -29,7 +28,12 @@ test('CollisionFeature', async t => {
   });
 
   await t.test('line label', t => {
-    const line = [new Point(0, 0), new Point(500, 100), new Point(510, 90), new Point(700, 0)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 500, y: 100 },
+      { x: 510, y: 90 },
+      { x: 700, y: 0 }
+    ];
     const anchor = new Anchor(505, 95, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     const boxPoints = pluckAnchorPoints(cf);
@@ -58,7 +62,12 @@ test('CollisionFeature', async t => {
   });
 
   await t.test('boxes for handling pitch underzooming', t => {
-    const line = [new Point(0, 0), new Point(500, 100), new Point(510, 90), new Point(700, 0)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 500, y: 100 },
+      { x: 510, y: 90 },
+      { x: 700, y: 0 }
+    ];
     const anchor = new Anchor(505, 95, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     const distancesToAnchor = pluckDistancesToAnchor(cf);
@@ -69,7 +78,13 @@ test('CollisionFeature', async t => {
   });
 
   await t.test('vertical line label', t => {
-    const line = [new Point(0, 0), new Point(0, 100), new Point(0, 111), new Point(0, 112), new Point(0, 200)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 0, y: 100 },
+      { x: 0, y: 111 },
+      { x: 0, y: 112 },
+      { x: 0, y: 200 }
+    ];
     const anchor = new Anchor(0, 110, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     const boxPoints = pluckAnchorPoints(cf);
@@ -100,7 +115,12 @@ test('CollisionFeature', async t => {
       bottom: -10
     };
 
-    const line = [new Point(0, 0), new Point(500, 100), new Point(510, 90), new Point(700, 0)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 500, y: 100 },
+      { x: 510, y: 90 },
+      { x: 700, y: 0 }
+    ];
     const anchor = new Anchor(505, 95, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     t.assert.equal(cf.boxEndIndex - cf.boxStartIndex, 0);
@@ -114,7 +134,12 @@ test('CollisionFeature', async t => {
       bottom: -10
     };
 
-    const line = [new Point(0, 0), new Point(500, 100), new Point(510, 90), new Point(700, 0)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 500, y: 100 },
+      { x: 510, y: 90 },
+      { x: 700, y: 0 }
+    ];
     const anchor = new Anchor(505, 95, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     t.assert.equal(cf.boxEndIndex - cf.boxStartIndex, 0);
@@ -128,14 +153,22 @@ test('CollisionFeature', async t => {
       bottom: 10.00001
     };
 
-    const line = [new Point(0, 0), new Point(500, 100), new Point(510, 90), new Point(700, 0)];
+    const line = [
+      { x: 0, y: 0 },
+      { x: 500, y: 100 },
+      { x: 510, y: 90 },
+      { x: 700, y: 0 }
+    ];
     const anchor = new Anchor(505, 95, 0, 1);
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shapedText, 1, 0, true, 1);
     t.assert.ok(cf.boxEndIndex - cf.boxStartIndex < 45);
   });
 
   await t.test('height is big enough that first box can be placed *after* anchor', t => {
-    const line = [new Point(3103, 4068), new Point(3225.6206896551726, 4096)];
+    const line = [
+      { x: 3103, y: 4068 },
+      { x: 3225.6206896551726, y: 4096 }
+    ];
     const anchor = new Anchor(3144.5959947505007, 4077.498298013894, 0.22449735614507618, 0);
     const shaping = { right: 256, left: 0, bottom: 256, top: 0 };
     const cf = new CollisionFeature(collisionBoxArray, line, anchor, 0, 0, 0, shaping, 1, 0, true, 1);

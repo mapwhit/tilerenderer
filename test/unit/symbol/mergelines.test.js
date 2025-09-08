@@ -1,5 +1,4 @@
 import test from 'node:test';
-import { Point } from '@mapwhit/point-geometry';
 import mergeLines from '../../../src/symbol/mergelines.js';
 
 function makeFeatures(lines) {
@@ -7,7 +6,7 @@ function makeFeatures(lines) {
   for (const line of lines) {
     const points = [];
     for (let j = 1; j < line.length; j++) {
-      points.push(new Point(line[j], 0));
+      points.push({ x: line[j], y: 0 });
     }
     features.push({ text: line[0], geometry: [points] });
   }
