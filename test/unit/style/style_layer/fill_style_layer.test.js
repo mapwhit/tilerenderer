@@ -1,16 +1,12 @@
 import test from 'node:test';
-import { Point } from '@mapwhit/point-geometry';
 import { getIntersectionDistance } from '../../../../src/style/style_layer/fill_extrusion_style_layer.js';
 
 test('getIntersectionDistance', async t => {
-  const queryPoint = [new Point(100, 100)];
-  const z = 3;
-  const a = new Point(100, -90);
-  const b = new Point(110, 110);
-  const c = new Point(-110, 110);
-  a.z = z;
-  b.z = z;
-  c.z = z;
+  const queryPoint = [{ x: 100, y: 100 }];
+  const z = 7;
+  const a = { x: 100, y: -90, z };
+  const b = { x: 110, y: 110, z };
+  const c = { x: -110, y: 110, z };
 
   await t.test('one point', t => {
     const projectedFace = [a, a];

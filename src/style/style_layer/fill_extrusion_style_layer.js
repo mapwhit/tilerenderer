@@ -1,6 +1,6 @@
 import glMatrix from '@mapbox/gl-matrix';
 import { polygonIntersectsMultiPolygon, polygonIntersectsPolygon } from '@mapwhit/geometry';
-import { Point } from '@mapwhit/point-geometry';
+import { clone, equals, sub } from '@mapwhit/point-geometry';
 import FillExtrusionBucket from '../../data/bucket/fill_extrusion_bucket.js';
 import { translate, translateDistance } from '../query_utils.js';
 import StyleLayer from '../style_layer.js';
@@ -45,11 +45,9 @@ export class FillExtrusionStyleLayer extends StyleLayer {
     const height = this._paint.get('fill-extrusion-height').evaluate(feature, featureState);
     const base = this._paint.get('fill-extrusion-base').evaluate(feature, featureState);
 
-    const projectedQueryGeometry = projectQueryGeometry(translatedPolygon, pixelPosMatrix, transform, 0);
+    const projectedQueryGeometry = projectQueryGeometry(translatedPolygon, pixelPosMatrix, 0);
 
-    const projected = projectExtrusion(geometry, base, height, pixelPosMatrix);
-    const projectedBase = projected[0];
-    const projectedTop = projected[1];
+    const { projectedBase, projectedTop } = projectExtrusion(geometry, base, height, pixelPosMatrix);
     return checkIntersection(projectedBase, projectedTop, projectedQueryGeometry);
   }
 }
@@ -72,7 +70,7 @@ export function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
     let i = 0;
     const a = projectedFace[i++];
     let b;
-    while (!b || a.equals(b)) {
+    while (!b || equals(a, b)) {
       b = projectedFace[i++];
       if (!b) {
         return Number.POSITIVE_INFINITY;
@@ -84,9 +82,9 @@ export function getIntersectionDistance(projectedQueryGeometry, projectedFace) {
       const c = projectedFace[i];
       const p = projectedQueryGeometry[0];
 
-      const ab = b.sub(a);
-      const ac = c.sub(a);
-      const ap = p.sub(a);
+      const ab = sub(clone(b), a);
+      const ac = sub(clone(c), a);
+      const ap = sub(clone(p), a);
 
       const dotABAB = dot(ab, ab);
       const dotABAC = dot(ab, ac);
@@ -153,8 +151,8 @@ function checkIntersection(projectedBase, projectedTop, projectedQueryGeometry) 
  * performance improvement.
  */
 function projectExtrusion(geometry, zBase, zTop, m) {
-  const projectedBase = [];
-  const projectedTop = [];
+  const projectedBase = new Array(geometry.length);
+  const projectedTop = new Array(geometry.length);
 
   const baseXZ = m[8] * zBase;
   const baseYZ = m[9] * zBase;
@@ -165,12 +163,12 @@ function projectExtrusion(geometry, zBase, zTop, m) {
   const topZZ = m[10] * zTop;
   const topWZ = m[11] * zTop;
 
-  for (const r of geometry) {
-    const ringBase = [];
-    const ringTop = [];
-    for (const p of r) {
-      const x = p.x;
-      const y = p.y;
+  for (let i = 0; i < geometry.length; i++) {
+    const ring = geometry[i];
+    const ringBase = new Array(ring.length);
+    const ringTop = new Array(ring.length);
+    for (let j = 0; j < ring.length; j++) {
+      const { x, y } = ring[j];
 
       const sX = m[0] * x + m[4] * y + m[12];
       const sY = m[1] * x + m[5] * y + m[13];
@@ -181,32 +179,27 @@ function projectExtrusion(geometry, zBase, zTop, m) {
       const baseY = sY + baseYZ;
       const baseZ = sZ + baseZZ;
       const baseW = sW + baseWZ;
+      ringBase[j] = { x: baseX / baseW, y: baseY / baseW, z: baseZ / baseW };
 
       const topX = sX + topXZ;
       const topY = sY + topYZ;
       const topZ = sZ + topZZ;
       const topW = sW + topWZ;
-
-      const b = new Point(baseX / baseW, baseY / baseW);
-      b.z = baseZ / baseW;
-      ringBase.push(b);
-
-      const t = new Point(topX / topW, topY / topW);
-      t.z = topZ / topW;
-      ringTop.push(t);
+      ringTop[j] = { x: topX / topW, y: topY / topW, z: topZ / topW };
     }
-    projectedBase.push(ringBase);
-    projectedTop.push(ringTop);
+    projectedBase[i] = ringBase;
+    projectedTop[i] = ringTop;
   }
-  return [projectedBase, projectedTop];
+  return { projectedBase, projectedTop };
 }
 
-function projectQueryGeometry(queryGeometry, pixelPosMatrix, transform, z) {
-  const projectedQueryGeometry = [];
-  for (const p of queryGeometry) {
-    const v = [p.x, p.y, z, 1];
+function projectQueryGeometry(queryGeometry, pixelPosMatrix, z) {
+  const projectedQueryGeometry = new Array(queryGeometry.length);
+  for (let i = 0; i < queryGeometry.length; i++) {
+    const { x, y } = queryGeometry[i];
+    const v = [x, y, z, 1];
     vec4.transformMat4(v, v, pixelPosMatrix);
-    projectedQueryGeometry.push(new Point(v[0] / v[3], v[1] / v[3]));
+    projectedQueryGeometry[i] = { x: v[0] / v[3], y: v[1] / v[3] };
   }
   return projectedQueryGeometry;
 }
