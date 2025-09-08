@@ -5,7 +5,7 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [ "removeLayer", "circle" ],
+        ["removeLayer", "circle"],
         [
           "addLayer",
           {
@@ -14,9 +14,7 @@
             "source": "geojson"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -28,23 +26,22 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
   "sprite": "local://sprites/sprite",
-  "layers": [{
-    "id": "circle",
-    "type": "symbol",
-    "source": "geojson",
-    "layout": {
-      "icon-image": "dot.sdf"
-    },
-    "paint": {
-      "icon-color": "red"
+  "layers": [
+    {
+      "id": "circle",
+      "type": "symbol",
+      "source": "geojson",
+      "layout": {
+        "icon-image": "dot.sdf"
+      },
+      "paint": {
+        "icon-color": "red"
+      }
     }
-  }]
+  ]
 }

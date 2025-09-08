@@ -2,31 +2,22 @@
   "version": 8,
   "metadata": {
     "test": {
-        "fadeDuration": 100,
-        "width": 512,
-        "height": 512,
-        "description": "Line symbols are placed differently at different zoom levels: this test crosses a zoom level and renders 80% through the cross-fade. The 'wait' logic is tricky here: 1st 'wait 100' is to trigger placement at z2 after tiles have loaded, 2nd 'wait 100' is to allow z2 labels to fade in, 'wait' after 'setZoom' runs until the z3 tiles load (but doesn't elapse any time on the fake test clock), next 'wait 100' triggers a placement using the z3 and z2 tiles together, final 'wait 80' actually exercises the cross fade.",
-        "operations": [
-          ["wait", 100],
-          ["wait", 100],
-          [
-            "setZoom",
-            3
-          ],
-          ["wait"],
-          [
-            "wait",
-            100
-          ],
-          [
-            "wait",
-            80
-          ]
-        ]
+      "fadeDuration": 100,
+      "width": 512,
+      "height": 512,
+      "description": "Line symbols are placed differently at different zoom levels: this test crosses a zoom level and renders 80% through the cross-fade. The 'wait' logic is tricky here: 1st 'wait 100' is to trigger placement at z2 after tiles have loaded, 2nd 'wait 100' is to allow z2 labels to fade in, 'wait' after 'setZoom' runs until the z3 tiles load (but doesn't elapse any time on the fake test clock), next 'wait 100' triggers a placement using the z3 and z2 tiles together, final 'wait 80' actually exercises the cross fade.",
+      "operations": [
+        ["wait", 100],
+        ["wait", 100],
+        ["setZoom", 3],
+        ["wait"],
+        ["wait", 100],
+        ["wait", 80]
+      ]
     }
   },
   "zoom": 2,
-  "center": [-14.41400, 39.09187],
+  "center": [-14.414, 39.09187],
   "sources": {
     "mapbox": {
       "type": "geojson",
@@ -41,14 +32,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.4195556640625,
-                  39.091699613104595
-                ],
-                [
-                  102.3046875,
-                  39.36827914916014
-                ]
+                [-14.4195556640625, 39.091699613104595],
+                [102.3046875, 39.36827914916014]
               ]
             }
           },
@@ -60,14 +45,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.403076171875,
-                  39.10022600175347
-                ],
-                [
-                  103.35937499999999,
-                  65.80277639340238
-                ]
+                [-14.403076171875, 39.10022600175347],
+                [103.35937499999999, 65.80277639340238]
               ]
             }
           },
@@ -79,14 +58,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.414062499999998,
-                  39.091699613104595
-                ],
-                [
-                  -14.765625,
-                  82.21421714106776
-                ]
+                [-14.414062499999998, 39.091699613104595],
+                [-14.765625, 82.21421714106776]
               ]
             }
           },
@@ -98,14 +71,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.408569335937498,
-                  39.091699613104595
-                ],
-                [
-                  -130.78125,
-                  39.095962936305476
-                ]
+                [-14.408569335937498, 39.091699613104595],
+                [-130.78125, 39.095962936305476]
               ]
             }
           },
@@ -117,14 +84,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.414062499999998,
-                  39.095962936305476
-                ],
-                [
-                  -16.5234375,
-                  -58.81374171570779
-                ]
+                [-14.414062499999998, 39.095962936305476],
+                [-16.5234375, -58.81374171570779]
               ]
             }
           },
@@ -136,14 +97,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.4195556640625,
-                  39.10022600175347
-                ],
-                [
-                  -130.4296875,
-                  64.47279382008166
-                ]
+                [-14.4195556640625, 39.10022600175347],
+                [-130.4296875, 64.47279382008166]
               ]
             }
           },
@@ -155,14 +110,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.4195556640625,
-                  39.0831721934762
-                ],
-                [
-                  33.75,
-                  81.87364125482827
-                ]
+                [-14.4195556640625, 39.0831721934762],
+                [33.75, 81.87364125482827]
               ]
             }
           },
@@ -174,14 +123,8 @@
             "geometry": {
               "type": "LineString",
               "coordinates": [
-                [
-                  -14.447021484374998,
-                  39.104488809440475
-                ],
-                [
-                  -66.4453125,
-                  82.26169873683153
-                ]
+                [-14.447021484374998, 39.104488809440475],
+                [-66.4453125, 82.26169873683153]
               ]
             }
           }
@@ -207,14 +150,15 @@
         "symbol-placement": "line",
         "symbol-spacing": 100,
         "text-allow-overlap": false,
-        "text-font": [ "NotoCJK" ]
+        "text-font": ["NotoCJK"]
       }
-    }, {
+    },
+    {
       "id": "lines",
       "type": "line",
       "source": "mapbox",
       "paint": {
-          "line-opacity": 0.25
+        "line-opacity": 0.25
       }
     }
   ]

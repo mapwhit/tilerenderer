@@ -18,10 +18,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -80,
-                0
-              ]
+              "coordinates": [-80, 0]
             }
           }
         ]
@@ -43,10 +40,7 @@
       "source": "mapbox",
       "layout": {
         "text-field": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-max-width": 0,
         "text-anchor": "left"
       }

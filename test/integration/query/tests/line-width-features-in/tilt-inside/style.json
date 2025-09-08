@@ -4,22 +4,10 @@
     "test": {
       "width": 500,
       "height": 500,
-      "queryGeometry": [
-        [
-          388,
-          470
-        ],
-        [
-          438,
-          490
-        ]
-      ]
+      "queryGeometry": [[388, 470], [438, 490]]
     }
   },
-  "center": [
-    -74.522,
-    39.92
-  ],
+  "center": [-74.522, 39.92],
   "pitch": 50,
   "zoom": 9,
   "sources": {
@@ -27,9 +15,7 @@
       "type": "vector",
       "maxzoom": 7,
       "minzoom": 7,
-      "tiles": [
-        "local://tiles/counties-{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/counties-{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [

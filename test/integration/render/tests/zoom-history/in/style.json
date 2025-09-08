@@ -6,23 +6,11 @@
       "height": 256,
       "diff": 0.00025,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          0
-        ],
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          0.5
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setZoom", 0],
+        ["wait"],
+        ["setZoom", 0.5],
+        ["wait"]
       ]
     }
   },
@@ -32,16 +20,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            45,
-            -45
-          ],
-          [
-            -45,
-            45
-          ]
-        ]
+        "coordinates": [[45, -45], [-45, 45]]
       }
     }
   },
@@ -52,10 +31,7 @@
       "source": "source",
       "paint": {
         "line-width": {
-          "stops": [
-            [0, 8],
-            [1, 16]
-          ]
+          "stops": [[0, 8], [1, 16]]
         },
         "line-dasharray": [1, 1],
         "line-color": "black"
@@ -67,10 +43,7 @@
       "source": "source",
       "paint": {
         "line-width": {
-          "stops": [
-            [0, 4],
-            [1, 8]
-          ]
+          "stops": [[0, 4], [1, 8]]
         },
         "line-dasharray": [2, 2],
         "line-color": "red"

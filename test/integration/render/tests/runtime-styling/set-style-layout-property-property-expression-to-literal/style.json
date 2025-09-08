@@ -25,10 +25,7 @@
                       },
                       "geometry": {
                         "type": "Point",
-                        "coordinates": [
-                          -10,
-                          0
-                        ]
+                        "coordinates": [-10, 0]
                       }
                     },
                     {
@@ -38,10 +35,7 @@
                       },
                       "geometry": {
                         "type": "Point",
-                        "coordinates": [
-                          10,
-                          0
-                        ]
+                        "coordinates": [10, 0]
                       }
                     }
                   ]
@@ -62,9 +56,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -84,10 +76,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -97,10 +86,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -115,10 +101,7 @@
       "source": "geojson",
       "layout": {
         "icon-image": "oneway",
-        "icon-rotate": [
-          "get",
-          "rotate"
-        ]
+        "icon-rotate": ["get", "rotate"]
       }
     }
   ]

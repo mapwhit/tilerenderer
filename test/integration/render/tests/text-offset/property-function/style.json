@@ -15,27 +15,21 @@
           {
             "type": "Feature",
             "properties": {
-              "offset": [0,1]
+              "offset": [0, 1]
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
             "properties": {
-              "offset": [1,-1]
+              "offset": [1, -1]
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -56,10 +50,7 @@
           "type": "identity",
           "property": "offset"
         },
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": 10
       },
       "paint": {

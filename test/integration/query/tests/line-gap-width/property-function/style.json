@@ -4,10 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "queryGeometry": [
-        32,
-        32
-      ]
+      "queryGeometry": [32, 32]
     }
   },
   "sources": {
@@ -18,23 +15,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "gap": 20 },
+            "properties": {"gap": 20},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [10, 10],
-                [10, -10]
-              ]
+              "coordinates": [[10, 10], [10, -10]]
             }
-          }, {
+          },
+          {
             "type": "Feature",
-            "properties": { "gap": 1 },
+            "properties": {"gap": 1},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [-10, 10],
-                [-10, -10]
-              ]
+              "coordinates": [[-10, 10], [-10, -10]]
             }
           }
         ]
@@ -47,7 +39,7 @@
       "type": "line",
       "source": "geojson",
       "paint": {
-        "line-gap-width": { "property": "gap", "type": "identity" },
+        "line-gap-width": {"property": "gap", "type": "identity"},
         "line-width": 5
       },
       "interactive": true

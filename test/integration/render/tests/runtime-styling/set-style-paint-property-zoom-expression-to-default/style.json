@@ -22,9 +22,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -39,13 +37,8 @@
       "paint": {
         "background-color": [
           "interpolate",
-          [
-            "exponential",
-            1
-          ],
-          [
-            "zoom"
-          ],
+          ["exponential", 1],
+          ["zoom"],
           0,
           "blue",
           10,

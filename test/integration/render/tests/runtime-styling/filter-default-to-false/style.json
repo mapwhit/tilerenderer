@@ -4,20 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "setFilter",
-          "symbol",
-          [
-            "==",
-            "property",
-            "b"
-          ]
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["setFilter", "symbol", ["==", "property", "b"]], ["wait"]]
     }
   },
   "transition": {
@@ -33,10 +20,7 @@
         },
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }

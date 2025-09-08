@@ -11,9 +11,7 @@
   "sources": {
     "source": {
       "type": "raster-dem",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.terrain.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.terrain.png"],
       "maxzoom": 15,
       "tileSize": 256
     }
@@ -32,16 +30,7 @@
       "source": "source",
       "paint": {
         "hillshade-highlight-color": {
-          "stops": [
-            [
-              10,
-              "#0473c0"
-            ],
-            [
-              12,
-              "#04c04c"
-            ]
-          ]
+          "stops": [[10, "#0473c0"], [12, "#04c04c"]]
         }
       }
     }

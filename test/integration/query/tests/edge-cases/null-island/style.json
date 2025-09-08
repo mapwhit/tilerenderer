@@ -5,32 +5,17 @@
       "width": 512,
       "height": 512,
       "debug": true,
-      "queryGeometry": [
-        [
-          0,
-          0
-        ],
-        [
-          512,
-          512
-        ]
-      ]
+      "queryGeometry": [[0, 0], [512, 512]]
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 1,
   "sources": {
     "geojson": {
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

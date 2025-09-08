@@ -15,21 +15,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "x": 0 },
+            "properties": {"x": 0},
             "geometry": {
               "type": "Point",
-              "coordinates": [ -10, 0 ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": 5 },
+            "properties": {"x": 5},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -44,10 +41,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "A",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": ["match", ["number", ["get", "x"]], 5, 24, 12],
         "text-ignore-placement": true,
         "text-allow-overlap": true
@@ -59,10 +53,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "A",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": [
           "interpolate",
           ["cubic-bezier", 0, 0.9, 0.1, 1],
@@ -70,7 +61,7 @@
           0,
           2,
           1,
-          [ "match", ["number", ["get", "x"]], 5, 24, 12]
+          ["match", ["number", ["get", "x"]], 5, 24, 12]
         ],
         "text-offset": [0, 1],
         "text-ignore-placement": true,

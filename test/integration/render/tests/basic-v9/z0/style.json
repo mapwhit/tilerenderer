@@ -6,10 +6,7 @@
       "height": 512,
       "center": [0, 0],
       "zoom": 0,
-      "operations": [
-        ["setStyle", "local://styles/basic-v9.json"],
-        ["wait"]
-      ]
+      "operations": [["setStyle", "local://styles/basic-v9.json"], ["wait"]]
     }
   },
   "sources": {},

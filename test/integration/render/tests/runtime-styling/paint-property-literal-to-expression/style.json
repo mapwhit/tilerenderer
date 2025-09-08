@@ -9,24 +9,9 @@
           "setPaintProperty",
           "background",
           "background-color",
-          [
-            "interpolate",
-            [
-              "exponential",
-              1
-            ],
-            [
-              "zoom"
-            ],
-            0,
-            "blue",
-            10,
-            "white"
-          ]
+          ["interpolate", ["exponential", 1], ["zoom"], 0, "blue", 10, "white"]
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

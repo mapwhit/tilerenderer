@@ -12,48 +12,21 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            -10
-          ],
-          [
-            10,
-            -10
-          ]
-        ]
+        "coordinates": [[-10, -10], [10, -10]]
       }
     },
     "b": {
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            0
-          ],
-          [
-            10,
-            0
-          ]
-        ]
+        "coordinates": [[-10, 0], [10, 0]]
       }
     },
     "c": {
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            10
-          ],
-          [
-            10,
-            10
-          ]
-        ]
+        "coordinates": [[-10, 10], [10, 10]]
       }
     }
   },

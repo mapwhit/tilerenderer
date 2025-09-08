@@ -13,28 +13,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }
@@ -46,10 +25,7 @@
       "source": "geojson",
       "paint": {
         "fill-antialias": false,
-        "fill-translate": [
-          10,
-          10
-        ],
+        "fill-translate": [10, 10],
         "fill-translate-anchor": "map"
       }
     }

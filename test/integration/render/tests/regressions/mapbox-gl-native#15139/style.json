@@ -6,11 +6,8 @@
       "height": 100
     }
   },
-  "center": [
-    11.582393,
-    48.187820
-  ],
-  "zoom": 19.420100,
+  "center": [11.582393, 48.18782],
+  "zoom": 19.4201,
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",
   "sources": {
     "geojson": {
@@ -20,22 +17,10 @@
         "geometry": {
           "type": "LineString",
           "coordinates": [
-            [
-              11.581739,
-              48.187768
-            ],
-            [
-              11.582435,
-              48.187821
-            ],
-            [
-              11.582301,
-              48.187832
-            ],
-            [
-              11.581708,
-              48.187823
-            ]
+            [11.581739, 48.187768],
+            [11.582435, 48.187821],
+            [11.582301, 48.187832],
+            [11.581708, 48.187823]
           ]
         }
       }
@@ -60,10 +45,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "Frankfurter Ring",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": 24,
         "symbol-placement": "line-center"
       }

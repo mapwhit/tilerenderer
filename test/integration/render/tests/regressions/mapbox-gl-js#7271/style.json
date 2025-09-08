@@ -6,32 +6,12 @@
       "height": 64
     }
   },
-  "center": [
-      -10,
-      0
-  ],
+  "center": [-10, 0],
   "zoom": 0,
   "sources": {
     "image": {
       "type": "image",
-      "coordinates": [
-        [
-          -270,
-          -80
-        ],
-        [
-          90,
-          -80
-        ],
-        [
-          90,
-          80
-        ],
-        [
-          -270,
-          80
-        ]
-      ],
+      "coordinates": [[-270, -80], [90, -80], [90, 80], [-270, 80]],
       "url": "local://image/0.png"
     }
   },

@@ -14,20 +14,9 @@
             "duration": 500
           }
         ],
-        [
-          "setPaintProperty",
-          "background",
-          "background-color",
-          "white"
-        ],
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          250
-        ]
+        ["setPaintProperty", "background", "background-color", "white"],
+        ["wait", 0],
+        ["wait", 250]
       ]
     }
   },

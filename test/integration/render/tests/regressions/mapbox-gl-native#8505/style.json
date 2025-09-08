@@ -5,34 +5,13 @@
       "width": 128,
       "height": 128,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          2
-        ],
-        [
-          "wait"
-        ],
-        [
-          "setFilter",
-          "circle",
-          [
-            "has",
-            "nonexistent"
-          ]
-        ],
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          0
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setZoom", 2],
+        ["wait"],
+        ["setFilter", "circle", ["has", "nonexistent"]],
+        ["wait"],
+        ["setZoom", 0],
+        ["wait"]
       ]
     }
   },
@@ -44,10 +23,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

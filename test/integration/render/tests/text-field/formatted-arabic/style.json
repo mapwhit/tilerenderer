@@ -6,7 +6,7 @@
       "width": 256
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "point": {
@@ -22,7 +22,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -36,23 +36,32 @@
       "type": "symbol",
       "source": "point",
       "layout": {
-        "text-field": ["format",
-            ["get", "name"], { "font-scale": 1.5 },
-            " ", {},
-            ["get", "name_en"], { "font-scale": 0.5, "text-font": ["literal", [ "NotoCJK" ]] },
-            " ", {},
-            ["get", "name"], { "font-scale": 1.5 },
-            " ", {},
-            ["get", "name_en"], { "font-scale": 0.5, "text-font": ["literal", [ "NotoCJK" ]] },
-            " ", {},
-            ["get", "name"], { "font-scale": 1.5 },
-            " ", {},
-            ["get", "name_en"], { "font-scale": 0.5, "text-font": ["literal", [ "NotoCJK" ]] }
+        "text-field": [
+          "format",
+          ["get", "name"],
+          {"font-scale": 1.5},
+          " ",
+          {},
+          ["get", "name_en"],
+          {"font-scale": 0.5, "text-font": ["literal", ["NotoCJK"]]},
+          " ",
+          {},
+          ["get", "name"],
+          {"font-scale": 1.5},
+          " ",
+          {},
+          ["get", "name_en"],
+          {"font-scale": 0.5, "text-font": ["literal", ["NotoCJK"]]},
+          " ",
+          {},
+          ["get", "name"],
+          {"font-scale": 1.5},
+          " ",
+          {},
+          ["get", "name_en"],
+          {"font-scale": 0.5, "text-font": ["literal", ["NotoCJK"]]}
         ],
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": 24,
         "text-max-width": 10
       }

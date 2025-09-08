@@ -4,25 +4,17 @@
     "test": {
       "width": 500,
       "height": 500,
-      "queryGeometry": [
-        379,
-        270
-      ]
+      "queryGeometry": [379, 270]
     }
   },
-  "center": [
-    -74.522,
-    39.92
-  ],
+  "center": [-74.522, 39.92],
   "zoom": 7,
   "sources": {
     "us-counties": {
       "type": "vector",
       "maxzoom": 7,
       "minzoom": 7,
-      "tiles": [
-        "local://tiles/counties-{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/counties-{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -32,10 +24,7 @@
       "source": "us-counties",
       "source-layer": "counties",
       "paint": {
-        "line-translate": [
-          40,
-          20
-        ],
+        "line-translate": [40, 20],
         "line-width": 10
       },
       "interactive": true

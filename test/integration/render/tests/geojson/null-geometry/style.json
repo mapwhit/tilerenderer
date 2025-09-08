@@ -11,7 +11,8 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [{
+        "features": [
+          {
             "type": "Feature",
             "properties": {},
             "geometry": null
@@ -21,10 +22,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -32,9 +30,11 @@
     }
   },
   "sprite": "local://sprites/sprite",
-  "layers": [{
-    "id": "circle",
-    "type": "circle",
-    "source": "geojson"
-  }]
+  "layers": [
+    {
+      "id": "circle",
+      "type": "circle",
+      "source": "geojson"
+    }
+  ]
 }

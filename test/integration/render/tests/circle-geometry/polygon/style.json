@@ -12,40 +12,19 @@
     "geometry": {
       "type": "geojson",
       "data": {
-          "type": "FeatureCollection",
-          "features": [
-              {
-                  "type": "Feature",
-                  "properties": {},
-                  "geometry": {
-                      "type": "Polygon",
-                      "coordinates": [
-                          [
-                              [
-                                  -25,
-                                  -25
-                              ],
-                              [
-                                  -25,
-                                  25
-                              ],
-                              [
-                                  25,
-                                  25
-                              ],
-                              [
-                                  25,
-                                  -25
-                              ],
-                              [
-                                  -25,
-                                  -25
-                              ]
-                          ]
-                      ]
-                  }
-              }
-          ]
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [[-25, -25], [-25, 25], [25, 25], [25, -25], [-25, -25]]
+              ]
+            }
+          }
+        ]
       }
     }
   },

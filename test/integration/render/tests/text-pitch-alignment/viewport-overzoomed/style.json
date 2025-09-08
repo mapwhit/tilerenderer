@@ -5,10 +5,7 @@
       "height": 1024
     }
   },
-  "center": [
-    50,
-    0
-  ],
+  "center": [50, 0],
   "zoom": 18,
   "pitch": 60,
   "sources": {
@@ -17,10 +14,7 @@
       "maxzoom": 16,
       "data": {
         "type": "LineString",
-        "coordinates": [
-            [ 50, -90 ],
-            [ 50, 90 ]
-        ]
+        "coordinates": [[50, -90], [50, 90]]
       }
     }
   },
@@ -43,10 +37,7 @@
         "text-rotation-alignment": "map",
         "text-pitch-alignment": "viewport",
         "text-field": "Figueroa St.",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       },
       "paint": {
         "text-opacity": 1

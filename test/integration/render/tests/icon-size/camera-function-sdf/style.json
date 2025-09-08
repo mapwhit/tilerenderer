@@ -15,10 +15,10 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "x": 0 },
+            "properties": {"x": 0},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -34,10 +34,7 @@
       "source": "geojson",
       "layout": {
         "icon-size": {
-          "stops": [
-            [ 0, 1 ],
-            [ 1, 2 ]
-          ]
+          "stops": [[0, 1], [1, 2]]
         },
         "icon-image": "dot.sdf"
       },

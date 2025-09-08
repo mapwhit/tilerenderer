@@ -15,9 +15,7 @@
             "color": "red"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -30,10 +28,7 @@
         "id": "1",
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }
@@ -47,19 +42,10 @@
         "circle-radius": 5,
         "circle-color": [
           "step",
-          [
-            "zoom"
-          ],
+          ["zoom"],
           "black",
           1,
-          [
-            "coalesce",
-            [
-              "feature-state",
-              "color"
-            ],
-            "black"
-          ]
+          ["coalesce", ["feature-state", "color"], "black"]
         ]
       }
     }

@@ -19,10 +19,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -2,
-                0
-              ]
+              "coordinates": [-2, 0]
             }
           },
           {
@@ -32,10 +29,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                2,
-                0
-              ]
+              "coordinates": [2, 0]
             }
           }
         ]
@@ -49,10 +43,7 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 10,
-        "circle-opacity": [
-          "get",
-          "opacity"
-        ]
+        "circle-opacity": ["get", "opacity"]
       }
     }
   ]

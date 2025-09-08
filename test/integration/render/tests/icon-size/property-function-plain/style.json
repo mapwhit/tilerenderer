@@ -14,21 +14,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "x": 0 },
+            "properties": {"x": 0},
             "geometry": {
               "type": "Point",
-              "coordinates": [ -10, 0 ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": 5 },
+            "properties": {"x": 5},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -45,16 +42,7 @@
       "layout": {
         "icon-size": {
           "property": "x",
-          "stops": [
-            [
-              0,
-              0.5
-            ],
-            [
-              10,
-              1.5
-            ]
-          ]
+          "stops": [[0, 0.5], [10, 1.5]]
         },
         "icon-image": "restaurant-12"
       },

@@ -6,10 +6,7 @@
       "diff": 0.00025
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 0,
   "pitch": 45,
   "sources": {
@@ -25,16 +22,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  0,
-                  -40
-                ],
-                [
-                  10,
-                  20
-                ]
-              ]
+              "coordinates": [[0, -40], [10, 20]]
             }
           },
           {
@@ -45,28 +33,7 @@
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -180,
-                    -60
-                  ],
-                  [
-                    -180,
-                    60
-                  ],
-                  [
-                    180,
-                    60
-                  ],
-                  [
-                    180,
-                    -60
-                  ],
-                  [
-                    -180,
-                    -60
-                  ]
-                ]
+                [[-180, -60], [-180, 60], [180, 60], [180, -60], [-180, -60]]
               ]
             }
           },
@@ -78,28 +45,7 @@
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -180,
-                    -60
-                  ],
-                  [
-                    170,
-                    60
-                  ],
-                  [
-                    180,
-                    60
-                  ],
-                  [
-                    -170,
-                    -60
-                  ],
-                  [
-                    -180,
-                    -60
-                  ]
-                ]
+                [[-180, -60], [170, 60], [180, 60], [-170, -60], [-180, -60]]
               ]
             }
           }
@@ -123,11 +69,7 @@
       "paint": {
         "fill-color": "#888"
       },
-      "filter": [
-        "==",
-        "order",
-        "below"
-      ]
+      "filter": ["==", "order", "below"]
     },
     {
       "id": "text",
@@ -139,10 +81,7 @@
         "text-rotation-alignment": "map",
         "text-pitch-alignment": "map",
         "text-field": "{text}",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       },
       "paint": {
         "text-opacity": 1
@@ -155,11 +94,7 @@
       "paint": {
         "fill-color": "#f00"
       },
-      "filter": [
-        "==",
-        "order",
-        "above"
-      ]
+      "filter": ["==", "order", "above"]
     }
   ]
 }

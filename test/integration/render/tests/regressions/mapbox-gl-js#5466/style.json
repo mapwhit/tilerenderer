@@ -11,9 +11,7 @@
   "sources": {
     "satellite": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.satellite.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
       "maxzoom": 17,
       "tileSize": 256
     },
@@ -28,28 +26,7 @@
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -58,
-                    1
-                  ],
-                  [
-                    26,
-                    1
-                  ],
-                  [
-                    26,
-                    47
-                  ],
-                  [
-                    -58,
-                    47
-                  ],
-                  [
-                    -58,
-                    1
-                  ]
-                ]
+                [[-58, 1], [26, 1], [26, 47], [-58, 47], [-58, 1]]
               ]
             }
           }

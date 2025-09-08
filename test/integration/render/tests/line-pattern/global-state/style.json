@@ -5,14 +5,8 @@
       "width": 128,
       "height": 128,
       "operations": [
-        [
-          "setGlobalStateProperty",
-          "icon",
-          "generic_icon"
-        ],
-        [
-          "wait"
-        ]
+        ["setGlobalStateProperty", "icon", "generic_icon"],
+        ["wait"]
       ]
     }
   },
@@ -26,16 +20,7 @@
             "type": "Feature",
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  10,
-                  -10
-                ],
-                [
-                  -10,
-                  -10
-                ]
-              ]
+              "coordinates": [[10, -10], [-10, -10]]
             }
           }
         ]
@@ -53,32 +38,14 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  0
-                ],
-                [
-                  10,
-                  0
-                ]
-              ]
+              "coordinates": [[-10, 0], [10, 0]]
             }
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  10
-                ],
-                [
-                  10,
-                  10
-                ]
-              ]
+              "coordinates": [[-10, 10], [10, 10]]
             }
           }
         ]
@@ -101,10 +68,7 @@
       "source": "a",
       "paint": {
         "line-width": 10,
-        "line-pattern": [
-          "global-state",
-          "icon"
-        ]
+        "line-pattern": ["global-state", "icon"]
       }
     },
     {
@@ -113,17 +77,7 @@
       "source": "b",
       "paint": {
         "line-width": 10,
-        "line-pattern": [
-          "coalesce",
-          [
-            "get",
-            "icon"
-          ],
-          [
-            "global-state",
-            "icon"
-          ]
-        ]
+        "line-pattern": ["coalesce", ["get", "icon"], ["global-state", "icon"]]
       }
     }
   ]

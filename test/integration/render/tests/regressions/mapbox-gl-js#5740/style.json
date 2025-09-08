@@ -6,23 +6,7 @@
       "width": 64,
       "height": 64,
       "description": "Tests that fill-pattern cross-fading completes, by checking the rendering after the fade duration has elapsed.",
-      "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          1.1
-        ],
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          1000
-        ]
-      ]
+      "operations": [["wait"], ["setZoom", 1.1], ["wait", 0], ["wait", 1000]]
     }
   },
   "sources": {
@@ -31,28 +15,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }

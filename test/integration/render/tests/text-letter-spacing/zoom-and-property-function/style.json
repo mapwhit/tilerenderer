@@ -6,7 +6,7 @@
       "width": 256
     }
   },
-  "center": [ 35, 0 ],
+  "center": [35, 0],
   "zoom": 1.5,
   "sources": {
     "point": {
@@ -16,18 +16,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "spacing": "varying" },
+            "properties": {"spacing": "varying"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 35, 15 ]
+              "coordinates": [35, 15]
             }
           },
           {
             "type": "Feature",
-            "properties": { "spacing": "fixed" },
+            "properties": {"spacing": "fixed"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 35, -15 ]
+              "coordinates": [35, -15]
             }
           }
         ]
@@ -59,10 +59,7 @@
             [{"zoom": 2, "value": "fixed"}, 0.8]
           ]
         },
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

@@ -7,17 +7,14 @@
     }
   },
   "state": {
-    "text-size": { "default": 24 }
+    "text-size": {"default": 24}
   },
   "sources": {
     "geojson": {
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -29,14 +26,8 @@
       "source": "geojson",
       "layout": {
         "text-field": "ABC",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
-        "text-size": [
-          "global-state",
-          "text-size"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-size": ["global-state", "text-size"]
       }
     }
   ]

@@ -22,24 +22,7 @@
             "properties": {},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  10
-                ],
-                [
-                  10,
-                  10
-                ],
-                [
-                  -10,
-                  -10
-                ],
-                [
-                  10,
-                  -10
-                ]
-              ]
+              "coordinates": [[-10, 10], [10, 10], [-10, -10], [10, -10]]
             }
           },
           {
@@ -47,24 +30,7 @@
             "properties": {},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  9
-                ],
-                [
-                  10,
-                  9
-                ],
-                [
-                  -10,
-                  -9
-                ],
-                [
-                  10,
-                  -9
-                ]
-              ]
+              "coordinates": [[-10, 9], [10, 9], [-10, -9], [10, -9]]
             }
           }
         ]
@@ -77,10 +43,7 @@
       "type": "line",
       "source": "geojson",
       "paint": {
-        "line-color": [
-          "global-state",
-          "color"
-        ],
+        "line-color": ["global-state", "color"],
         "line-width": 2
       }
     }

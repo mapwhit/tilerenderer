@@ -11,104 +11,39 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [{
+        "features": [
+          {
             "type": "Feature",
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    20,
-                    -10
-                  ],
-                  [
-                    20,
-                    10
-                  ],
-                  [
-                    40,
-                    10
-                  ],
-                  [
-                    40,
-                    -10
-                  ],
-                  [
-                    20,
-                    -10
-                  ]
-                ]
+                [[20, -10], [20, 10], [40, 10], [40, -10], [20, -10]]
               ]
             },
-            "properties": {
-            }
-          }, {
+            "properties": {}
+          },
+          {
             "type": "Feature",
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -10,
-                    -10
-                  ],
-                  [
-                    -10,
-                    10
-                  ],
-                  [
-                    10,
-                    10
-                  ],
-                  [
-                    10,
-                    -10
-                  ],
-                  [
-                    -10,
-                    -10
-                  ]
-                ]
+                [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
               ]
             },
-            "properties": {
-            }
-          }, {
+            "properties": {}
+          },
+          {
             "type": "Feature",
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -40,
-                    -10
-                  ],
-                  [
-                    -40,
-                    10
-                  ],
-                  [
-                    -20,
-                    10
-                  ],
-                  [
-                    -20,
-                    -10
-                  ],
-                  [
-                    -40,
-                    -10
-                  ]
-                ]
+                [[-40, -10], [-40, 10], [-20, 10], [-20, -10], [-40, -10]]
               ]
             },
-            "properties": {
-            }
+            "properties": {}
           }
         ]
       }
-
-
     }
   },
   "sprite": "local://sprites/emerald",
@@ -117,7 +52,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color" : "#fff"
+        "background-color": "#fff"
       }
     },
     {
@@ -131,5 +66,3 @@
     }
   ]
 }
-
-

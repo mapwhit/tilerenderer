@@ -5,19 +5,14 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "bearing": 90,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -36,10 +31,7 @@
       "paint": {
         "line-width": 2,
         "line-color": "#000",
-        "line-translate": [
-          10,
-          10
-        ],
+        "line-translate": [10, 10],
         "line-translate-anchor": "map"
       }
     }

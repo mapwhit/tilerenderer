@@ -6,8 +6,8 @@
       "height": 512,
       "operations": [
         ["setStyle", "local://styles/uruguay.json"],
-        ["setZoom", 9 ],
-        ["setCenter", [-56.509552, -32.865788] ],
+        ["setZoom", 9],
+        ["setCenter", [-56.509552, -32.865788]],
         ["wait"]
       ]
     }

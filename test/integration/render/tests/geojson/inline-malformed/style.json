@@ -6,20 +6,14 @@
       "height": 512
     }
   },
-  "center": [
-    -77.0305,
-    38.9014
-  ],
+  "center": [-77.0305, 38.9014],
   "zoom": 12.15,
   "sources": {
     "geojson": {
       "type": "geojson",
       "data": {
         "type": "Model",
-        "geometry": [
-          -77.050327,
-          38.909634
-        ],
+        "geometry": [-77.050327, 38.909634],
         "properties": {
           "name": "P Street Northwest - Massachusetts Avenue Northwest"
         }

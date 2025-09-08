@@ -6,29 +6,12 @@
       "height": 64,
       "description": "Tests that raster tiles are retained for cross-fading. The first pair of wait operations ensures that z1 tiles are fully faded in. The third wait ensures that v0 tiles are loaded, and the last two waits fade them halfway in.",
       "operations": [
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          1000
-        ],
-        [
-          "setZoom",
-          0
-        ],
-        [
-          "wait"
-        ],
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          500
-        ]
+        ["wait", 0],
+        ["wait", 1000],
+        ["setZoom", 0],
+        ["wait"],
+        ["wait", 0],
+        ["wait", 500]
       ]
     }
   },
@@ -36,9 +19,7 @@
   "sources": {
     "satellite": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.cross-fade.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.cross-fade.png"],
       "maxzoom": 17,
       "tileSize": 256
     }

@@ -22,10 +22,7 @@
                   },
                   "geometry": {
                     "type": "Point",
-                    "coordinates": [
-                      0,
-                      0
-                    ]
+                    "coordinates": [0, 0]
                   }
                 }
               }
@@ -39,18 +36,12 @@
                 "layout": {
                   "icon-image": "circle-12"
                 },
-                "filter": [
-                  "==",
-                  "property",
-                  "a"
-                ]
+                "filter": ["==", "property", "a"]
               }
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -67,10 +58,7 @@
         },
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }
@@ -84,11 +72,7 @@
       "layout": {
         "icon-image": "circle-12"
       },
-      "filter": [
-        "==",
-        "property",
-        false
-      ]
+      "filter": ["==", "property", false]
     }
   ]
 }

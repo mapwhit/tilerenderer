@@ -6,17 +6,12 @@
       "height": 64
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 17,
   "sources": {
     "satellite": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.satellite.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
       "maxzoom": 18,
       "tileSize": 256
     }

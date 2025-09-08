@@ -5,17 +5,12 @@
     "test": {}
   },
   "zoom": 8,
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "sources": {
     "maplibre": {
       "type": "vector",
       "maxzoom": 0,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "sprite": "local://sprites/emerald",

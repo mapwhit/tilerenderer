@@ -6,7 +6,7 @@
       "width": 64
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "state": {
     "color": {
@@ -21,24 +21,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                -10
-              ]
+              "coordinates": [0, -10]
             }
           },
           {
             "type": "Feature",
-            "properties": { },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                10
-              ]
+              "coordinates": [0, 10]
             }
           }
         ]
@@ -54,10 +48,7 @@
       "layout": {
         "text-allow-overlap": true,
         "text-field": "Test",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       },
       "paint": {
         "text-color": ["global-state", "color"]

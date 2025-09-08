@@ -18,17 +18,11 @@
           {
             "type": "Feature",
             "properties": {
-              "icon-offset": [
-                5,
-                10
-              ]
+              "icon-offset": [5, 10]
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -45,10 +39,7 @@
         "icon-image": "generic_icon",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
-        "icon-offset": [
-          "get",
-          "icon-offset"
-        ]
+        "icon-offset": ["get", "icon-offset"]
       }
     }
   ]

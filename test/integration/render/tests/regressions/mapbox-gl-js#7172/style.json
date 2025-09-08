@@ -2,38 +2,27 @@
   "version": 8,
   "metadata": {
     "test": {
-        "fadeDuration": 100,
-        "width": 512,
-        "height": 512,
-        "description": "This test ensures that symbols with allow-overlap: true are always visible, even if they get included in a placement where they are outside of the collision grid. Before the fix, this test showed partially transparent icons in the right quarter of the viewport.",
-        "operations": [
-          ["wait", 100],
-          ["wait", 100],
-          ["setCenter", [
-            13.428056,
-            52.499167
-          ]],
-          ["wait"],
-          ["wait", 100],
-          [
-            "wait",
-            50
-          ]
-        ]
+      "fadeDuration": 100,
+      "width": 512,
+      "height": 512,
+      "description": "This test ensures that symbols with allow-overlap: true are always visible, even if they get included in a placement where they are outside of the collision grid. Before the fix, this test showed partially transparent icons in the right quarter of the viewport.",
+      "operations": [
+        ["wait", 100],
+        ["wait", 100],
+        ["setCenter", [13.428056, 52.499167]],
+        ["wait"],
+        ["wait", 100],
+        ["wait", 50]
+      ]
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "sprite": "local://sprites/sprite",
@@ -50,11 +39,7 @@
       "type": "symbol",
       "source": "mapbox",
       "source-layer": "poi_label",
-      "filter": [
-        "==",
-        "maki",
-        "restaurant"
-      ],
+      "filter": ["==", "maki", "restaurant"],
       "layout": {
         "symbol-placement": "point",
         "icon-allow-overlap": true,

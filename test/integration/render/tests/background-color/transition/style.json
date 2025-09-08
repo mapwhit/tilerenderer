@@ -5,20 +5,9 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setPaintProperty",
-          "background",
-          "background-color",
-          "white"
-        ],
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          500
-        ]
+        ["setPaintProperty", "background", "background-color", "white"],
+        ["wait", 0],
+        ["wait", 500]
       ]
     }
   },

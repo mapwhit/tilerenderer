@@ -6,18 +6,13 @@
       "height": 256
     }
   },
-  "center": [
-    13.42498,
-    52.49608
-  ],
+  "center": [13.42498, 52.49608],
   "zoom": 17,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",
@@ -38,10 +33,7 @@
       "layout": {
         "text-field": "test",
         "text-allow-overlap": true,
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "symbol-placement": "point"
       },
       "paint": {

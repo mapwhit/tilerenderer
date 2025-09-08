@@ -6,10 +6,7 @@
       "height": 512
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 0,
   "pitch": 60,
   "sources": {
@@ -17,20 +14,7 @@
       "type": "geojson",
       "data": {
         "type": "MultiPoint",
-        "coordinates": [
-          [
-            0,
-            0
-          ],
-          [
-            0,
-            60
-          ],
-          [
-            0,
-            -60
-          ]
-        ]
+        "coordinates": [[0, 0], [0, 60], [0, -60]]
       }
     }
   },

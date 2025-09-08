@@ -19,97 +19,31 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -12,
-                    -12
-                  ],
-                  [
-                    -12,
-                    12
-                  ],
-                  [
-                    -4,
-                    12
-                  ],
-                  [
-                    -4,
-                    -12
-                  ],
-                  [
-                    -12,
-                    -12
-                  ]
-                ]
+                [[-12, -12], [-12, 12], [-4, 12], [-4, -12], [-12, -12]]
               ]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -4,
-                    -12
-                  ],
-                  [
-                    -4,
-                    12
-                  ],
-                  [
-                    4,
-                    12
-                  ],
-                  [
-                    4,
-                    -12
-                  ],
-                  [
-                    -4,
-                    -12
-                  ]
-                ]
+                [[-4, -12], [-4, 12], [4, 12], [4, -12], [-4, -12]]
               ]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    4,
-                    -12
-                  ],
-                  [
-                    4,
-                    12
-                  ],
-                  [
-                    12,
-                    12
-                  ],
-                  [
-                    12,
-                    -12
-                  ],
-                  [
-                    4,
-                    -12
-                  ]
-                ]
+                [[4, -12], [4, 12], [12, 12], [12, -12], [4, -12]]
               ]
             }
           }
@@ -124,10 +58,7 @@
       "source": "geojson",
       "paint": {
         "fill-antialias": false,
-        "fill-color": [
-          "global-state",
-          "color"
-        ]
+        "fill-color": ["global-state", "color"]
       }
     }
   ]

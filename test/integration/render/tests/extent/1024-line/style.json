@@ -5,18 +5,13 @@
       "diff": 0.0005
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/extent1024-14-8802-5374.mvt"
-      ]
+      "tiles": ["local://tiles/extent1024-14-8802-5374.mvt"]
     }
   },
   "layers": [

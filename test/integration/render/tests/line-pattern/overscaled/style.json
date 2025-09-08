@@ -21,16 +21,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  10,
-                  -0.01
-                ],
-                [
-                  -10,
-                  -0.01
-                ]
-              ]
+              "coordinates": [[10, -0.01], [-10, -0.01]]
             }
           },
           {
@@ -40,16 +31,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  0
-                ],
-                [
-                  10,
-                  0
-                ]
-              ]
+              "coordinates": [[-10, 0], [10, 0]]
             }
           },
           {
@@ -59,16 +41,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  0.01
-                ],
-                [
-                  10,
-                  0.01
-                ]
-              ]
+              "coordinates": [[-10, 0.01], [10, 0.01]]
             }
           }
         ]

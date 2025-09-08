@@ -6,13 +6,10 @@
       "width": 128,
       "description": "This test renders before the first placement happens, to exercise default opacities. Before fixing #7032, the restaurant icon would incorrectly appear even though its matched text hadn't been placed.",
       "fadeDuration": 100,
-      "operations": [
-        ["wait"],
-        ["wait", 50]
-      ]
+      "operations": [["wait"], ["wait", 50]]
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "point": {
@@ -25,7 +22,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -52,24 +49,18 @@
         "text-allow-overlap": false,
         "icon-allow-overlap": true,
         "text-optional": false,
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     },
-      {
-        "id": "label",
-        "type": "symbol",
-        "source": "point",
-        "layout": {
-          "text-field": "Shows w/o Placement",
-          "text-allow-overlap": true,
-          "text-font": [
-            "Open Sans Semibold",
-            "Arial Unicode MS Bold"
-          ]
-        }
+    {
+      "id": "label",
+      "type": "symbol",
+      "source": "point",
+      "layout": {
+        "text-field": "Shows w/o Placement",
+        "text-allow-overlap": true,
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
+      }
     }
   ]
 }

@@ -4,10 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "queryGeometry": [
-        17,
-        32
-      ]
+      "queryGeometry": [17, 32]
     }
   },
   "sources": {
@@ -18,32 +15,21 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "offset": 0 },
+            "properties": {"offset": 0},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [10, 10],
-                  [10, -10],
-                  [-10, -10],
-                  [-10, 10],
-                  [10,10]
-                ]
+                [[10, 10], [10, -10], [-10, -10], [-10, 10], [10, 10]]
               ]
             }
-          }, {
+          },
+          {
             "type": "Feature",
-            "properties": { "offset": 10 },
+            "properties": {"offset": 10},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [10, 10],
-                  [10, -10],
-                  [-10, -10],
-                  [-10, 10],
-                  [10, 10]
-                ]
+                [[10, 10], [10, -10], [-10, -10], [-10, 10], [10, 10]]
               ]
             }
           }
@@ -57,7 +43,7 @@
       "type": "line",
       "source": "geojson",
       "paint": {
-        "line-offset": { "property": "offset", "type": "identity" },
+        "line-offset": {"property": "offset", "type": "identity"},
         "line-width": 3
       },
       "interactive": true

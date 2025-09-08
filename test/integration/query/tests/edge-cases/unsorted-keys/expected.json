@@ -2,10 +2,7 @@
   {
     "geometry": {
       "type": "Point",
-      "coordinates": [
-        -84.26383852958679,
-        39.268954879518304
-      ]
+      "coordinates": [-84.26383852958679, 39.268954879518304]
     },
     "type": "Feature",
     "properties": {

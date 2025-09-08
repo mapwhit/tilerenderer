@@ -5,15 +5,8 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setPaintProperty",
-          "circle",
-          "circle-radius",
-          null
-        ],
-        [
-          "wait"
-        ]
+        ["setPaintProperty", "circle", "circle-radius", null],
+        ["wait"]
       ]
     }
   },
@@ -33,10 +26,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -46,10 +36,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -62,10 +49,7 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-radius": [
-          "get",
-          "radius"
-        ]
+        "circle-radius": ["get", "radius"]
       }
     }
   ]

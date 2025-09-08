@@ -21,16 +21,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  10,
-                  -10
-                ],
-                [
-                  -10,
-                  -10
-                ]
-              ]
+              "coordinates": [[10, -10], [-10, -10]]
             }
           },
           {
@@ -40,16 +31,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  0
-                ],
-                [
-                  10,
-                  0
-                ]
-              ]
+              "coordinates": [[-10, 0], [10, 0]]
             }
           },
           {
@@ -59,16 +41,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  10
-                ],
-                [
-                  10,
-                  10
-                ]
-              ]
+              "coordinates": [[-10, 10], [10, 10]]
             }
           }
         ]
@@ -90,12 +63,17 @@
       "paint": {
         "line-width": 10,
         "line-pattern": [
-          "step", ["zoom"],
+          "step",
+          ["zoom"],
           "generic_icon",
           2,
-          ["match", ["string", ["get", "class"]],
-            "street", "generic_icon",
-            "path", "generic_metro",
+          [
+            "match",
+            ["string", ["get", "class"]],
+            "street",
+            "generic_icon",
+            "path",
+            "generic_metro",
             "school_icon"
           ]
         ]

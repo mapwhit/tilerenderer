@@ -5,15 +5,8 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setPaintProperty",
-          "background",
-          "background-color",
-          null
-        ],
-        [
-          "wait"
-        ]
+        ["setPaintProperty", "background", "background-color", null],
+        ["wait"]
       ]
     }
   },
@@ -28,13 +21,8 @@
       "paint": {
         "background-color": [
           "interpolate",
-          [
-            "exponential",
-            1
-          ],
-          [
-            "zoom"
-          ],
+          ["exponential", 1],
+          ["zoom"],
           0,
           "blue",
           10,

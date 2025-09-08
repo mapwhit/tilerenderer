@@ -12,13 +12,11 @@
             "type": "raster",
             "source": "raster",
             "paint": {
-                "raster-fade-duration": 0
+              "raster-fade-duration": 0
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -28,9 +26,7 @@
   "sources": {
     "raster": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.satellite.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
       "tileSize": 256
     }
   },

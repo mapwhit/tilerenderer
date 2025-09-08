@@ -15,14 +15,8 @@
             "color": "magenta"
           }
         ],
-        [
-          "setGlobalStateProperty",
-          "color",
-          "cyan"
-        ],
-        [
-          "wait"
-        ]
+        ["setGlobalStateProperty", "color", "cyan"],
+        ["wait"]
       ]
     }
   },
@@ -35,13 +29,13 @@
           {
             "id": 0,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [-10, 0] },
+            "geometry": {"type": "Point", "coordinates": [-10, 0]},
             "properties": {}
           },
           {
             "id": 1,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [10, 0] },
+            "geometry": {"type": "Point", "coordinates": [10, 0]},
             "properties": {}
           }
         ]
@@ -57,14 +51,8 @@
         "circle-radius": 10,
         "circle-color": [
           "coalesce",
-          [
-            "feature-state",
-            "color"
-          ],
-          [
-            "global-state",
-            "color"
-          ],
+          ["feature-state", "color"],
+          ["global-state", "color"],
           "yellow"
         ]
       }

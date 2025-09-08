@@ -15,13 +15,13 @@
           {
             "id": 0,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [-10, 0] },
+            "geometry": {"type": "Point", "coordinates": [-10, 0]},
             "properties": {}
           },
           {
             "id": 1,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [10, 0] },
+            "geometry": {"type": "Point", "coordinates": [10, 0]},
             "properties": {}
           }
         ]
@@ -35,10 +35,7 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 10,
-        "circle-color": [
-          "global-state",
-          "color"
-        ]
+        "circle-color": ["global-state", "color"]
       }
     }
   ]

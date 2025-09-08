@@ -5,17 +5,12 @@
       "height": 256
     }
   },
-  "center": [
-    -122.48,
-    37.84
-  ],
+  "center": [-122.48, 37.84],
   "zoom": 14,
   "sources": {
     "contour": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.contour.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.contour.png"],
       "maxzoom": 17,
       "tileSize": 256
     }

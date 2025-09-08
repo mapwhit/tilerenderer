@@ -5,18 +5,13 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -35,16 +30,7 @@
       "paint": {
         "line-width": 10,
         "line-color": {
-          "stops": [
-            [
-              16,
-              "green"
-            ],
-            [
-              17,
-              "blue"
-            ]
-          ]
+          "stops": [[16, "green"], [17, "blue"]]
         }
       }
     }

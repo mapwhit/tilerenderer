@@ -12,9 +12,7 @@
             "type": "background"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

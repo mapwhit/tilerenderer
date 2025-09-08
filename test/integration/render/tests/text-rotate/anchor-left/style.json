@@ -11,10 +11,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -28,10 +25,7 @@
       "layout": {
         "icon-image": "dot.sdf",
         "text-field": "Test",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-rotate": 45,
         "text-anchor": "left"
       }

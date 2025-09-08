@@ -6,7 +6,7 @@
       "width": 256
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "point": {
@@ -16,74 +16,74 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "x": "bottom-right" },
+            "properties": {"x": "bottom-right"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "bottom" },
+            "properties": {"x": "bottom"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "bottom-left" },
+            "properties": {"x": "bottom-left"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "right" },
+            "properties": {"x": "right"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "center" },
+            "properties": {"x": "center"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "left" },
+            "properties": {"x": "left"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "top-right" },
+            "properties": {"x": "top-right"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "top" },
+            "properties": {"x": "top"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": "top-left" },
+            "properties": {"x": "top-left"},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -104,10 +104,7 @@
           "property": "x"
         },
         "text-allow-overlap": true,
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

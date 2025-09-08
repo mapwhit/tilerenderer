@@ -22,9 +22,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -38,16 +36,7 @@
       "type": "background",
       "paint": {
         "background-color": {
-          "stops": [
-            [
-              0,
-              "blue"
-            ],
-            [
-              10,
-              "white"
-            ]
-          ]
+          "stops": [[0, "blue"], [10, "white"]]
         }
       }
     }

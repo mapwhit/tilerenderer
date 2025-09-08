@@ -5,21 +5,9 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setFilter",
-          "symbol",
-          [
-            "==",
-            "property",
-            "b"
-          ]
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setFilter", "symbol", ["==", "property", "b"]],
+        ["wait"]
       ]
     }
   },
@@ -36,10 +24,7 @@
         },
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }

@@ -14,26 +14,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -47,10 +39,7 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-translate": [
-          20,
-          0
-        ],
+        "circle-translate": [20, 0],
         "circle-translate-anchor": "viewport"
       }
     }

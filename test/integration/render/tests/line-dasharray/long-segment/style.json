@@ -5,10 +5,7 @@
       "height": 256
     }
   },
-  "center": [
-    -77.0305,
-    38.9014
-  ],
+  "center": [-77.0305, 38.9014],
   "zoom": 12.15,
   "sources": {
     "geojson": {
@@ -17,16 +14,7 @@
         "type": "Feature",
         "geometry": {
           "type": "LineString",
-          "coordinates": [
-            [
-              -80,
-              38.910203
-            ],
-            [
-              80,
-              38.910321
-            ]
-          ]
+          "coordinates": [[-80, 38.910203], [80, 38.910321]]
         },
         "properties": {
           "name": "P Street Northwest - Massachusetts Avenue Northwest"
@@ -48,10 +36,7 @@
       "source": "geojson",
       "paint": {
         "line-color": "#000",
-        "line-dasharray": [
-          1,
-          1
-        ],
+        "line-dasharray": [1, 1],
         "line-width": 50
       }
     }

@@ -15,9 +15,7 @@
             "sources": {
               "raster": {
                 "type": "raster",
-                "tiles": [
-                  "local://tiles/{z}-{x}-{y}.satellite.png"
-                ],
+                "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
                 "tileSize": 256
               }
             },
@@ -33,9 +31,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

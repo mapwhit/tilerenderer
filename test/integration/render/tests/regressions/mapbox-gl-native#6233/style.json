@@ -5,18 +5,9 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setLayoutProperty",
-          "line",
-          "visibility",
-          "visible"
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setLayoutProperty", "line", "visibility", "visible"],
+        ["wait"]
       ]
     }
   },
@@ -28,24 +19,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            10
-          ],
-          [
-            10,
-            10
-          ],
-          [
-            -10,
-            -10
-          ],
-          [
-            10,
-            -10
-          ]
-        ]
+        "coordinates": [[-10, 10], [10, 10], [-10, -10], [10, -10]]
       }
     }
   },

@@ -13,11 +13,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [-50, 100],
-          [0, -50],
-          [50, 100]
-        ]
+        "coordinates": [[-50, 100], [0, -50], [50, 100]]
       }
     }
   },

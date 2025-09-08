@@ -5,20 +5,9 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./image/0.png"
-        ],
-        [
-          "removeImage",
-          "marker"
-        ],
-        [
-          "addImage",
-          "marker",
-          "./image/marker.png"
-        ],
+        ["addImage", "marker", "./image/0.png"],
+        ["removeImage", "marker"],
+        ["addImage", "marker", "./image/marker.png"],
         [
           "addLayer",
           {
@@ -30,9 +19,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

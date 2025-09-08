@@ -4,15 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "removeLayer",
-          "background"
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["removeLayer", "background"], ["wait"]]
     }
   },
   "transition": {

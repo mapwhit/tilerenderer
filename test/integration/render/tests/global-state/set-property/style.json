@@ -5,22 +5,14 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setGlobalStateProperty",
-          "color",
-          "cyan"
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setGlobalStateProperty", "color", "cyan"],
+        ["wait"]
       ]
     }
   },
   "state": {
-    "color": { "default": "magenta" }
+    "color": {"default": "magenta"}
   },
   "sources": {
     "geojson": {
@@ -31,13 +23,13 @@
           {
             "id": 0,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [-10, 0] },
+            "geometry": {"type": "Point", "coordinates": [-10, 0]},
             "properties": {}
           },
           {
             "id": 1,
             "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [10, 0] },
+            "geometry": {"type": "Point", "coordinates": [10, 0]},
             "properties": {}
           }
         ]
@@ -51,10 +43,7 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 10,
-        "circle-color": [
-          "global-state",
-          "color"
-        ]
+        "circle-color": ["global-state", "color"]
       }
     }
   ]

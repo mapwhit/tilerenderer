@@ -12,16 +12,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -20,
-            0
-          ],
-          [
-            20,
-            0
-          ]
-        ]
+        "coordinates": [[-20, 0], [20, 0]]
       }
     }
   },

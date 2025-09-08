@@ -4,26 +4,13 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setBearing",
-          10
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["wait"], ["setBearing", 10], ["wait"]]
     }
   },
   "sources": {
     "satellite": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.satellite.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
       "tileSize": 256
     }
   },

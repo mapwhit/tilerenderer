@@ -16,10 +16,7 @@
         },
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }
@@ -30,7 +27,12 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-color": ["case", ["==", ["get", "property"], 0], "black", "white"]
+        "circle-color": [
+          "case",
+          ["==", ["get", "property"], 0],
+          "black",
+          "white"
+        ]
       }
     }
   ]

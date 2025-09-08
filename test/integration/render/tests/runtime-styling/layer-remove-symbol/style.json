@@ -4,15 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "removeLayer",
-          "symbol"
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["removeLayer", "symbol"], ["wait"]]
     }
   },
   "transition": {
@@ -23,10 +15,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

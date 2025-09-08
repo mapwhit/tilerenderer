@@ -20,7 +20,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0.1, 0.1 ]
+              "coordinates": [0.1, 0.1]
             }
           }
         ]
@@ -38,15 +38,11 @@
           "type": "categorical",
           "property": "foo",
           "stops": [
-            [{ "value": "bar", "zoom": 0 }, "xxx"],
-            [{ "value": "bar", "zoom": 2 }, "XXX"]
+            [{"value": "bar", "zoom": 0}, "xxx"],
+            [{"value": "bar", "zoom": 2}, "XXX"]
           ]
-
         },
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

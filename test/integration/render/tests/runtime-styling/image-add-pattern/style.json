@@ -6,11 +6,7 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./image/marker.png"
-        ],
+        ["addImage", "marker", "./image/marker.png"],
         [
           "addLayer",
           {
@@ -23,9 +19,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -35,28 +29,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }

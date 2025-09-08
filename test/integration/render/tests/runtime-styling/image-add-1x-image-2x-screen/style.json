@@ -6,11 +6,7 @@
       "height": 64,
       "pixelRatio": 2,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./sprites/1x.png"
-        ],
+        ["addImage", "marker", "./sprites/1x.png"],
         [
           "addLayer",
           {
@@ -22,9 +18,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

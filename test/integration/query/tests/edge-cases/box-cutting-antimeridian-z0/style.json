@@ -5,22 +5,10 @@
       "width": 512,
       "height": 512,
       "debug": true,
-      "queryGeometry": [
-        [
-          112,
-          200
-        ],
-        [
-          400,
-          281
-        ]
-      ]
+      "queryGeometry": [[112, 200], [400, 281]]
     }
   },
-  "center": [
-    180,
-    0
-  ],
+  "center": [180, 0],
   "zoom": 0,
   "sources": {
     "geojson": {
@@ -35,10 +23,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           },
           {
@@ -48,10 +33,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                90,
-                0
-              ]
+              "coordinates": [90, 0]
             }
           },
           {
@@ -61,10 +43,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -90,
-                0
-              ]
+              "coordinates": [-90, 0]
             }
           }
         ]

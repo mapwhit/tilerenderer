@@ -14,16 +14,7 @@
       "type": "background",
       "paint": {
         "background-color": {
-          "stops": [
-            [
-              0,
-              "rgb(118,0,118)"
-            ],
-            [
-              10,
-              "rgb(255,155,0)"
-            ]
-          ],
+          "stops": [[0, "rgb(118,0,118)"], [10, "rgb(255,155,0)"]],
           "colorSpace": "hcl"
         }
       }

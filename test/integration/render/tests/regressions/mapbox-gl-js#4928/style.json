@@ -6,11 +6,7 @@
       "height": 64,
       "pixelRatio": 1.1,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./image/marker.png"
-        ],
+        ["addImage", "marker", "./image/marker.png"],
         [
           "addLayer",
           {
@@ -22,9 +18,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

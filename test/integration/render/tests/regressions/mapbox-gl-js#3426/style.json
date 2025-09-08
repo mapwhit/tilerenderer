@@ -5,18 +5,9 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setPaintProperty",
-          "line",
-          "line-width",
-          10
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setPaintProperty", "line", "line-width", 10],
+        ["wait"]
       ]
     }
   },
@@ -28,16 +19,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -180,
-            0
-          ],
-          [
-            180,
-            0
-          ]
-        ]
+        "coordinates": [[-180, 0], [180, 0]]
       }
     }
   },

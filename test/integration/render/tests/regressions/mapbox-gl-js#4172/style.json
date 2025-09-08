@@ -19,10 +19,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -44,7 +41,15 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-radius": ["interpolate", ["linear"], ["/", 0, ["get", "zero"]], 1, 1, 2, 2],
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["/", 0, ["get", "zero"]],
+          1,
+          1,
+          2,
+          2
+        ],
         "circle-translate": [0, 0]
       }
     },

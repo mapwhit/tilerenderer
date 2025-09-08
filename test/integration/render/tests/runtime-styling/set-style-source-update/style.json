@@ -17,10 +17,7 @@
                 "type": "geojson",
                 "data": {
                   "type": "Point",
-                  "coordinates": [
-                    0,
-                    0
-                  ]
+                  "coordinates": [0, 0]
                 }
               }
             },
@@ -33,9 +30,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -47,10 +42,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          10,
-          10
-        ]
+        "coordinates": [10, 10]
       }
     }
   },

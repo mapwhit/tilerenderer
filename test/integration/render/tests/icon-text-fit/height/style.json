@@ -11,10 +11,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -27,10 +24,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "ABC",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "icon-image": "label",
         "icon-text-fit": "height"
       }

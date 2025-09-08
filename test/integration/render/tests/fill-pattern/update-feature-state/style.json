@@ -15,9 +15,7 @@
             "hover": true
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -33,28 +31,7 @@
           "pattern": "generic_icon"
         },
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }
@@ -65,13 +42,13 @@
       "type": "fill",
       "source": "geojson",
       "paint": {
-            "fill-pattern": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                "generic_icon",
-                "generic_metro"
-            ]
-        }
+        "fill-pattern": [
+          "case",
+          ["boolean", ["feature-state", "hover"], false],
+          "generic_icon",
+          "generic_metro"
+        ]
+      }
     }
   ]
 }

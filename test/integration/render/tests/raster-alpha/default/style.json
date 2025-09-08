@@ -5,17 +5,12 @@
       "height": 256
     }
   },
-  "center": [
-    52.499167,
-    13.418056
-  ],
+  "center": [52.499167, 13.418056],
   "zoom": 16,
   "sources": {
     "source": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/alpha.png"
-      ],
+      "tiles": ["local://tiles/alpha.png"],
       "maxzoom": 17,
       "tileSize": 256
     }
