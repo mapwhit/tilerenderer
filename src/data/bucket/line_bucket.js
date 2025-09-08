@@ -1,3 +1,4 @@
+import { Point } from '@mapwhit/point-geometry';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import { LineLayoutArray } from '../array_types.js';
@@ -356,7 +357,7 @@ class LineBucket {
 
           if (miterLength > 100) {
             // Almost parallel lines
-            joinNormal = nextNormal.clone().mult(-1);
+            joinNormal = nextNormal.mult(-1);
           } else {
             const direction = prevNormal.x * nextNormal.y - prevNormal.y * nextNormal.x > 0 ? -1 : 1;
             const bevelLength = (miterLength * prevNormal.add(nextNormal).mag()) / prevNormal.sub(nextNormal).mag();
@@ -556,7 +557,7 @@ class LineBucket {
       distance = scaleDistance(distance, distancesForScaling);
     }
 
-    extrude = normal.clone();
+    extrude = Point.clone(normal);
     if (endLeft) {
       extrude._sub(normal.perp()._mult(endLeft));
     }

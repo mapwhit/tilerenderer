@@ -1,4 +1,4 @@
-import { findPoleOfInaccessibility } from '@mapwhit/geometry';
+import { clipLine, findPoleOfInaccessibility } from '@mapwhit/geometry';
 import murmur3 from 'murmurhash-js';
 import SymbolBucket from '../data/bucket/symbol_bucket.js';
 import EXTENT from '../data/extent.js';
@@ -7,7 +7,6 @@ import classifyRings from '../util/classify_rings.js';
 import { allowsLetterSpacing, allowsVerticalWritingMode } from '../util/script_detection.js';
 import warn from '../util/warn.js';
 import Anchor from './anchor.js';
-import clipLine from './clip_line.js';
 import CollisionFeature from './collision_feature.js';
 import { getAnchors, getCenterAnchor } from './get_anchors.js';
 import { getGlyphQuads, getIconQuads } from './quads.js';

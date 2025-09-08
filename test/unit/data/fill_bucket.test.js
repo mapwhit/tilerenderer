@@ -1,18 +1,16 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
 import FillBucket from '../../../src/data/bucket/fill_bucket.js';
 import segment from '../../../src/data/segment.js';
 import FillStyleLayer from '../../../src/style/style_layer/fill_style_layer.js';
 import { createPopulateOptions, getFeaturesFromLayer, loadVectorTile } from '../../util/tile.js';
 
 function createPolygon(numPoints) {
-  const points = [];
+  const points = new Array(numPoints);
   for (let i = 0; i < numPoints; i++) {
-    points.push(
-      new Point(
-        2048 + 256 * Math.cos((i / numPoints) * 2 * Math.PI, 2048 + 256 * Math.sin((i / numPoints) * 2 * Math.PI))
-      )
-    );
+    points[i] = {
+      x: 2048 + 256 * Math.cos((i / numPoints) * 2 * Math.PI),
+      y: 2048 + 256 * Math.sin((i / numPoints) * 2 * Math.PI)
+    };
   }
   return points;
 }
@@ -35,9 +33,20 @@ test('FillBucket', async t => {
     t.assert.doesNotThrow(() => {
       const bucket = createFillBucket({ id: 'test', layout: {} });
 
-      bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10)]]);
+      bucket.addFeature({}, [
+        [
+          { x: 0, y: 0 },
+          { x: 10, y: 10 }
+        ]
+      ]);
 
-      bucket.addFeature({}, [[new Point(0, 0), new Point(10, 10), new Point(10, 20)]]);
+      bucket.addFeature({}, [
+        [
+          { x: 0, y: 0 },
+          { x: 10, y: 10 },
+          { x: 10, y: 20 }
+        ]
+      ]);
 
       const feature = sourceLayer.feature(0);
       bucket.addFeature(feature, feature.loadGeometry());

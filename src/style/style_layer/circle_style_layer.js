@@ -1,5 +1,4 @@
 import glMatrix from '@mapbox/gl-matrix';
-import Point from '@mapbox/point-geometry';
 import { polygonIntersectsBufferedPoint } from '@mapwhit/geometry';
 import CircleBucket from '../../data/bucket/circle_bucket.js';
 import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';
@@ -84,15 +83,16 @@ class CircleStyleLayer extends StyleLayer {
   }
 }
 
-function projectPoint(p, pixelPosMatrix) {
-  const point = vec4.transformMat4([], [p.x, p.y, 0, 1], pixelPosMatrix);
-  return new Point(point[0] / point[3], point[1] / point[3]);
+function projectPoint({ x, y }, pixelPosMatrix) {
+  const point = vec4.transformMat4([], [x, y, 0, 1], pixelPosMatrix);
+  return {
+    x: point[0] / point[3],
+    y: point[1] / point[3]
+  };
 }
 
 function projectQueryGeometry(queryGeometry, pixelPosMatrix) {
-  return queryGeometry.map(p => {
-    return projectPoint(p, pixelPosMatrix);
-  });
+  return queryGeometry.map(p => projectPoint(p, pixelPosMatrix));
 }
 
 export default CircleStyleLayer;

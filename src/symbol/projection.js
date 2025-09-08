@@ -1,5 +1,5 @@
 import glMatrix from '@mapbox/gl-matrix';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { addDynamicAttributes } from '../data/bucket/symbol_bucket.js';
 import properties from '../style/style_layer/symbol_style_layer_properties.js';
 import { WritingMode } from '../symbol/shaping.js';
