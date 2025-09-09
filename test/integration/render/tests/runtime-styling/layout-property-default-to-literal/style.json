@@ -5,15 +5,8 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setLayoutProperty",
-          "symbol",
-          "icon-image",
-          "triangle-12"
-        ],
-        [
-          "wait"
-        ]
+        ["setLayoutProperty", "symbol", "icon-image", "triangle-12"],
+        ["wait"]
       ]
     }
   },
@@ -25,10 +18,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

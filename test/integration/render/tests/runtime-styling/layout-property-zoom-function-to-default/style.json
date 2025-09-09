@@ -5,15 +5,8 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setLayoutProperty",
-          "symbol",
-          "icon-image",
-          null
-        ],
-        [
-          "wait"
-        ]
+        ["setLayoutProperty", "symbol", "icon-image", null],
+        ["wait"]
       ]
     }
   },
@@ -25,10 +18,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -40,16 +30,7 @@
       "source": "geojson",
       "layout": {
         "icon-image": {
-          "stops": [
-            [
-              0,
-              "circle-12"
-            ],
-            [
-              10,
-              "triangle-12"
-            ]
-          ]
+          "stops": [[0, "circle-12"], [10, "triangle-12"]]
         }
       }
     }

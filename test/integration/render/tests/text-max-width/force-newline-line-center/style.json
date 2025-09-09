@@ -17,16 +17,7 @@
             "properties": {},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -20,
-                  0
-                ],
-                [
-                  20,
-                  0
-                ]
-              ]
+              "coordinates": [[-20, 0], [20, 0]]
             }
           }
         ]
@@ -49,10 +40,7 @@
       "layout": {
         "symbol-placement": "line-center",
         "text-field": "abcde\nabcde",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

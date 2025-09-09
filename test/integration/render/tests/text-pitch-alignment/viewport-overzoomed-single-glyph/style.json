@@ -1,9 +1,6 @@
 {
   "version": 8,
-  "center": [
-    -118.28162,
-    33.86852
-  ],
+  "center": [-118.28162, 33.86852],
   "zoom": 21,
   "pitch": 60,
   "bearing": 161.5,
@@ -11,9 +8,7 @@
     "mapbox": {
       "type": "vector",
       "maxzoom": 16,
-      "tiles": [
-        "local://tiles/mapbox.mapbox-streets-v7/16-11235-26208.mvt"
-      ]
+      "tiles": ["local://tiles/mapbox.mapbox-streets-v7/16-11235-26208.mvt"]
     }
   },
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",
@@ -31,13 +26,10 @@
       "source": "mapbox",
       "source-layer": "road_label",
       "layout": {
-        "text-size": { "base": 1, "stops": [ [ 9, 10 ], [ 20, 16 ] ] },
+        "text-size": {"base": 1, "stops": [[9, 10], [20, 16]]},
         "text-max-angle": 30,
         "symbol-spacing": 250,
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "symbol-placement": "line",
         "text-padding": 1,
         "text-rotation-alignment": "map",

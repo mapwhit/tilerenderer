@@ -15,9 +15,7 @@
             "color": "red"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -30,10 +28,7 @@
         "id": "1",
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }
@@ -45,14 +40,7 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 5,
-        "circle-color": [
-          "coalesce",
-          [
-            "feature-state",
-            "color"
-          ],
-          "black"
-        ]
+        "circle-color": ["coalesce", ["feature-state", "color"], "black"]
       }
     }
   ]

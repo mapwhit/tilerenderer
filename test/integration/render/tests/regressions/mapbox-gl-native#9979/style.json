@@ -24,17 +24,9 @@
             "type": "line"
           }
         ],
-        [
-          "wait"
-        ],
-        [
-          "removeLayer",
-          "line"
-        ],
-        [
-          "removeSource",
-          "geojson"
-        ],
+        ["wait"],
+        ["removeLayer", "line"],
+        ["removeSource", "geojson"],
         [
           "addSource",
           "geojson",
@@ -67,13 +59,8 @@
             }
           }
         ],
-        [
-          "setZoom",
-          16.7
-        ],
-        [
-          "wait"
-        ]
+        ["setZoom", 16.7],
+        ["wait"]
       ]
     }
   },

@@ -4,15 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "removeLayer",
-          "raster"
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["removeLayer", "raster"], ["wait"]]
     }
   },
   "transition": {
@@ -21,9 +13,7 @@
   "sources": {
     "raster": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.satellite.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"],
       "tileSize": 256
     }
   },

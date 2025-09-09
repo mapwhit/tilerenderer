@@ -14,14 +14,8 @@
             "color": "red"
           }
         ],
-        [
-          "wait",
-          0
-        ],
-        [
-          "wait",
-          150
-        ]
+        ["wait", 0],
+        ["wait", 150]
       ]
     }
   },
@@ -31,28 +25,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }
@@ -64,7 +37,7 @@
       "source": "geojson",
       "paint": {
         "fill-extrusion-height": 0,
-        "fill-extrusion-color":"blue"
+        "fill-extrusion-color": "blue"
       }
     }
   ]

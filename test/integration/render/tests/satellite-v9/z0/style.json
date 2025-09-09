@@ -9,11 +9,7 @@
       "operations": [
         ["setStyle", "local://styles/satellite-v9.json"],
         ["wait"],
-        ["setPaintProperty",
-         "satellite",
-         "raster-fade-duration",
-         0
-        ],
+        ["setPaintProperty", "satellite", "raster-fade-duration", 0],
         ["wait"]
       ]
     }

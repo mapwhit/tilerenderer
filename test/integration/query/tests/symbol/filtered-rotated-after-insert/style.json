@@ -4,31 +4,11 @@
     "test": {
       "width": 256,
       "height": 256,
-      "operations": [
-        [
-          "setBearing",
-          45
-        ],
-        [
-          "wait"
-        ]
-      ],
-      "queryGeometry": [
-        [
-          0,
-          0
-        ],
-        [
-          256,
-          256
-        ]
-      ]
+      "operations": [["setBearing", 45], ["wait"]],
+      "queryGeometry": [[0, 0], [256, 256]]
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 3,
   "sources": {
     "geojson": {
@@ -48,10 +28,7 @@
         "text-field": ".",
         "text-size": 6,
         "text-allow-overlap": true,
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

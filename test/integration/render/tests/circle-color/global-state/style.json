@@ -22,10 +22,7 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             },
             "properties": {}
           },
@@ -34,10 +31,7 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             },
             "properties": {}
           }
@@ -52,10 +46,7 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 10,
-        "circle-color": [
-          "global-state",
-          "color"
-        ]
+        "circle-color": ["global-state", "color"]
       }
     }
   ]

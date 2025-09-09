@@ -9,17 +9,9 @@
           "setLayoutProperty",
           "symbol",
           "icon-rotate",
-          [ "+",
-            [
-              "get",
-              "rotate"
-            ],
-            45
-          ]
+          ["+", ["get", "rotate"], 45]
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -39,10 +31,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -52,10 +41,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -70,10 +56,7 @@
       "source": "geojson",
       "layout": {
         "icon-image": "oneway",
-        "icon-rotate": [
-          "get",
-          "rotate"
-        ]
+        "icon-rotate": ["get", "rotate"]
       }
     }
   ]

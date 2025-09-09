@@ -6,11 +6,11 @@
       "width": 256
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "state": {
-    "prefix": { "default": "pre_"},
-    "suffix": { "default": "_suf" }
+    "prefix": {"default": "pre_"},
+    "suffix": {"default": "_suf"}
   },
   "sources": {
     "point": {
@@ -25,7 +25,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -45,10 +45,7 @@
           ["get", "name"],
           ["global-state", "suffix"]
         ],
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": 32
       }
     }

@@ -14,24 +14,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "x": 0 },
+            "properties": {"x": 0},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                -10
-              ]
+              "coordinates": [0, -10]
             }
           },
           {
             "type": "Feature",
-            "properties": { "x": 1 },
+            "properties": {"x": 1},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                10
-              ]
+              "coordinates": [0, 10]
             }
           }
         ]
@@ -50,16 +44,7 @@
       "paint": {
         "icon-color": {
           "property": "x",
-          "stops": [
-            [
-              0,
-              "blue"
-            ],
-            [
-              1,
-              "red"
-            ]
-          ]
+          "stops": [[0, "blue"], [1, "red"]]
         }
       }
     }

@@ -5,10 +5,7 @@
       "width": 1,
       "height": 1,
       "operations": [
-        [
-          "removeLayer",
-          "background"
-        ],
+        ["removeLayer", "background"],
         [
           "addLayer",
           {
@@ -16,9 +13,7 @@
             "type": "background"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

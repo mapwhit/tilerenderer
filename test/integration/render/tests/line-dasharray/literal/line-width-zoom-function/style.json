@@ -12,16 +12,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            0
-          ],
-          [
-            10,
-            0
-          ]
-        ]
+        "coordinates": [[-10, 0], [10, 0]]
       }
     }
   },
@@ -32,21 +23,9 @@
       "source": "geojson",
       "paint": {
         "line-width": {
-          "stops": [
-            [
-              0,
-              1
-            ],
-            [
-              1,
-              10
-            ]
-          ]
+          "stops": [[0, 1], [1, 10]]
         },
-        "line-dasharray": [
-          1,
-          1
-        ]
+        "line-dasharray": [1, 1]
       }
     }
   ]

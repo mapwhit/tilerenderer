@@ -11,48 +11,21 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            -10
-          ],
-          [
-            10,
-            -10
-          ]
-        ]
+        "coordinates": [[-10, -10], [10, -10]]
       }
     },
     "b": {
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            0
-          ],
-          [
-            10,
-            0
-          ]
-        ]
+        "coordinates": [[-10, 0], [10, 0]]
       }
     },
     "c": {
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            10
-          ],
-          [
-            10,
-            10
-          ]
-        ]
+        "coordinates": [[-10, 10], [10, 10]]
       }
     }
   },
@@ -63,10 +36,7 @@
       "source": "a",
       "paint": {
         "line-width": 2,
-        "line-dasharray": [
-          1,
-          1
-        ]
+        "line-dasharray": [1, 1]
       }
     },
     {
@@ -75,10 +45,7 @@
       "source": "b",
       "paint": {
         "line-width": 4,
-        "line-dasharray": [
-          1,
-          1
-        ]
+        "line-dasharray": [1, 1]
       }
     },
     {
@@ -87,10 +54,7 @@
       "source": "c",
       "paint": {
         "line-width": 8,
-        "line-dasharray": [
-          1,
-          1
-        ]
+        "line-dasharray": [1, 1]
       }
     }
   ]

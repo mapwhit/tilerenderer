@@ -9,9 +9,7 @@
   "sources": {
     "raster": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/alpha.png"
-      ],
+      "tiles": ["local://tiles/alpha.png"],
       "tileSize": 256
     }
   },

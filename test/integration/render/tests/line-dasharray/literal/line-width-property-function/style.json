@@ -20,16 +20,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  -5
-                ],
-                [
-                  10,
-                  -5
-                ]
-              ]
+              "coordinates": [[-10, -5], [10, -5]]
             }
           },
           {
@@ -39,16 +30,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  0
-                ],
-                [
-                  10,
-                  0
-                ]
-              ]
+              "coordinates": [[-10, 0], [10, 0]]
             }
           },
           {
@@ -58,16 +40,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  5
-                ],
-                [
-                  10,
-                  5
-                ]
-              ]
+              "coordinates": [[-10, 5], [10, 5]]
             }
           }
         ]
@@ -84,10 +57,7 @@
           "type": "identity",
           "property": "property"
         },
-        "line-dasharray": [
-          2,
-          1
-        ]
+        "line-dasharray": [2, 1]
       }
     }
   ]

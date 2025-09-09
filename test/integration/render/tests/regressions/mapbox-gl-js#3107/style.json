@@ -12,28 +12,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }
@@ -45,9 +24,9 @@
       "type": "fill",
       "source": "geojson",
       "paint": {
-          "fill-outline-color": "hsla(0, 0, 0, 0)",
-          "fill-color": "hsla(0, 0, 0, 0)",
-          "fill-pattern": "generic_icon"
+        "fill-outline-color": "hsla(0, 0, 0, 0)",
+        "fill-color": "hsla(0, 0, 0, 0)",
+        "fill-pattern": "generic_icon"
       }
     }
   ]

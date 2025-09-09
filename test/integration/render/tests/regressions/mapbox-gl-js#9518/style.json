@@ -14,13 +14,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-pattern": [
-          "step",
-          ["zoom"],
-          "",
-          5,
-          "cemetery_icon"
-        ]
+        "background-pattern": ["step", ["zoom"], "", 5, "cemetery_icon"]
       }
     }
   ]

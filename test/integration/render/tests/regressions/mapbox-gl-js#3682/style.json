@@ -16,16 +16,7 @@
         },
         "geometry": {
           "type": "LineString",
-          "coordinates": [
-            [
-              0,
-              -20
-            ],
-            [
-              0,
-              20
-            ]
-          ]
+          "coordinates": [[0, -20], [0, 20]]
         }
       }
     }
@@ -36,10 +27,7 @@
       "type": "line",
       "source": "geojson",
       "paint": {
-        "line-dasharray": [
-          1,
-          1
-        ],
+        "line-dasharray": [1, 1],
         "line-width": {
           "type": "identity",
           "property": "width"

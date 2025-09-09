@@ -21,13 +21,11 @@
             "type": "raster",
             "source": "raster",
             "paint": {
-                "raster-fade-duration": 0
+              "raster-fade-duration": 0
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

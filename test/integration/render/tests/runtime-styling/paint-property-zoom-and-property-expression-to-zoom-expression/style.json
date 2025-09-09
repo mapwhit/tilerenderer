@@ -9,24 +9,9 @@
           "setPaintProperty",
           "circle",
           "circle-color",
-          [
-            "interpolate",
-            [
-              "exponential",
-              1
-            ],
-            [
-              "zoom"
-            ],
-            0,
-            "blue",
-            10,
-            "white"
-          ]
+          ["interpolate", ["exponential", 1], ["zoom"], 0, "blue", 10, "white"]
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -46,10 +31,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -59,10 +41,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -75,16 +54,7 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-color": [
-          "step",
-          ["zoom"],
-          [
-            "get",
-            "color"
-          ],
-          10,
-          "black"
-        ]
+        "circle-color": ["step", ["zoom"], ["get", "color"], 10, "black"]
       }
     }
   ]

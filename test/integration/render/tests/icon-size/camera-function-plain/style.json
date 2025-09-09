@@ -18,7 +18,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -34,10 +34,7 @@
       "source": "geojson",
       "layout": {
         "icon-size": {
-          "stops": [
-            [ 0, 0.5 ],
-            [ 1, 1.5 ]
-          ]
+          "stops": [[0, 0.5], [1, 1.5]]
         },
         "icon-image": "restaurant-12"
       },

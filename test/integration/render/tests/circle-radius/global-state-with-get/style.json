@@ -22,10 +22,7 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             },
             "properties": {
               "radius": 12
@@ -36,10 +33,7 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             },
             "properties": {}
           }
@@ -55,14 +49,8 @@
       "paint": {
         "circle-radius": [
           "coalesce",
-          [
-            "get",
-            "radius"
-          ],
-          [
-            "global-state",
-            "radius"
-          ],
+          ["get", "radius"],
+          ["global-state", "radius"],
           10
         ]
       }

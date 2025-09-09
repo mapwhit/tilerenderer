@@ -11,37 +11,44 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [{
-          "type": "Feature",
-          "properties": { "class": "A" },
-          "geometry": { "type": "Point", "coordinates": [0, 0] }
-         }, {
-          "type": "Feature",
-          "properties": { "class": "A" },
-          "geometry": { "type": "Point", "coordinates": [15, 15] }
-         }, {
-          "type": "Feature",
-          "properties": { "class": "A" },
-          "geometry": { "type": "Point", "coordinates": [-15, -15] }
-         }, {
-          "type": "Feature",
-          "properties": { "class": "B" },
-          "geometry": { "type": "Point", "coordinates": [8, 8] }
-         }, {
-          "type": "Feature",
-          "properties": { "class": "B" },
-          "geometry": { "type": "Point", "coordinates": [-8, -8] }
-         }, {
-          "type": "Feature",
-          "properties": { "class": "C" },
-          "geometry": { "type": "Point", "coordinates": [4, 4] }
-         }
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {"class": "A"},
+            "geometry": {"type": "Point", "coordinates": [0, 0]}
+          },
+          {
+            "type": "Feature",
+            "properties": {"class": "A"},
+            "geometry": {"type": "Point", "coordinates": [15, 15]}
+          },
+          {
+            "type": "Feature",
+            "properties": {"class": "A"},
+            "geometry": {"type": "Point", "coordinates": [-15, -15]}
+          },
+          {
+            "type": "Feature",
+            "properties": {"class": "B"},
+            "geometry": {"type": "Point", "coordinates": [8, 8]}
+          },
+          {
+            "type": "Feature",
+            "properties": {"class": "B"},
+            "geometry": {"type": "Point", "coordinates": [-8, -8]}
+          },
+          {
+            "type": "Feature",
+            "properties": {"class": "C"},
+            "geometry": {"type": "Point", "coordinates": [4, 4]}
+          }
         ]
       }
     }
   },
   "sprite": "local://sprites/sprite",
-  "layers": [{
+  "layers": [
+    {
       "id": "symbolA",
       "type": "symbol",
       "source": "geojson",
@@ -53,7 +60,8 @@
       "paint": {
         "icon-color": "red"
       }
-    }, {
+    },
+    {
       "id": "symbolB",
       "type": "symbol",
       "source": "geojson",
@@ -65,7 +73,8 @@
       "paint": {
         "icon-color": "blue"
       }
-    }, {
+    },
+    {
       "id": "symbolC",
       "type": "symbol",
       "source": "geojson",

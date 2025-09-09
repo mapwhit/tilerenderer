@@ -5,27 +5,11 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setLayoutProperty",
-          "layer",
-          "visibility",
-          "none"
-        ],
-        [
-          "wait"
-        ],
-        [
-          "setLayoutProperty",
-          "layer",
-          "visibility",
-          "visible"
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setLayoutProperty", "layer", "visibility", "none"],
+        ["wait"],
+        ["setLayoutProperty", "layer", "visibility", "visible"],
+        ["wait"]
       ]
     }
   },

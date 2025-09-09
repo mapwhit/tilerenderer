@@ -5,18 +5,9 @@
       "height": 64,
       "width": 64,
       "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setLayoutProperty",
-          "symbol",
-          "text-field",
-          "ā"
-        ],
-        [
-          "wait"
-        ]
+        ["wait"],
+        ["setLayoutProperty", "symbol", "text-field", "ā"],
+        ["wait"]
       ]
     }
   },
@@ -28,10 +19,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -43,9 +31,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "A",
-        "text-font": [
-          "NotoCJK"
-        ]
+        "text-font": ["NotoCJK"]
       }
     }
   ]

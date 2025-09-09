@@ -9,19 +9,9 @@
           "setLayoutProperty",
           "symbol",
           "icon-image",
-          [
-            "step",
-            [
-              "zoom"
-            ],
-            "circle-12",
-            10,
-            "triangle-12"
-          ]
+          ["step", ["zoom"], "circle-12", 10, "triangle-12"]
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -33,10 +23,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

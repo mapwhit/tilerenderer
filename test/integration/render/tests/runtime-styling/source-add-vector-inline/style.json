@@ -10,9 +10,7 @@
           "vector",
           {
             "type": "vector",
-            "tiles": [
-              "local://tiles/{z}-{x}-{y}.mvt"
-            ]
+            "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
           }
         ],
         [
@@ -24,9 +22,7 @@
             "source-layer": "water"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

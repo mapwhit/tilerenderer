@@ -22,9 +22,7 @@
             "source-layer": "water"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

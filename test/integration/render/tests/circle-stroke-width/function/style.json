@@ -14,26 +14,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -48,16 +40,7 @@
       "paint": {
         "circle-color": "#fff",
         "circle-stroke-width": {
-          "stops": [
-            [
-              0,
-              5
-            ],
-            [
-              1,
-              10
-            ]
-          ]
+          "stops": [[0, 5], [1, 10]]
         }
       }
     }

@@ -18,12 +18,9 @@
             "id": "a",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
-          }                   
+          }
         ]
       }
     },
@@ -38,12 +35,9 @@
             "id": "a",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
-          }                   
+          }
         ]
       }
     },
@@ -58,15 +52,12 @@
             "id": "a",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                -10
-              ]
+              "coordinates": [0, -10]
             }
-          }                   
+          }
         ]
       }
-    }        
+    }
   },
   "layers": [
     {
@@ -100,6 +91,6 @@
         "circle-stroke-color": "green",
         "circle-stroke-width": 2
       }
-    }    
+    }
   ]
 }

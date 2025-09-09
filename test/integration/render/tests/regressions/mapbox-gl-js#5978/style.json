@@ -12,32 +12,14 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -180,
-            10
-          ],
-          [
-            180,
-            10
-          ]
-        ]
+        "coordinates": [[-180, 10], [180, 10]]
       }
     },
     "b": {
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -180,
-            -10
-          ],
-          [
-            180,
-            -10
-          ]
-        ]
+        "coordinates": [[-180, -10], [180, -10]]
       }
     }
   },

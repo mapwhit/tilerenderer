@@ -4,18 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "wait"
-        ],
-        [
-          "setZoom",
-          1
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["wait"], ["setZoom", 1], ["wait"]]
     }
   },
   "sources": {},
@@ -25,10 +14,7 @@
       "type": "background",
       "paint": {
         "background-color": {
-          "stops": [
-            [0, "white"],
-            [1, "black"]
-          ]
+          "stops": [[0, "white"], [1, "black"]]
         }
       }
     }

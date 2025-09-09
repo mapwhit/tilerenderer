@@ -5,15 +5,8 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setLayoutProperty",
-          "b",
-          "icon-offset",
-          [0, 10]
-        ],
-        [
-          "wait"
-        ]
+        ["setLayoutProperty", "b", "icon-offset", [0, 10]],
+        ["wait"]
       ]
     }
   },

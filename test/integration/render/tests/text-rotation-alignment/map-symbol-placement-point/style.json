@@ -12,10 +12,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -29,10 +26,7 @@
         "symbol-placement": "point",
         "text-rotation-alignment": "map",
         "text-field": "-->",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

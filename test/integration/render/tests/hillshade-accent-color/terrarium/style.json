@@ -11,9 +11,7 @@
   "sources": {
     "source": {
       "type": "raster-dem",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.terrarium.png"
-      ],
+      "tiles": ["local://tiles/{z}-{x}-{y}.terrarium.png"],
       "maxzoom": 15,
       "tileSize": 256,
       "encoding": "terrarium"

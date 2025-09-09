@@ -18,7 +18,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -35,10 +35,7 @@
       "layout": {
         "icon-size": {
           "base": 99,
-          "stops": [
-            [ 0, 0.5 ],
-            [ 1, 1.5 ]
-          ]
+          "stops": [[0, 0.5], [1, 1.5]]
         },
         "icon-image": "restaurant-12"
       },

@@ -19,10 +19,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                8,
-                0
-              ]
+              "coordinates": [8, 0]
             }
           },
           {
@@ -32,10 +29,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -8,
-                0
-              ]
+              "coordinates": [-8, 0]
             }
           }
         ]
@@ -45,7 +39,7 @@
   "layers": [
     {
       "id": "circles",
-      "filter": ["==", ["get" ,"position"], "left"],
+      "filter": ["==", ["get", "position"], "left"],
       "type": "circle",
       "source": "circles",
       "paint": {

@@ -7,17 +7,14 @@
     }
   },
   "state": {
-    "icon-size": { "default": 2 }
+    "icon-size": {"default": 2}
   },
   "sources": {
     "geojson": {
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -29,10 +26,7 @@
       "source": "geojson",
       "layout": {
         "icon-image": "generic_icon",
-        "icon-size": [
-          "global-state",
-          "icon-size"
-        ]
+        "icon-size": ["global-state", "icon-size"]
       }
     }
   ]

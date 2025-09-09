@@ -6,10 +6,7 @@
       "width": 64
     }
   },
-  "center": [
-    90,
-    45
-  ],
+  "center": [90, 45],
   "zoom": 1,
   "sources": {
     "geojson": {
@@ -40,10 +37,11 @@
       "layout": {
         "text-field": "Test",
         "text-font": [
-          "step", ["zoom"],
-          [ "literal", [ "Open Sans Semibold", "Arial Unicode MS Bold" ]],
+          "step",
+          ["zoom"],
+          ["literal", ["Open Sans Semibold", "Arial Unicode MS Bold"]],
           1,
-          ["literal", [ "Open Sans Semibold", "Arial Unicode MS Bold" ]]
+          ["literal", ["Open Sans Semibold", "Arial Unicode MS Bold"]]
         ]
       },
       "paint": {

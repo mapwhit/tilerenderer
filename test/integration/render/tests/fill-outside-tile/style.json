@@ -11,9 +11,7 @@
   "sources": {
     "vector_tiles": {
       "type": "vector",
-      "tiles": [
-        "local://tiles/outside_ring.mvt"
-      ]
+      "tiles": ["local://tiles/outside_ring.mvt"]
     }
   },
   "layers": [

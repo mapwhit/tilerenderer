@@ -4,11 +4,7 @@
     "test": {
       "height": 256,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./image/marker.png"
-        ],
+        ["addImage", "marker", "./image/marker.png"],
         [
           "addLayer",
           {
@@ -20,17 +16,9 @@
             }
           }
         ],
-        [
-          "wait"
-        ],
-        [
-          "removeImage",
-          "marker"
-        ],
-        [
-          "removeLayer",
-          "fill"
-        ],
+        ["wait"],
+        ["removeImage", "marker"],
+        ["removeLayer", "fill"],
         [
           "addLayer",
           {
@@ -43,82 +31,52 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
-
     }
   },
-"zoom": 11,
- "sources": {
-     "mapbox": {
-       "type": "geojson",
-       "maxzoom": 10,
-       "data": {
-         "type": "FeatureCollection",
-         "features": [
-           {
-             "type": "Feature",
-             "properties": {
-               "class": "street"
-             },
-             "geometry": {
-               "type": "LineString",
-               "coordinates": [
-                 [
-                   10,
-                   -0.01
-                 ],
-                 [
-                   -10,
-                   -0.01
-                 ]
-               ]
-             }
-           },
-           {
-             "type": "Feature",
-             "properties": {
-               "class": "path"
-             },
-             "geometry": {
-               "type": "LineString",
-               "coordinates": [
-                 [
-                   -10,
-                   0
-                 ],
-                 [
-                   10,
-                   0
-                 ]
-               ]
-             }
-           },
-           {
-             "type": "Feature",
-             "properties": {
-               "class": "street"
-             },
-             "geometry": {
-               "type": "LineString",
-               "coordinates": [
-                 [
-                   -10,
-                   0.01
-                 ],
-                 [
-                   10,
-                   0.01
-                 ]
-               ]
-             }
-           }
-         ]
-       }
-     }
-   },
+  "zoom": 11,
+  "sources": {
+    "mapbox": {
+      "type": "geojson",
+      "maxzoom": 10,
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "class": "street"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[10, -0.01], [-10, -0.01]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "class": "path"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[-10, 0], [10, 0]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "class": "street"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[-10, 0.01], [10, 0.01]]
+            }
+          }
+        ]
+      }
+    }
+  },
   "sprite": "local://sprites/emerald",
   "layers": [
     {

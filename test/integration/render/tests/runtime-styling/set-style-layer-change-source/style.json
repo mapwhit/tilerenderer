@@ -17,20 +17,14 @@
                 "type": "geojson",
                 "data": {
                   "type": "Point",
-                  "coordinates": [
-                    0,
-                    0
-                  ]
+                  "coordinates": [0, 0]
                 }
               },
               "wrong-geojson": {
                 "type": "geojson",
                 "data": {
                   "type": "Point",
-                  "coordinates": [
-                    5,
-                    5
-                  ]
+                  "coordinates": [5, 5]
                 }
               }
             },
@@ -43,9 +37,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -57,20 +49,14 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     },
     "wrong-geojson": {
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          5,
-          5
-        ]
+        "coordinates": [5, 5]
       }
     }
   },

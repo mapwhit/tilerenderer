@@ -2,16 +2,7 @@
   {
     "geometry": {
       "type": "LineString",
-      "coordinates": [
-        [
-          0,
-          0
-        ],
-        [
-          45,
-          44.99588261816547
-        ]
-      ]
+      "coordinates": [[0, 0], [45, 44.99588261816]]
     },
     "type": "Feature",
     "properties": {},

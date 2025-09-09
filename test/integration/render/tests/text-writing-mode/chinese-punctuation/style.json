@@ -12,162 +12,93 @@
     "mapbox": {
       "type": "geojson",
       "data": {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "氣—到–身_什…戰.只。"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -119,
-                    85
-                  ],
-                  [
-                    -119,
-                    10
-                  ]
-                ]
-              }
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "氣—到–身_什…戰.只。"
             },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "（氣）到（身）（什）"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -32.453124999999964,
-                    85
-                  ],
-                  [
-                    -32.453124999999964,
-                    10
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "“氣”到“身”“白”"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    52.04687500000002,
-                    85
-                  ],
-                  [
-                    52.04687500000002,
-                    10
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "—氣—到—a—a—"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    128.703125,
-                    85
-                  ],
-                  [
-                    128.703125,
-                    10
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "氣—到–身_什…戰.只。"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -150,
-                    -17
-                  ],
-                  [
-                    -10,
-                    -17
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "（氣）到（身）（什）"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -150,
-                    -58
-                  ],
-                  [
-                    -10,
-                    -58
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "“氣”到“身”“白”"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    10,
-                    -17
-                  ],
-                  [
-                    130,
-                    -17
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "name": "—氣—到—a—a—"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    10,
-                    -58
-                  ],
-                  [
-                    130,
-                    -58
-                  ]
-                ]
-              }
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[-119, 85], [-119, 10]]
             }
-          ]
-        }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "（氣）到（身）（什）"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [-32.453124999999964, 85],
+                [-32.453124999999964, 10]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "“氣”到“身”“白”"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[52.04687500000002, 85], [52.04687500000002, 10]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "—氣—到—a—a—"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[128.703125, 85], [128.703125, 10]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "氣—到–身_什…戰.只。"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[-150, -17], [-10, -17]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "（氣）到（身）（什）"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[-150, -58], [-10, -58]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "“氣”到“身”“白”"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[10, -17], [130, -17]]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "name": "—氣—到—a—a—"
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [[10, -58], [130, -58]]
+            }
+          }
+        ]
+      }
     }
   },
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",
@@ -187,14 +118,15 @@
         "text-field": "{name}",
         "symbol-placement": "line",
         "text-allow-overlap": true,
-        "text-font": [ "NotoCJK" ]
+        "text-font": ["NotoCJK"]
       }
-    }, {
+    },
+    {
       "id": "lines",
       "type": "line",
       "source": "mapbox",
       "paint": {
-          "line-opacity": 0.25
+        "line-opacity": 0.25
       }
     }
   ]

@@ -4,15 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "removeLayer",
-          "fill"
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["removeLayer", "fill"], ["wait"]]
     }
   },
   "transition": {
@@ -24,28 +16,7 @@
       "data": {
         "type": "Polygon",
         "coordinates": [
-          [
-            [
-              -10,
-              -10
-            ],
-            [
-              -10,
-              10
-            ],
-            [
-              10,
-              10
-            ],
-            [
-              10,
-              -10
-            ],
-            [
-              -10,
-              -10
-            ]
-          ]
+          [[-10, -10], [-10, 10], [10, 10], [10, -10], [-10, -10]]
         ]
       }
     }

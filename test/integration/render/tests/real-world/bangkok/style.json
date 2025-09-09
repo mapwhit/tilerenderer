@@ -6,8 +6,8 @@
       "height": 512,
       "operations": [
         ["setStyle", "local://styles/bangkok.json"],
-        ["setZoom", 12 ],
-        ["setCenter", [100.5434415, 13.714627] ],
+        ["setZoom", 12],
+        ["setCenter", [100.5434415, 13.714627]],
         ["wait"]
       ]
     }

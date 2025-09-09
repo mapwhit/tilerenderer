@@ -6,7 +6,7 @@
       "width": 64
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "point": {
@@ -21,7 +21,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, -10 ]
+              "coordinates": [0, -10]
             }
           },
           {
@@ -31,7 +31,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 10 ]
+              "coordinates": [0, 10]
             }
           }
         ]
@@ -48,24 +48,10 @@
         "text-field": "A",
         "text-font": [
           "match",
-          [
-            "get",
-            "text-font"
-          ],
+          ["get", "text-font"],
           "noto",
-          [
-            "literal",
-            [
-              "NotoCJK"
-            ]
-          ],
-          [
-            "literal",
-            [
-              "Open Sans Semibold",
-              "Arial Unicode MS Bold"
-            ]
-          ]
+          ["literal", ["NotoCJK"]],
+          ["literal", ["Open Sans Semibold", "Arial Unicode MS Bold"]]
         ]
       }
     }

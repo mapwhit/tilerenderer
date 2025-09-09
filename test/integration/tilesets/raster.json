@@ -1,5 +1,3 @@
 {
-  "tiles": [
-    "local://tiles/{z}-{x}-{y}.satellite.png"
-  ]
+  "tiles": ["local://tiles/{z}-{x}-{y}.satellite.png"]
 }

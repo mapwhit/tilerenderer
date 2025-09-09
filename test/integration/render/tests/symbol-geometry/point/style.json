@@ -14,14 +14,16 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [{
-          "type": "Feature",
-          "properties": {},
-          "geometry": {
-            "type": "Point",
-            "coordinates": [0, 0]
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Point",
+              "coordinates": [0, 0]
+            }
           }
-        }]
+        ]
       }
     }
   },
@@ -38,15 +40,12 @@
       "type": "symbol",
       "source": "geometry",
       "layout": {
-          "icon-image": "rocket-12",
-          "text-field": "Mapbox",
-          "text-font": [
-            "Open Sans Semibold",
-            "Arial Unicode MS Bold"
-          ],
-          "text-allow-overlap": true,
-          "text-ignore-placement": true,
-          "text-offset": [0, 1]
+        "icon-image": "rocket-12",
+        "text-field": "Mapbox",
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-allow-overlap": true,
+        "text-ignore-placement": true,
+        "text-offset": [0, 1]
       }
     }
   ]

@@ -14,32 +14,26 @@
       "data": {
         "type": "FeatureCollection",
         "features": [
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [
-                      0,
-                      0
-                    ]
-                },
-                "properties": {
-                    "text": "OK"
-                }
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [0, 0]
             },
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [
-                      20,
-                      0
-                    ]
-                },
-                "properties": {
-                    "text": ""
-                }
+            "properties": {
+              "text": "OK"
             }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [20, 0]
+            },
+            "properties": {
+              "text": ""
+            }
+          }
         ]
       }
     }
@@ -56,17 +50,11 @@
         "icon-allow-overlap": true,
         "icon-image": "triangle-12",
         "text-field": "{text}",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       },
       "paint": {
         "icon-opacity": 0.5,
-        "text-translate": [
-          -10,
-          0
-        ]
+        "text-translate": [-10, 0]
       }
     }
   ]

@@ -15,9 +15,7 @@
             "hover": true
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -26,16 +24,16 @@
     "geojson": {
       "type": "geojson",
       "data": {
-            "type": "Feature",
-            "id": 1,
-            "properties": {
-                "radius": 5
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [0,0]
-            }
+        "type": "Feature",
+        "id": 1,
+        "properties": {
+          "radius": 5
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [0, 0]
         }
+      }
     }
   },
   "layers": [
@@ -44,16 +42,16 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-            "circle-radius": [ "get", "radius" ],
-            "circle-opacity": 0.5,
-            "circle-color": "#ff0000",
-            "circle-stroke-width": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                4,
-                1
-            ]
-        }
+        "circle-radius": ["get", "radius"],
+        "circle-opacity": 0.5,
+        "circle-color": "#ff0000",
+        "circle-stroke-width": [
+          "case",
+          ["boolean", ["feature-state", "hover"], false],
+          4,
+          1
+        ]
+      }
     }
   ]
 }

@@ -18,8 +18,7 @@
       "**",
       "!src/css",
       "!src/style-spec/reference/**/*.json",
-      "!test/fixtures",
-      "!test/integration/**/*.json"
+      "!test/fixtures"
     ]
   },
   "formatter": {
@@ -104,6 +103,19 @@
           "style": {
             "useNodejsImportProtocol": "error"
           }
+        }
+      }
+    },
+    {
+      "includes": [
+        "test/integration/**/*.json"
+      ],
+      "json": {
+        "formatter": {
+          "enabled": true,
+          "expand": "auto",
+          "bracketSpacing": false,
+          "lineWidth": 80
         }
       }
     }

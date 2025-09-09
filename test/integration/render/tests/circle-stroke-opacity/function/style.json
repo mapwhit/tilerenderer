@@ -14,26 +14,18 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -49,16 +41,7 @@
         "circle-color": "#fff",
         "circle-stroke-width": 5,
         "circle-stroke-opacity": {
-          "stops": [
-            [
-              0,
-              0.5
-            ],
-            [
-              1,
-              1
-            ]
-          ]
+          "stops": [[0, 0.5], [1, 1]]
         }
       }
     }

@@ -15,28 +15,7 @@
         "properties": {},
         "geometry": {
           "type": "MultiLineString",
-          "coordinates": [
-            [
-              [
-                -3,
-                -3
-              ],
-              [
-                -3,
-                3
-              ]
-            ],
-            [
-              [
-                3,
-                -3
-              ],
-              [
-                3,
-                3
-              ]
-            ]
-          ]
+          "coordinates": [[[-3, -3], [-3, 3]], [[3, -3], [3, 3]]]
         }
       },
       "lineMetrics": true

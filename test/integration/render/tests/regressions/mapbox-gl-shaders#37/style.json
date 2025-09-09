@@ -19,16 +19,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  -10,
-                  -20
-                ],
-                [
-                  -10,
-                  20
-                ]
-              ]
+              "coordinates": [[-10, -20], [-10, 20]]
             }
           },
           {
@@ -38,16 +29,7 @@
             },
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [
-                  10,
-                  -20
-                ],
-                [
-                  10,
-                  20
-                ]
-              ]
+              "coordinates": [[10, -20], [10, 20]]
             }
           }
         ]
@@ -61,10 +43,7 @@
       "source": "geojson",
       "paint": {
         "line-width": 5,
-        "line-dasharray": [
-          1,
-          1
-        ],
+        "line-dasharray": [1, 1],
         "line-opacity": {
           "type": "identity",
           "property": "opacity"

@@ -23,29 +23,32 @@
     }
   },
   "sprite": "local://sprites/sprite",
-  "layers": [{
-    "id": "a",
-    "type": "symbol",
-    "source": "geojson",
-    "layout": {
-      "icon-image": "dot.sdf",
-      "icon-allow-overlap": true,
-      "icon-size": ["get", "sizeA"]
+  "layers": [
+    {
+      "id": "a",
+      "type": "symbol",
+      "source": "geojson",
+      "layout": {
+        "icon-image": "dot.sdf",
+        "icon-allow-overlap": true,
+        "icon-size": ["get", "sizeA"]
+      },
+      "paint": {
+        "icon-color": "blue"
+      }
     },
-    "paint": {
-      "icon-color": "blue"
+    {
+      "id": "b",
+      "type": "symbol",
+      "source": "geojson",
+      "layout": {
+        "icon-image": "dot.sdf",
+        "icon-allow-overlap": true,
+        "icon-size": ["get", "sizeB"]
+      },
+      "paint": {
+        "icon-color": "red"
+      }
     }
-  }, {
-    "id": "b",
-    "type": "symbol",
-    "source": "geojson",
-    "layout": {
-      "icon-image": "dot.sdf",
-      "icon-allow-overlap": true,
-      "icon-size": ["get", "sizeB"]
-    },
-    "paint": {
-      "icon-color": "red"
-    }
-  }]
+  ]
 }

@@ -5,19 +5,14 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 17,
   "pitch": 60,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "sprite": "local://sprites/emerald",

@@ -12,11 +12,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates":
-          [
-            0,
-            0
-          ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -33,10 +29,7 @@
         "text-rotation-alignment": "auto",
         "text-max-width": 5,
         "text-field": "مكتبة الإسكندرية‎‎ Maktabat\u001c al-Iskandarīyah\n\nSome\nnew\nمكتبة lines",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

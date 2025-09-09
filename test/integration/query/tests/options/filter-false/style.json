@@ -4,10 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "queryGeometry": [
-        32,
-        32
-      ],
+      "queryGeometry": [32, 32],
       "queryOptions": {
         "filter": ["==", "key", "nope"]
       }
@@ -20,10 +17,7 @@
         "type": "Feature",
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         },
         "properties": {
           "key": "value"

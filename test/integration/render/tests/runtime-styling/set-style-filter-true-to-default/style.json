@@ -22,10 +22,7 @@
                   },
                   "geometry": {
                     "type": "Point",
-                    "coordinates": [
-                      0,
-                      0
-                    ]
+                    "coordinates": [0, 0]
                   }
                 }
               }
@@ -43,9 +40,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -62,10 +57,7 @@
         },
         "geometry": {
           "type": "Point",
-          "coordinates": [
-            0,
-            0
-          ]
+          "coordinates": [0, 0]
         }
       }
     }
@@ -79,11 +71,7 @@
       "layout": {
         "icon-image": "circle-12"
       },
-      "filter": [
-        "==",
-        "property",
-        true
-      ]
+      "filter": ["==", "property", true]
     }
   ]
 }

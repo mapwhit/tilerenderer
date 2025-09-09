@@ -5,17 +5,12 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 1,
   "sources": {
     "maplibre": {
       "type": "raster",
-      "tiles": [
-        "local://tiles/sparse204/{z}-{x}-{y}.png"
-      ]
+      "tiles": ["local://tiles/sparse204/{z}-{x}-{y}.png"]
     }
   },
   "layers": [

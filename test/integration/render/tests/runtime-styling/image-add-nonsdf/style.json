@@ -5,11 +5,7 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "addImage",
-          "line.sdf",
-          "./image/line.sdf.png"
-        ],
+        ["addImage", "line.sdf", "./image/line.sdf.png"],
         [
           "addLayer",
           {
@@ -21,9 +17,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -38,4 +32,3 @@
   },
   "layers": []
 }
-

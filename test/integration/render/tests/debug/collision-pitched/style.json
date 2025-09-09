@@ -8,10 +8,7 @@
       "diff": 0.005
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 3,
   "pitch": 60,
   "bearing": 90,
@@ -38,10 +35,7 @@
       "layout": {
         "symbol-placement": "point",
         "text-field": "test test test",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

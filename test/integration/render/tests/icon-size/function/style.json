@@ -12,10 +12,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -28,16 +25,7 @@
       "layout": {
         "icon-image": "generic_icon",
         "icon-size": {
-          "stops": [
-            [
-              0,
-              1
-            ],
-            [
-              1,
-              2
-            ]
-          ]
+          "stops": [[0, 1], [1, 2]]
         }
       }
     }

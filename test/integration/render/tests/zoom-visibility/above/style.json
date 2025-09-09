@@ -5,22 +5,10 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "setZoom",
-          2.1
-        ],
-        [
-          "wait"
-        ],
-        [
-          "setLayerZoomRange",
-          "circle",
-          1,
-          2
-        ],
-        [
-          "wait"
-        ]
+        ["setZoom", 2.1],
+        ["wait"],
+        ["setLayerZoomRange", "circle", 1, 2],
+        ["wait"]
       ]
     }
   },
@@ -29,10 +17,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },

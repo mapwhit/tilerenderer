@@ -7,10 +7,7 @@
       "allowed": 0.0003
     }
   },
-  "center": [
-    -70.752954126,
-    43.39004898677380
-  ],
+  "center": [-70.752954126, 43.3900489867738],
   "zoom": 11,
   "sources": {
     "geojson": {
@@ -34,9 +31,7 @@
       "source": "geojson",
       "layout": {
         "text-field": "{name}",
-        "text-font": [
-          "NotoCJK"
-        ],
+        "text-font": ["NotoCJK"],
         "symbol-placement": "point"
       }
     }

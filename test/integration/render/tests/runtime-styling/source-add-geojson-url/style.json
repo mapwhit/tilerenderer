@@ -21,9 +21,7 @@
             "source": "geojson"
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

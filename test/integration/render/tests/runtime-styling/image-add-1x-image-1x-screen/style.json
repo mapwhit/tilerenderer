@@ -5,11 +5,7 @@
       "width": 64,
       "height": 64,
       "operations": [
-        [
-          "addImage",
-          "marker",
-          "./sprites/1x.png"
-        ],
+        ["addImage", "marker", "./sprites/1x.png"],
         [
           "addLayer",
           {
@@ -21,9 +17,7 @@
             }
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },

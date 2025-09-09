@@ -5,18 +5,13 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -37,30 +32,12 @@
           "property": "class",
           "type": "categorical",
           "stops": [
-            [
-              "path",
-              1
-            ],
-            [
-              "driveway",
-              2
-            ],
-            [
-              "service",
-              3
-            ],
-            [
-              "street_limited",
-              4
-            ],
-            [
-              "street",
-              5
-            ],
-            [
-              "main",
-              6
-            ]
+            ["path", 1],
+            ["driveway", 2],
+            ["service", 3],
+            ["street_limited", 4],
+            ["street", 5],
+            ["main", 6]
           ]
         }
       }

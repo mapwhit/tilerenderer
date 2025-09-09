@@ -4,10 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "queryGeometry": [
-        32,
-        16
-      ]
+      "queryGeometry": [32, 16]
     }
   },
   "sources": {
@@ -23,10 +20,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           },
           {
@@ -36,10 +30,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                5,
-                15
-              ]
+              "coordinates": [5, 15]
             }
           }
         ]

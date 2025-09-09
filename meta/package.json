@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.3",
     "@mapwhit/glsl-minify": "~1",
     "ejs": "^3.1.10",
     "esbuild": "^0.25.9"

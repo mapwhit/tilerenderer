@@ -20,10 +20,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -34,10 +31,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -52,18 +46,9 @@
       "type": "symbol",
       "source": "geojson",
       "layout": {
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
-        "text-field": [
-          "get",
-          "name"
-        ],
-        "text-size": [
-          "get",
-          "size"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-field": ["get", "name"],
+        "text-size": ["get", "size"],
         "icon-image": "label",
         "icon-text-fit": "both",
         "icon-ignore-placement": true,

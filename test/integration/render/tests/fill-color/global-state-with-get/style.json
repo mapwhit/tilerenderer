@@ -19,33 +19,11 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -12,
-                    -12
-                  ],
-                  [
-                    -12,
-                    12
-                  ],
-                  [
-                    -4,
-                    12
-                  ],
-                  [
-                    -4,
-                    -12
-                  ],
-                  [
-                    -12,
-                    -12
-                  ]
-                ]
+                [[-12, -12], [-12, 12], [-4, 12], [-4, -12], [-12, -12]]
               ]
             }
           },
@@ -57,60 +35,17 @@
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    -4,
-                    -12
-                  ],
-                  [
-                    -4,
-                    12
-                  ],
-                  [
-                    4,
-                    12
-                  ],
-                  [
-                    4,
-                    -12
-                  ],
-                  [
-                    -4,
-                    -12
-                  ]
-                ]
+                [[-4, -12], [-4, 12], [4, 12], [4, -12], [-4, -12]]
               ]
             }
           },
           {
             "type": "Feature",
-            "properties": {
-            },
+            "properties": {},
             "geometry": {
               "type": "Polygon",
               "coordinates": [
-                [
-                  [
-                    4,
-                    -12
-                  ],
-                  [
-                    4,
-                    12
-                  ],
-                  [
-                    12,
-                    12
-                  ],
-                  [
-                    12,
-                    -12
-                  ],
-                  [
-                    4,
-                    -12
-                  ]
-                ]
+                [[4, -12], [4, 12], [12, 12], [12, -12], [4, -12]]
               ]
             }
           }
@@ -127,14 +62,8 @@
         "fill-antialias": false,
         "fill-color": [
           "coalesce",
-          [
-            "get",
-            "color"
-          ],
-          [
-            "global-state",
-            "color"
-          ],
+          ["get", "color"],
+          ["global-state", "color"],
           "yellow"
         ]
       }

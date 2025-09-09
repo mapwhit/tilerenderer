@@ -18,10 +18,7 @@
             "id": 1,
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -31,10 +28,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -46,10 +40,7 @@
       "id": "a",
       "type": "circle",
       "source": "geojson",
-      "filter": [
-        "has",
-        "$id"
-      ],
+      "filter": ["has", "$id"],
       "paint": {
         "circle-color": "red"
       }
@@ -58,10 +49,7 @@
       "id": "b",
       "type": "circle",
       "source": "geojson",
-      "filter": [
-        "!has",
-        "$id"
-      ],
+      "filter": ["!has", "$id"],
       "paint": {
         "circle-color": "blue"
       }

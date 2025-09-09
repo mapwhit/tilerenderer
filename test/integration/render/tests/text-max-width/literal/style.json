@@ -16,10 +16,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -41,10 +38,7 @@
       "source": "mapbox",
       "layout": {
         "text-field": "For every fact there is an infinity of hypotheses.",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-max-width": 7
       }
     }

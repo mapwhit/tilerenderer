@@ -18,10 +18,7 @@
             "id": 1,
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -30,10 +27,7 @@
             "id": 2,
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -45,11 +39,7 @@
       "id": "circle",
       "type": "circle",
       "source": "geojson",
-      "filter": [
-        "==",
-        "$id",
-        1
-      ]
+      "filter": ["==", "$id", 1]
     }
   ]
 }

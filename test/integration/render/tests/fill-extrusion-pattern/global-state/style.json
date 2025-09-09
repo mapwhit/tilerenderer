@@ -4,14 +4,8 @@
     "test": {
       "height": 256,
       "operations": [
-        [
-          "setGlobalStateProperty",
-          "icon",
-          "generic_icon"
-        ],
-        [
-          "wait"
-        ]
+        ["setGlobalStateProperty", "icon", "generic_icon"],
+        ["wait"]
       ]
     }
   },
@@ -27,26 +21,11 @@
               "type": "Polygon",
               "coordinates": [
                 [
-                  [
-                    -0.0003,
-                    -0.0003
-                  ],
-                  [
-                    -0.0003,
-                    0.0003
-                  ],
-                  [
-                    0.0003,
-                    0.0003
-                  ],
-                  [
-                    0.0003,
-                    -0.0003
-                  ],
-                  [
-                    -0.0003,
-                    -0.0003
-                  ]
+                  [-0.0003, -0.0003],
+                  [-0.0003, 0.0003],
+                  [0.0003, 0.0003],
+                  [0.0003, -0.0003],
+                  [-0.0003, -0.0003]
                 ]
               ]
             }
@@ -69,26 +48,11 @@
               "type": "Polygon",
               "coordinates": [
                 [
-                  [
-                    -0.0002,
-                    0
-                  ],
-                  [
-                    0,
-                    0.0002
-                  ],
-                  [
-                    0.0002,
-                    0
-                  ],
-                  [
-                    0,
-                    -0.0002
-                  ],
-                  [
-                    -0.0002,
-                    0
-                  ]
+                  [-0.0002, 0],
+                  [0, 0.0002],
+                  [0.0002, 0],
+                  [0, -0.0002],
+                  [-0.0002, 0]
                 ]
               ]
             }
@@ -102,26 +66,11 @@
               "type": "Polygon",
               "coordinates": [
                 [
-                  [
-                    -0.00008,
-                    -0.00008
-                  ],
-                  [
-                    -0.00008,
-                    0.00008
-                  ],
-                  [
-                    0.00008,
-                    0.00008
-                  ],
-                  [
-                    0.00008,
-                    -0.00008
-                  ],
-                  [
-                    -0.00008,
-                    -0.00008
-                  ]
+                  [-0.00008, -0.00008],
+                  [-0.00008, 0.00008],
+                  [0.00008, 0.00008],
+                  [0.00008, -0.00008],
+                  [-0.00008, -0.00008]
                 ]
               ]
             }
@@ -139,10 +88,7 @@
       "type": "fill-extrusion",
       "source": "a",
       "paint": {
-        "fill-extrusion-pattern": [
-          "global-state",
-          "icon"
-        ],
+        "fill-extrusion-pattern": ["global-state", "icon"],
         "fill-extrusion-height": 10
       }
     },
@@ -153,19 +99,10 @@
       "paint": {
         "fill-extrusion-pattern": [
           "coalesce",
-          [
-            "get",
-            "icon"
-          ],
-          [
-            "global-state",
-            "icon"
-          ]
+          ["get", "icon"],
+          ["global-state", "icon"]
         ],
-        "fill-extrusion-height": [
-          "get",
-          "height"
-        ]
+        "fill-extrusion-height": ["get", "height"]
       }
     }
   ]

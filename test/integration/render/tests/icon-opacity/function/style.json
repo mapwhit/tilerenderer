@@ -5,18 +5,13 @@
       "height": 256
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "sprite": "local://sprites/sprite",
@@ -34,11 +29,7 @@
       "type": "symbol",
       "source": "mapbox",
       "source-layer": "poi_label",
-      "filter": [
-        "==",
-        "maki",
-        "restaurant"
-      ],
+      "filter": ["==", "maki", "restaurant"],
       "layout": {
         "symbol-placement": "point",
         "icon-allow-overlap": true,
@@ -47,16 +38,7 @@
       },
       "paint": {
         "icon-opacity": {
-          "stops": [
-            [
-              16,
-              0.5
-            ],
-            [
-              17,
-              0.6
-            ]
-          ]
+          "stops": [[16, 0.5], [17, 0.6]]
         }
       }
     }

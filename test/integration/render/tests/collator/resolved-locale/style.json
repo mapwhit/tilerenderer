@@ -17,10 +17,7 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                0,
-                0
-              ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -41,20 +38,22 @@
       "type": "symbol",
       "source": "mapbox",
       "layout": {
-        "text-field": ["concat",
-            "en == ",
+        "text-field": [
+          "concat",
+          "en == ",
+          [
+            "resolved-locale",
             [
-              "resolved-locale",
-              [
-                "collator",
-                {"case-sensitive": true, "diacritic-sensitive": true, "locale": "en"}
-              ]
+              "collator",
+              {
+                "case-sensitive": true,
+                "diacritic-sensitive": true,
+                "locale": "en"
+              }
             ]
+          ]
         ],
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-      ],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
         "text-size": 10,
         "text-max-width": 7
       }

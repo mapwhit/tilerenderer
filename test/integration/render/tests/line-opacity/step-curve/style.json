@@ -6,10 +6,7 @@
       "width": 64
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 0.99,
   "sources": {
     "geojson": {
@@ -19,35 +16,26 @@
         "features": [
           {
             "type": "Feature",
-            "properties": { "class": "motorway" },
+            "properties": {"class": "motorway"},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [-10, 10],
-                [10, -10]
-              ]
+              "coordinates": [[-10, 10], [10, -10]]
             }
           },
           {
             "type": "Feature",
-            "properties": { "class": "trunk" },
+            "properties": {"class": "trunk"},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [10, 10],
-                [-10, -10]
-              ]
+              "coordinates": [[10, 10], [-10, -10]]
             }
           },
           {
             "type": "Feature",
-            "properties": { "class": "other" },
+            "properties": {"class": "other"},
             "geometry": {
               "type": "LineString",
-              "coordinates": [
-                [-10, 0],
-                [10, 0]
-              ]
+              "coordinates": [[-10, 0], [10, 0]]
             }
           }
         ]
@@ -69,10 +57,15 @@
       "paint": {
         "line-width": 10,
         "line-opacity": [
-          "step", ["zoom"],
-          ["match", ["string", ["get", "class"]],
-            "motorway", 1,
-            "trunk", 0.25,
+          "step",
+          ["zoom"],
+          [
+            "match",
+            ["string", ["get", "class"]],
+            "motorway",
+            1,
+            "trunk",
+            0.25,
             0.1
           ],
           1,

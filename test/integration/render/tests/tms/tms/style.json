@@ -9,9 +9,7 @@
       "type": "vector",
       "maxzoom": 14,
       "scheme": "tms",
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.tms.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.tms.mvt"]
     }
   },
   "layers": [

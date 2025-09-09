@@ -6,24 +6,16 @@
       "width": 1000,
       "height": 250,
       "pixelRatio": 0.5,
-      "queryGeometry": [
-        160,
-        90
-      ]
+      "queryGeometry": [160, 90]
     }
   },
-  "center": [
-    0,
-    0
-  ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -32,11 +24,7 @@
       "type": "circle",
       "source": "mapbox",
       "source-layer": "hillshade",
-      "filter": [
-        "==",
-        "level",
-        56
-      ],
+      "filter": ["==", "level", 56],
       "paint": {
         "circle-radius": 15
       }

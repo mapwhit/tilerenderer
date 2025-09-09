@@ -5,10 +5,10 @@
       "height": 64,
       "width": 64,
       "diff": 0.001,
-      "collisionDebug":true
+      "collisionDebug": true
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 0,
   "sources": {
     "point": {
@@ -21,7 +21,7 @@
             "properties": {},
             "geometry": {
               "type": "Point",
-              "coordinates": [ 0, 0 ]
+              "coordinates": [0, 0]
             }
           }
         ]
@@ -36,10 +36,7 @@
       "source": "point",
       "layout": {
         "text-field": "Test",
-        "text-font": [
-          "Open Sans Semibold",
-          "Arial Unicode MS Bold"
-        ]
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"]
       }
     }
   ]

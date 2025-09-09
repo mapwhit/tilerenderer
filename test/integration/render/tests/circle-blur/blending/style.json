@@ -20,10 +20,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -5,
-                0
-              ]
+              "coordinates": [-5, 0]
             }
           },
           {
@@ -34,10 +31,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                5,
-                0
-              ]
+              "coordinates": [5, 0]
             }
           }
         ]
@@ -51,14 +45,8 @@
       "source": "geojson",
       "paint": {
         "circle-radius": 20,
-        "circle-color": [
-          "get",
-          "color"
-        ],
-        "circle-blur": [
-          "get",
-          "blur"
-        ]
+        "circle-color": ["get", "color"],
+        "circle-blur": ["get", "blur"]
       }
     }
   ]

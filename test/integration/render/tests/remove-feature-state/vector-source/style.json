@@ -15,9 +15,7 @@
             "color": "red"
           }
         ],
-        [
-          "wait"
-        ],
+        ["wait"],
         [
           "removeFeatureState",
           {
@@ -27,24 +25,17 @@
           },
           "color"
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
-  "center": [
-    13.418056,
-    52.499167
-  ],
+  "center": [13.418056, 52.499167],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "layers": [
@@ -62,14 +53,7 @@
       "source-layer": "poi_label",
       "paint": {
         "circle-radius": 5,
-        "circle-color": [
-          "coalesce",
-          [
-            "feature-state",
-            "color"
-          ],
-          "black"
-        ]
+        "circle-color": ["coalesce", ["feature-state", "color"], "black"]
       }
     }
   ]

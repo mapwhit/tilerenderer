@@ -25,10 +25,7 @@
                       },
                       "geometry": {
                         "type": "Point",
-                        "coordinates": [
-                          -10,
-                          0
-                        ]
+                        "coordinates": [-10, 0]
                       }
                     },
                     {
@@ -38,10 +35,7 @@
                       },
                       "geometry": {
                         "type": "Point",
-                        "coordinates": [
-                          10,
-                          0
-                        ]
+                        "coordinates": [10, 0]
                       }
                     }
                   ]
@@ -60,9 +54,7 @@
             ]
           }
         ],
-        [
-          "wait"
-        ]
+        ["wait"]
       ]
     }
   },
@@ -82,10 +74,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                -10,
-                0
-              ]
+              "coordinates": [-10, 0]
             }
           },
           {
@@ -95,10 +84,7 @@
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                10,
-                0
-              ]
+              "coordinates": [10, 0]
             }
           }
         ]
@@ -111,10 +97,7 @@
       "type": "circle",
       "source": "geojson",
       "paint": {
-        "circle-radius": [
-          "get",
-          "radius"
-        ]
+        "circle-radius": ["get", "radius"]
       }
     }
   ]

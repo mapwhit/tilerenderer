@@ -11,10 +11,7 @@
       "type": "geojson",
       "data": {
         "type": "Point",
-        "coordinates": [
-          0,
-          0
-        ]
+        "coordinates": [0, 0]
       }
     }
   },
@@ -30,16 +27,7 @@
       "paint": {
         "icon-halo-color": "blue",
         "icon-halo-width": {
-          "stops": [
-            [
-              16,
-              4
-            ],
-            [
-              17,
-              5
-            ]
-          ]
+          "stops": [[16, 4], [17, 5]]
         }
       }
     }

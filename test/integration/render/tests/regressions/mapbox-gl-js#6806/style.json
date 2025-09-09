@@ -9,18 +9,13 @@
       "diff-comment": "Needed to pass on Ubuntu 22"
     }
   },
-  "center": [
-    13.418056,
-    52.4963
-  ],
+  "center": [13.418056, 52.4963],
   "zoom": 14,
   "sources": {
     "mapbox": {
       "type": "vector",
       "maxzoom": 14,
-      "tiles": [
-        "local://tiles/{z}-{x}-{y}.mvt"
-      ]
+      "tiles": ["local://tiles/{z}-{x}-{y}.mvt"]
     }
   },
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",

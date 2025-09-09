@@ -6,10 +6,7 @@
       "width": 200
     }
   },
-  "center": [
-    0.0,
-    0.0
-  ],
+  "center": [0.0, 0.0],
   "zoom": 15,
   "sources": {
     "geojson": {
@@ -18,16 +15,7 @@
         "type": "Feature",
         "geometry": {
           "type": "LineString",
-          "coordinates": [
-            [
-              -0.001,
-              -0.001
-            ],
-            [
-              0.001,
-              0.001
-            ]
-          ]
+          "coordinates": [[-0.001, -0.001], [0.001, 0.001]]
         }
       }
     }
@@ -46,10 +34,7 @@
       "source": "geojson",
       "paint": {
         "line-color": "blue",
-        "line-dasharray": [
-          1.666666,
-          1.666666
-        ],
+        "line-dasharray": [1.666666, 1.666666],
         "line-width": 12
       }
     },
@@ -59,10 +44,7 @@
       "source": "geojson",
       "paint": {
         "line-color": "red",
-        "line-dasharray": [
-          2.5,
-          2.5
-        ],
+        "line-dasharray": [2.5, 2.5],
         "line-width": 8
       }
     }

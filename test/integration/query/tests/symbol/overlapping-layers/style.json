@@ -4,22 +4,11 @@
     "test": {
       "width": 256,
       "height": 256,
-      "operations": [
-        [
-          "setCenter",
-          [
-            8,
-            8
-          ]
-        ]
-      ],
-      "queryGeometry": [
-        [ 0, 0 ],
-        [ 256, 256 ]
-      ]
+      "operations": [["setCenter", [8, 8]]],
+      "queryGeometry": [[0, 0], [256, 256]]
     }
   },
-  "center": [ 0, 0 ],
+  "center": [0, 0],
   "zoom": 3,
   "sources": {
     "geojson": {
@@ -31,30 +20,21 @@
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                1,
-                1
-              ]
+              "coordinates": [1, 1]
             }
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                8,
-                8
-              ]
+              "coordinates": [8, 8]
             }
           },
           {
             "type": "Feature",
             "geometry": {
               "type": "Point",
-              "coordinates": [
-                4,
-                4
-              ]
+              "coordinates": [4, 4]
             }
           }
         ]

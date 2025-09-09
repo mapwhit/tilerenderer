@@ -4,15 +4,7 @@
     "test": {
       "width": 64,
       "height": 64,
-      "operations": [
-        [
-          "removeLayer",
-          "line"
-        ],
-        [
-          "wait"
-        ]
-      ]
+      "operations": [["removeLayer", "line"], ["wait"]]
     }
   },
   "transition": {
@@ -23,24 +15,7 @@
       "type": "geojson",
       "data": {
         "type": "LineString",
-        "coordinates": [
-          [
-            -10,
-            10
-          ],
-          [
-            10,
-            10
-          ],
-          [
-            -10,
-            -10
-          ],
-          [
-            10,
-            -10
-          ]
-        ]
+        "coordinates": [[-10, 10], [10, 10], [-10, -10], [10, -10]]
       }
     }
   },
