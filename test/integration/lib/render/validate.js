@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { glob, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
@@ -47,7 +48,7 @@ export default async function renderTest(test, { data, directory }) {
 
   const { difference } = await compare(png, expectedPaths, diff);
   test.difference = difference;
-  test.ok = difference <= test.allowed;
+  assert(difference <= test.allowed, `the difference ${difference} is bigger than allowed ${test.allowed}`);
 }
 
 /**

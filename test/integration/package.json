@@ -2,7 +2,6 @@
   "devDependencies": {
     "@mapbox/mapbox-gl-rtl-text": "^0.2.3",
     "@mapbox/mvt-fixtures": "^3.2.0",
-    "diff": "^8.0.2",
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0"
   },

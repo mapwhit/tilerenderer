@@ -28,19 +28,13 @@ export default async function harness(cwd, runTest, { implementation, prefix }) 
     const testId = prefix ? `${prefix}/${id}` : id;
     const skip = implementation === 'native' && process.env.BUILDTYPE !== 'Debug' && test.id.match(/^debug\//);
 
-    test(testId, { skip, concurrency: true }, async t => {
+    test(testId, { skip, concurrency: true }, async () => {
       const styleData = await readFile(path.join(cwd, file), 'utf8');
       const style = JSON.parse(styleData);
       fixtureToStyle(style, id, implementation);
       const st = style.metadata.test;
-      try {
-        await loader.localizeURLs(style);
-        await runTest(style, st);
-        t.assert.ok(st.ok, `${testId} failed:\n${st.difference}`);
-      } catch (error) {
-        st.error = error;
-        throw error;
-      }
+      await loader.localizeURLs(style);
+      await runTest(style, st);
     });
   }
 }
