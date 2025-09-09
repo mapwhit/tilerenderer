@@ -1,4 +1,19 @@
 
+1.2.0 / 2025-09-08
+==================
+
+ * global-state as a function that can be used in layer visibility
+ * remove `global-state` passed around in order to pass it to `evaluate`
+ * pass `global-state` from `Style` to layers to expressions as parameter to constructor
+ * prevent unloading tile to be called more than once
+ * simplify parsing GeoJSON tile
+ * simplify VectorTileWorkerSource as it doesn't need to be reused
+ * make geojson source implement all its methods independently from vector tile source
+ * Add 'idle' event: fires when no further rendering is expected without further interaction.
+ * speed up integration tests
+ * add `test-coverage` make target
+ * simplify utils, use `@map/geometry` instead of utils, use `structuredClone` instead of `clone`
+
 1.1.1 / 2025-08-29
 ==================
 
