@@ -138,6 +138,8 @@ class Style extends Evented {
     for (const layer of this._layers.values()) {
       const layoutAffectingGlobalStateRefs = layer.getLayoutAffectingGlobalStateRefs();
       const paintAffectingGlobalStateRefs = layer.getPaintAffectingGlobalStateRefs();
+      const visibilityAffectingGlobalStateRefs = layer.getVisibilityAffectingGlobalStateRefs();
+      let visibilityToEval;
 
       for (const ref of globalStateRefs) {
         if (layoutAffectingGlobalStateRefs.has(ref)) {
@@ -148,6 +150,13 @@ class Style extends Evented {
             this._updatePaintProperty(layer, name, value);
           }
         }
+        if (visibilityAffectingGlobalStateRefs?.has(ref)) {
+          visibilityToEval = true;
+        }
+      }
+      if (visibilityToEval) {
+        layer.recalculateVisibility();
+        this._updateLayer(layer);
       }
     }
 
