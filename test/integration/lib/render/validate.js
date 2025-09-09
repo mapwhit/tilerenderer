@@ -1,4 +1,4 @@
-import { glob, mkdir, readFile } from 'node:fs/promises';
+import { glob, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
@@ -45,15 +45,9 @@ export default async function renderTest(test, { data, directory }) {
   const diff = path.join(dir, 'diff.png');
   await writePNG(actual, png);
 
-  const { difference, expected } = await compare(actual, expectedPaths, diff);
+  const { difference } = await compare(png, expectedPaths, diff);
   test.difference = difference;
   test.ok = difference <= test.allowed;
-
-  const buffers = await Promise.all([actual, expected, diff].map(f => readFile(f)));
-  const base64 = buffers.map(b => b.toString('base64'));
-  test.actual = base64[0];
-  test.expected = base64[1];
-  test.diff = base64[2];
 }
 
 /**
@@ -69,8 +63,8 @@ export default async function renderTest(test, { data, directory }) {
  * @param {string} diffPath - Path to save the difference image.
  * @returns {Promise<{difference: number, expected: string}>} - Object containing the difference and the expected image path.
  */
-async function compare(actualPath, expectedPaths, diffPath) {
-  const [actualImg, ...expectedImgs] = await Promise.all([readPNG(actualPath), ...expectedPaths.map(readPNG)]);
+async function compare(actualImg, expectedPaths, diffPath) {
+  const expectedImgs = await Promise.all(expectedPaths.map(readPNG));
 
   let minNumPixels = Number.POSITIVE_INFINITY;
   let minDiff;
