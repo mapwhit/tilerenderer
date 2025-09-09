@@ -1,9 +1,10 @@
 import HeatmapBucket from '../../data/bucket/heatmap_bucket.js';
 import renderColorRamp from '../../util/color_ramp.js';
+import { circleIntersection, getMaximumPaintValue } from '../query_utils.js';
 import StyleLayer from '../style_layer.js';
 import properties from './heatmap_style_layer_properties.js';
 
-class HeatmapStyleLayer extends StyleLayer {
+export default class HeatmapStyleLayer extends StyleLayer {
   createBucket(options) {
     return new HeatmapBucket(options);
   }
@@ -34,17 +35,30 @@ class HeatmapStyleLayer extends StyleLayer {
     }
   }
 
-  queryRadius() {
-    return 0;
+  queryRadius(bucket) {
+    return getMaximumPaintValue('heatmap-radius', this, bucket);
   }
 
-  queryIntersectsFeature() {
-    return false;
+  queryIntersectsFeature(
+    queryGeometry,
+    feature,
+    featureState,
+    geometry,
+    zoom,
+    transform,
+    pixelsToTileUnits,
+    pixelPosMatrix
+  ) {
+    return circleIntersection({
+      queryGeometry,
+      geometry,
+      pixelPosMatrix,
+      size: this._paint.get('heatmap-radius').evaluate(feature, featureState) * pixelsToTileUnits,
+      transform
+    });
   }
 
   hasOffscreenPass() {
     return this._paint.get('heatmap-opacity') !== 0 && !this.isHidden();
   }
 }
-
-export default HeatmapStyleLayer;
