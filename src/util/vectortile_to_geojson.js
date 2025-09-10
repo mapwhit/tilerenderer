@@ -1,11 +1,16 @@
-class Feature {
+import { VectorTileFeature } from '@mapwhit/vector-tile';
+import classifyRings from './classify_rings.js';
+
+export default class GeoJSONFeature {
+  #vectorTileFeature;
+  #geometry;
+  #xyz;
+
   constructor(vectorTileFeature, z, x, y) {
     this.type = 'Feature';
 
-    this._vectorTileFeature = vectorTileFeature;
-    vectorTileFeature._z = z;
-    vectorTileFeature._x = x;
-    vectorTileFeature._y = y;
+    this.#vectorTileFeature = vectorTileFeature;
+    this.#xyz = { z, x, y };
 
     this.properties = vectorTileFeature.properties;
 
@@ -15,32 +20,66 @@ class Feature {
   }
 
   get geometry() {
-    if (this._geometry === undefined) {
-      this._geometry = this._vectorTileFeature.toGeoJSON(
-        this._vectorTileFeature._x,
-        this._vectorTileFeature._y,
-        this._vectorTileFeature._z
-      ).geometry;
-    }
-    return this._geometry;
-  }
-
-  set geometry(g) {
-    this._geometry = g;
-  }
-
-  toJSON() {
-    const json = {
-      geometry: this.geometry
-    };
-    for (const i in this) {
-      if (i === '_geometry' || i === '_vectorTileFeature') {
-        continue;
-      }
-      json[i] = this[i];
-    }
-    return json;
+    this.#geometry ??= toGeoJSONGeometry(this.#vectorTileFeature, this.#xyz);
+    return this.#geometry;
   }
 }
 
-export default Feature;
+const invPi = 360 / Math.PI;
+
+function toGeoJSONGeometry(vtf, { x, y, z }) {
+  const size = vtf.extent * 2 ** z;
+  const scale = 360 / size;
+  const x0 = vtf.extent * x;
+  const y0 = vtf.extent * y;
+  let coords = vtf.loadGeometry();
+  let type = VectorTileFeature.types[vtf.type];
+
+  switch (vtf.type) {
+    case 1: {
+      const points = new Array(coords.length);
+      for (let i = 0; i < coords.length; i++) {
+        points[i] = coords[i][0];
+      }
+      coords = points;
+      project(coords);
+      break;
+    }
+
+    case 2:
+      for (let i = 0; i < coords.length; i++) {
+        project(coords[i]);
+      }
+      break;
+
+    case 3:
+      coords = classifyRings(coords);
+      for (let i = 0; i < coords.length; i++) {
+        for (let j = 0; j < coords[i].length; j++) {
+          project(coords[i][j]);
+        }
+      }
+      break;
+  }
+
+  if (coords.length === 1) {
+    coords = coords[0];
+  } else {
+    type = `Multi${type}`;
+  }
+
+  return {
+    type,
+    coordinates: coords
+  };
+
+  function project(line) {
+    for (let i = 0; i < line.length; i++) {
+      const { x, y } = line[i];
+      const lon = (x + x0) * scale - 180;
+      const y2 = 180 - (y + y0) * scale;
+      const lat = invPi * Math.atan(Math.exp((y2 * Math.PI) / 180)) - 90;
+      line[i] = [lon, lat];
+    }
+  }
+}

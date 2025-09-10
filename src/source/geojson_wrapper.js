@@ -1,7 +1,4 @@
-import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EXTENT from '../data/extent.js';
-
-const { toGeoJSON } = VectorTileFeature.prototype;
 
 // The feature type used by geojson-vt and supercluster. Should be extracted to
 // global type and used in module definitions for those two modules.
@@ -45,10 +42,6 @@ class FeatureWrapper {
     return this.type === 1
       ? this._feature.geometry.map(p => [makePoint(p)])
       : this._feature.geometry.map(ring => ring.map(makePoint));
-  }
-
-  toGeoJSON(x, y, z) {
-    return toGeoJSON.call(this, x, y, z);
   }
 }
 
