@@ -22,7 +22,7 @@
     "@mapwhit/pbf": "^1.0.0",
     "@mapwhit/point-geometry": "^1.0.2",
     "@mapwhit/style-expressions": "^1.2.0",
-    "@mapwhit/vector-tile": "^3.1.0",
+    "@mapwhit/vector-tile": "4.0.0",
     "@pirxpilot/nanoassert": "~1",
     "csscolorparser": "^1.0.3",
     "dynload": "^1.0.2",
