@@ -1,4 +1,13 @@
 
+1.2.1 / 2025-09-11
+==================
+
+ * upgrade @mapwhit/events to 1.0.0
+ * strip precision before comparing query tests
+ * simplify test validation
+ * remove generating HTML report for integration tests
+ * add `update-test-fixtures` make task
+
 1.2.0 / 2025-09-08
 ==================
 
