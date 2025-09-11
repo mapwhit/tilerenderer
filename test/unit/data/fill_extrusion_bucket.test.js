@@ -1,5 +1,5 @@
 import test from 'node:test';
-import { VectorTileFeature } from '@mapwhit/vector-tile';
+
 import {
   default as FillExtrusionBucket,
   isBoundaryEdge,
@@ -80,7 +80,7 @@ test('FillExtrusionBucket', async t => {
       feature: {
         id: 123,
         properties: {},
-        type: VectorTileFeature.types.Polygon,
+        type: 'Polygon',
         loadGeometry: () => [
           [
             { x: 0, y: 0 },
@@ -366,7 +366,7 @@ test('FillExtrusionBucket', async t => {
 
     // Create a LineString feature
     const lineStringFeature = {
-      type: VectorTileFeature.types.LineString,
+      type: 'LineString',
       geometry: [
         [
           { x: 0, y: 0 },

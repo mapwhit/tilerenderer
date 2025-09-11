@@ -1,5 +1,4 @@
 import { clone, dist, perp, sub, unit } from '@mapwhit/point-geometry';
-import { VectorTileFeature } from '@mapwhit/vector-tile';
 import assert from 'assert';
 import earcut from 'earcut';
 import classifyRings from '../../util/classify_rings.js';
@@ -16,7 +15,6 @@ import EvaluationParameters from '../../style/evaluation_parameters.js';
 import loadGeometry from '../load_geometry.js';
 import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
 
-const { types: vectorTileFeatureTypes } = VectorTileFeature;
 const layoutAttributes = layout.members;
 
 const FACTOR = 2 ** 13;
@@ -193,7 +191,7 @@ export default class FillExtrusionBucket {
 
       //Only triangulate and draw the area of the feature if it is a polygon
       //Other feature types (e.g. LineString) do not have area, so triangulation is pointless / undefined
-      if (vectorTileFeatureTypes[feature.type] !== 'Polygon') {
+      if (feature.type !== 3) {
         continue;
       }
 

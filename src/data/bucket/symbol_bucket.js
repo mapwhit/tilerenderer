@@ -21,8 +21,6 @@ import { collisionBoxLayout, collisionCircleLayout, symbolLayoutAttributes } fro
 import SymbolBuffers from './symbol_buffers.js';
 import CollisionBuffers from './symbol_collision_buffers.js';
 
-const vectorTileFeatureTypes = VectorTileFeature.types;
-
 function addVertex(array, anchorX, anchorY, ox, oy, tx, ty, sizeVertex) {
   array.emplaceBack(
     // a_pos_offset
@@ -187,7 +185,7 @@ export default class SymbolBucket {
         sourceLayerIndex,
         geometry: loadGeometry(feature),
         properties: feature.properties,
-        type: vectorTileFeatureTypes[feature.type]
+        type: VectorTileFeature.types[feature.type]
       };
       if (typeof feature.id !== 'undefined') {
         symbolFeature.id = feature.id;

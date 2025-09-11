@@ -1,5 +1,4 @@
 import { dist, equals, Point } from '@mapwhit/point-geometry';
-import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import { LineLayoutArray } from '../array_types.js';
 import EXTENT from '../extent.js';
@@ -11,7 +10,6 @@ import layout from './line_attributes.js';
 import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
 
 const layoutAttributes = layout.members;
-const vectorTileFeatureTypes = VectorTileFeature.types;
 
 // NOTE ON EXTRUDE SCALE:
 // scale the extrusion vector so that the normal length is this value.
@@ -172,7 +170,7 @@ export default class LineBucket {
   }
 
   addLine(vertices, feature, join, cap, miterLimit, roundLimit, index, imagePositions) {
-    const isPolygon = vectorTileFeatureTypes[feature.type] === 'Polygon';
+    const isPolygon = feature.type === 3;
 
     // If the line has duplicate vertices at the ends, adjust start/length to remove them.
     const firstVertex = Point.clone(vertices[0]);
