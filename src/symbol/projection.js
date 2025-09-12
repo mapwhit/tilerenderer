@@ -1,5 +1,5 @@
 import glMatrix from '@mapbox/gl-matrix';
-import Point from '@mapbox/point-geometry';
+import { Point } from '@mapwhit/point-geometry';
 import { addDynamicAttributes } from '../data/bucket/symbol_bucket.js';
 import properties from '../style/style_layer/symbol_style_layer_properties.js';
 import { WritingMode } from '../symbol/shaping.js';
@@ -448,10 +448,10 @@ function projectTruncatedLineSegment(
   // point near the plane of the camera. We wouldn't be able to render the label anyway once it crossed the
   // plane of the camera.
   const projectedUnitVertex = project(
-    previousTilePoint.add(previousTilePoint.sub(currentTilePoint)._unit()),
+    Point.clone(previousTilePoint)._add(Point.clone(previousTilePoint)._sub(currentTilePoint)._unit()),
     projectionMatrix
   ).point;
-  const projectedUnitSegment = previousProjectedPoint.sub(projectedUnitVertex);
+  const projectedUnitSegment = Point.clone(previousProjectedPoint)._sub(projectedUnitVertex);
 
   return previousProjectedPoint.add(projectedUnitSegment._mult(minimumLength / projectedUnitSegment.mag()));
 }

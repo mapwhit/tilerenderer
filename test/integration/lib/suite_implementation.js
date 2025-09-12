@@ -98,11 +98,7 @@ export default async function suiteImplementation(style, options) {
   }
 
   const results = options.queryGeometry
-    ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions ?? {}).map(feature => {
-        const f = feature.toJSON();
-        delete f.layer;
-        return f;
-      })
+    ? map.queryRenderedFeatures(options.queryGeometry, options.queryOptions ?? {}).map(convertFeature)
     : [];
 
   map.remove();
@@ -157,4 +153,10 @@ export default async function suiteImplementation(style, options) {
     }
     return true;
   }
+}
+
+function convertFeature(feature) {
+  const { layer: _, geometry, ...result } = feature;
+  result.geometry = geometry;
+  return result;
 }

@@ -2,7 +2,7 @@ import { calculateSignedArea } from '@mapwhit/geometry';
 import quickselect from 'quickselect';
 
 // classifies an array of rings into polygons with outer rings and holes
-export default function classifyRings(rings, maxRings) {
+export default function classifyRings(rings, maxRings = -1) {
   if (rings.length <= 1) {
     return [rings];
   }
@@ -19,9 +19,7 @@ export default function classifyRings(rings, maxRings) {
 
     ring.area = Math.abs(area);
 
-    if (ccw === undefined) {
-      ccw = area < 0;
-    }
+    ccw ??= area < 0;
 
     if (ccw === area < 0) {
       append(polygon);

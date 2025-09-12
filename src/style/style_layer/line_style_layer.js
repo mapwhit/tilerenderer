@@ -1,5 +1,5 @@
-import Point from '@mapbox/point-geometry';
 import { polygonIntersectsBufferedMultiLine } from '@mapwhit/geometry';
+import { add, clone, div, mult, perp, sub, unit } from '@mapwhit/point-geometry';
 import LineBucket from '../../data/bucket/line_bucket.js';
 import renderColorRamp from '../../util/color_ramp.js';
 import EvaluationParameters from '../evaluation_parameters.js';
@@ -111,22 +111,22 @@ function offsetLine(rings, offset) {
     newRings[k] = newRing;
 
     let b = ring[0];
-    let aToB = new Point(0, 0);
+    let aToB = { x: 0, y: 0 };
     for (let i = 0; i < ring.length - 1; i++) {
       const c = ring[i + 1];
-      const bToC = c.sub(b)._unit()._perp();
-      const extrude = aToB._add(bToC)._unit();
+      const bToC = perp(unit(sub(clone(c), b)));
+      const extrude = unit(add(aToB, bToC));
       const cosHalfAngle = extrude.x * bToC.x + extrude.y * bToC.y;
       if (cosHalfAngle !== 0) {
-        extrude._div(cosHalfAngle);
+        div(extrude, cosHalfAngle);
       }
-      newRing[i] = extrude._mult(offset)._add(b);
+      newRing[i] = add(mult(extrude, offset), b);
 
       b = c;
       aToB = bToC;
     }
 
-    newRing[ring.length - 1] = aToB._unit()._mult(offset)._add(b);
+    newRing[ring.length - 1] = add(mult(unit(aToB), offset), b);
   }
   return newRings;
 }

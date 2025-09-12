@@ -1,4 +1,4 @@
-import { VectorTileFeature } from '@mapwhit/vector-tile';
+import { clone, dist, perp, sub, unit } from '@mapwhit/point-geometry';
 import assert from 'assert';
 import earcut from 'earcut';
 import classifyRings from '../../util/classify_rings.js';
@@ -15,7 +15,6 @@ import EvaluationParameters from '../../style/evaluation_parameters.js';
 import loadGeometry from '../load_geometry.js';
 import { addPatternDependencies, hasPattern } from './pattern_bucket_features.js';
 
-const { types: vectorTileFeatureTypes } = VectorTileFeature;
 const layoutAttributes = layout.members;
 
 const FACTOR = 2 ** 13;
@@ -34,7 +33,7 @@ function addVertex(vertexArray, x, y, nx, ny, nz, t, e) {
   );
 }
 
-class FillExtrusionBucket {
+export default class FillExtrusionBucket {
   constructor(options) {
     this.zoom = options.zoom;
     this.overscaling = options.overscaling;
@@ -145,46 +144,44 @@ class FillExtrusionBucket {
         }
 
         let edgeDistance = 0;
+        let from = ring[0];
+        for (let i = 1; i < ring.length; i++) {
+          const to = ring[i];
 
-        for (let p = 0; p < ring.length; p++) {
-          const p1 = ring[p];
-
-          if (p >= 1) {
-            const p2 = ring[p - 1];
-
-            if (!isBoundaryEdge(p1, p2)) {
-              if (segment.vertexLength + 4 > SegmentVector.MAX_VERTEX_ARRAY_LENGTH) {
-                segment = this.segments.prepareSegment(4, this.layoutVertexArray, this.indexArray);
-              }
-
-              const perp = p1.sub(p2)._perp()._unit();
-              const dist = p2.dist(p1);
-              if (edgeDistance + dist > 32768) {
-                edgeDistance = 0;
-              }
-
-              addVertex(this.layoutVertexArray, p1.x, p1.y, perp.x, perp.y, 0, 0, edgeDistance);
-              addVertex(this.layoutVertexArray, p1.x, p1.y, perp.x, perp.y, 0, 1, edgeDistance);
-
-              edgeDistance += dist;
-
-              addVertex(this.layoutVertexArray, p2.x, p2.y, perp.x, perp.y, 0, 0, edgeDistance);
-              addVertex(this.layoutVertexArray, p2.x, p2.y, perp.x, perp.y, 0, 1, edgeDistance);
-
-              const bottomRight = segment.vertexLength;
-
-              // ┌──────┐
-              // │ 0  1 │ Counter-clockwise winding order.
-              // │      │ Triangle 1: 0 => 2 => 1
-              // │ 2  3 │ Triangle 2: 1 => 2 => 3
-              // └──────┘
-              this.indexArray.emplaceBack(bottomRight, bottomRight + 2, bottomRight + 1);
-              this.indexArray.emplaceBack(bottomRight + 1, bottomRight + 2, bottomRight + 3);
-
-              segment.vertexLength += 4;
-              segment.primitiveLength += 2;
+          if (!isBoundaryEdge(to, from)) {
+            if (segment.vertexLength + 4 > SegmentVector.MAX_VERTEX_ARRAY_LENGTH) {
+              segment = this.segments.prepareSegment(4, this.layoutVertexArray, this.indexArray);
             }
+
+            const { x, y } = unit(perp(sub(clone(to), from)));
+            const distance = dist(from, to);
+            if (edgeDistance + distance > 32768) {
+              edgeDistance = 0;
+            }
+
+            addVertex(this.layoutVertexArray, to.x, to.y, x, y, 0, 0, edgeDistance);
+            addVertex(this.layoutVertexArray, to.x, to.y, x, y, 0, 1, edgeDistance);
+
+            edgeDistance += distance;
+
+            addVertex(this.layoutVertexArray, from.x, from.y, x, y, 0, 0, edgeDistance);
+            addVertex(this.layoutVertexArray, from.x, from.y, x, y, 0, 1, edgeDistance);
+
+            const bottomRight = segment.vertexLength;
+
+            // ┌──────┐
+            // │ 0  1 │ Counter-clockwise winding order.
+            // │      │ Triangle 1: 0 => 2 => 1
+            // │ 2  3 │ Triangle 2: 1 => 2 => 3
+            // └──────┘
+            this.indexArray.emplaceBack(bottomRight, bottomRight + 2, bottomRight + 1);
+            this.indexArray.emplaceBack(bottomRight + 1, bottomRight + 2, bottomRight + 3);
+
+            segment.vertexLength += 4;
+            segment.primitiveLength += 2;
           }
+
+          from = to;
         }
       }
 
@@ -194,7 +191,7 @@ class FillExtrusionBucket {
 
       //Only triangulate and draw the area of the feature if it is a polygon
       //Other feature types (e.g. LineString) do not have area, so triangulation is pointless / undefined
-      if (vectorTileFeatureTypes[feature.type] !== 'Polygon') {
+      if (feature.type !== 3) {
         continue;
       }
 
@@ -241,13 +238,11 @@ class FillExtrusionBucket {
   }
 }
 
-export default FillExtrusionBucket;
-
-function isBoundaryEdge(p1, p2) {
+export function isBoundaryEdge(p1, p2) {
   return (p1.x === p2.x && (p1.x < 0 || p1.x > EXTENT)) || (p1.y === p2.y && (p1.y < 0 || p1.y > EXTENT));
 }
 
-function isEntirelyOutside(ring) {
+export function isEntirelyOutside(ring) {
   let left = true;
   let right = true;
   let top = true;

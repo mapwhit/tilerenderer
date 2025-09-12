@@ -1,5 +1,4 @@
 import test from 'node:test';
-import Point from '@mapbox/point-geometry';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import { CanonicalTileID, OverscaledTileID } from '../../../src/source/tile_id.js';
@@ -28,16 +27,16 @@ test('transform', async t => {
     t.assert.equal(transform.minZoom, 10);
     t.assert.deepEqual(transform.center, { lng: 0, lat: 0 });
     t.assert.equal(transform.maxZoom, 10);
-    t.assert.equal(transform.size.equals(new Point(500, 500)), true);
-    t.assert.equal(transform.centerPoint.equals(new Point(250, 250)), true);
+    t.assert.equal(transform.size.equals({ x: 500, y: 500 }), true);
+    t.assert.equal(transform.centerPoint.equals({ x: 250, y: 250 }), true);
     t.assert.equal(transform.scaleZoom(0), Number.NEGATIVE_INFINITY);
     t.assert.equal(transform.scaleZoom(10), 3.3219280948873626);
-    t.assert.deepEqual(transform.point, new Point(262144, 262144));
+    t.assert.deepEqual(transform.point, { x: 262144, y: 262144 });
     t.assert.equal(transform.x, 262144);
     t.assert.equal(transform.y, 262144);
     t.assert.equal(transform.height, 500);
-    t.assert.deepEqual(fixedLngLat(transform.pointLocation(new Point(250, 250))), { lng: 0, lat: 0 });
-    t.assert.deepEqual(fixedCoord(transform.pointCoordinate(new Point(250, 250))), { column: 512, row: 512, zoom: 10 });
+    t.assert.deepEqual(fixedLngLat(transform.pointLocation({ x: 250, y: 250 })), { lng: 0, lat: 0 });
+    t.assert.deepEqual(fixedCoord(transform.pointCoordinate({ x: 250, y: 250 })), { column: 512, row: 512, zoom: 10 });
     t.assert.deepEqual(transform.locationPoint(new LngLat(0, 0)), { x: 250, y: 250 });
     t.assert.deepEqual(transform.locationCoordinate(new LngLat(0, 0)), { column: 512, row: 512, zoom: 10 });
   });
@@ -55,8 +54,8 @@ test('transform', async t => {
     transform.resize(500, 500);
     transform.zoom = 4;
     t.assert.deepEqual(transform.center, { lng: 0, lat: 0 });
-    transform.setLocationAtPoint({ lng: 13, lat: 10 }, new Point(15, 45));
-    t.assert.deepEqual(fixedLngLat(transform.pointLocation(new Point(15, 45))), { lng: 13, lat: 10 });
+    transform.setLocationAtPoint({ lng: 13, lat: 10 }, { x: 15, y: 45 });
+    t.assert.deepEqual(fixedLngLat(transform.pointLocation({ x: 15, y: 45 })), { lng: 13, lat: 10 });
   });
 
   await t.test('setLocationAt tilted', t => {
@@ -65,8 +64,8 @@ test('transform', async t => {
     transform.zoom = 4;
     transform.pitch = 50;
     t.assert.deepEqual(transform.center, { lng: 0, lat: 0 });
-    transform.setLocationAtPoint({ lng: 13, lat: 10 }, new Point(15, 45));
-    t.assert.deepEqual(fixedLngLat(transform.pointLocation(new Point(15, 45))), { lng: 13, lat: 10 });
+    transform.setLocationAtPoint({ lng: 13, lat: 10 }, { x: 15, y: 45 });
+    t.assert.deepEqual(fixedLngLat(transform.pointLocation({ x: 15, y: 45 })), { lng: 13, lat: 10 });
   });
 
   await t.test('has a default zoom', t => {

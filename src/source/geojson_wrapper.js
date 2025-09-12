@@ -1,8 +1,4 @@
-import Point from '@mapbox/point-geometry';
-import { VectorTileFeature } from '@mapwhit/vector-tile';
 import EXTENT from '../data/extent.js';
-
-const { toGeoJSON } = VectorTileFeature.prototype;
 
 // The feature type used by geojson-vt and supercluster. Should be extracted to
 // global type and used in module definitions for those two modules.
@@ -47,10 +43,6 @@ class FeatureWrapper {
       ? this._feature.geometry.map(p => [makePoint(p)])
       : this._feature.geometry.map(ring => ring.map(makePoint));
   }
-
-  toGeoJSON(x, y, z) {
-    return toGeoJSON.call(this, x, y, z);
-  }
 }
 
 class GeoJSONWrapper {
@@ -79,5 +71,5 @@ class GeoJSONWrapper {
 export default GeoJSONWrapper;
 
 function makePoint(arr) {
-  return new Point(arr[0], arr[1]);
+  return { x: arr[0], y: arr[1] };
 }
