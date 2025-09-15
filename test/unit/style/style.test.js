@@ -2453,6 +2453,69 @@ test('Style', async t => {
     });
   });
 
+  await t.test('Style.query*Features', async t => {
+    let style;
+    const transform = new Transform();
+    transform.resize(512, 512);
+
+    t.beforeEach(() => {
+      style = new Style(new StubMap());
+      style.loadJSON({
+        version: 8,
+        sources: {
+          geojson: createGeoJSONSource()
+        },
+        layers: [
+          {
+            id: 'symbol',
+            type: 'symbol',
+            source: 'geojson'
+          }
+        ]
+      });
+    });
+    t.afterEach(() => {
+      style._remove();
+    });
+
+    await t.test('style adds global-state to querySourceFeatures', async t => {
+      await style.once('style.load');
+      const sourceCache = style._sources['geojson'];
+      const querySourceFeatures = t.mock.fn();
+      t.mock.method(sourceCache, 'getRenderableIds', () => ['symbol']);
+      t.mock.method(sourceCache, 'getTileByID', () => ({
+        tileID: new OverscaledTileID(0, 0, 0, 0, 0),
+        querySourceFeatures
+      }));
+      style.querySourceFeatures('geojson', { filter: '[]' });
+      t.assert.ok(querySourceFeatures.mock.callCount() > 0);
+      const params = querySourceFeatures.mock.calls[0].arguments[1];
+      t.assert.ok(params.hasOwnProperty('globalState'));
+    });
+
+    await t.test('style adds global-state to queryRenderedFeatures', async t => {
+      await style.once('style.load');
+      const sourceCache = style._sources['geojson'];
+      sourceCache.transform = transform;
+      const queryRenderedFeatures = t.mock.fn();
+      t.mock.method(sourceCache, 'tilesIn', () => [
+        {
+          tile: {
+            queryRenderedFeatures
+          },
+          tileID: new OverscaledTileID(0, 0, 0, 0, 0),
+          queryGeometry: [{ x: 0, y: 0 }],
+          cameraQueryGeometry: [{ x: 0, y: 0 }],
+          scale: 1
+        }
+      ]);
+      style.queryRenderedFeatures([{ x: 0, y: 0 }], { filter: '[]' }, transform);
+      t.assert.ok(queryRenderedFeatures.mock.callCount() > 0);
+      const params = queryRenderedFeatures.mock.calls[0].arguments[5];
+      t.assert.ok(params.hasOwnProperty('globalState'));
+    });
+  });
+
   await t.test('Style.hasTransitions', async t => {
     let style;
     t.afterEach(() => {

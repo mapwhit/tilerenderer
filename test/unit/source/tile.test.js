@@ -28,14 +28,15 @@ test('Tile', async t => {
       }
     ];
 
-    await t.test('geojson tile', t => {
+    await t.test('no data', t => {
       const tile = new Tile(new OverscaledTileID(3, 0, 2, 1, 2));
-      let result;
-
-      result = [];
+      const result = [];
       tile.querySourceFeatures(result, {});
       t.assert.equal(result.length, 0);
+    });
 
+    await t.test('geojson tile', async t => {
+      const tile = new Tile(new OverscaledTileID(3, 0, 2, 1, 2));
       const vectorTile = new GeoJSONWrapper(features);
       tile.loadVectorData(
         createVectorData({
@@ -44,20 +45,40 @@ test('Tile', async t => {
         createPainter()
       );
 
-      result = [];
-      tile.querySourceFeatures(result);
-      t.assert.equal(result.length, 1);
-      t.assert.deepEqual(result[0].geometry.coordinates[0], [-90, 0]);
-      result = [];
-      tile.querySourceFeatures(result, {});
-      t.assert.equal(result.length, 1);
-      t.assert.deepEqual(result[0].properties, features[0].tags);
-      result = [];
-      tile.querySourceFeatures(result, { filter: ['==', 'oneway', true] });
-      t.assert.equal(result.length, 1);
-      result = [];
-      tile.querySourceFeatures(result, { filter: ['!=', 'oneway', true] });
-      t.assert.equal(result.length, 0);
+      await t.test('query all source features', t => {
+        let result = [];
+        tile.querySourceFeatures(result);
+        t.assert.equal(result.length, 1);
+        t.assert.deepEqual(result[0].geometry.coordinates[0], [-90, 0]);
+        result = [];
+        tile.querySourceFeatures(result, {});
+        t.assert.equal(result.length, 1);
+        t.assert.deepEqual(result[0].properties, features[0].tags);
+      });
+
+      await t.test('filter source features', t => {
+        let result = [];
+        tile.querySourceFeatures(result, { filter: ['==', 'oneway', true] });
+        t.assert.equal(result.length, 1);
+        result = [];
+        tile.querySourceFeatures(result, { filter: ['!=', 'oneway', true] });
+        t.assert.equal(result.length, 0);
+      });
+
+      await t.test('filter with global-state', t => {
+        let result = [];
+        tile.querySourceFeatures(result, {
+          filter: ['==', ['get', 'oneway'], ['global-state', 'isOneway']],
+          globalState: { isOneway: true }
+        });
+        t.assert.equal(result.length, 1);
+        result = [];
+        tile.querySourceFeatures(result, {
+          filter: ['!=', ['get', 'oneway'], ['global-state', 'isOneway']],
+          globalState: { isOneway: true }
+        });
+        t.assert.equal(result.length, 0);
+      });
     });
 
     await t.test('empty geojson tile', t => {

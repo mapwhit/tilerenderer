@@ -70,6 +70,12 @@ test('filter', async t => {
     });
   });
 
+  await t.test('expression, global-state', t => {
+    const f = createFilter(['==', ['global-state', 'x'], ['get', 'x']], { x: 1 });
+    t.assert.equal(f({}, { properties: { x: 1 } }), true);
+    t.assert.equal(f({}, { properties: { x: 2 } }), false);
+  });
+
   await legacyFilterTests(t, createFilter);
 });
 
