@@ -35,7 +35,7 @@ class StyleLayer extends Evented {
       this.source = layer.source;
       this['source-layer'] = this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
-      this._featureFilter = featureFilter(layer.filter);
+      this._featureFilter = featureFilter(layer.filter, globalState);
     }
 
     this._featureFilter ??= featureFilter.addGlobalStateRefs(() => true);

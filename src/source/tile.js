@@ -204,7 +204,7 @@ class Tile {
       return;
     }
 
-    const filter = featureFilter(params?.filter);
+    const filter = featureFilter(params?.filter, params?.globalState);
     const { z, x, y } = this.tileID.canonical;
     const coord = { z, x, y };
 

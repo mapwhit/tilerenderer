@@ -920,8 +920,9 @@ class Style extends Evented {
     }
 
     const sourceResults = [];
+    params = params ? { ...params, globalState: this._globalState } : { globalState: this._globalState };
     for (const id in this._sources) {
-      if (params.layers && !includedSources[id]) {
+      if (params?.layers && !includedSources[id]) {
         continue;
       }
       sourceResults.push(
@@ -948,7 +949,12 @@ class Style extends Evented {
 
   querySourceFeatures(sourceID, params) {
     const sourceCache = this._sources[sourceID];
-    return sourceCache ? querySourceFeatures(sourceCache, params) : [];
+    return sourceCache
+      ? querySourceFeatures(
+          sourceCache,
+          params ? { ...params, globalState: this._globalState } : { globalState: this._globalState }
+        )
+      : [];
   }
 
   getLight() {

@@ -45,7 +45,7 @@ class FeatureIndex {
 
     const params = args.params || {};
     const pixelsToTileUnits = EXTENT / args.tileSize / args.scale;
-    const filter = featureFilter(params.filter);
+    const filter = featureFilter(params.filter, params.globalState);
 
     const queryGeometry = args.queryGeometry;
     const queryPadding = args.queryPadding * pixelsToTileUnits;
@@ -175,11 +175,18 @@ class FeatureIndex {
 
   // Given a set of symbol indexes that have already been looked up,
   // return a matching set of GeoJSONFeatures
-  lookupSymbolFeatures(symbolFeatureIndexes, bucketIndex, sourceLayerIndex, filterSpec, filterLayerIDs, styleLayers) {
+  lookupSymbolFeatures(
+    symbolFeatureIndexes,
+    bucketIndex,
+    sourceLayerIndex,
+    { filterSpec, globalState },
+    filterLayerIDs,
+    styleLayers
+  ) {
     const result = {};
     this.loadVTLayers();
 
-    const filter = featureFilter(filterSpec);
+    const filter = featureFilter(filterSpec, globalState);
 
     for (const symbolFeatureIndex of symbolFeatureIndexes) {
       this.loadMatchingFeature(
