@@ -67,7 +67,9 @@ function registerRTLTextPlugin(loadedPlugin) {
   plugin['processBidirectionalText'] = loadedPlugin.processBidirectionalText;
   plugin['processStyledBidirectionalText'] = loadedPlugin.processStyledBidirectionalText;
 
-  _completionCallback();
+  if (_completionCallback) {
+    _completionCallback();
+  }
   _loadedCallbacks.forEach(callback => callback());
   _loadedCallbacks.length = 0;
 }
