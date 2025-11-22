@@ -219,7 +219,7 @@ export default class GeoJSONSource extends Evented {
     }
     if (diff) {
       if (!this.#dataUpdateable) {
-        throw new Error(`Cannot update existing geojson data in ${this.id}`);
+        throw new Error(`GeoJSONSource "${this.id}": GeoJSON data is not compatible with updateData`);
       }
       applySourceDiff(this.#dataUpdateable, diff, this.promoteId);
       this.data = { type: 'FeatureCollection', features: Array.from(this.#dataUpdateable.values()) };

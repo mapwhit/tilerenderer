@@ -201,7 +201,7 @@ test('GeoJSONSource.updateData', async t => {
     const errorPromise = waitForEvent(source, 'error', () => true);
     source.updateData({ removeAll: true });
     const error = await errorPromise;
-    t.assert.equal(error.error.message, 'Cannot update existing geojson data in source1');
+    t.assert.equal(error.error.message, 'GeoJSONSource "source1": GeoJSON data is not compatible with updateData');
   });
 
   await t.test('updateData with geojson creates an updateable source', async () => {

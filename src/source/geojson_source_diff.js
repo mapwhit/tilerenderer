@@ -6,6 +6,10 @@ export function isUpdateableGeoJSON(data, promoteId) {
   if (data == null) {
     return true;
   }
+  // {} can be updated
+  if (data.type == null) {
+    return true;
+  }
   // a single feature with an id can be updated, need to explicitly check against null because 0 is a valid feature id that is falsy
   if (data.type === 'Feature') {
     return getFeatureId(data, promoteId) != null;
@@ -30,7 +34,7 @@ export function isUpdateableGeoJSON(data, promoteId) {
 }
 export function toUpdateable(data, promoteId) {
   const result = new Map();
-  if (data == null) {
+  if (data == null || data.type == null) {
     // empty result
   } else if (data.type === 'Feature') {
     result.set(getFeatureId(data, promoteId), data);
