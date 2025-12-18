@@ -1,5 +1,7 @@
 name: check
 on: [push]
+env:
+  TEST_REPORTER: tap
 jobs:
   build:
     runs-on: ubuntu-latest
