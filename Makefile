@@ -13,7 +13,7 @@ BUILD = build/$(PROJECT).js build/$(PROJECT)-worker.js
 DEBUG_FLAG ?= true
 
 %/node_modules: %/package.json
-	yarn --cwd $(@D) --no-progress
+	pnpm -C $(@D) install
 	touch $@
 
 .SECONDEXPANSION:
@@ -148,7 +148,7 @@ update-test-fixtures: test-integration format
 
 ALL_DEPENDENCIES = $(DEPENDENCIES) $(DEPENDENCIES_TEST) $(DEPENDENCIES_INTEGRATION)
 distclean: clean clean-test
-	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=yarn.lock)
+	rm -fr $(ALL_DEPENDENCIES) $(ALL_DEPENDENCIES:node_modules=pnpm-lock.yaml)
 
 clean:
 	rm -fr build
