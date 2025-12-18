@@ -9,6 +9,9 @@ permissions:
   id-token: write # Required for OIDC
   contents: read
 
+env:
+  TEST_REPORTER: tap
+
 jobs:
   publish:
     runs-on: ubuntu-latest
