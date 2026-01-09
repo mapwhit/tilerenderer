@@ -6,7 +6,6 @@ import Transform from '../../../src/geo/transform.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import SymbolStyleLayer from '../../../src/style/style_layer/symbol_style_layer.js';
-import featureFilter from '../../../src/style-spec/feature_filter/index.js';
 import CrossTileSymbolIndex from '../../../src/symbol/cross_tile_symbol_index.js';
 import { Placement } from '../../../src/symbol/placement.js';
 import { performSymbolLayout } from '../../../src/symbol/symbol_layout.js';
@@ -26,7 +25,6 @@ function createSymbolBucket(globalState) {
     {
       id: 'test',
       type: 'symbol',
-      filter: featureFilter(),
       layout: { 'text-font': ['Test'], 'text-field': 'abcde' }
     },
     globalState

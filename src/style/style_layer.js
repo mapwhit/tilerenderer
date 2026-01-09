@@ -38,7 +38,7 @@ class StyleLayer extends Evented {
       this._featureFilter = featureFilter(layer.filter);
     }
 
-    this._featureFilter ??= featureFilter.addGlobalStateRefs(() => true);
+    this._featureFilter ??= featureFilter();
 
     if (properties.layout) {
       this._unevaluatedLayout = new Layout(properties.layout, globalState);
@@ -59,7 +59,7 @@ class StyleLayer extends Evented {
   setFilter(filter) {
     this.#key = undefined;
     this.filter = filter;
-    this._featureFilter = featureFilter(filter);
+    this._featureFilter.setValue(filter);
   }
 
   _setZoomRange(minzoom, maxzoom) {
