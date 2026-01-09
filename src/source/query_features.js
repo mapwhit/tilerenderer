@@ -94,7 +94,10 @@ export function queryRenderedSymbols(
       renderedSymbols[queryData.bucketInstanceId],
       queryData.bucketIndex,
       queryData.sourceLayerIndex,
-      params.filter,
+      {
+        filterSpec: params.filter,
+        globalState: params.globalState
+      },
       params.layers,
       styleLayers
     );

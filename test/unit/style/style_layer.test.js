@@ -201,6 +201,23 @@ test('StyleLayer.setLayoutProperty', async t => {
   });
 });
 
+test('StyleLayer.setFilter', async t => {
+  await t.test('sets new filter referencing global state', () => {
+    const layer = createStyleLayer(
+      {
+        id: 'symbol',
+        type: 'symbol',
+        source: 'source'
+      },
+      { showSymbol: true }
+    );
+    layer.setFilter(['==', ['global-state', 'showSymbol'], true]);
+
+    t.assert.deepEqual(layer.getLayoutAffectingGlobalStateRefs(), new Set(['showSymbol']));
+    t.assert.equal(layer._featureFilter({}), true);
+  });
+});
+
 test('StyleLayer.getLayoutAffectingGlobalStateRefs', async t => {
   await t.test('returns empty Set when no global state references', () => {
     const layer = createStyleLayer({

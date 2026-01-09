@@ -64,29 +64,34 @@ const filterSpec = {
  * @returns {Function} filter-evaluating function
  */
 export default function createFilter(filter, globalState) {
-  if (filter === null || filter === undefined) {
-    return addGlobalStateRefs(() => true);
-  }
+  let evaluate;
+  const expression = (globalProperties, feature) => evaluate(globalProperties, feature);
+  expression.setValue = setValue;
+  setValue(filter);
+  return expression;
 
-  if (!isExpressionFilter(filter)) {
-    filter = convertFilter(filter);
-  }
+  function setValue(filter) {
+    if (filter === null || filter === undefined) {
+      evaluate = () => true;
+      addGlobalStateRefs(expression);
+      return;
+    }
 
-  const compiled = createExpression(filter, filterSpec, globalState);
-  if (compiled.result === 'error') {
-    throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
+    if (!isExpressionFilter(filter)) {
+      filter = convertFilter(filter);
+    }
+
+    const compiled = createExpression(filter, filterSpec, globalState);
+    if (compiled.result === 'error') {
+      throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
+    }
+    evaluate = (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature);
+    addGlobalStateRefs(expression, () => findGlobalStateRefs(compiled.value.expression));
   }
-  return Object.assign(
-    addGlobalStateRefs(
-      (globalProperties, feature) => compiled.value.evaluate(globalProperties, feature),
-      () => findGlobalStateRefs(compiled.value.expression)
-    )
-  );
 }
 
-export function addGlobalStateRefs(filter, getGlobalStateRefs = () => new Set()) {
+function addGlobalStateRefs(filter, getGlobalStateRefs = () => new Set()) {
   filter.getGlobalStateRefs = getGlobalStateRefs;
-  return filter;
 }
 
 // Comparison function to sort numbers and strings

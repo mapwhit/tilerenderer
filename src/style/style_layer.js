@@ -35,10 +35,10 @@ class StyleLayer extends Evented {
       this.source = layer.source;
       this['source-layer'] = this.sourceLayer = layer['source-layer'];
       this.filter = layer.filter;
-      this._featureFilter = featureFilter(layer.filter);
+      this._featureFilter = featureFilter(layer.filter, globalState);
     }
 
-    this._featureFilter ??= featureFilter.addGlobalStateRefs(() => true);
+    this._featureFilter ??= featureFilter(undefined, globalState);
 
     if (properties.layout) {
       this._unevaluatedLayout = new Layout(properties.layout, globalState);
@@ -59,7 +59,7 @@ class StyleLayer extends Evented {
   setFilter(filter) {
     this.#key = undefined;
     this.filter = filter;
-    this._featureFilter = featureFilter(filter);
+    this._featureFilter.setValue(filter);
   }
 
   _setZoomRange(minzoom, maxzoom) {

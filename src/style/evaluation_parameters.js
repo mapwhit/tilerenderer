@@ -6,6 +6,7 @@ export default class EvaluationParameters {
   // "options" may also be another EvaluationParameters to copy, see CrossFadedProperty.possiblyEvaluate
   constructor(zoom, options) {
     this.zoom = zoom;
+    this.isSupportedScript = isSupportedScript;
 
     if (options) {
       this.now = options.now || 0;
@@ -18,10 +19,6 @@ export default class EvaluationParameters {
       this.zoomHistory = new ZoomHistory();
       this.transition = {};
     }
-  }
-
-  isSupportedScript(str) {
-    return isStringInSupportedScript(str, rtlTextPlugin.isLoaded());
   }
 
   crossFadingFactor() {
@@ -40,4 +37,8 @@ export default class EvaluationParameters {
       ? { fromScale: 2, toScale: 1, t: fraction + (1 - fraction) * t }
       : { fromScale: 0.5, toScale: 1, t: 1 - (1 - t) * fraction };
   }
+}
+
+function isSupportedScript(str) {
+  return isStringInSupportedScript(str, rtlTextPlugin.isLoaded());
 }
