@@ -1,4 +1,14 @@
 
+1.2.2 / 2026-01-10
+==================
+
+ * `queryRenderedFeatures` works now for heatmap layers
+ * fix filters with `global-state` property
+ * use `@mapwhit/rtl-text` instead `@mapbox/mapbox-gl-rtl-text`
+ * upgrade `@mapwhit/vector-tile` to 4.0.0
+ * use `clipLine` from `@mapwhit/geometry`
+ * replace `@mapbox/point-geometry` with `@mapwhit/point-geometry`
+
 1.2.1 / 2025-09-11
 ==================
 
