@@ -1,13 +1,15 @@
-import glMatrix from '@mapbox/gl-matrix';
-import { polygonIntersectsBufferedPoint } from '@mapwhit/geometry';
 import CircleBucket from '../../data/bucket/circle_bucket.js';
-import { getMaximumPaintValue, translate, translateDistance } from '../query_utils.js';
+import {
+  circleIntersection,
+  getMaximumPaintValue,
+  projectQueryGeometry,
+  translate,
+  translateDistance
+} from '../query_utils.js';
 import StyleLayer from '../style_layer.js';
 import properties from './circle_style_layer_properties.js';
 
-const { vec4 } = glMatrix;
-
-class CircleStyleLayer extends StyleLayer {
+export default class CircleStyleLayer extends StyleLayer {
   constructor(layer, globalState) {
     super(layer, properties, globalState);
   }
@@ -50,49 +52,28 @@ class CircleStyleLayer extends StyleLayer {
     // // Otherwise, compare geometry in the plane of the viewport
     // // A circle with fixed scaling relative to the viewport gets larger in tile space as it moves into the distance
     // // A circle with fixed scaling relative to the map gets smaller in viewport space as it moves into the distance
+
     const pitchScale = this._paint.get('circle-pitch-scale');
     const pitchAlignment = this._paint.get('circle-pitch-alignment');
-    const alignWithMap = pitchAlignment === 'map';
-    const alignWithViewport = pitchAlignment === 'viewport';
-    const transformedPolygon = alignWithMap
-      ? translatedPolygon
-      : projectQueryGeometry(translatedPolygon, pixelPosMatrix);
-    const transformedSize = alignWithMap ? size * pixelsToTileUnits : size;
-    const adjustViewportToMap = pitchScale === 'viewport' && alignWithMap;
-    const adjustMapToViewport = pitchScale === 'map' && alignWithViewport;
 
-    for (const ring of geometry) {
-      for (const point of ring) {
-        const transformedPoint = alignWithMap ? point : projectPoint(point, pixelPosMatrix);
-
-        let adjustedSize = transformedSize;
-        const projectedCenter = vec4.transformMat4([], [point.x, point.y, 0, 1], pixelPosMatrix);
-        if (adjustViewportToMap) {
-          adjustedSize *= projectedCenter[3] / transform.cameraToCenterDistance;
-        } else if (adjustMapToViewport) {
-          adjustedSize *= transform.cameraToCenterDistance / projectedCenter[3];
-        }
-
-        if (polygonIntersectsBufferedPoint(transformedPolygon, transformedPoint, adjustedSize)) {
-          return true;
-        }
-      }
+    let transformedPolygon;
+    let transformedSize;
+    if (pitchAlignment === 'map') {
+      transformedPolygon = translatedPolygon;
+      transformedSize = size * pixelsToTileUnits;
+    } else {
+      transformedPolygon = projectQueryGeometry(translatedPolygon, pixelPosMatrix);
+      transformedSize = size;
     }
 
-    return false;
+    return circleIntersection({
+      queryGeometry: transformedPolygon,
+      geometry,
+      pixelPosMatrix,
+      size: transformedSize,
+      transform,
+      pitchAlignment,
+      pitchScale
+    });
   }
 }
-
-function projectPoint({ x, y }, pixelPosMatrix) {
-  const point = vec4.transformMat4([], [x, y, 0, 1], pixelPosMatrix);
-  return {
-    x: point[0] / point[3],
-    y: point[1] / point[3]
-  };
-}
-
-function projectQueryGeometry(queryGeometry, pixelPosMatrix) {
-  return queryGeometry.map(p => projectPoint(p, pixelPosMatrix));
-}
-
-export default CircleStyleLayer;
