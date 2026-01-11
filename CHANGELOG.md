@@ -1,4 +1,9 @@
 
+1.3.0 / 2026-01-11
+==================
+
+ * queue style modifications before it is loaded and apply them after
+
 1.2.2 / 2026-01-10
 ==================
 
