@@ -21,11 +21,9 @@ test('Map images', async t => {
     });
   });
 
-  await t.test('listImages throws an error if called before "load"', t => {
+  await t.test('listImages does nothing if called before "load"', t => {
     const map = createMap();
-    t.assert.throws(() => {
-      map.listImages();
-    }, Error);
+    t.assert.equal(map.listImages(), undefined);
   });
 
   await t.test('map getImage matches addImage, HTMLImageElement', (t, done) => {

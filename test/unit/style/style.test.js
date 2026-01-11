@@ -413,9 +413,10 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throw before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.addSource('source-id', createSource()), /load/i);
+      style.addSource('source-id', createSource());
+      t.assert.equal(style._sources['source-id'], undefined);
     });
 
     await t.test('throw if missing source type', (t, done) => {
@@ -498,9 +499,12 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throw before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.removeSource('source-id'), /load/i);
+      const source = (style._sources['source-id'] = {});
+      style.removeSource('source-id');
+      t.assert.equal(style._sources['source-id'], source);
+      delete style._sources['source-id'];
     });
 
     await t.test('fires "data" event', async () => {
@@ -625,9 +629,13 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throws before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.setGeoJSONSourceData('source-id', geoJSON), /load/i);
+      style.sources ??= {};
+      style.sources['source-id'] = {};
+      style.setGeoJSONSourceData('source-id', geoJSON);
+      t.assert.equal(style.sources['source-id'].data, undefined);
+      delete style.sources['source-id'];
     });
 
     await t.test('throws on non-existence', (t, done) => {
@@ -646,9 +654,10 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throws before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.setGlobalState({}), /load/i);
+      style.setGlobalState({ accentColor: { default: 'red' } });
+      t.assert.deepEqual(style.getGlobalState(), {});
     });
 
     await t.test('sets global state', (t, done) => {
@@ -932,9 +941,10 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throws before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.setGlobalStateProperty('accentColor', 'yellow'), /load/i);
+      style.setGlobalStateProperty('accentColor', 'yellow');
+      t.assert.deepEqual(style.getGlobalState(), {});
     });
 
     await t.test('sets property', (t, done) => {
@@ -1291,9 +1301,10 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throw before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.addLayer({ id: 'background', type: 'background' }), /load/i);
+      style.addLayer({ id: 'background', type: 'background' });
+      t.assert.deepEqual(style.layers, []);
     });
 
     await t.test('sets up layer event forwarding', (t, done) => {
@@ -1624,9 +1635,13 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throw before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.removeLayer('background'), /load/i);
+      const layer = {};
+      style._layers.set('background', {});
+      style.removeLayer('background');
+      t.assert.deepEqual(style.layers, [layer]);
+      style._layers.delete('background');
     });
 
     await t.test('fires "data" event', async () => {
@@ -1722,8 +1737,9 @@ test('Style', async t => {
       style = null;
     });
 
-    await t.test('throw before loaded', t => {
-      t.assert.throws(() => style.moveLayer('background'), /load/i);
+    await t.test('queues operation before loaded', t => {
+      style.moveLayer('background');
+      t.assert.deepEqual(style.layers, []);
     });
 
     await t.test('fires "data" event', async () => {
@@ -2039,10 +2055,16 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throws if style is not loaded', (t, done) => {
+    t.test('queues operation if style is not loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.setFilter('symbol', ['==', 'id', 1]), /load/i);
-      done();
+      const layer = {
+        setFilter() {}
+      };
+      style._layers.set('symbol', layer);
+      t.mock.method(layer, 'setFilter');
+      style.setFilter('symbol', ['==', 'id', 1]);
+      t.assert.equal(layer.setFilter.mock.callCount(), 0);
+      style._layers.delete('symbol');
     });
 
     function createStyle() {
@@ -2149,10 +2171,16 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('throw before loaded', (t, done) => {
+    await t.test('queues operation before loaded', t => {
       style = new Style(new StubMap());
-      t.assert.throws(() => style.setLayerZoomRange('symbol', 5, 12), /load/i);
-      done();
+      const layer = {
+        _setZoomRange() {}
+      };
+      style._layers.set('symbol', layer);
+      t.mock.method(layer, '_setZoomRange');
+      style.setLayerZoomRange('symbol', 5, 12);
+      t.assert.equal(layer._setZoomRange.mock.callCount(), 0);
+      style._layers.delete('symbol');
     });
 
     function createStyle() {
@@ -2567,6 +2595,24 @@ test('Style', async t => {
         t.assert.equal(style.hasTransitions(), false);
         done();
       });
+    });
+  });
+
+  await t.test('Style.setLight', async t => {
+    let style;
+    t.afterEach(() => {
+      style._remove();
+    });
+
+    await t.test('queues operation if style is not loaded', t => {
+      style = new Style(new StubMap());
+      style._light = {
+        setLight() {}
+      };
+      t.mock.method(style._light, 'setLight');
+      style.setLight({});
+      t.assert.equal(style._light.setLight.mock.callCount(), 0);
+      delete style._light;
     });
   });
 });

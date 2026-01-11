@@ -55,7 +55,8 @@ test('setFeatureState', async t => {
       done();
     });
   });
-  await t.test('throw before loaded', t => {
+
+  await t.test('queues operation before loaded', t => {
     const map = createMap({
       style: {
         version: 8,
@@ -65,14 +66,19 @@ test('setFeatureState', async t => {
         layers: []
       }
     });
-    t.assert.throws(
-      () => {
-        map.setFeatureState({ source: 'geojson', id: '12345' }, { hover: true });
-      },
-      Error,
-      /load/i
-    );
+    map.style._sources.geojson = {
+      setFeatureState() {},
+      getFeatureState() {}
+    };
+    t.mock.method(map.style._sources.geojson, 'setFeatureState');
+    t.mock.method(map.style._sources.geojson, 'getFeatureState');
+    map.setFeatureState({ source: 'geojson', id: '12345' }, { hover: true });
+    t.assert.equal(map.style._sources.geojson.setFeatureState.mock.callCount(), 0);
+    t.assert.equal(map.style._sources.geojson.getFeatureState.mock.callCount(), 0);
+    t.assert.equal(map.getFeatureState({ source: 'geojson', id: '12345' }), undefined);
+    delete map.style._sources.geojson;
   });
+
   await t.test('fires an error if source not found', (t, done) => {
     const map = createMap({
       style: {
@@ -350,7 +356,7 @@ test('removeFeatureState', async t => {
     });
   });
 
-  await t.test('throw before loaded', () => {
+  await t.test('queues operation before loaded', () => {
     const map = createMap({
       style: {
         version: 8,
@@ -360,13 +366,13 @@ test('removeFeatureState', async t => {
         layers: []
       }
     });
-    t.assert.throws(
-      () => {
-        map.removeFeatureState({ source: 'geojson', id: 12345 }, { hover: true });
-      },
-      Error,
-      /load/i
-    );
+    map.style._sources.geojson = {
+      removeFeatureState() {}
+    };
+    t.mock.method(map.style._sources.geojson, 'removeFeatureState');
+    map.removeFeatureState({ source: 'geojson', id: '12345' }, { hover: true });
+    t.assert.equal(map.style._sources.geojson.removeFeatureState.mock.callCount(), 0);
+    delete map.style._sources.geojson;
   });
   await t.test('fires an error if source not found', (t, done) => {
     const map = createMap({
