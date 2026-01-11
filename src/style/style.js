@@ -41,6 +41,7 @@ class Style extends Evented {
     loadGlyphRange: this.loadGlyphRange.bind(this)
   });
   #layerIndex = new StyleLayerIndex();
+  #opsQueue = [];
 
   constructor(map, options = {}) {
     super();
@@ -89,7 +90,10 @@ class Style extends Evented {
   }
 
   setGlobalStateProperty(name, value) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setGlobalStateProperty(name, value));
+      return;
+    }
 
     const newValue = value === null ? (this.stylesheet.state?.[name]?.default ?? null) : value;
 
@@ -107,7 +111,10 @@ class Style extends Evented {
   }
 
   setGlobalState(newStylesheetState) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setGlobalState(newStylesheetState));
+      return;
+    }
 
     const changedGlobalStateRefs = [];
 
@@ -225,6 +232,9 @@ class Style extends Evented {
     this.light = this.stylesheet.light;
     this._light = new Light(this.light);
 
+    this.#opsQueue.forEach(op => op());
+    this.#opsQueue = [];
+
     this.fire(new Event('data', { dataType: 'style' }));
     this.fire(new Event('style.load'));
   }
@@ -299,12 +309,6 @@ class Style extends Evented {
     }
 
     return false;
-  }
-
-  _checkLoaded() {
-    if (!this._loaded) {
-      throw new Error('Style is not done loading');
-    }
   }
 
   /**
@@ -390,13 +394,18 @@ class Style extends Evented {
   }
 
   listImages() {
-    this._checkLoaded();
+    if (!this._loaded) {
+      return;
+    }
 
     return this.imageManager.listImages();
   }
 
   addSource(id, source) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.addSource(id, source));
+      return;
+    }
 
     if (this._sources[id] !== undefined) {
       throw new Error('There is already a source with this ID');
@@ -432,7 +441,10 @@ class Style extends Evented {
    * @throws {Error} if no source is found with the given ID
    */
   removeSource(id) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.removeSource(id));
+      return;
+    }
 
     if (this._sources[id] === undefined) {
       throw new Error('There is no source with this ID');
@@ -464,7 +476,10 @@ class Style extends Evented {
    * @param {GeoJSON|string} data GeoJSON source
    */
   setGeoJSONSourceData(id, data) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setGeoJSONSourceData(id, data));
+      return;
+    }
 
     assert(this._sources[id] !== undefined, 'There is no source with this ID');
     const geojsonSource = this._sources[id].getSource();
@@ -519,7 +534,10 @@ class Style extends Evented {
    * @param {string} [before] ID of an existing layer to insert before
    */
   addLayer(layerObject, before) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.addLayer(layerObject, before));
+      return;
+    }
 
     const id = layerObject.id;
 
@@ -568,7 +586,10 @@ class Style extends Evented {
    * @param {string} [before] ID of an existing layer to insert before
    */
   moveLayer(id, before) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.moveLayer(id, before));
+      return;
+    }
     this._changed = true;
 
     const layer = this._layers.get(id);
@@ -593,7 +614,10 @@ class Style extends Evented {
    * @fires error
    */
   removeLayer(id) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.removeLayer(id));
+      return;
+    }
 
     const layer = this._layers.get(id);
     if (!layer) {
@@ -624,7 +648,10 @@ class Style extends Evented {
   }
 
   setLayerZoomRange(layerId, minzoom, maxzoom) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setLayerZoomRange(layerId, minzoom, maxzoom));
+      return;
+    }
 
     const layer = this.getLayer(layerId);
     if (!layer) {
@@ -646,7 +673,10 @@ class Style extends Evented {
   }
 
   setFilter(layerId, filter) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setFilter(layerId, filter));
+      return;
+    }
 
     const layer = this.getLayer(layerId);
     if (!layer) {
@@ -680,7 +710,10 @@ class Style extends Evented {
   }
 
   setLayoutProperty(layerId, name, value) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setLayoutProperty(layerId, name, value));
+      return;
+    }
 
     const layer = this.getLayer(layerId);
     if (!layer) {
@@ -713,7 +746,10 @@ class Style extends Evented {
   }
 
   setPaintProperty(layerId, name, value) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setPaintProperty(layerId, name, value));
+      return;
+    }
 
     const layer = this.getLayer(layerId);
     if (!layer) {
@@ -749,7 +785,10 @@ class Style extends Evented {
   }
 
   setFeatureState(feature, state) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setFeatureState(feature, state));
+      return;
+    }
     const sourceId = feature.source;
     const sourceLayer = feature.sourceLayer;
     const sourceCache = this._sources[sourceId];
@@ -776,7 +815,10 @@ class Style extends Evented {
   }
 
   removeFeatureState(target, key) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.removeFeatureState(target, key));
+      return;
+    }
     const sourceId = target.source;
     const sourceCache = this._sources[sourceId];
 
@@ -802,7 +844,9 @@ class Style extends Evented {
   }
 
   getFeatureState(feature) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      return;
+    }
     const sourceId = feature.source;
     const sourceLayer = feature.sourceLayer;
     const sourceCache = this._sources[sourceId];
@@ -962,7 +1006,10 @@ class Style extends Evented {
   }
 
   setLight(lightOptions) {
-    this._checkLoaded();
+    if (!this._loaded) {
+      this.#opsQueue.push(() => this.setLight(lightOptions));
+      return;
+    }
 
     const light = this._light.getLight();
     let _update = false;

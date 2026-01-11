@@ -130,7 +130,7 @@ test('map layers', async t => {
       t.assert.equal(updateLayers.mock.callCount(), 1);
     });
 
-    await t.test('throw before loaded', t => {
+    t.test('queues operation before loaded', t => {
       const map = createMap({
         style: {
           version: 8,
@@ -139,13 +139,14 @@ test('map layers', async t => {
         }
       });
 
-      t.assert.throws(
-        () => {
-          map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
-        },
-        Error,
-        /load/i
-      );
+      const layer = {
+        setLayoutProperty() {}
+      };
+      map.style._layers.set('symbol', layer);
+      t.mock.method(layer, 'setLayoutProperty');
+      map.setLayoutProperty('symbol', 'text-transform', 'lowercase');
+      t.assert.equal(layer.setLayoutProperty.mock.callCount(), 0);
+      map.style._layers.delete('symbol');
     });
 
     await t.test('fires an error if layer not found', async t => {
@@ -300,7 +301,7 @@ test('map layers', async t => {
       t.assert.deepEqual(map.getPaintProperty('background', 'background-color'), 'red');
     });
 
-    await t.test('throw before loaded', t => {
+    await t.test('queues operation before loaded', t => {
       const map = createMap({
         style: {
           version: 8,
@@ -309,13 +310,14 @@ test('map layers', async t => {
         }
       });
 
-      t.assert.throws(
-        () => {
-          map.setPaintProperty('background', 'background-color', 'red');
-        },
-        Error,
-        /load/i
-      );
+      const layer = {
+        setPaintProperty() {}
+      };
+      map.style._layers.set('background', layer);
+      t.mock.method(layer, 'setPaintProperty');
+      map.setPaintProperty('background', 'background-color', 'red');
+      t.assert.equal(layer.setPaintProperty.mock.callCount(), 0);
+      map.style._layers.delete('background');
     });
 
     await t.test('fires an error if layer not found', async t => {
