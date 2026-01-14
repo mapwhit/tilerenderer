@@ -2,14 +2,14 @@ import test from 'node:test';
 import LngLat from '../../../src/geo/lng_lat.js';
 import Transform from '../../../src/geo/transform.js';
 import GeoJSONSource from '../../../src/source/geojson_source.js';
-import GeoJSONWorkerSource from '../../../src/source/geojson_worker_source.js';
+import makeTiler from '../../../src/source/geojson_tiler.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 
 test('GeoJSONSource.setData', async t => {
   function createSource(opts = {}) {
     Object.assign(opts, { data: {} });
-    return new GeoJSONSource('id', opts, null, {});
+    return new GeoJSONSource('id', opts, null, makeTiler());
   }
 
   await t.test('returns self', t => {
@@ -32,6 +32,18 @@ test('GeoJSONSource.setData', async t => {
     source.on('dataloading', () => done());
     source.load();
   });
+
+  await t.test('accepts stringified data', t => {
+    const source = createSource();
+    const geojson = {
+      type: 'LineString',
+      coordinates: [
+        [0, 90],
+        [0, -90]
+      ]
+    };
+    t.assert.equal(source.setData(JSON.stringify(geojson)), source);
+  });
 });
 
 test('GeoJSONSource.update', async t => {
@@ -43,16 +55,17 @@ test('GeoJSONSource.update', async t => {
   transform.setLocationAtPoint(lngLat, point);
 
   await t.test('sends initial loadData request to dispatcher', (t, done) => {
-    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', () => {
+    const tiler = makeTiler();
+    t.mock.method(tiler, 'loadData', () => {
       done();
       return Promise.resolve();
     });
-
-    new GeoJSONSource('id', { data: {} }, null, {}).load();
+    new GeoJSONSource('id', { data: {} }, null, tiler).load();
   });
 
   await t.test('forwards geojson-vt options with worker request', (t, done) => {
-    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', params => {
+    const tiler = makeTiler();
+    t.mock.method(tiler, 'loadData', params => {
       t.assert.deepEqual(params.geojsonVtOptions, {
         extent: 8192,
         maxZoom: 10,
@@ -62,10 +75,8 @@ test('GeoJSONSource.update', async t => {
         generateId: true
       });
       done();
-
       return Promise.resolve();
     });
-
     new GeoJSONSource(
       'id',
       {
@@ -76,12 +87,13 @@ test('GeoJSONSource.update', async t => {
         generateId: true
       },
       null,
-      {}
+      tiler
     ).load();
   });
 
   await t.test('forwards Supercluster options with worker request', (t, done) => {
-    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', params => {
+    const tiler = makeTiler();
+    t.mock.method(tiler, 'loadData', params => {
       t.assert.deepEqual(params.superclusterOptions, {
         maxZoom: 12,
         extent: 8192,
@@ -104,12 +116,12 @@ test('GeoJSONSource.update', async t => {
         generateId: true
       },
       null,
-      {}
+      tiler
     ).load();
   });
 
   await t.test('fires event when metadata loads', (t, done) => {
-    const source = new GeoJSONSource('id', { data: {} }, null, {});
+    const source = new GeoJSONSource('id', { data: {} }, null, makeTiler());
 
     source.on('data', e => {
       if (e.sourceDataType === 'metadata') {
@@ -121,11 +133,11 @@ test('GeoJSONSource.update', async t => {
   });
 
   await t.test('fires "error"', (t, done) => {
-    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', () => {
+    const tiler = makeTiler();
+    t.mock.method(tiler, 'loadData', () => {
       return Promise.reject('error');
     });
-
-    const source = new GeoJSONSource('id', { data: {} }, null, {});
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
 
     source.on('error', err => {
       t.assert.equal(err.error, 'error');
@@ -136,12 +148,13 @@ test('GeoJSONSource.update', async t => {
   });
 
   await t.test('sends loadData request to dispatcher after data update', (t, done) => {
-    t.mock.method(GeoJSONWorkerSource.prototype, 'loadData', () => {
+    const tiler = makeTiler();
+    t.mock.method(tiler, 'loadData', () => {
       done();
       return Promise.resolve();
     });
 
-    const source = new GeoJSONSource('id', { data: {} }, null, {});
+    const source = new GeoJSONSource('id', { data: {} }, null, tiler);
     source.map = {
       transform: {},
       getGlobalState: () => ({})

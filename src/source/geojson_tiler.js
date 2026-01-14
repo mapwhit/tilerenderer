@@ -5,14 +5,12 @@ import GeoJSONWrapper from './geojson_wrapper.js';
 import { makeSingleSourceLayerWorkerTile as makeWorkerTile } from './worker_tile.js';
 
 /**
- * The {@link WorkerSource} implementation that supports {@link GeoJSONSource}.
- *
+ * Creates tiles from GeoJSON data.
  */
-class GeoJSONWorkerSource {
-  constructor(resources, layerIndex) {
-    this.resources = resources;
-    this.layerIndex = layerIndex;
-  }
+export default function makeTiler(resources, layerIndex) {
+  let geoJSONIndex;
+  let createGeoJSONIndex;
+
   /**
    * Fetches (if appropriate), parses, and index geojson data into tiles. This
    * preparatory method must be called before {@link GeoJSONWorkerSource#loadTile}
@@ -23,49 +21,48 @@ class GeoJSONWorkerSource {
    * parsed GeoJSON object.
    *
    * @param params
-   * @param callback
    */
-  loadData(params) {
-    const data = loadJSON(params);
-    this._geoJSONIndex = null;
-    this._createGeoJSONIndex = params.cluster
+  function loadData(params) {
+    const { cluster, data, geojsonVtOptions, superclusterOptions } = params;
+    geoJSONIndex = undefined;
+    createGeoJSONIndex = cluster
       ? () => {
           rewind(data, true);
-          return new Supercluster(params.superclusterOptions).load(data.features);
+          return new Supercluster(superclusterOptions).load(data.features);
         }
       : () => {
           rewind(data, true);
-          return geojsonvt(data, params.geojsonVtOptions);
+          return geojsonvt(data, geojsonVtOptions);
         };
   }
 
-  getTile(tileID) {
-    if (!this._geoJSONIndex) {
-      if (!this._createGeoJSONIndex) {
+  function getTile(tileID) {
+    if (!geoJSONIndex) {
+      if (!createGeoJSONIndex) {
         return; // we couldn't load the file
       }
 
       try {
-        this._geoJSONIndex = this._createGeoJSONIndex();
+        geoJSONIndex = createGeoJSONIndex();
       } finally {
-        this._createGeoJSONIndex = null;
+        createGeoJSONIndex = undefined;
       }
     }
     const { z, x, y } = tileID.canonical;
-    return this._geoJSONIndex.getTile(z, x, y);
+    return geoJSONIndex.getTile(z, x, y);
   }
 
   /**
-   * Implements {@link WorkerSource#loadTile}.
+   * Returns a single tile.
    */
-  async loadTile(params) {
+  async function loadTile(params) {
     const { tileID, source } = params;
-    const geoJSONTile = this.getTile(tileID);
+    const geoJSONTile = getTile(tileID);
     if (!geoJSONTile) {
       return; // nothing in the given tile
     }
     const sourceLayer = new GeoJSONWrapper(geoJSONTile.features);
-    const layerFamilies = this.layerIndex.familiesBySource.get(source);
+    const layerFamilies = layerIndex.familiesBySource.get(source);
     if (!layerFamilies) {
       return;
     }
@@ -74,24 +71,14 @@ class GeoJSONWorkerSource {
       features[index] = { feature: sourceLayer.feature(index), index, sourceLayerIndex: 0 };
     }
 
-    const result = await makeWorkerTile(params, features, layerFamilies.get(sourceLayer.name), this.resources);
+    const result = await makeWorkerTile(params, features, layerFamilies.get(sourceLayer.name), resources);
 
     result.vectorTile = sourceLayer;
     return result;
   }
-}
 
-/**
- * Fetch and parse GeoJSON according to the given params.
- *
- * @param data Literal GeoJSON data. Must be provided.
- */
-function loadJSON({ data, source }) {
-  try {
-    return typeof data === 'string' ? JSON.parse(data) : data;
-  } catch {
-    throw new Error(`Input data given to '${source}' is not a valid GeoJSON object.`);
-  }
+  return {
+    loadData,
+    loadTile
+  };
 }
-
-export default GeoJSONWorkerSource;

@@ -2,7 +2,6 @@ import { ErrorEvent, Event, Evented } from '@mapwhit/events';
 
 import EXTENT from '../data/extent.js';
 import browser from '../util/browser.js';
-import GeoJSONWorkerSource from './geojson_worker_source.js';
 
 /**
  * A source containing GeoJSON.
@@ -49,13 +48,13 @@ import GeoJSONWorkerSource from './geojson_worker_source.js';
  * @see [Add a GeoJSON line](https://www.mapbox.com/mapbox-gl-js/example/geojson-line/)
  * @see [Create a heatmap from points](https://www.mapbox.com/mapbox-gl-js/example/heatmap/)
  */
-class GeoJSONSource extends Evented {
+export default class GeoJSONSource extends Evented {
   #pendingDataEvents = new Set();
   #newData = false;
   #updateInProgress = false;
-  #worker;
+  #tiler;
 
-  constructor(id, options, eventedParent, { resources, layerIndex }) {
+  constructor(id, options, eventedParent, tiler) {
     super();
 
     this.id = id;
@@ -114,7 +113,7 @@ class GeoJSONSource extends Evented {
       },
       options.workerOptions
     );
-    this.#worker = new GeoJSONWorkerSource(resources, layerIndex);
+    this.#tiler = tiler;
   }
 
   load() {
@@ -150,7 +149,7 @@ class GeoJSONSource extends Evented {
       this.fire(new Event('dataloading', { dataType: 'source' }));
       while (this.#newData) {
         this.#newData = false;
-        await this._updateWorkerData(this.data);
+        await this.#updateTilerData();
       }
       this.#pendingDataEvents.forEach(sourceDataType =>
         this.fire(new Event('data', { dataType: 'source', sourceDataType }))
@@ -164,18 +163,15 @@ class GeoJSONSource extends Evented {
   }
 
   /*
-   * Responsible for invoking WorkerSource's geojson.loadData target, which
-   * handles loading the geojson data and preparing to serve it up as tiles,
-   * using geojson-vt or supercluster as appropriate.
+   * Responsible for invoking tiler's `loadData` target, which
+   * handles creating tiles, using geojson-vt or supercluster as appropriate.
    */
-  async _updateWorkerData(data) {
-    const json = typeof data === 'function' ? await data().catch(() => {}) : data;
-    if (!json) {
-      throw new Error('no GeoJSON data');
-    }
-    const options = { ...this.workerOptions, data: json };
+  async #updateTilerData() {
+    this.data = await loadJSON(this.data, this.id);
 
-    return await this.#worker.loadData(options);
+    const options = { ...this.workerOptions, data: this.data };
+    await this.#tiler.loadData(options);
+    return this.data;
   }
 
   async loadTile(tile) {
@@ -194,7 +190,7 @@ class GeoJSONSource extends Evented {
     };
 
     tile.workerID ??= true;
-    const data = await this.#worker.loadTile(params).finally(() => tile.unloadVectorData());
+    const data = await this.#tiler.loadTile(params).finally(() => tile.unloadVectorData());
     if (!tile.aborted) {
       tile.loadVectorData(data, this.map.painter);
     }
@@ -217,4 +213,25 @@ class GeoJSONSource extends Evented {
   }
 }
 
-export default GeoJSONSource;
+/**
+ * Fetch and parse GeoJSON according to the given params.
+ *
+ * @param data Function loading GeoJSON dataor GeoJSON data directly. Must be provided.
+ * GeoJSON can be either an object or string literal to be parsed.
+ */
+async function loadJSON(data, source) {
+  if (typeof data === 'function') {
+    data = await data().catch(() => {});
+    if (!data) {
+      throw new Error('no GeoJSON data');
+    }
+  }
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch {
+      throw new Error(`Input data given to '${source}' is not a valid GeoJSON object.`);
+    }
+  }
+  return data;
+}
