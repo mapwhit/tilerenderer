@@ -1,4 +1,24 @@
 
+1.4.0 / 2026-01-21
+==================
+
+ * Make GeoJSONSource#setData faster (#6738)
+ * Fix performance and memory leak in GeoJSONSource (#6163)
+ * Implement the `getData` method (#4082)
+ * Diff-style updates for geojson sources (#1605)
+ * Add a filter option for GeoJSON sources (#9864)
+ * fix precedence of promoteId over feature id in fill extrusions (#9863)
+ * Fix promoteId for line layers (#9210)
+ * make placement respect symbol-sort-key (#9054)
+ * Placement order matches viewport-y sort
+ * An option to use a feature property as ID for feature state (#8987)
+ * separate `source` processing data and `tiler` creating tiles from it
+ * Introduce variable text placement for point labels.
+ * Update shaping unit test.
+ * Add *-sort-key layout property for circle, fill, line (#8467)
+ * Evaluate feature-state dependent layer IDs on bucket creation (#7790)
+ * add `symbol-sort-key` style property (#7678)
+
 1.3.0 / 2026-01-11
 ==================
 
