@@ -1,8 +1,9 @@
 import { ErrorEvent, Event, Evented } from '@mapwhit/events';
-
+import { createExpression } from '@mapwhit/style-expressions';
 import EXTENT from '../data/extent.js';
 import browser from '../util/browser.js';
-import GeoJSONWorkerSource from './geojson_worker_source.js';
+import warn from '../util/warn.js';
+import { applySourceDiff, isUpdateableGeoJSON, mergeSourceDiffs, toUpdateable } from './geojson_source_diff.js';
 
 /**
  * A source containing GeoJSON.
@@ -49,13 +50,16 @@ import GeoJSONWorkerSource from './geojson_worker_source.js';
  * @see [Add a GeoJSON line](https://www.mapbox.com/mapbox-gl-js/example/geojson-line/)
  * @see [Create a heatmap from points](https://www.mapbox.com/mapbox-gl-js/example/heatmap/)
  */
-class GeoJSONSource extends Evented {
+export default class GeoJSONSource extends Evented {
   #pendingDataEvents = new Set();
   #newData = false;
   #updateInProgress = false;
-  #worker;
+  #dataUpdateable;
+  #pendingUpdate;
+  #pendingData;
+  #tiler;
 
-  constructor(id, options, eventedParent, { resources, layerIndex }) {
+  constructor(id, options, eventedParent, tiler) {
     super();
 
     this.id = id;
@@ -73,7 +77,7 @@ class GeoJSONSource extends Evented {
 
     this.setEventedParent(eventedParent);
 
-    this.data = options.data;
+    this.#pendingUpdate = { data: options.data };
     this._options = Object.assign({}, options);
 
     if (options.maxzoom !== undefined) {
@@ -82,6 +86,7 @@ class GeoJSONSource extends Evented {
     if (options.type) {
       this.type = options.type;
     }
+    this.promoteId = options.promoteId;
 
     const scale = EXTENT / this.tileSize;
 
@@ -114,7 +119,7 @@ class GeoJSONSource extends Evented {
       },
       options.workerOptions
     );
-    this.#worker = new GeoJSONWorkerSource(resources, layerIndex);
+    this.#tiler = tiler;
   }
 
   load() {
@@ -133,9 +138,42 @@ class GeoJSONSource extends Evented {
    * @returns {GeoJSONSource} this
    */
   setData(data) {
-    this.data = data;
+    this.#pendingUpdate = { data };
     this.#updateData();
     return this;
+  }
+
+  /**
+   * Updates the source's GeoJSON, and re-renders the map.
+   *
+   * For sources with lots of features, this method can be used to make updates more quickly.
+   *
+   * This approach requires unique IDs for every feature in the source. The IDs can either be specified on the feature,
+   * or by using the promoteId option to specify which property should be used as the ID.
+   *
+   * It is an error to call updateData on a source that did not have unique IDs for each of its features already.
+   *
+   * Updates are applied on a best-effort basis, updating an ID that does not exist will not result in an error.
+   *
+   * @param {GeoJSONSourceDiff} diff The changes that need to be applied.
+   * @returns {GeoJSONSource} this
+   */
+  updateData(diff) {
+    this.#pendingUpdate = {
+      data: this.#pendingUpdate?.data,
+      diff: mergeSourceDiffs(this.#pendingUpdate?.diff, diff)
+    };
+    this.#updateData();
+    return this;
+  }
+
+  /**
+   * Allows to get the source's actual GeoJSON data.
+   *
+   * @returns a promise which resolves to the source's actual GeoJSON data
+   */
+  getData() {
+    return this.#pendingData;
   }
 
   async #updateData(sourceDataType = 'content') {
@@ -150,7 +188,8 @@ class GeoJSONSource extends Evented {
       this.fire(new Event('dataloading', { dataType: 'source' }));
       while (this.#newData) {
         this.#newData = false;
-        await this._updateWorkerData(this.data);
+        this.#pendingData = this.#updateTilerData();
+        await this.#pendingData;
       }
       this.#pendingDataEvents.forEach(sourceDataType =>
         this.fire(new Event('data', { dataType: 'source', sourceDataType }))
@@ -164,18 +203,32 @@ class GeoJSONSource extends Evented {
   }
 
   /*
-   * Responsible for invoking WorkerSource's geojson.loadData target, which
-   * handles loading the geojson data and preparing to serve it up as tiles,
-   * using geojson-vt or supercluster as appropriate.
+   * Responsible for invoking tiler's `loadData` target, which
+   * handles creating tiles, using geojson-vt or supercluster as appropriate.
    */
-  async _updateWorkerData(data) {
-    const json = typeof data === 'function' ? await data().catch(() => {}) : data;
-    if (!json) {
-      throw new Error('no GeoJSON data');
+  async #updateTilerData() {
+    const { data, diff } = this.#pendingUpdate ?? {};
+    this.#pendingUpdate = undefined;
+    if (!(data || diff)) {
+      warn.once(`No data or diff provided to GeoJSONSource ${this.id}.`);
+      return this.data;
     }
-    const options = { ...this.workerOptions, data: json };
+    if (data) {
+      this.data = await loadJSON(data, this.id);
+      this.#dataUpdateable = updatableGeoJson(this.data, this.promoteId);
+    }
+    if (diff) {
+      if (!this.#dataUpdateable) {
+        throw new Error(`GeoJSONSource "${this.id}": GeoJSON data is not compatible with updateData`);
+      }
+      applySourceDiff(this.#dataUpdateable, diff, this.promoteId);
+      this.data = { type: 'FeatureCollection', features: Array.from(this.#dataUpdateable.values()) };
+    }
+    this.data = filterGeoJSON(this.data, this._options);
 
-    return await this.#worker.loadData(options);
+    const options = { ...this.workerOptions, data: this.data };
+    await this.#tiler.loadData(options);
+    return this.data;
   }
 
   async loadTile(tile) {
@@ -190,11 +243,12 @@ class GeoJSONSource extends Evented {
       pixelRatio: browser.devicePixelRatio,
       showCollisionBoxes: this.map.showCollisionBoxes,
       justReloaded: tile.workerID != null,
-      painter: this.map.painter
+      painter: this.map.painter,
+      promoteId: this.promoteId
     };
 
     tile.workerID ??= true;
-    const data = await this.#worker.loadTile(params).finally(() => tile.unloadVectorData());
+    const data = await this.#tiler.loadTile(params).finally(() => tile.unloadVectorData());
     if (!tile.aborted) {
       tile.loadVectorData(data, this.map.painter);
     }
@@ -217,4 +271,47 @@ class GeoJSONSource extends Evented {
   }
 }
 
-export default GeoJSONSource;
+/**
+ * Fetch and parse GeoJSON according to the given params.
+ *
+ * @param data Function loading GeoJSON dataor GeoJSON data directly. Must be provided.
+ * GeoJSON can be either an object or string literal to be parsed.
+ */
+async function loadJSON(data, source) {
+  if (typeof data === 'function') {
+    data = await data().catch(() => {});
+    if (!data) {
+      throw new Error('no GeoJSON data');
+    }
+  }
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch {
+      throw new Error(`Input data given to '${source}' is not a valid GeoJSON object.`);
+    }
+  }
+  return data;
+}
+
+function filterGeoJSON(data, { filter }) {
+  if (!filter) {
+    return data;
+  }
+  const compiled = createExpression(filter, {
+    type: 'boolean',
+    'property-type': 'data-driven',
+    overridable: false,
+    transition: false
+  });
+  if (compiled.result === 'error') {
+    throw new Error(compiled.value.map(err => `${err.key}: ${err.message}`).join(', '));
+  }
+
+  const features = data.features.filter(feature => compiled.value.evaluate({ zoom: 0 }, feature));
+  return { type: 'FeatureCollection', features };
+}
+
+function updatableGeoJson(data, promoteId) {
+  return isUpdateableGeoJSON(data, promoteId) ? toUpdateable(data, promoteId) : false;
+}

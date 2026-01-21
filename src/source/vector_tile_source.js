@@ -22,6 +22,7 @@ class VectorTileSource extends Evented {
     this.url = options.url;
     this.scheme = options.scheme ?? 'xyz';
     this.tileSize = options.tileSize ?? 512;
+    this.promoteId = options.promoteId;
 
     if (this.tileSize !== 512) {
       throw new Error('vector tile sources must have a tileSize of 512');
@@ -93,6 +94,7 @@ class VectorTileSource extends Evented {
         source: this.id,
         pixelRatio: browser.devicePixelRatio,
         showCollisionBoxes: this.map.showCollisionBoxes,
+        promoteId: this.promoteId,
         painter: this.map.painter
       };
       tile.workerID ??= true;

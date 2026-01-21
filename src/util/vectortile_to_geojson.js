@@ -6,16 +6,15 @@ export default class GeoJSONFeature {
   #geometry;
   #xyz;
 
-  constructor(vectorTileFeature, z, x, y) {
+  constructor(vectorTileFeature, z, x, y, id) {
     this.type = 'Feature';
 
     this.#vectorTileFeature = vectorTileFeature;
     this.#xyz = { z, x, y };
 
     this.properties = vectorTileFeature.properties;
-
-    if (vectorTileFeature.id != null) {
-      this.id = vectorTileFeature.id;
+    if (id !== undefined) {
+      this.id = id;
     }
   }
 

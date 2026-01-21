@@ -1,4 +1,4 @@
-import { StructArrayLayout2ub4 as CollisionVertexArray } from '../array_types.js';
+import { CollisionVertexArray } from '../array_types.js';
 import SegmentVector from '../segment.js';
 import { collisionVertexAttributes } from './symbol_attributes.js';
 

@@ -2,6 +2,13 @@
 
 import { DataConstantProperty, DataDrivenProperty, Properties } from '../properties.js';
 
+const layout = new Properties({
+  'circle-sort-key': new DataDrivenProperty({
+    type: 'number',
+    expression: { parameters: ['zoom', 'feature'] }
+  })
+});
+
 const paint = new Properties({
   'circle-radius': new DataDrivenProperty({
     type: 'number',
@@ -73,4 +80,4 @@ const paint = new Properties({
   })
 });
 
-export default { paint };
+export default { paint, layout };

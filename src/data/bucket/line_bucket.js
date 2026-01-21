@@ -71,45 +71,70 @@ export default class LineBucket {
     this.overscaling = overscaling;
     this.layers = layers;
     this.index = index;
-    this.features = [];
     this.hasPattern = false;
+    this.features = [];
 
     this.layoutVertexArray = new LineLayoutArray();
     this.indexArray = new TriangleIndexArray();
     this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, layers, zoom);
     this.segments = new SegmentVector();
+
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
   }
 
   populate(features, options) {
-    this.features = [];
     this.hasPattern = hasPattern('line', this.layers, options);
+    const lineSortKey = this.layers[0]._layout.get('line-sort-key');
+    const bucketFeatures = [];
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (!this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         continue;
       }
 
       const geometry = loadGeometry(feature);
+      const sortKey = lineSortKey ? lineSortKey.evaluate(feature, {}) : undefined;
 
-      const patternFeature = {
+      const bucketFeature = {
+        id,
+        properties: feature.properties,
+        type: feature.type,
         sourceLayerIndex,
         index,
         geometry,
-        properties: feature.properties,
-        type: feature.type,
-        patterns: {}
+        patterns: {},
+        sortKey
       };
 
-      if (typeof feature.id !== 'undefined') {
-        patternFeature.id = feature.id;
-      }
+      bucketFeatures.push(bucketFeature);
+    }
+
+    if (lineSortKey) {
+      bucketFeatures.sort((a, b) => {
+        // a.sortKey is always a number when in use
+        return a.sortKey - b.sortKey;
+      });
+    }
+
+    for (const bucketFeature of bucketFeatures) {
+      const { geometry, index, sourceLayerIndex } = bucketFeature;
 
       if (this.hasPattern) {
-        this.features.push(addPatternDependencies('line', this.layers, patternFeature, { zoom: this.zoom }, options));
+        const patternBucketFeature = addPatternDependencies(
+          'line',
+          this.layers,
+          bucketFeature,
+          { zoom: this.zoom },
+          options
+        );
+        // pattern features are added only once the pattern is loaded into the image atlas
+        // so are stored during populate until later updated with positions by tile worker in addFeatures
+        this.features.push(patternBucketFeature);
       } else {
-        this.addFeature(patternFeature, geometry, index, {});
+        this.addFeature(bucketFeature, geometry, index, {});
       }
 
+      const feature = features[index].feature;
       options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
     }
   }
@@ -125,8 +150,7 @@ export default class LineBucket {
 
   addFeatures(options, imagePositions) {
     for (const feature of this.features) {
-      const { geometry } = feature;
-      this.addFeature(feature, geometry, feature.index, imagePositions);
+      this.addFeature(feature, feature.geometry, feature.index, imagePositions);
     }
   }
 

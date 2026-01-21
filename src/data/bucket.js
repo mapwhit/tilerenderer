@@ -49,6 +49,8 @@ export function updateBuckets(buckets, style) {
 
     // swap out the layers in the bucket with the current style layers
     bucket.layers = layers;
-    bucket.stateDependentLayers = layers.filter(layer => layer.isStateDependent());
+    if (bucket.stateDependentLayerIds?.length) {
+      bucket.stateDependentLayers = layers.filter(layer => layer.isStateDependent());
+    }
   }
 }

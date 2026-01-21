@@ -9,7 +9,10 @@ export const dynamicLayoutAttributes = createLayout([{ name: 'a_projected_pos', 
 
 export const placementOpacityAttributes = createLayout([{ name: 'a_fade_opacity', components: 1, type: 'Uint32' }], 4);
 
-export const collisionVertexAttributes = createLayout([{ name: 'a_placed', components: 2, type: 'Uint8' }], 4);
+export const collisionVertexAttributes = createLayout([
+  { name: 'a_placed', components: 2, type: 'Uint8' },
+  { name: 'a_shift', components: 2, type: 'Float32' }
+]);
 
 export const collisionBox = createLayout([
   // the box is centered around the anchor point
@@ -70,13 +73,16 @@ export const placement = createLayout([
   { type: 'Float32', name: 'lineOffsetX' },
   { type: 'Float32', name: 'lineOffsetY' },
   { type: 'Uint8', name: 'writingMode' },
-  { type: 'Uint8', name: 'hidden' }
+  { type: 'Uint8', name: 'hidden' },
+  { type: 'Uint32', name: 'crossTileID' }
 ]);
 
 export const symbolInstance = createLayout([
   { type: 'Int16', name: 'anchorX' },
   { type: 'Int16', name: 'anchorY' },
-  { type: 'Int16', name: 'horizontalPlacedTextSymbolIndex' },
+  { type: 'Int16', name: 'rightJustifiedTextSymbolIndex' },
+  { type: 'Int16', name: 'centerJustifiedTextSymbolIndex' },
+  { type: 'Int16', name: 'leftJustifiedTextSymbolIndex' },
   { type: 'Int16', name: 'verticalPlacedTextSymbolIndex' },
   { type: 'Uint16', name: 'key' },
   { type: 'Uint16', name: 'textBoxStartIndex' },
@@ -84,10 +90,12 @@ export const symbolInstance = createLayout([
   { type: 'Uint16', name: 'iconBoxStartIndex' },
   { type: 'Uint16', name: 'iconBoxEndIndex' },
   { type: 'Uint16', name: 'featureIndex' },
-  { type: 'Uint16', name: 'numGlyphVertices' },
+  { type: 'Uint16', name: 'numHorizontalGlyphVertices' },
   { type: 'Uint16', name: 'numVerticalGlyphVertices' },
   { type: 'Uint16', name: 'numIconVertices' },
-  { type: 'Uint32', name: 'crossTileID' }
+  { type: 'Uint32', name: 'crossTileID' },
+  { type: 'Float32', name: 'textBoxScale' },
+  { type: 'Float32', name: 'radialTextOffset' }
 ]);
 
 export const glyphOffset = createLayout([{ type: 'Float32', name: 'offsetX' }]);

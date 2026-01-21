@@ -32,15 +32,52 @@ class CircleBucket {
     this.indexArray = new TriangleIndexArray();
     this.segments = new SegmentVector();
     this.programConfigurations = new ProgramConfigurationSet(layoutAttributes, options.layers, options.zoom);
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
   }
 
   populate(features, options) {
-    for (const { feature, index, sourceLayerIndex } of features) {
-      if (this.layers[0]._featureFilter(new EvaluationParameters(this.zoom), feature)) {
+    const styleLayer = this.layers[0];
+    const bucketFeatures = [];
+    let circleSortKey = null;
+
+    // Heatmap layers are handled in this bucket and have no evaluated properties, so we check our access
+    if (styleLayer.type === 'circle') {
+      circleSortKey = styleLayer._layout.get('circle-sort-key');
+    }
+
+    for (const { feature, id, index, sourceLayerIndex } of features) {
+      if (styleLayer._featureFilter(new EvaluationParameters(this.zoom), feature)) {
         const geometry = loadGeometry(feature);
-        this.addFeature(feature, geometry, index);
-        options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
+        const sortKey = circleSortKey ? circleSortKey.evaluate(feature, {}) : undefined;
+
+        const bucketFeature = {
+          id,
+          properties: feature.properties,
+          type: feature.type,
+          sourceLayerIndex,
+          index,
+          geometry,
+          patterns: {},
+          sortKey
+        };
+
+        bucketFeatures.push(bucketFeature);
       }
+    }
+
+    if (circleSortKey) {
+      bucketFeatures.sort((a, b) => {
+        // a.sortKey is always a number when in use
+        return a.sortKey - b.sortKey;
+      });
+    }
+
+    for (const bucketFeature of bucketFeatures) {
+      const { geometry, index, sourceLayerIndex } = bucketFeature;
+      const feature = features[index].feature;
+
+      this.addFeature(bucketFeature, geometry, index);
+      options.featureIndex.insert(feature, geometry, index, sourceLayerIndex, this.index);
     }
   }
 
@@ -100,7 +137,7 @@ class CircleBucket {
         // │ 0     1 │
         // └─────────┘
 
-        const segment = this.segments.prepareSegment(4, this.layoutVertexArray, this.indexArray);
+        const segment = this.segments.prepareSegment(4, this.layoutVertexArray, this.indexArray, feature.sortKey);
         const index = segment.vertexLength;
 
         addCircleVertex(this.layoutVertexArray, x, y, -1, -1);

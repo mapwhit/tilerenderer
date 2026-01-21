@@ -1,6 +1,7 @@
 import { plugin as rtlTextPlugin } from '../source/rtl_text_plugin.js';
 import { charAllowsIdeographicBreaking, charHasUprightVerticalOrientation } from '../util/script_detection.js';
 import verticalizePunctuation from '../util/verticalize_punctuation.js';
+import ONE_EM from './one_em.js';
 
 export const WritingMode = {
   horizontal: 1,
@@ -102,24 +103,12 @@ export function shapeText(
   textJustify,
   spacing,
   translate,
-  verticalHeight,
   writingMode
 ) {
   const logicalInput = TaggedString.fromFeature(text, defaultFontStack);
   if (writingMode === WritingMode.vertical) {
     logicalInput.verticalizePunctuation();
   }
-
-  const positionedGlyphs = [];
-  const shaping = {
-    positionedGlyphs,
-    text: logicalInput,
-    top: translate[1],
-    bottom: translate[1],
-    left: translate[0],
-    right: translate[0],
-    writingMode
-  };
 
   let lines;
 
@@ -160,13 +149,23 @@ export function shapeText(
     lines = breakLines(logicalInput, determineLineBreaks(logicalInput, spacing, maxWidth, glyphs));
   }
 
-  shapeLines(shaping, glyphs, lines, lineHeight, textAnchor, textJustify, writingMode, spacing, verticalHeight);
+  const positionedGlyphs = [];
+  const shaping = {
+    positionedGlyphs,
+    text: logicalInput.toString(),
+    top: translate[1],
+    bottom: translate[1],
+    left: translate[0],
+    right: translate[0],
+    writingMode,
+    lineCount: lines.length
+  };
 
+  shapeLines(shaping, glyphs, lines, lineHeight, textAnchor, textJustify, writingMode, spacing);
   if (!positionedGlyphs.length) {
     return false;
   }
 
-  shaping.text = shaping.text.toString();
   return shaping;
 }
 
@@ -323,7 +322,7 @@ function determineLineBreaks(logicalInput, spacing, maxWidth, glyphMap) {
   return leastBadBreaks(evaluateBreak(logicalInput.length(), currentX, targetWidth, potentialLineBreaks, 0, true));
 }
 
-function getAnchorAlignment(anchor) {
+export function getAnchorAlignment(anchor) {
   let horizontalAlign = 0.5;
   let verticalAlign = 0.5;
 
@@ -356,17 +355,7 @@ function getAnchorAlignment(anchor) {
   return { horizontalAlign, verticalAlign };
 }
 
-function shapeLines(
-  shaping,
-  glyphMap,
-  lines,
-  lineHeight,
-  textAnchor,
-  textJustify,
-  writingMode,
-  spacing,
-  verticalHeight
-) {
+function shapeLines(shaping, glyphMap, lines, lineHeight, textAnchor, textJustify, writingMode, spacing) {
   // the y offset *should* be part of the font metadata
   const yOffset = -17;
 
@@ -422,7 +411,7 @@ function shapeLines(
           scale: section.scale,
           fontStack: section.fontStack
         });
-        x += verticalHeight * section.scale + spacing;
+        x += ONE_EM * section.scale + spacing;
       }
     }
 

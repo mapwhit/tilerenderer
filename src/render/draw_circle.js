@@ -1,3 +1,4 @@
+import SegmentVector from '../data/segment.js';
 import CullFaceMode from '../gl/cull_face_mode.js';
 import DepthMode from '../gl/depth_mode.js';
 import StencilMode from '../gl/stencil_mode.js';
@@ -12,6 +13,7 @@ function drawCircles(painter, sourceCache, layer, coords) {
   const opacity = layer._paint.get('circle-opacity');
   const strokeWidth = layer._paint.get('circle-stroke-width');
   const strokeOpacity = layer._paint.get('circle-stroke-opacity');
+  const sortFeaturesByKey = layer._layout.get('circle-sort-key').constantOr(1) !== undefined;
 
   if (opacity.constantOr(1) === 0 && (strokeWidth.constantOr(1) === 0 || strokeOpacity.constantOr(1) === 0)) {
     return;
@@ -26,6 +28,8 @@ function drawCircles(painter, sourceCache, layer, coords) {
   const stencilMode = StencilMode.disabled;
   const colorMode = painter.colorModeForRenderPass();
 
+  const segmentsRenderStates = [];
+
   for (let i = 0; i < coords.length; i++) {
     const coord = coords[i];
 
@@ -37,6 +41,43 @@ function drawCircles(painter, sourceCache, layer, coords) {
 
     const programConfiguration = bucket.programConfigurations.get(layer.id);
     const program = painter.useProgram('circle', programConfiguration);
+    const layoutVertexBuffer = bucket.layoutVertexBuffer;
+    const indexBuffer = bucket.indexBuffer;
+    const uniformValues = circleUniformValues(painter, coord, tile, layer);
+
+    const state = {
+      programConfiguration,
+      program,
+      layoutVertexBuffer,
+      indexBuffer,
+      uniformValues
+    };
+
+    if (sortFeaturesByKey) {
+      const oldSegments = bucket.segments.get();
+      for (const segment of oldSegments) {
+        segmentsRenderStates.push({
+          segments: new SegmentVector([segment]),
+          sortKey: segment.sortKey,
+          state
+        });
+      }
+    } else {
+      segmentsRenderStates.push({
+        segments: bucket.segments,
+        sortKey: 0,
+        state
+      });
+    }
+  }
+
+  if (sortFeaturesByKey) {
+    segmentsRenderStates.sort((a, b) => a.sortKey - b.sortKey);
+  }
+
+  for (const segmentsState of segmentsRenderStates) {
+    const { programConfiguration, program, layoutVertexBuffer, indexBuffer, uniformValues } = segmentsState.state;
+    const segments = segmentsState.segments;
 
     program.draw(
       context,
@@ -45,11 +86,11 @@ function drawCircles(painter, sourceCache, layer, coords) {
       stencilMode,
       colorMode,
       CullFaceMode.disabled,
-      circleUniformValues(painter, coord, tile, layer),
+      uniformValues,
       layer.id,
-      bucket.layoutVertexBuffer,
-      bucket.indexBuffer,
-      bucket.segments,
+      layoutVertexBuffer,
+      indexBuffer,
+      segments,
       layer._paint,
       painter.transform.zoom,
       programConfiguration

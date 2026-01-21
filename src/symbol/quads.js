@@ -91,13 +91,8 @@ export function getIconQuads(anchor, shapedIcon, layer, alongLine, shapedText, f
  * Create the quads used for rendering a text label.
  * @private
  */
-export function getGlyphQuads(anchor, shaping, layer, alongLine, feature, positions) {
-  const oneEm = 24;
+export function getGlyphQuads(anchor, shaping, textOffset, layer, alongLine, feature, positions) {
   const textRotate = (layer._layout.get('text-rotate').evaluate(feature, {}) * Math.PI) / 180;
-  const textOffset = layer._layout
-    .get('text-offset')
-    .evaluate(feature, {})
-    .map(t => t * oneEm);
 
   const positionedGlyphs = shaping.positionedGlyphs;
   const quads = [];

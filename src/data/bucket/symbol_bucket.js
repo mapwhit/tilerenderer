@@ -86,6 +86,7 @@ export default class SymbolBucket {
     this.pixelRatio = options.pixelRatio;
     this.sourceLayerIndex = options.sourceLayerIndex;
     this.hasPattern = false;
+    this.sortKeyRanges = [];
 
     const layer = this.layers[0];
     const unevaluatedLayoutValues = layer._unevaluatedLayout._values;
@@ -94,13 +95,18 @@ export default class SymbolBucket {
     this.iconSizeData = getSizeData(this.zoom, unevaluatedLayoutValues['icon-size']);
 
     const layout = this.layers[0]._layout;
-    const zOrderByViewportY = layout.get('symbol-z-order') === 'viewport-y';
+    const sortKey = layout.get('symbol-sort-key');
+    const zOrder = layout.get('symbol-z-order');
+    this.sortFeaturesByKey = zOrder !== 'viewport-y' && sortKey.constantOr(1) !== undefined;
+    const zOrderByViewportY = zOrder === 'viewport-y' || (zOrder === 'auto' && !this.sortFeaturesByKey);
     this.sortFeaturesByY =
       zOrderByViewportY &&
       (layout.get('text-allow-overlap') ||
         layout.get('icon-allow-overlap') ||
         layout.get('text-ignore-placement') ||
         layout.get('icon-ignore-placement'));
+
+    this.stateDependentLayerIds = this.layers.filter(l => l.isStateDependent()).map(l => l.id);
 
     this.sourceID = options.sourceID;
   }
@@ -140,6 +146,7 @@ export default class SymbolBucket {
       (textField.value.kind !== 'constant' || textField.value.value.toString().length > 0) &&
       (textFont.value.kind !== 'constant' || textFont.value.value.length > 0);
     const hasIcon = iconImage.value.kind !== 'constant' || iconImage.value.value?.length > 0;
+    const symbolSortKey = layout.get('symbol-sort-key');
 
     this.features = [];
 
@@ -151,7 +158,7 @@ export default class SymbolBucket {
     const stacks = options.glyphDependencies;
     const globalProperties = new EvaluationParameters(this.zoom);
 
-    for (const { feature, index, sourceLayerIndex } of features) {
+    for (const { feature, id, index, sourceLayerIndex } of features) {
       if (!layer._featureFilter(globalProperties, feature)) {
         continue;
       }
@@ -178,18 +185,19 @@ export default class SymbolBucket {
         continue;
       }
 
+      const sortKey = this.sortFeaturesByKey ? symbolSortKey.evaluate(feature, {}) : undefined;
+
       const symbolFeature = {
+        id,
         text,
         icon,
         index,
         sourceLayerIndex,
         geometry: loadGeometry(feature),
         properties: feature.properties,
-        type: VectorTileFeature.types[feature.type]
+        type: VectorTileFeature.types[feature.type],
+        sortKey
       };
-      if (typeof feature.id !== 'undefined') {
-        symbolFeature.id = feature.id;
-      }
       this.features.push(symbolFeature);
 
       if (icon) {
@@ -213,6 +221,13 @@ export default class SymbolBucket {
       // Merge adjacent lines with the same text to improve labelling.
       // It's better to place labels on one long line than on many short segments.
       this.features = mergeLines(this.features);
+    }
+
+    if (this.sortFeaturesByKey) {
+      this.features.sort((a, b) => {
+        // a.sortKey is always a number when sortFeaturesByKey is true
+        return a.sortKey - b.sortKey;
+      });
     }
   }
 
@@ -295,7 +310,7 @@ export default class SymbolBucket {
     lineLength
   ) {
     const { indexArray, layoutVertexArray, dynamicLayoutVertexArray, segments } = arrays;
-    const segment = segments.prepareSegment(4 * quads.length, layoutVertexArray, indexArray);
+    const segment = segments.prepareSegment(4 * quads.length, layoutVertexArray, indexArray, feature.sortKey);
     const glyphOffsetArrayStart = this.glyphOffsetArray.length;
     const vertexStartIndex = segment.vertexLength;
     const { x: lax, y: lay } = labelAnchor;
@@ -335,7 +350,9 @@ export default class SymbolBucket {
       lineOffset[0],
       lineOffset[1],
       writingMode,
-      false
+      false,
+      // The crossTileID is only filled/used on the foreground for dynamic text anchors
+      0
     );
 
     arrays.programConfigurations.populatePaintArrays(arrays.layoutVertexArray.length, feature, feature.index, {
@@ -439,6 +456,43 @@ export default class SymbolBucket {
     }
   }
 
+  getSortedSymbolIndexes(angle) {
+    if (this.sortedAngle === angle && this.symbolInstanceIndexes !== undefined) {
+      return this.symbolInstanceIndexes;
+    }
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    const rotatedYs = [];
+    const featureIndexes = [];
+    const result = [];
+
+    for (let i = 0; i < this.symbolInstances.length; ++i) {
+      result.push(i);
+      const symbolInstance = this.symbolInstances.get(i);
+      rotatedYs.push(Math.round(sin * symbolInstance.anchorX + cos * symbolInstance.anchorY) | 0);
+      featureIndexes.push(symbolInstance.featureIndex);
+    }
+
+    result.sort((aIndex, bIndex) => {
+      return rotatedYs[aIndex] - rotatedYs[bIndex] || featureIndexes[bIndex] - featureIndexes[aIndex];
+    });
+
+    return result;
+  }
+
+  addToSortKeyRanges(symbolInstanceIndex, sortKey) {
+    const last = this.sortKeyRanges[this.sortKeyRanges.length - 1];
+    if (last && last.sortKey === sortKey) {
+      last.symbolInstanceEnd = symbolInstanceIndex + 1;
+    } else {
+      this.sortKeyRanges.push({
+        sortKey,
+        symbolInstanceStart: symbolInstanceIndex,
+        symbolInstanceEnd: symbolInstanceIndex + 1
+      });
+    }
+  }
+
   sortFeatures(angle) {
     if (!this.sortFeaturesByY) {
       return;
@@ -447,7 +501,6 @@ export default class SymbolBucket {
     if (this.sortedAngle === angle) {
       return;
     }
-    this.sortedAngle = angle;
 
     // The current approach to sorting doesn't sort across segments so don't try.
     // Sorting within segments separately seemed not to be worth the complexity.
@@ -460,35 +513,36 @@ export default class SymbolBucket {
     // sorted order.
 
     // To avoid sorting the actual symbolInstance array we sort an array of indexes.
-    const slen = this.symbolInstances.length;
-    const symbolInstanceIndexes = new Array(slen);
-    const rotatedYs = new Array(slen);
-    const featureIndexes = new Array(slen);
-    const sin = Math.sin(angle);
-    const cos = Math.cos(angle);
-    for (let i = 0; i < slen; i++) {
-      symbolInstanceIndexes[i] = i;
-      const { anchorX, anchorY, featureIndex } = this.symbolInstances.get(i);
-      rotatedYs[i] = Math.round(sin * anchorX + cos * anchorY) | 0;
-      featureIndexes[i] = featureIndex;
-    }
-
-    symbolInstanceIndexes.sort((a, b) => rotatedYs[a] - rotatedYs[b] || featureIndexes[b] - featureIndexes[a]);
+    this.symbolInstanceIndexes = this.getSortedSymbolIndexes(angle);
+    this.sortedAngle = angle;
 
     this.text.indexArray.clear();
     this.icon.indexArray.clear();
 
-    this.featureSortOrder = new Array(slen);
+    this.featureSortOrder = new Array(this.symbolInstanceIndexes.length);
 
-    for (let i = 0; i < slen; i++) {
-      const index = symbolInstanceIndexes[i];
-      const { featureIndex, horizontalPlacedTextSymbolIndex, verticalPlacedTextSymbolIndex } =
-        this.symbolInstances.get(index);
-      this.featureSortOrder[i] = featureIndex;
+    for (let i = 0; i < this.symbolInstanceIndexes.length; i++) {
+      const index = this.symbolInstanceIndexes[i];
+      const {
+        centerJustifiedTextSymbolIndex,
+        featureIndex,
+        leftJustifiedTextSymbolIndex,
+        rightJustifiedTextSymbolIndex,
+        verticalPlacedTextSymbolIndex
+      } = this.symbolInstances.get(index);
+      this.featureSortOrder.push(featureIndex);
 
-      if (horizontalPlacedTextSymbolIndex >= 0) {
-        this.addIndicesForPlacedTextSymbol(horizontalPlacedTextSymbolIndex);
-      }
+      [rightJustifiedTextSymbolIndex, centerJustifiedTextSymbolIndex, leftJustifiedTextSymbolIndex].forEach(
+        (index, i, array) => {
+          // Only add a given index the first time it shows up,
+          // to avoid duplicate opacity entries when multiple justifications
+          // share the same glyphs.
+          if (index >= 0 && array.indexOf(index) === i) {
+            this.addIndicesForPlacedTextSymbol(index);
+          }
+        }
+      );
+
       if (verticalPlacedTextSymbolIndex >= 0) {
         this.addIndicesForPlacedTextSymbol(verticalPlacedTextSymbolIndex);
       }

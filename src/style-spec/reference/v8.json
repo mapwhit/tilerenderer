@@ -337,6 +337,10 @@
       "default": "mapbox",
       "doc": "The encoding used by this source. Mapbox Terrain RGB is used by default"
     },
+    "promoteId": {
+      "type": "promoteId",
+      "doc": "A property to use as a feature id (for feature state). Either a property name, or an object of the form `{<sourceLayer>: <propertyName>}`."
+    },
     "*": {
       "type": "*",
       "doc": "Other keys to configure the data source."
@@ -395,9 +399,13 @@
       "doc": "Whether to calculate line distance metrics. This is required for line layers that specify `line-gradient` values."
     },
     "generateId": {
-        "type": "boolean",
-        "default": false,
-        "doc": "Whether to generate ids for the geojson features. When enabled, the `feature.id` property will be auto assigned based on it's index in the `features` array, over-writing any previous values."
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether to generate ids for the geojson features. When enabled, the `feature.id` property will be auto assigned based on its index in the `features` array, over-writing any previous values."
+    },
+    "promoteId": {
+      "type": "promoteId",
+      "doc": "A property to use as a feature id (for feature state). Either a property name, or an object of the form `{<sourceLayer>: <propertyName>}`."
     }
   },
   "source_video": {
@@ -650,6 +658,21 @@
     }
   },
   "layout_fill": {
+    "fill-sort-key": {
+      "type": "number",
+      "doc": "Sorts features in ascending order based on this value. Features with a higher sort key will appear above features with a lower sort key.",
+      "sdk-support": {
+          "js": "1.2.0"
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      },
+      "property-type": "data-driven"
+    },
     "visibility": {
       "type": "enum",
       "values": {
@@ -680,6 +703,21 @@
     }
   },
   "layout_circle": {
+    "circle-sort-key": {
+      "type": "number",
+      "doc": "Sorts features in ascending order based on this value. Features with a higher sort key will appear above features with a lower sort key.",
+      "sdk-support": {
+          "js": "1.2.0"
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      },
+      "property-type": "data-driven"
+    },
     "visibility": {
       "type": "enum",
       "values": {
@@ -892,6 +930,21 @@
       },
       "property-type": "data-constant"
     },
+    "line-sort-key": {
+      "type": "number",
+      "doc": "Sorts features in ascending order based on this value. Features with a higher sort key will appear above features with a lower sort key.",
+      "sdk-support": {
+          "js": "1.2.0"
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      },
+      "property-type": "data-driven"
+    },
     "visibility": {
       "type": "enum",
       "values": {
@@ -1007,9 +1060,27 @@
       },
       "property-type": "data-constant"
     },
+    "symbol-sort-key": {
+      "type": "number",
+      "doc": "Sorts features in ascending order based on this value. Features with a higher sort key will appear above features with a lower sort key wehn they overlap. Features with a lower sort key will have priority over other features when doing placement.",
+      "sdk-support": {
+          "js": "0.53.0"
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      },
+      "property-type": "data-driven"
+    },
     "symbol-z-order": {
       "type": "enum",
       "values": {
+        "auto": {
+          "doc": "If `symbol-sort-key` is set, sort based on that. Otherwise sort symbols by their position relative to the viewport."
+        },
         "viewport-y": {
           "doc": "Symbols will be sorted by their y-position relative to the viewport."
         },
@@ -1017,7 +1088,7 @@
           "doc": "Symbols will be rendered in the same order as the source data with no sorting applied."
         }
       },
-      "default": "viewport-y",
+      "default": "auto",
       "doc": "Controls the order in which overlapping symbols in the same layer are rendered",
       "sdk-support": {
         "basic functionality": {
@@ -1809,6 +1880,92 @@
         ]
       },
       "property-type": "data-driven"
+    },
+    "text-radial-offset": {
+      "type": "number",
+      "units": "ems",
+      "default": 0,
+      "doc": "Radial offset of text, in the direction of the symbol's anchor. Useful in combination with `text-variable-anchor`, which defaults to using the two-dimensional `text-offset` if present.",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        },
+        "data-driven styling": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        }
+      },
+      "requires": [
+        "text-field"
+      ],
+      "property-type": "data-driven",
+      "expression": {
+        "interpolated": true,
+        "parameters": [
+          "zoom",
+          "feature"
+        ]
+      }
+    },
+    "text-variable-anchor": {
+      "type": "array",
+      "value": "enum",
+      "values": {
+        "center": {
+          "doc": "The center of the text is placed closest to the anchor."
+        },
+        "left": {
+          "doc": "The left side of the text is placed closest to the anchor."
+        },
+        "right": {
+          "doc": "The right side of the text is placed closest to the anchor."
+        },
+        "top": {
+          "doc": "The top of the text is placed closest to the anchor."
+        },
+        "bottom": {
+          "doc": "The bottom of the text is placed closest to the anchor."
+        },
+        "top-left": {
+          "doc": "The top left corner of the text is placed closest to the anchor."
+        },
+        "top-right": {
+          "doc": "The top right corner of the text is placed closest to the anchor."
+        },
+        "bottom-left": {
+          "doc": "The bottom left corner of the text is placed closest to the anchor."
+        },
+        "bottom-right": {
+          "doc": "The bottom right corner of the text is placed closest to the anchor."
+        }
+      },
+      "requires": [
+        "text-field",
+        {
+          "symbol-placement": [
+            "point"
+          ]
+        }
+      ],
+      "doc": "To increase the chance of placing high-priority labels on the map, you can provide an array of `text-anchor` locations: the renderer will attempt to place the label at each location, in order, before moving onto the next label. Use `text-justify: auto` to choose justification based on anchor position. To apply an offset, use the `text-radial-offset` or the two-dimensional `text-offset`.",
+      "sdk-support": {
+        "basic functionality": {
+          "js": "0.54.0",
+          "android": "7.4.0",
+          "ios": "4.10.0"
+        }
+      },
+      "expression": {
+        "interpolated": false,
+        "parameters": [
+          "zoom"
+        ]
+      },
+      "example": ["center", "left", "right"],
+      "property-type": "data-constant"
     },
     "text-anchor": {
       "type": "enum",

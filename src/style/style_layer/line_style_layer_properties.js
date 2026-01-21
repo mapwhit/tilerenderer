@@ -31,6 +31,10 @@ const layout = new Properties({
     type: 'number',
     default: 1.05,
     expression: { interpolated: true, parameters: ['zoom'] }
+  }),
+  'line-sort-key': new DataDrivenProperty({
+    type: 'number',
+    expression: { parameters: ['zoom', 'feature'] }
   })
 });
 const paint = new Properties({

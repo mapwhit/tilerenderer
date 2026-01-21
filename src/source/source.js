@@ -25,6 +25,7 @@ import { bindAll } from '../util/object.js';
  */
 
 import geojson from './geojson_source.js';
+import geojsonTiler from './geojson_tiler.js';
 import image from './image_source.js';
 import rasterDem from './raster_dem_tile_source.js';
 import raster from './raster_tile_source.js';
@@ -38,6 +39,9 @@ const sourceTypes = {
   image
 };
 
+const tilerTypes = {
+  geojson: geojsonTiler
+};
 /*
  * Creates a tiled data source instance given an options object.
  *
@@ -48,11 +52,18 @@ const sourceTypes = {
  * @returns {Source}
  */
 export function create(id, specification, eventedParent, { resources, layerIndex, showTileBoundaries }) {
-  const source = new sourceTypes[specification.type](id, specification, eventedParent, {
-    resources,
-    layerIndex,
-    showTileBoundaries
-  });
+  const tiler = tilerTypes[specification.type]?.(resources, layerIndex);
+
+  const source = new sourceTypes[specification.type](
+    id,
+    specification,
+    eventedParent,
+    tiler ?? {
+      resources,
+      layerIndex,
+      showTileBoundaries
+    }
+  );
 
   bindAll(['load', 'abort', 'unload', 'serialize', 'prepare'], source);
   return source;
