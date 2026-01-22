@@ -27,24 +27,7 @@ const mapwhit = {
   Evented
 };
 
-const properties = {
-  workerCount: {
-    get() {
-      return config.WORKER_COUNT;
-    },
-    set(count) {
-      config.WORKER_COUNT = count;
-    }
-  },
-  workerUrl: {
-    get() {
-      return config.WORKER_URL;
-    },
-    set(url) {
-      config.WORKER_URL = url;
-    }
-  }
-};
+const properties = {};
 
 Object.defineProperties(mapwhit, properties);
 Object.defineProperties(config, properties);

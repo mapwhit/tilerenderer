@@ -1,9 +1,4 @@
 import { Evented } from '@mapwhit/events';
-import browser from './browser.js';
-
-function getDefaultWorkerCount() {
-  return Math.max(Math.floor(browser.hardwareConcurrency / 2), 1);
-}
 
 const config = new Evented();
 
@@ -18,7 +13,4 @@ config.notify = function () {
   config.fire('change', config);
 };
 
-config.set({
-  WORKER_COUNT: getDefaultWorkerCount(),
-  WORKER_URL: ''
-});
+config.set({});
