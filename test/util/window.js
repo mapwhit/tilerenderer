@@ -1,7 +1,6 @@
 import canvas from 'canvas';
 import gl from 'gl';
 import jsdom from 'jsdom';
-import WebWorker from './web_worker.js';
 import '../../src/source/rtl_text_plugin.js';
 
 const _window = create();
@@ -61,11 +60,7 @@ function create() {
   };
   window.WebGLFramebuffer ??= Object;
 
-  window.Worker ??= WebWorker;
-
   globalThis.document ??= window.document;
-
-  window.registerRTLTextPlugin ??= globalThis.registerRTLTextPlugin;
 
   return window;
 }
