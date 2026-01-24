@@ -5,7 +5,7 @@ import { Point } from '@mapwhit/point-geometry';
 import packageJSON from '../package.json' with { type: 'json' };
 import { default as LngLat } from './geo/lng_lat.js';
 import { default as LngLatBounds } from './geo/lng_lat_bounds.js';
-import { rtlMainThreadPluginFactory } from './source/rtl_text_plugin_main_thread.js';
+import { rtlPluginLoader } from './source/rtl_text_plugin.js';
 import { default as Style } from './style/style.js';
 import { default as Map } from './ui/map.js';
 import config from './util/config.js';
@@ -55,7 +55,7 @@ export default mapwhit;
  * @see [Add support for right-to-left scripts](https://maplibre.org/maplibre-gl-js/docs/examples/mapbox-gl-rtl-text/)
  */
 function setRTLTextPlugin(pluginURL, lazy) {
-  return rtlMainThreadPluginFactory().setRTLTextPlugin(pluginURL, lazy);
+  return rtlPluginLoader.setRTLTextPlugin(pluginURL, lazy);
 }
 /**
  * Gets the map's [RTL text plugin](https://www.mapbox.com/mapbox-gl-js/plugins/#mapbox-gl-rtl-text) status.
@@ -67,7 +67,7 @@ function setRTLTextPlugin(pluginURL, lazy) {
  * const pluginStatus = getRTLTextPluginStatus();
  */
 function getRTLTextPluginStatus() {
-  return rtlMainThreadPluginFactory().getRTLTextPluginStatus();
+  return rtlPluginLoader.getRTLTextPluginStatus();
 }
 
 // canary assert: used to confirm that asserts have been removed from production build

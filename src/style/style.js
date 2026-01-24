@@ -5,7 +5,7 @@ import ImageManager from '../render/image_manager.js';
 import LineAtlas from '../render/line_atlas.js';
 import { queryRenderedFeatures, queryRenderedSymbols, querySourceFeatures } from '../source/query_features.js';
 import { resources } from '../source/resources/index.js';
-import { rtlMainThreadPluginFactory } from '../source/rtl_text_plugin_main_thread.js';
+import { rtlPluginLoader } from '../source/rtl_text_plugin.js';
 import { getType as getSourceType, setType as setSourceType } from '../source/source.js';
 import SourceCache from '../source/source_cache.js';
 import CrossTileSymbolIndex from '../symbol/cross_tile_symbol_index.js';
@@ -65,7 +65,7 @@ class Style extends Evented {
     this._removedLayers = new Map();
     this._resetUpdates();
     this.#rtlPluginLoadedHandler = this.#rtlPluginLoaded.bind(this);
-    rtlMainThreadPluginFactory().on('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
+    rtlPluginLoader.on('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
     this.on('data', event => {
       if (event.dataType !== 'source' || event.sourceDataType !== 'metadata') {
         return;
@@ -1055,7 +1055,7 @@ class Style extends Evented {
   }
 
   _remove() {
-    rtlMainThreadPluginFactory().off('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
+    rtlPluginLoader.off('RTLPluginLoaded', this.#rtlPluginLoadedHandler);
     for (const id in this._sources) {
       this._sources[id].clearTiles();
     }

@@ -1,4 +1,4 @@
-import { rtlWorkerPlugin } from '../source/rtl_text_plugin_worker.js';
+import { rtlPlugin } from '../source/rtl_text_plugin.js';
 import { charAllowsIdeographicBreaking, charHasUprightVerticalOrientation } from '../util/script_detection.js';
 import verticalizePunctuation from '../util/verticalize_punctuation.js';
 import ONE_EM from './one_em.js';
@@ -112,7 +112,7 @@ export function shapeText(
 
   let lines;
 
-  const { processBidirectionalText, processStyledBidirectionalText } = rtlWorkerPlugin;
+  const { processBidirectionalText, processStyledBidirectionalText } = rtlPlugin;
   if (processBidirectionalText && logicalInput.sections.length === 1) {
     // Bidi doesn't have to be style-aware
     lines = [];

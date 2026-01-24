@@ -1,7 +1,7 @@
 import { dist } from '@mapwhit/point-geometry';
 import { Formatted } from '@mapwhit/style-expressions';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
-import { rtlWorkerPlugin } from '../../source/rtl_text_plugin_worker.js';
+import { rtlPlugin } from '../../source/rtl_text_plugin.js';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import mergeLines from '../../symbol/mergelines.js';
 import { getSizeData } from '../../symbol/symbol_size.js';
@@ -186,8 +186,7 @@ export default class SymbolBucket {
         const bucketHasRTLText = (this.hasRTLText = this.hasRTLText || containsRTLText(formattedText));
         if (
           !bucketHasRTLText || // non-rtl text so can proceed safely
-          rtlWorkerPlugin.getRTLTextPluginStatus() === 'unavailable' || // We don't intend to lazy-load the rtl text plugin, so proceed with incorrect shaping
-          rtlWorkerPlugin.isParsed() // Use the rtlText plugin to shape text
+          rtlPlugin.isRTLSupported(true) // Use the rtlText plugin to shape text if available or We don't intend to lazy-load the rtl text plugin, so proceed with incorrect shaping
         ) {
           text = transformText(formattedText, layer, feature);
         }

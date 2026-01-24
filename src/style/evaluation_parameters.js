@@ -1,4 +1,4 @@
-import { rtlWorkerPlugin } from '../source/rtl_text_plugin_worker.js';
+import { rtlPlugin } from '../source/rtl_text_plugin.js';
 import { isStringInSupportedScript } from '../util/script_detection.js';
 import ZoomHistory from './zoom_history.js';
 
@@ -39,5 +39,5 @@ export default class EvaluationParameters {
 }
 
 function isSupportedScript(str) {
-  return isStringInSupportedScript(str, rtlWorkerPlugin.getRTLTextPluginStatus() === 'loaded');
+  return isStringInSupportedScript(str, rtlPlugin.isRTLSupported());
 }

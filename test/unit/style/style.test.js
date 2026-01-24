@@ -2,7 +2,7 @@ import test from 'node:test';
 import { Event, Evented } from '@mapwhit/events';
 import { Color } from '@mapwhit/style-expressions';
 import Transform from '../../../src/geo/transform.js';
-import { rtlMainThreadPluginFactory } from '../../../src/source/rtl_text_plugin_main_thread.js';
+import { rtlPluginLoader } from '../../../src/source/rtl_text_plugin.js';
 import SourceCache from '../../../src/source/source_cache.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import Style from '../../../src/style/style.js';
@@ -89,7 +89,7 @@ test('Style', async t => {
       await style.once('style.load');
       t.mock.method(style._sources.raster, 'reload');
       t.mock.method(style._sources.vector, 'reload');
-      rtlMainThreadPluginFactory().fire(new Event('RTLPluginLoaded'));
+      rtlPluginLoader.fire(new Event('RTLPluginLoaded'));
       t.assert.equal(style._sources.raster.reload.mock.callCount(), 0);
       t.assert.equal(style._sources.vector.reload.mock.callCount(), 1);
     });
@@ -359,13 +359,13 @@ test('Style', async t => {
     });
 
     await t.test('deregisters plugin listener', async t => {
-      t.mock.method(rtlMainThreadPluginFactory(), 'off');
+      t.mock.method(rtlPluginLoader, 'off');
       const style = new Style(new StubMap());
       style.loadJSON(createStyleJSON());
 
       await style.once('style.load');
       style._remove();
-      t.assert.equal(rtlMainThreadPluginFactory().off.mock.callCount(), 1);
+      t.assert.equal(rtlPluginLoader.off.mock.callCount(), 1);
     });
   });
 

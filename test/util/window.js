@@ -1,7 +1,7 @@
 import canvas from 'canvas';
 import gl from 'gl';
 import jsdom from 'jsdom';
-import '../../src/source/rtl_text_plugin_main_thread.js';
+import '../../src/source/rtl_text_plugin.js';
 
 const _window = create();
 
