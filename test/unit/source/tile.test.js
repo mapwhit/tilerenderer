@@ -6,7 +6,6 @@ import Context from '../../../src/gl/context.js';
 import GeoJSONWrapper from '../../../src/source/geojson_wrapper.js';
 import Tile from '../../../src/source/tile.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
-import { createSymbolBucket } from '../../util/create_symbol_layer.js';
 import { loadVectorTile } from '../../util/tile.js';
 import _window from '../../util/window.js';
 
@@ -226,26 +225,6 @@ test('Tile', async t => {
         new OverscaledTileID(10, 1, 10, 293, 390)
       ]);
     });
-  });
-});
-
-test('rtl text detection', async t => {
-  await t.test('Tile#hasRTLText is true when a tile loads a symbol bucket with rtl text', t => {
-    const tile = new Tile(new OverscaledTileID(1, 0, 1, 1, 1));
-    // Create a stub symbol bucket
-    const symbolBucket = createSymbolBucket(new CollisionBoxArray());
-    // symbolBucket has not been populated yet so we force override the value in the stub
-    symbolBucket.hasRTLText = true;
-    tile.loadVectorData(
-      createVectorData({ vectorTile: loadVectorTile(), buckets: [symbolBucket], hasRTLText: true }),
-      createPainter({
-        getLayer() {
-          return symbolBucket.layers[0];
-        }
-      })
-    );
-
-    t.assert.ok(tile.hasRTLText);
   });
 });
 
