@@ -75,3 +75,12 @@ export function waitForEvent(evented, eventName, predicate) {
     evented.on(eventName, listener);
   });
 }
+
+/**
+ * This allows test to wait for a certain amount of time before continuing.
+ * @param milliseconds - the amount of time to wait in milliseconds
+ * @returns - a promise that resolves after the specified amount of time
+ */
+export function sleep(milliseconds = 0) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}

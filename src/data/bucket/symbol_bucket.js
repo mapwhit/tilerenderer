@@ -1,11 +1,12 @@
 import { dist } from '@mapwhit/point-geometry';
 import { Formatted } from '@mapwhit/style-expressions';
 import { VectorTileFeature } from '@mapwhit/vector-tile';
+import { rtlPlugin } from '../../source/rtl_text_plugin.js';
 import EvaluationParameters from '../../style/evaluation_parameters.js';
 import mergeLines from '../../symbol/mergelines.js';
 import { getSizeData } from '../../symbol/symbol_size.js';
 import transformText from '../../symbol/transform_text.js';
-import { allowsVerticalWritingMode } from '../../util/script_detection.js';
+import { allowsVerticalWritingMode, stringContainsRTLText } from '../../util/script_detection.js';
 import { verticalizedCharacterMap } from '../../util/verticalize_punctuation.js';
 import {
   CollisionBoxLayoutArray,
@@ -42,6 +43,15 @@ export function addDynamicAttributes(dynamicLayoutVertexArray, p, angle) {
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
   dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
+}
+
+function containsRTLText(formattedText) {
+  for (const section of formattedText.sections) {
+    if (stringContainsRTLText(section.text)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -86,6 +96,7 @@ export default class SymbolBucket {
     this.pixelRatio = options.pixelRatio;
     this.sourceLayerIndex = options.sourceLayerIndex;
     this.hasPattern = false;
+    this.hasRTLText = false;
     this.sortKeyRanges = [];
 
     const layer = this.layers[0];
@@ -169,11 +180,16 @@ export default class SymbolBucket {
         // but plain string token evaluation skips that pathway so do the
         // conversion here.
         const resolvedTokens = layer.getValueAndResolveTokens('text-field', feature);
-        text = transformText(
-          resolvedTokens instanceof Formatted ? resolvedTokens : Formatted.fromString(resolvedTokens),
-          layer,
-          feature
-        );
+        const formattedText =
+          resolvedTokens instanceof Formatted ? resolvedTokens : Formatted.fromString(resolvedTokens);
+        // on this instance: if hasRTLText is already true, all future calls to containsRTLText can be skipped.
+        const bucketHasRTLText = (this.hasRTLText = this.hasRTLText || containsRTLText(formattedText));
+        if (
+          !bucketHasRTLText || // non-rtl text so can proceed safely
+          rtlPlugin.isRTLSupported(true) // Use the rtlText plugin to shape text if available or We don't intend to lazy-load the rtl text plugin, so proceed with incorrect shaping
+        ) {
+          text = transformText(formattedText, layer, feature);
+        }
       }
 
       let icon;
@@ -244,7 +260,9 @@ export default class SymbolBucket {
   }
 
   isEmpty() {
-    return this.symbolInstances.length === 0;
+    // When the bucket encounters only rtl-text but the plugin isnt loaded, no symbol instances will be created.
+    // In order for the bucket to be serialized, and not discarded as an empty bucket both checks are necessary.
+    return this.symbolInstances.length === 0 && !this.hasRTLText;
   }
 
   uploadPending() {

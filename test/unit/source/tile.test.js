@@ -240,6 +240,6 @@ function createVectorData(options) {
   );
 }
 
-function createPainter() {
-  return { style: {} };
+function createPainter(styleStub = {}) {
+  return { style: styleStub };
 }

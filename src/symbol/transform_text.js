@@ -1,4 +1,4 @@
-import { plugin as rtlTextPlugin } from '../source/rtl_text_plugin.js';
+import { rtlPlugin } from '../source/rtl_text_plugin.js';
 
 function transformText(text, layer, feature) {
   const transform = layer._layout.get('text-transform').evaluate(feature, {});
@@ -7,9 +7,8 @@ function transformText(text, layer, feature) {
   } else if (transform === 'lowercase') {
     text = text.toLocaleLowerCase();
   }
-
-  if (rtlTextPlugin.applyArabicShaping) {
-    text = rtlTextPlugin.applyArabicShaping(text);
+  if (rtlPlugin.applyArabicShaping) {
+    text = rtlPlugin.applyArabicShaping(text);
   }
 
   return text;

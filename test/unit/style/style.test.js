@@ -2,7 +2,7 @@ import test from 'node:test';
 import { Event, Evented } from '@mapwhit/events';
 import { Color } from '@mapwhit/style-expressions';
 import Transform from '../../../src/geo/transform.js';
-import plugin from '../../../src/source/rtl_text_plugin.js';
+import { rtlPluginLoader } from '../../../src/source/rtl_text_plugin.js';
 import SourceCache from '../../../src/source/source_cache.js';
 import { OverscaledTileID } from '../../../src/source/tile_id.js';
 import Style from '../../../src/style/style.js';
@@ -63,28 +63,35 @@ test('Style', async t => {
       style._remove();
     });
 
-    await t.test('registers plugin listener', t => {
-      plugin.clearRTLTextPlugin();
-
-      t.mock.method(plugin, 'registerForPluginAvailability');
-
+    await t.test('RTL plugin load reloads vector source but not raster source', async t => {
       style = new Style(new StubMap());
-      t.assert.equal(plugin.registerForPluginAvailability.mock.callCount(), 1);
-
-      t.mock.method(plugin, 'loadScript', () => Promise.reject());
-      plugin.setRTLTextPlugin('some-bogus-url');
-      t.assert.deepEqual(plugin.loadScript.mock.calls[0].arguments[0], 'https://example.org/some-bogus-url');
-    });
-
-    await t.test('loads plugin immediately if already registered', (t, done) => {
-      plugin.clearRTLTextPlugin();
-      t.mock.method(plugin, 'loadScript', () => Promise.reject(true));
-      plugin.setRTLTextPlugin('some-bogus-url', error => {
-        // Getting this error message shows the bogus URL was succesfully passed to the worker state
-        t.assert.equal(error.message, 'RTL Text Plugin failed to load scripts from https://example.org/some-bogus-url');
-        done();
-      });
-      style = new Style(createStyleJSON());
+      style.loadJSON(
+        createStyleJSON({
+          sources: {
+            raster: {
+              type: 'raster',
+              tiles: ['http://tiles.server']
+            },
+            vector: {
+              type: 'vector',
+              tiles: ['http://tiles.server']
+            }
+          },
+          layers: [
+            {
+              id: 'raster',
+              type: 'raster',
+              source: 'raster'
+            }
+          ]
+        })
+      );
+      await style.once('style.load');
+      t.mock.method(style._sources.raster, 'reload');
+      t.mock.method(style._sources.vector, 'reload');
+      rtlPluginLoader.fire(new Event('RTLPluginLoaded'));
+      t.assert.equal(style._sources.raster.reload.mock.callCount(), 0);
+      t.assert.equal(style._sources.vector.reload.mock.callCount(), 1);
     });
   });
 
@@ -351,19 +358,14 @@ test('Style', async t => {
       });
     });
 
-    await t.test('deregisters plugin listener', (t, done) => {
+    await t.test('deregisters plugin listener', async t => {
+      t.mock.method(rtlPluginLoader, 'off');
       const style = new Style(new StubMap());
-      t.mock.method(style, '_reloadSources', () => {});
       style.loadJSON(createStyleJSON());
-      t.mock.method(plugin, 'loadScript', () => {});
 
-      style.on('style.load', () => {
-        style._remove();
-        plugin.setRTLTextPlugin('some-bogus-url');
-        t.assert.equal(plugin.loadScript.mock.callCount(), 0);
-        t.assert.equal(style._reloadSources.mock.callCount(), 0);
-        done();
-      });
+      await style.once('style.load');
+      style._remove();
+      t.assert.equal(rtlPluginLoader.off.mock.callCount(), 1);
     });
   });
 
