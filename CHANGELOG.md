@@ -1,4 +1,17 @@
 
+1.5.0 / 2026-01-25
+==================
+
+ * remove triggering RTL plugin lazy load from tile
+ * refactor RTL plugin to `mapwhit` coding conventions
+ * Don't reload raster sources when RTL text plugin loads to avoid flicker. (#2381)
+ * Deferred loading of RTL text plugin detects labels rendered from GeoJSON sources (#9091)
+ * Remove `stringContainsRTLText` dependency from within style-spec. (#9088)
+ * remove obsolete worker config options
+ * upgrade `biome` to 2.3.11
+ * upgrade `esbuild` to 0.27.2
+ * use `pnpm` instead of `yarn`
+
 1.4.0 / 2026-01-21
 ==================
 
