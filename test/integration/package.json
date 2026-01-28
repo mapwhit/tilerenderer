@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@mapbox/mvt-fixtures": "^3.2.0",
-    "@mapwhit/rtl-text": "^0.0.2",
+    "@mapwhit/rtl-text": "^0.1.0",
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0"
   },
