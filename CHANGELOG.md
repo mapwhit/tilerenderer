@@ -1,4 +1,9 @@
 
+1.6.0 / 2026-01-27
+==================
+
+ * pass loading function instead of url to `setRTLTextPlugin`
+
 1.5.0 / 2026-01-25
 ==================
 
