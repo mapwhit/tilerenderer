@@ -27,13 +27,13 @@ test('RTLPlugin', async t => {
     t.assert.ok(rtlPlugin.processStyledBidirectionalText == null);
   });
 
-  await t.test('plugin loaded', t => {
+  await t.test('plugin loaded', async t => {
     const rtlTextPlugin = {
       applyArabicShaping: () => {},
       processBidirectionalText: () => {},
       processStyledBidirectionalText: () => {}
     };
-    globalThis.registerRTLTextPlugin(rtlTextPlugin);
+    await rtlPluginLoader.setRTLTextPlugin(() => Promise.resolve(rtlTextPlugin));
     t.assert.ok(rtlPlugin.isRTLSupported());
     t.assert.ok(rtlPlugin.isRTLSupported(true));
     t.assert.equal(rtlPlugin.applyArabicShaping, rtlTextPlugin.applyArabicShaping);
@@ -42,11 +42,7 @@ test('RTLPlugin', async t => {
   });
 
   await t.test('plugin deferred', async t => {
-    t.mock.method(rtlPluginLoader, '_loadScript', () => {
-      globalThis.registerRTLTextPlugin({});
-      return Promise.resolve();
-    });
-    await rtlPluginLoader.setRTLTextPlugin('http://example.com/plugin', true);
+    await rtlPluginLoader.setRTLTextPlugin(() => new Promise(), true);
     t.assert.ok(!rtlPlugin.isRTLSupported());
     t.assert.ok(rtlPlugin.isRTLSupported(true));
   });
@@ -58,9 +54,8 @@ test('RTLPlugin', async t => {
   });
 
   await t.test('plugin download failed', async t => {
-    t.mock.method(rtlPluginLoader, '_loadScript', () => Promise.reject());
     try {
-      await rtlPluginLoader.setRTLTextPlugin('http://example.com/plugin');
+      await rtlPluginLoader.setRTLTextPlugin(() => Promise.reject());
     } catch {}
     t.assert.ok(!rtlPlugin.isRTLSupported());
     t.assert.ok(rtlPlugin.isRTLSupported(true));

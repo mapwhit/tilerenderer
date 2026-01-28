@@ -1,5 +1,7 @@
 import path from 'node:path';
 import { setTimeout } from 'node:timers/promises';
+import rtlText from '@mapwhit/rtl-text';
+import { setRTLTextPlugin } from '../../../src/index.js';
 import Map from '../../../src/ui/map.js';
 import browser from '../../../src/util/browser.js';
 import config from '../../../src/util/config.js';
@@ -8,17 +10,12 @@ import { readPNG } from './png.js';
 
 globalThis.window ??= _window;
 
-async function loadPlugin() {
-  const { default: rtlText } = await import('@mapwhit/rtl-text');
-  return await rtlText();
-}
-
 let pluginloaded;
 
 export default async function suiteImplementation(style, options) {
-  if (options.loadRTLTextPlugin) {
-    pluginloaded ??= loadPlugin();
-    await pluginloaded;
+  if (options.loadRTLTextPlugin && !pluginloaded) {
+    pluginloaded = true;
+    await setRTLTextPlugin(rtlText);
   }
 
   window.devicePixelRatio = options.pixelRatio;

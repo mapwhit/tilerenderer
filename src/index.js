@@ -43,22 +43,27 @@ export default mapwhit;
  */
 
 /**
- * Sets the map's [RTL text plugin](https://www.mapbox.com/mapbox-gl-js/plugins/#mapbox-gl-rtl-text).
+ * Sets the map's [RTL text plugin](https://github.com/mapwhit/rtl-text).
  * Necessary for supporting languages like Arabic and Hebrew that are written right-to-left.
  *
  * @function setRTLTextPlugin
- * @param {string} pluginURL URL pointing to the Mapbox RTL text plugin source.
- * @param {boolean} lazy If set to `true`, mapboxgl will defer loading the plugin until rtl text is encountered,
+ * @param {function} loadPlugin a function that returns a Promise resolving to object
+ *   with RTL text plugin methods `applyArabicShaping`, `processBidirectionalText`,
+ *   and `processStyledBidirectionalText`.
+ * @param {boolean} lazy If set to `true`, loading the plugin will defer until rtl text is encountered,
  *    rtl text will then be rendered only after the plugin finishes loading.
  * @example
- * setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js', false);
+ * ```javascript
+ * import loadRTLTextPlugin from '@mapwhit/rtl-text';
+ * setRTLTextPlugin(loadRTLTextPlugin, true);
+ * ```
  * @see [Add support for right-to-left scripts](https://maplibre.org/maplibre-gl-js/docs/examples/mapbox-gl-rtl-text/)
  */
-function setRTLTextPlugin(pluginURL, lazy) {
-  return rtlPluginLoader.setRTLTextPlugin(pluginURL, lazy);
+function setRTLTextPlugin(loadPlugin, lazy) {
+  return rtlPluginLoader.setRTLTextPlugin(loadPlugin, lazy);
 }
 /**
- * Gets the map's [RTL text plugin](https://www.mapbox.com/mapbox-gl-js/plugins/#mapbox-gl-rtl-text) status.
+ * Gets the map's [RTL text plugin](https://github.com/mapwhit/rtl-text) status.
  * The status can be `unavailable` (i.e. not requested or removed), `loading`, `loaded` or `error`.
  * If the status is `loaded` and the plugin is requested again, an error will be thrown.
  *

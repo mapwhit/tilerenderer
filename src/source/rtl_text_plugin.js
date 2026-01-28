@@ -1,6 +1,4 @@
 import { Event, Evented } from '@mapwhit/events';
-import dynload from 'dynload';
-import browser from '../util/browser.js';
 
 /**
  * The possible option of the plugin's status
@@ -49,14 +47,13 @@ export const rtlPlugin = RTLPlugin();
 
 function RTLPluginLoader() {
   let status = 'unavailable';
-  let url;
+  let load;
 
   const self = {
     getRTLTextPluginStatus,
     setRTLTextPlugin,
     lazyLoad,
-    _clearRTLTextPlugin,
-    _registerRTLTextPlugin
+    _clearRTLTextPlugin
   };
 
   /** This one is exposed to outside */
@@ -66,20 +63,17 @@ function RTLPluginLoader() {
 
   // public for testing
   function _clearRTLTextPlugin() {
-    url = undefined;
     status = 'unavailable';
+    load = undefined;
     _setMethods();
   }
 
-  function setRTLTextPlugin(pluginURL, deferred = false) {
-    if (url) {
+  function setRTLTextPlugin(pluginLoad, deferred = false) {
+    if (load) {
       // error
       return Promise.reject(new Error('setRTLTextPlugin cannot be called multiple times.'));
     }
-    url = browser.resolveURL(pluginURL);
-    if (!url) {
-      return Promise.reject(new Error(`requested url ${pluginURL} is invalid`));
-    }
+    load = pluginLoad;
     if (status === 'requested') {
       return _downloadRTLTextPlugin();
     }
@@ -93,9 +87,13 @@ function RTLPluginLoader() {
   }
 
   async function _downloadRTLTextPlugin() {
+    if (typeof load !== 'function') {
+      return Promise.reject(new Error('RTL text plugin load function is not set.'));
+    }
     status = 'loading';
     try {
-      await rtlPluginLoader._loadScript({ url });
+      _setMethods(await load());
+      status = 'loaded';
     } catch {
       status = 'error';
     }
@@ -126,36 +124,7 @@ function RTLPluginLoader() {
     rtlPlugin.processStyledBidirectionalText = rtlTextPlugin.processStyledBidirectionalText;
   }
 
-  // This is invoked by the RTL text plugin when the download has finished, and the code has been parsed.
-  function _registerRTLTextPlugin(rtlTextPlugin) {
-    if (rtlPlugin.isRTLSupported()) {
-      throw new Error('RTL text plugin already registered.');
-    }
-    status = 'loaded';
-    _setMethods(rtlTextPlugin);
-  }
-
   return self;
 }
 
-// public for testing
-function _loadScript({ url }) {
-  const { promise, resolve, reject } = Promise.withResolvers();
-  const s = dynload(url);
-  s.onload = () => resolve();
-  s.onerror = () => reject(true);
-  return promise;
-}
-
-const { getRTLTextPluginStatus, setRTLTextPlugin, lazyLoad, _clearRTLTextPlugin, _registerRTLTextPlugin } =
-  RTLPluginLoader();
-
-globalThis.registerRTLTextPlugin ??= _registerRTLTextPlugin;
-
-export const rtlPluginLoader = Object.assign(new Evented(), {
-  getRTLTextPluginStatus,
-  setRTLTextPlugin,
-  lazyLoad,
-  _clearRTLTextPlugin,
-  _loadScript
-});
+export const rtlPluginLoader = Object.assign(new Evented(), RTLPluginLoader());
