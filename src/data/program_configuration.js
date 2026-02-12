@@ -566,7 +566,7 @@ export default class ProgramConfiguration {
     }
     if (feature.id !== undefined) {
       const featureId = String(feature.id);
-      this._idMap[featureId] = this._idMap[featureId] || [];
+      this._idMap[featureId] ??= [];
       this._idMap[featureId].push({
         index: index,
         start: this._bufferOffset,

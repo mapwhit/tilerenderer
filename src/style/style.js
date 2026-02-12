@@ -1106,7 +1106,7 @@ class Style extends Evented {
         layerTiles[layer.source],
         transform.center.lng
       );
-      symbolBucketsChanged = symbolBucketsChanged || layerBucketsChanged;
+      symbolBucketsChanged ||= layerBucketsChanged;
     }
     this.crossTileSymbolIndex.pruneUnusedLayers(this._layers.keys());
 

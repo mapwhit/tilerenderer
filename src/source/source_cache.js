@@ -800,7 +800,7 @@ class SourceCache extends Evented {
    * @private
    */
   setFeatureState(sourceLayer, featureId, state) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     this._state.updateState(sourceLayer, featureId, state);
   }
 
@@ -809,7 +809,7 @@ class SourceCache extends Evented {
    * @private
    */
   removeFeatureState(sourceLayer, featureId, key) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     this._state.removeFeatureState(sourceLayer, featureId, key);
   }
 
@@ -818,7 +818,7 @@ class SourceCache extends Evented {
    * @private
    */
   getFeatureState(sourceLayer, featureId) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     return this._state.getState(sourceLayer, featureId);
   }
 }

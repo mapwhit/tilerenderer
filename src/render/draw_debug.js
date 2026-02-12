@@ -393,7 +393,7 @@ const simplexFont = {
 };
 
 function createTextVertices(text, left, baseline, scale) {
-  scale = scale || 1;
+  scale ||= 1;
 
   const strokes = [];
   let i;

@@ -106,5 +106,5 @@ function computeTileMasks(rootTile, ref, childArray, lowerBound, mask) {
     ref.canonical.x - (rootTile.canonical.x << diffZ),
     ref.canonical.y - (rootTile.canonical.y << diffZ)
   );
-  mask[maskTileId.key] = mask[maskTileId.key] || maskTileId;
+  mask[maskTileId.key] ||= maskTileId;
 }
