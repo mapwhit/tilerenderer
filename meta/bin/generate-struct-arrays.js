@@ -83,8 +83,8 @@ function createStructArrayLayoutType({ members, size, alignment }) {
   // component counts
   if (!alignment || alignment === 1) {
     members = members.reduce((memo, member) => {
-      if (memo.length > 0 && memo[memo.length - 1].type === member.type) {
-        const last = memo[memo.length - 1];
+      if (memo.length > 0 && memo.at(-1).type === member.type) {
+        const last = memo.at(-1);
         return memo.slice(0, -1).concat({ ...last, components: last.components + member.components });
       }
       return memo.concat(member);

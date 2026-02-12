@@ -499,7 +499,7 @@ export default class SymbolBucket {
   }
 
   addToSortKeyRanges(symbolInstanceIndex, sortKey) {
-    const last = this.sortKeyRanges[this.sortKeyRanges.length - 1];
+    const last = this.sortKeyRanges.at(-1);
     if (last && last.sortKey === sortKey) {
       last.symbolInstanceEnd = symbolInstanceIndex + 1;
     } else {
