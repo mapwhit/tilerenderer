@@ -476,9 +476,7 @@ class Style extends Evented {
     sourceCache.setEventedParent(null);
     sourceCache.clearTiles();
 
-    if (sourceCache.onRemove) {
-      sourceCache.onRemove(this.map);
-    }
+    sourceCache.onRemove?.(this.map);
     this._changed = true;
   }
 

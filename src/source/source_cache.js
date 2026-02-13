@@ -63,15 +63,11 @@ class SourceCache extends Evented {
 
   onAdd(map) {
     this.map = map;
-    if (this._source?.onAdd) {
-      this._source.onAdd(map);
-    }
+    this._source?.onAdd?.(map);
   }
 
   onRemove(map) {
-    if (this._source?.onRemove) {
-      this._source.onRemove(map);
-    }
+    this._source?.onRemove?.(map);
   }
 
   /**
