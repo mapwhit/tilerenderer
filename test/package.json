@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "canvas": "~3",
-    "gl": "~8",
+    "gl": "9.0.0-rc.9",
     "jsdom": "~26"
   },
   "type": "module",
