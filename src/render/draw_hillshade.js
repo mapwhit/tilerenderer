@@ -101,7 +101,7 @@ function prepareHillshade(painter, tile, layer, sourceMaxZoom, depthMode, stenci
     // tiles will appear blank, because as you can see above the alpha value for these textures
     // is always 0
     context.pixelStoreUnpackPremultiplyAlpha.set(false);
-    tile.demTexture = tile.demTexture || painter.getTileTexture(textureStride);
+    tile.demTexture ||= painter.getTileTexture(textureStride);
     if (tile.demTexture) {
       const demTexture = tile.demTexture;
       demTexture.update(pixelData, { premultiply: false });

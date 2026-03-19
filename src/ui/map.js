@@ -1268,7 +1268,7 @@ class Map extends Camera {
       return;
     }
 
-    this._styleDirty = this._styleDirty || updateStyle;
+    this._styleDirty ||= updateStyle;
     this._sourcesDirty = true;
 
     this._rerender();

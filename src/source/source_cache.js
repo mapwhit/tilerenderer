@@ -63,15 +63,11 @@ class SourceCache extends Evented {
 
   onAdd(map) {
     this.map = map;
-    if (this._source?.onAdd) {
-      this._source.onAdd(map);
-    }
+    this._source?.onAdd?.(map);
   }
 
   onRemove(map) {
-    if (this._source?.onRemove) {
-      this._source.onRemove(map);
-    }
+    this._source?.onRemove?.(map);
   }
 
   /**
@@ -800,7 +796,7 @@ class SourceCache extends Evented {
    * @private
    */
   setFeatureState(sourceLayer, featureId, state) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     this._state.updateState(sourceLayer, featureId, state);
   }
 
@@ -809,7 +805,7 @@ class SourceCache extends Evented {
    * @private
    */
   removeFeatureState(sourceLayer, featureId, key) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     this._state.removeFeatureState(sourceLayer, featureId, key);
   }
 
@@ -818,7 +814,7 @@ class SourceCache extends Evented {
    * @private
    */
   getFeatureState(sourceLayer, featureId) {
-    sourceLayer = sourceLayer || '_geojsonTileLayer';
+    sourceLayer ??= '_geojsonTileLayer';
     return this._state.getState(sourceLayer, featureId);
   }
 }

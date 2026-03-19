@@ -103,7 +103,7 @@ export function queryRenderedSymbols(
     );
 
     for (const layerID in bucketSymbols) {
-      const resultFeatures = (result[layerID] = result[layerID] || []);
+      const resultFeatures = (result[layerID] ??= []);
       const layerSymbols = bucketSymbols[layerID];
       layerSymbols.sort((a, b) => {
         // Match topDownFeatureComparator from FeatureIndex, but using
@@ -186,11 +186,11 @@ function mergeRenderedFeatureLayers(tiles) {
   for (const tile of tiles) {
     const queryResults = tile.queryResults;
     const wrappedID = tile.wrappedTileID;
-    const wrappedIDLayers = (wrappedIDLayerMap[wrappedID] = wrappedIDLayerMap[wrappedID] || {});
+    const wrappedIDLayers = (wrappedIDLayerMap[wrappedID] ??= {});
     for (const layerID in queryResults) {
       const tileFeatures = queryResults[layerID];
-      const wrappedIDFeatures = (wrappedIDLayers[layerID] = wrappedIDLayers[layerID] || {});
-      const resultFeatures = (result[layerID] = result[layerID] || []);
+      const wrappedIDFeatures = (wrappedIDLayers[layerID] ??= {});
+      const resultFeatures = (result[layerID] ??= []);
       for (const tileFeature of tileFeatures) {
         if (!wrappedIDFeatures[tileFeature.featureIndex]) {
           wrappedIDFeatures[tileFeature.featureIndex] = true;

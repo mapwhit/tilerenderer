@@ -198,7 +198,7 @@ export default class LineBucket {
 
     // If the line has duplicate vertices at the ends, adjust start/length to remove them.
     const firstVertex = Point.clone(vertices[0]);
-    const lastVertex = Point.clone(vertices[vertices.length - 1]);
+    const lastVertex = Point.clone(vertices.at(-1));
     let len = vertices.length;
     while (len >= 2 && lastVertex.equals(vertices[len - 2])) {
       len--;
@@ -283,7 +283,7 @@ export default class LineBucket {
 
       // If we still don't have a previous normal, this is the beginning of a
       // non-closed line, so we're doing a straight "join".
-      prevNormal = prevNormal || nextNormal;
+      prevNormal ||= nextNormal;
 
       // Determine the normal of the join extrusion. It is the angle bisector
       // of the segments between the previous line and the next line.

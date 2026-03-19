@@ -55,11 +55,11 @@ class SourceFeatureState {
 
     const feature = String(featureId);
 
-    this.#deletedStates[sourceLayer] = this.#deletedStates[sourceLayer] || {};
+    this.#deletedStates[sourceLayer] ??= {};
 
     if (key && featureId !== undefined) {
       if (this.#deletedStates[sourceLayer][feature] !== null) {
-        this.#deletedStates[sourceLayer][feature] = this.#deletedStates[sourceLayer][feature] || {};
+        this.#deletedStates[sourceLayer][feature] ??= {};
         this.#deletedStates[sourceLayer][feature][key] = null;
       }
     } else if (featureId !== undefined) {
@@ -119,7 +119,7 @@ class SourceFeatureState {
       featuresChanged[sourceLayer] = layerStates;
     }
     for (const sourceLayer in this.#deletedStates) {
-      this.#state[sourceLayer] = this.#state[sourceLayer] || {};
+      this.#state[sourceLayer] ??= {};
       const layerStates = {};
 
       if (this.#deletedStates[sourceLayer] === null) {
@@ -141,7 +141,7 @@ class SourceFeatureState {
         }
       }
 
-      featuresChanged[sourceLayer] = featuresChanged[sourceLayer] || {};
+      featuresChanged[sourceLayer] ??= {};
       Object.assign(featuresChanged[sourceLayer], layerStates);
     }
     this.#stateChanges = {};

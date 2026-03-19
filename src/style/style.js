@@ -476,9 +476,7 @@ class Style extends Evented {
     sourceCache.setEventedParent(null);
     sourceCache.clearTiles();
 
-    if (sourceCache.onRemove) {
-      sourceCache.onRemove(this.map);
-    }
+    sourceCache.onRemove?.(this.map);
     this._changed = true;
   }
 
@@ -1106,7 +1104,7 @@ class Style extends Evented {
         layerTiles[layer.source],
         transform.center.lng
       );
-      symbolBucketsChanged = symbolBucketsChanged || layerBucketsChanged;
+      symbolBucketsChanged ||= layerBucketsChanged;
     }
     this.crossTileSymbolIndex.pruneUnusedLayers(this._layers.keys());
 

@@ -1567,7 +1567,7 @@ test('camera', async t => {
       let leftWorld0 = false;
 
       camera.on('move', () => {
-        leftWorld0 = leftWorld0 || camera.getCenter().lng < -180;
+        leftWorld0 ||= camera.getCenter().lng < -180;
       });
 
       camera.on('moveend', () => {

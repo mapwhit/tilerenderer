@@ -484,7 +484,7 @@ export default class Painter {
   }
 
   useProgram(name, programConfiguration = this.emptyProgramConfiguration) {
-    this.cache = this.cache || {};
+    this.cache ??= {};
     const key = `${name}${programConfiguration.cacheKey || ''}${this._showOverdrawInspector ? '/overdraw' : ''}`;
     if (!this.cache[key]) {
       this.cache[key] = new Program(

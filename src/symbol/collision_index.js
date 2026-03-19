@@ -216,7 +216,7 @@ export default class CollisionIndex {
       const x2 = projectedPoint.x + radius;
       const y2 = projectedPoint.y + radius;
       entirelyOffscreen = entirelyOffscreen && this.isOffscreen(x1, y1, x2, y2);
-      inGrid = inGrid || this.isInsideGrid(x1, y1, x2, y2);
+      inGrid ||= this.isInsideGrid(x1, y1, x2, y2);
 
       if (!allowOverlap) {
         if (this.grid.hitTestCircle(projectedPoint.x, projectedPoint.y, radius, collisionGroupPredicate)) {

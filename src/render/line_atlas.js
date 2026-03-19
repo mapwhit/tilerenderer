@@ -64,7 +64,7 @@ class LineAtlas {
       const row = this.nextRow + n + y;
       const index = this.width * row;
 
-      let left = oddLength ? -dasharray[dasharray.length - 1] : 0;
+      let left = oddLength ? -dasharray.at(-1) : 0;
       let right = dasharray[0];
       let partIndex = 1;
 
